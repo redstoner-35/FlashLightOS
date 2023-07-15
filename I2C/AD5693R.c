@@ -30,6 +30,9 @@ bool AD5693R_SetChipConfig(DACInitStrDef *DACInitStruct)
 	buf|=((unsigned short)DACInitStruct->DACPState)<<13;//设置PD1和PD0
 	buf|=(DACInitStruct->IsOnchipRefEnabled)?0:0x1000;//设置Refbit
 	buf|=DACInitStruct->DACRange==DAC_Output_REF?0:0x800;//设置GainBit
+	#ifdef Internal_Driver_Debug
+  UartPost(msg_error,"DACDrv","Control Register=0x%04X.",buf);
+  #endif		 
 	//发送配置
 	if(!PMBUS_WordReadWrite(true,true,&buf,AD5693ADDR,0x40))return false;//向控制寄存器写入结果
 	buf=0;
@@ -48,6 +51,9 @@ bool AD5693R_SetOutput(float VOUT)
 	Buf/=(DACVref/(float)65536);//将输出电压除以每阶的VID得到结果
 	if(Buf>=(float)65535)Buf=(float)65535;
 	if(Buf<0)Buf=0;//将算出的VID Code进行限幅
+	#ifdef Internal_Driver_Debug
+  UartPost(msg_error,"DACDrv","DAC VID Code=%d.",Buf);
+  #endif		
 	//开始发数据
 	vid=(unsigned int)Buf;//把算出的VID Code转换一下
 	return PMBUS_WordReadWrite(true,true,&vid,AD5693ADDR,0x30);//设置DAC值

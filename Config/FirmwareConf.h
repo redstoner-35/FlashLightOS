@@ -1,6 +1,11 @@
 #ifndef _FirmwareConf_
 #define _FirmwareConf_
 
+//固件模式配置
+#define Firmware_DIY_Mode //是否启用DIY高级用户模式，在此模式下驱动所有功能可以使用，否则温控调整和日志清除和恢复功能会被禁用。
+//#define FlashLightOS_Debug_Mode //是否启用debug模式，此时驱动将会禁用部分自检项目以及低电量关机功能，并且强制使用工厂配置
+//#define Internal_Driver_Debug //是否启用驱动内部设备驱动的额外信息输出。
+
 //性能参数定义
 #define BreathTIMFreq 50 //负责生成平滑呼吸灯效果的定时器频率(单位Hz)，越高越平滑
 #define GammaCorrectionValue 2.45   //亮度拟合曲线的gamma修正，根据不同LED有所不同

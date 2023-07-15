@@ -1,5 +1,5 @@
 Dependencies for Project 'FlashLightOS', Target 'FlashLightOS': (DO NOT MODIFY !)
-F (.\User\main.c)(0x64B0C965)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\main.o --omf_browse .\objects\main.crf --depend .\objects\main.d)
+F (.\User\main.c)(0x64B0C965)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\main.o --omf_browse .\objects\main.crf --depend .\objects\main.d)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32_config.h)(0x63906E64)
@@ -48,7 +48,7 @@ I (.\User\inc\console.h)(0x64B12177)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -60,7 +60,7 @@ I (.\User\inc\PWMDIM.h)(0x64991030)
 I (.\User\inc\AD5693R.h)(0x64A6E2F0)
 I (.\User\inc\logger.h)(0x64AC0453)
 I (.\User\inc\runtimelogger.h)(0x64B02264)
-F (.\User\ht32f5xxxx_01_it.c)(0x64ACE091)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\ht32f5xxxx_01_it.o --omf_browse .\objects\ht32f5xxxx_01_it.crf --depend .\objects\ht32f5xxxx_01_it.d)
+F (.\User\ht32f5xxxx_01_it.c)(0x64ACE091)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\ht32f5xxxx_01_it.o --omf_browse .\objects\ht32f5xxxx_01_it.crf --depend .\objects\ht32f5xxxx_01_it.d)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32_config.h)(0x63906E64)
@@ -108,7 +108,7 @@ I (.\User\inc\LEDMgmt.h)(0x648145DB)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\User\inc\SideKey.h)(0x64AE3C49)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
-F (.\User\delay.c)(0x647BE641)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\delay.o --omf_browse .\objects\delay.crf --depend .\objects\delay.d)
+F (.\User\delay.c)(0x647BE641)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\delay.o --omf_browse .\objects\delay.crf --depend .\objects\delay.d)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32_config.h)(0x63906E64)
@@ -153,7 +153,7 @@ I (.\Library\inc\ht32_serial.h)(0x647BE6B5)
 I (.\Library\inc\ht32_div.h)(0x647BE6B5)
 I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (.\User\inc\delay.h)(0x647BE621)
-F (.\User\MCUBeatTimer.c)(0x64B09B61)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\mcubeattimer.o --omf_browse .\objects\mcubeattimer.crf --depend .\objects\mcubeattimer.d)
+F (.\User\MCUBeatTimer.c)(0x64B09B61)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\mcubeattimer.o --omf_browse .\objects\mcubeattimer.crf --depend .\objects\mcubeattimer.d)
 I (.\Library\inc\HT32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32_config.h)(0x63906E64)
@@ -201,9 +201,9 @@ I (.\User\inc\console.h)(0x64B12177)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\delay.h)(0x647BE621)
-F (.\User\LinearTabOp.c)(0x64AECF73)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\lineartabop.o --omf_browse .\objects\lineartabop.crf --depend .\objects\lineartabop.d)
+F (.\User\LinearTabOp.c)(0x64AECF73)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\lineartabop.o --omf_browse .\objects\lineartabop.crf --depend .\objects\lineartabop.d)
 I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x599EDB3E)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599EDB3C)
 I (.\User\inc\console.h)(0x64B12177)
@@ -253,14 +253,14 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 F (.\MCUConfig\ht32_board_config.h)(0x647BE74A)()
 F (.\MCUConfig\ht32_op.s)(0x647BE85E)(--cpu Cortex-M0+ -g --apcs=interwork -I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include--pd "__UVISION_VERSION SETA 527" --pd "USE_HT32F52342_52 SETA 1" --pd "USE_HT32_CHIP SETA 4"--list .\listings\ht32_op.lst --xref -o .\objects\ht32_op.o --depend .\objects\ht32_op.d)
 F (.\MCUConfig\ht32f5xxxx_01_usbdconf.h)(0x647BE74A)()
 F (.\MCUConfig\ht32f5xxxx_02_usbdconf.h)(0x647BE74A)()
 F (.\MCUConfig\ht32f5xxxx_conf.h)(0x647BE74A)()
 F (.\MCUConfig\HT32F5xxxx_01_DebugSupport.ini)(0x647BE74A)()
-F (.\CMSIS\system_ht32f5xxxx_01.c)(0x647BE789)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\system_ht32f5xxxx_01.o --omf_browse .\objects\system_ht32f5xxxx_01.crf --depend .\objects\system_ht32f5xxxx_01.d)
+F (.\CMSIS\system_ht32f5xxxx_01.c)(0x647BE789)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\system_ht32f5xxxx_01.o --omf_browse .\objects\system_ht32f5xxxx_01.crf --depend .\objects\system_ht32f5xxxx_01.d)
 I (CMSIS\ht32f5xxxx_01.h)(0x647BE789)
 I (.\Library\inc\ht32_config.h)(0x647BE6B5)
 I (.\CMSIS\Core\Include\core_cm0plus.h)(0x647BE7BB)
@@ -306,7 +306,7 @@ I (.\Library\inc\ht32_serial.h)(0x647BE6B5)
 I (.\Library\inc\ht32_div.h)(0x647BE6B5)
 I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 F (.\MDK-ARM\startup_ht32f5xxxx_01.s)(0x647BE8A5)(--cpu Cortex-M0+ -g --apcs=interwork -I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include--pd "__UVISION_VERSION SETA 527" --pd "USE_HT32F52342_52 SETA 1" --pd "USE_HT32_CHIP SETA 4"--list .\listings\startup_ht32f5xxxx_01.lst --xref -o .\objects\startup_ht32f5xxxx_01.o --depend .\objects\startup_ht32f5xxxx_01.d)
-F (.\Library\src\ht32_cm0plus_misc.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\ht32_cm0plus_misc.o --omf_browse .\objects\ht32_cm0plus_misc.crf --depend .\objects\ht32_cm0plus_misc.d)
+F (.\Library\src\ht32_cm0plus_misc.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\ht32_cm0plus_misc.o --omf_browse .\objects\ht32_cm0plus_misc.crf --depend .\objects\ht32_cm0plus_misc.d)
 I (.\Library\inc\ht32_cm0plus_misc.h)(0x647BE6B5)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -353,7 +353,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (Library\src\ht32_div.c)(0x647BE6D3)
 I (Library\src\ht32_rand.c)(0x647BE6D3)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599EDB3C)
-F (.\Library\src\ht32f5xxxx_adc.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\ht32f5xxxx_adc.o --omf_browse .\objects\ht32f5xxxx_adc.crf --depend .\objects\ht32f5xxxx_adc.d)
+F (.\Library\src\ht32f5xxxx_adc.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\ht32f5xxxx_adc.o --omf_browse .\objects\ht32f5xxxx_adc.crf --depend .\objects\ht32f5xxxx_adc.d)
 I (.\Library\inc\ht32f5xxxx_adc.h)(0x647BE6B5)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -397,7 +397,7 @@ I (.\Library\inc\ht32_cm0plus_misc.h)(0x647BE6B5)
 I (.\Library\inc\ht32_serial.h)(0x647BE6B5)
 I (.\Library\inc\ht32_div.h)(0x647BE6B5)
 I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
-F (.\Library\src\ht32f5xxxx_bftm.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\ht32f5xxxx_bftm.o --omf_browse .\objects\ht32f5xxxx_bftm.crf --depend .\objects\ht32f5xxxx_bftm.d)
+F (.\Library\src\ht32f5xxxx_bftm.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\ht32f5xxxx_bftm.o --omf_browse .\objects\ht32f5xxxx_bftm.crf --depend .\objects\ht32f5xxxx_bftm.d)
 I (.\Library\inc\ht32f5xxxx_bftm.h)(0x647BE6B5)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -441,7 +441,7 @@ I (.\Library\inc\ht32_cm0plus_misc.h)(0x647BE6B5)
 I (.\Library\inc\ht32_serial.h)(0x647BE6B5)
 I (.\Library\inc\ht32_div.h)(0x647BE6B5)
 I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
-F (.\Library\src\ht32f5xxxx_ckcu.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\ht32f5xxxx_ckcu.o --omf_browse .\objects\ht32f5xxxx_ckcu.crf --depend .\objects\ht32f5xxxx_ckcu.d)
+F (.\Library\src\ht32f5xxxx_ckcu.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\ht32f5xxxx_ckcu.o --omf_browse .\objects\ht32f5xxxx_ckcu.crf --depend .\objects\ht32f5xxxx_ckcu.d)
 I (.\Library\inc\ht32f5xxxx_ckcu.h)(0x647BE6B5)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -485,7 +485,7 @@ I (.\Library\inc\ht32_cm0plus_misc.h)(0x647BE6B5)
 I (.\Library\inc\ht32_serial.h)(0x647BE6B5)
 I (.\Library\inc\ht32_div.h)(0x647BE6B5)
 I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
-F (.\Library\src\ht32f5xxxx_cmp.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\ht32f5xxxx_cmp.o --omf_browse .\objects\ht32f5xxxx_cmp.crf --depend .\objects\ht32f5xxxx_cmp.d)
+F (.\Library\src\ht32f5xxxx_cmp.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\ht32f5xxxx_cmp.o --omf_browse .\objects\ht32f5xxxx_cmp.crf --depend .\objects\ht32f5xxxx_cmp.d)
 I (.\Library\inc\ht32f5xxxx_cmp.h)(0x647BE6B5)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -529,7 +529,7 @@ I (.\Library\inc\ht32_cm0plus_misc.h)(0x647BE6B5)
 I (.\Library\inc\ht32_serial.h)(0x647BE6B5)
 I (.\Library\inc\ht32_div.h)(0x647BE6B5)
 I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
-F (.\Library\src\ht32f5xxxx_crc.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\ht32f5xxxx_crc.o --omf_browse .\objects\ht32f5xxxx_crc.crf --depend .\objects\ht32f5xxxx_crc.d)
+F (.\Library\src\ht32f5xxxx_crc.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\ht32f5xxxx_crc.o --omf_browse .\objects\ht32f5xxxx_crc.crf --depend .\objects\ht32f5xxxx_crc.d)
 I (.\Library\inc\ht32f5xxxx_crc.h)(0x647BE6B5)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -573,7 +573,7 @@ I (.\Library\inc\ht32_cm0plus_misc.h)(0x647BE6B5)
 I (.\Library\inc\ht32_serial.h)(0x647BE6B5)
 I (.\Library\inc\ht32_div.h)(0x647BE6B5)
 I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
-F (.\Library\src\ht32f5xxxx_ebi.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\ht32f5xxxx_ebi.o --omf_browse .\objects\ht32f5xxxx_ebi.crf --depend .\objects\ht32f5xxxx_ebi.d)
+F (.\Library\src\ht32f5xxxx_ebi.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\ht32f5xxxx_ebi.o --omf_browse .\objects\ht32f5xxxx_ebi.crf --depend .\objects\ht32f5xxxx_ebi.d)
 I (.\Library\inc\ht32f5xxxx_ebi.h)(0x647BE6B5)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -617,7 +617,7 @@ I (.\Library\inc\ht32_cm0plus_misc.h)(0x647BE6B5)
 I (.\Library\inc\ht32_serial.h)(0x647BE6B5)
 I (.\Library\inc\ht32_div.h)(0x647BE6B5)
 I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
-F (.\Library\src\ht32f5xxxx_exti.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\ht32f5xxxx_exti.o --omf_browse .\objects\ht32f5xxxx_exti.crf --depend .\objects\ht32f5xxxx_exti.d)
+F (.\Library\src\ht32f5xxxx_exti.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\ht32f5xxxx_exti.o --omf_browse .\objects\ht32f5xxxx_exti.crf --depend .\objects\ht32f5xxxx_exti.d)
 I (.\Library\inc\ht32f5xxxx_exti.h)(0x647BE6B5)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -661,7 +661,7 @@ I (.\Library\inc\ht32_cm0plus_misc.h)(0x647BE6B5)
 I (.\Library\inc\ht32_serial.h)(0x647BE6B5)
 I (.\Library\inc\ht32_div.h)(0x647BE6B5)
 I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
-F (.\Library\src\ht32f5xxxx_flash.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\ht32f5xxxx_flash.o --omf_browse .\objects\ht32f5xxxx_flash.crf --depend .\objects\ht32f5xxxx_flash.d)
+F (.\Library\src\ht32f5xxxx_flash.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\ht32f5xxxx_flash.o --omf_browse .\objects\ht32f5xxxx_flash.crf --depend .\objects\ht32f5xxxx_flash.d)
 I (.\Library\inc\ht32f5xxxx_flash.h)(0x647BE6B5)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -705,7 +705,7 @@ I (.\Library\inc\ht32_cm0plus_misc.h)(0x647BE6B5)
 I (.\Library\inc\ht32_serial.h)(0x647BE6B5)
 I (.\Library\inc\ht32_div.h)(0x647BE6B5)
 I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
-F (.\Library\src\ht32f5xxxx_gpio.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\ht32f5xxxx_gpio.o --omf_browse .\objects\ht32f5xxxx_gpio.crf --depend .\objects\ht32f5xxxx_gpio.d)
+F (.\Library\src\ht32f5xxxx_gpio.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\ht32f5xxxx_gpio.o --omf_browse .\objects\ht32f5xxxx_gpio.crf --depend .\objects\ht32f5xxxx_gpio.d)
 I (.\Library\inc\ht32f5xxxx_gpio.h)(0x647BE6B5)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -749,7 +749,7 @@ I (.\Library\inc\ht32_cm0plus_misc.h)(0x647BE6B5)
 I (.\Library\inc\ht32_serial.h)(0x647BE6B5)
 I (.\Library\inc\ht32_div.h)(0x647BE6B5)
 I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
-F (.\Library\src\ht32f5xxxx_i2c.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\ht32f5xxxx_i2c.o --omf_browse .\objects\ht32f5xxxx_i2c.crf --depend .\objects\ht32f5xxxx_i2c.d)
+F (.\Library\src\ht32f5xxxx_i2c.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\ht32f5xxxx_i2c.o --omf_browse .\objects\ht32f5xxxx_i2c.crf --depend .\objects\ht32f5xxxx_i2c.d)
 I (.\Library\inc\ht32f5xxxx_i2c.h)(0x647BE6B5)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -793,7 +793,7 @@ I (.\Library\inc\ht32_cm0plus_misc.h)(0x647BE6B5)
 I (.\Library\inc\ht32_serial.h)(0x647BE6B5)
 I (.\Library\inc\ht32_div.h)(0x647BE6B5)
 I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
-F (.\Library\src\ht32f5xxxx_i2s.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\ht32f5xxxx_i2s.o --omf_browse .\objects\ht32f5xxxx_i2s.crf --depend .\objects\ht32f5xxxx_i2s.d)
+F (.\Library\src\ht32f5xxxx_i2s.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\ht32f5xxxx_i2s.o --omf_browse .\objects\ht32f5xxxx_i2s.crf --depend .\objects\ht32f5xxxx_i2s.d)
 I (.\Library\inc\ht32f5xxxx_i2s.h)(0x647BE6B5)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -837,7 +837,7 @@ I (.\Library\inc\ht32_cm0plus_misc.h)(0x647BE6B5)
 I (.\Library\inc\ht32_serial.h)(0x647BE6B5)
 I (.\Library\inc\ht32_div.h)(0x647BE6B5)
 I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
-F (.\Library\src\ht32f5xxxx_mctm.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\ht32f5xxxx_mctm.o --omf_browse .\objects\ht32f5xxxx_mctm.crf --depend .\objects\ht32f5xxxx_mctm.d)
+F (.\Library\src\ht32f5xxxx_mctm.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\ht32f5xxxx_mctm.o --omf_browse .\objects\ht32f5xxxx_mctm.crf --depend .\objects\ht32f5xxxx_mctm.d)
 I (.\Library\inc\ht32f5xxxx_mctm.h)(0x647BE6B5)
 I (.\Library\inc\ht32f5xxxx_tm.h)(0x647BE6B5)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
@@ -881,7 +881,7 @@ I (.\Library\inc\ht32_cm0plus_misc.h)(0x647BE6B5)
 I (.\Library\inc\ht32_serial.h)(0x647BE6B5)
 I (.\Library\inc\ht32_div.h)(0x647BE6B5)
 I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
-F (.\Library\src\ht32f5xxxx_pdma.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\ht32f5xxxx_pdma.o --omf_browse .\objects\ht32f5xxxx_pdma.crf --depend .\objects\ht32f5xxxx_pdma.d)
+F (.\Library\src\ht32f5xxxx_pdma.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\ht32f5xxxx_pdma.o --omf_browse .\objects\ht32f5xxxx_pdma.crf --depend .\objects\ht32f5xxxx_pdma.d)
 I (.\Library\inc\ht32f5xxxx_pdma.h)(0x647BE6B5)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -925,7 +925,7 @@ I (.\Library\inc\ht32_cm0plus_misc.h)(0x647BE6B5)
 I (.\Library\inc\ht32_serial.h)(0x647BE6B5)
 I (.\Library\inc\ht32_div.h)(0x647BE6B5)
 I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
-F (.\Library\src\ht32f5xxxx_pwrcu.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\ht32f5xxxx_pwrcu.o --omf_browse .\objects\ht32f5xxxx_pwrcu.crf --depend .\objects\ht32f5xxxx_pwrcu.d)
+F (.\Library\src\ht32f5xxxx_pwrcu.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\ht32f5xxxx_pwrcu.o --omf_browse .\objects\ht32f5xxxx_pwrcu.crf --depend .\objects\ht32f5xxxx_pwrcu.d)
 I (.\Library\inc\ht32f5xxxx_pwrcu.h)(0x647BE6B5)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -969,7 +969,7 @@ I (.\Library\inc\ht32_cm0plus_misc.h)(0x647BE6B5)
 I (.\Library\inc\ht32_serial.h)(0x647BE6B5)
 I (.\Library\inc\ht32_div.h)(0x647BE6B5)
 I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
-F (.\Library\src\ht32f5xxxx_rstcu.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\ht32f5xxxx_rstcu.o --omf_browse .\objects\ht32f5xxxx_rstcu.crf --depend .\objects\ht32f5xxxx_rstcu.d)
+F (.\Library\src\ht32f5xxxx_rstcu.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\ht32f5xxxx_rstcu.o --omf_browse .\objects\ht32f5xxxx_rstcu.crf --depend .\objects\ht32f5xxxx_rstcu.d)
 I (.\Library\inc\ht32f5xxxx_rstcu.h)(0x647BE6B5)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -1013,7 +1013,7 @@ I (.\Library\inc\ht32_cm0plus_misc.h)(0x647BE6B5)
 I (.\Library\inc\ht32_serial.h)(0x647BE6B5)
 I (.\Library\inc\ht32_div.h)(0x647BE6B5)
 I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
-F (.\Library\src\ht32f5xxxx_rtc.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\ht32f5xxxx_rtc.o --omf_browse .\objects\ht32f5xxxx_rtc.crf --depend .\objects\ht32f5xxxx_rtc.d)
+F (.\Library\src\ht32f5xxxx_rtc.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\ht32f5xxxx_rtc.o --omf_browse .\objects\ht32f5xxxx_rtc.crf --depend .\objects\ht32f5xxxx_rtc.d)
 I (.\Library\inc\ht32f5xxxx_rtc.h)(0x647BE6B5)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -1057,7 +1057,7 @@ I (.\Library\inc\ht32_cm0plus_misc.h)(0x647BE6B5)
 I (.\Library\inc\ht32_serial.h)(0x647BE6B5)
 I (.\Library\inc\ht32_div.h)(0x647BE6B5)
 I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
-F (.\Library\src\ht32f5xxxx_sci.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\ht32f5xxxx_sci.o --omf_browse .\objects\ht32f5xxxx_sci.crf --depend .\objects\ht32f5xxxx_sci.d)
+F (.\Library\src\ht32f5xxxx_sci.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\ht32f5xxxx_sci.o --omf_browse .\objects\ht32f5xxxx_sci.crf --depend .\objects\ht32f5xxxx_sci.d)
 I (.\Library\inc\ht32f5xxxx_sci.h)(0x647BE6B5)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -1101,7 +1101,7 @@ I (.\Library\inc\ht32_cm0plus_misc.h)(0x647BE6B5)
 I (.\Library\inc\ht32_serial.h)(0x647BE6B5)
 I (.\Library\inc\ht32_div.h)(0x647BE6B5)
 I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
-F (.\Library\src\ht32f5xxxx_spi.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\ht32f5xxxx_spi.o --omf_browse .\objects\ht32f5xxxx_spi.crf --depend .\objects\ht32f5xxxx_spi.d)
+F (.\Library\src\ht32f5xxxx_spi.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\ht32f5xxxx_spi.o --omf_browse .\objects\ht32f5xxxx_spi.crf --depend .\objects\ht32f5xxxx_spi.d)
 I (.\Library\inc\ht32f5xxxx_spi.h)(0x647BE6B5)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -1145,7 +1145,7 @@ I (.\Library\inc\ht32_cm0plus_misc.h)(0x647BE6B5)
 I (.\Library\inc\ht32_serial.h)(0x647BE6B5)
 I (.\Library\inc\ht32_div.h)(0x647BE6B5)
 I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
-F (.\Library\src\ht32f5xxxx_tm.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\ht32f5xxxx_tm.o --omf_browse .\objects\ht32f5xxxx_tm.crf --depend .\objects\ht32f5xxxx_tm.d)
+F (.\Library\src\ht32f5xxxx_tm.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\ht32f5xxxx_tm.o --omf_browse .\objects\ht32f5xxxx_tm.crf --depend .\objects\ht32f5xxxx_tm.d)
 I (.\Library\inc\ht32f5xxxx_tm.h)(0x647BE6B5)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -1189,7 +1189,7 @@ I (.\Library\inc\ht32_cm0plus_misc.h)(0x647BE6B5)
 I (.\Library\inc\ht32_serial.h)(0x647BE6B5)
 I (.\Library\inc\ht32_div.h)(0x647BE6B5)
 I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
-F (.\Library\src\ht32f5xxxx_usart.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\ht32f5xxxx_usart.o --omf_browse .\objects\ht32f5xxxx_usart.crf --depend .\objects\ht32f5xxxx_usart.d)
+F (.\Library\src\ht32f5xxxx_usart.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\ht32f5xxxx_usart.o --omf_browse .\objects\ht32f5xxxx_usart.crf --depend .\objects\ht32f5xxxx_usart.d)
 I (.\Library\inc\ht32f5xxxx_usart.h)(0x647BE6B5)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -1233,7 +1233,7 @@ I (.\Library\inc\ht32_cm0plus_misc.h)(0x647BE6B5)
 I (.\Library\inc\ht32_serial.h)(0x647BE6B5)
 I (.\Library\inc\ht32_div.h)(0x647BE6B5)
 I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
-F (.\Library\src\ht32f5xxxx_usbd.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\ht32f5xxxx_usbd.o --omf_browse .\objects\ht32f5xxxx_usbd.crf --depend .\objects\ht32f5xxxx_usbd.d)
+F (.\Library\src\ht32f5xxxx_usbd.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\ht32f5xxxx_usbd.o --omf_browse .\objects\ht32f5xxxx_usbd.crf --depend .\objects\ht32f5xxxx_usbd.d)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32_config.h)(0x63906E64)
@@ -1278,7 +1278,7 @@ I (.\Library\inc\ht32_serial.h)(0x647BE6B5)
 I (.\Library\inc\ht32_div.h)(0x647BE6B5)
 I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (.\Library\inc\ht32f5xxxx_usbdchk.h)(0x647BE6B5)
-F (.\Library\src\ht32f5xxxx_wdt.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\ht32f5xxxx_wdt.o --omf_browse .\objects\ht32f5xxxx_wdt.crf --depend .\objects\ht32f5xxxx_wdt.d)
+F (.\Library\src\ht32f5xxxx_wdt.c)(0x647BE6D3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\ht32f5xxxx_wdt.o --omf_browse .\objects\ht32f5xxxx_wdt.crf --depend .\objects\ht32f5xxxx_wdt.d)
 I (.\Library\inc\ht32f5xxxx_wdt.h)(0x647BE6B5)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -1322,12 +1322,12 @@ I (.\Library\inc\ht32_cm0plus_misc.h)(0x647BE6B5)
 I (.\Library\inc\ht32_serial.h)(0x647BE6B5)
 I (.\Library\inc\ht32_div.h)(0x647BE6B5)
 I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
-F (.\ConfFileMgmt\cfgfileop.c)(0x64B09B61)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\cfgfileop.o --omf_browse .\objects\cfgfileop.crf --depend .\objects\cfgfileop.d)
+F (.\ConfFileMgmt\cfgfileop.c)(0x64B09B61)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\cfgfileop.o --omf_browse .\objects\cfgfileop.crf --depend .\objects\cfgfileop.d)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\INA219.h)(0x64A6E223)
@@ -1384,7 +1384,7 @@ I (.\User\inc\Xmodem.h)(0x64AD2112)
 I (.\User\inc\runtimelogger.h)(0x64B02264)
 I (.\User\inc\logger.h)(0x64AC0453)
 I (.\User\inc\ADC.h)(0x64B2021E)
-F (.\ConfFileMgmt\AES256.c)(0x64AB5F5B)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\aes256.o --omf_browse .\objects\aes256.crf --depend .\objects\aes256.d)
+F (.\ConfFileMgmt\AES256.c)(0x64AB5F5B)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\aes256.o --omf_browse .\objects\aes256.crf --depend .\objects\aes256.d)
 I (.\User\inc\AES256.h)(0x647BE621)
 I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x599EDB3A)
@@ -1431,7 +1431,7 @@ I (.\Library\inc\ht32_serial.h)(0x647BE6B5)
 I (.\Library\inc\ht32_div.h)(0x647BE6B5)
 I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
-F (.\ConfFileMgmt\logger.c)(0x64B09B61)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\logger.o --omf_browse .\objects\logger.crf --depend .\objects\logger.d)
+F (.\ConfFileMgmt\logger.c)(0x64B09B61)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\logger.o --omf_browse .\objects\logger.crf --depend .\objects\logger.d)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x599EDB3C)
 I (.\User\inc\console.h)(0x64B12177)
@@ -1480,7 +1480,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\delay.h)(0x647BE621)
 I (.\User\inc\ADC.h)(0x64B2021E)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -1489,7 +1489,7 @@ I (.\Config\I2CAddr.h)(0x64A6E3AA)
 I (.\User\inc\logger.h)(0x64AC0453)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x599EDB3E)
-F (.\ConfFileMgmt\runtimelogger.c)(0x64B11807)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\runtimelogger.o --omf_browse .\objects\runtimelogger.crf --depend .\objects\runtimelogger.d)
+F (.\ConfFileMgmt\runtimelogger.c)(0x64B11807)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\runtimelogger.o --omf_browse .\objects\runtimelogger.crf --depend .\objects\runtimelogger.d)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
@@ -1538,7 +1538,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -1548,7 +1548,7 @@ I (.\User\inc\ADC.h)(0x64B2021E)
 I (.\User\inc\runtimelogger.h)(0x64B02264)
 I (.\User\inc\logger.h)(0x64AC0453)
 I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x599EDB3E)
-F (.\ConfFileMgmt\selftestlogger.c)(0x64B0B7B8)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\selftestlogger.o --omf_browse .\objects\selftestlogger.crf --depend .\objects\selftestlogger.d)
+F (.\ConfFileMgmt\selftestlogger.c)(0x64B0B7B8)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\selftestlogger.o --omf_browse .\objects\selftestlogger.crf --depend .\objects\selftestlogger.d)
 I (.\User\inc\selftestlogger.h)(0x64B1EF54)
 I (.\User\inc\runtimelogger.h)(0x64B02264)
 I (.\User\inc\logger.h)(0x64AC0453)
@@ -1556,7 +1556,7 @@ I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\INA219.h)(0x64A6E223)
@@ -1609,7 +1609,7 @@ I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x599EDB3A)
 I (.\User\inc\Xmodem.h)(0x64AD2112)
-F (.\I2C\I2CDrv.c)(0x64B0F915)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\i2cdrv.o --omf_browse .\objects\i2cdrv.crf --depend .\objects\i2cdrv.d)
+F (.\I2C\I2CDrv.c)(0x64B0F915)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\i2cdrv.o --omf_browse .\objects\i2cdrv.crf --depend .\objects\i2cdrv.d)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32_config.h)(0x63906E64)
@@ -1656,19 +1656,19 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\delay.h)(0x647BE621)
 I (.\User\inc\console.h)(0x64B12177)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
 I (.\User\inc\PMBUS.h)(0x647BE621)
-F (.\I2C\PMBUS.c)(0x64A41C15)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\pmbus.o --omf_browse .\objects\pmbus.crf --depend .\objects\pmbus.d)
+F (.\I2C\PMBUS.c)(0x64A41C15)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\pmbus.o --omf_browse .\objects\pmbus.crf --depend .\objects\pmbus.d)
 I (.\User\inc\PMBUS.h)(0x647BE621)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\delay.h)(0x647BE621)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
@@ -1715,12 +1715,12 @@ I (.\Library\inc\ht32_serial.h)(0x647BE6B5)
 I (.\Library\inc\ht32_div.h)(0x647BE6B5)
 I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x599EDB3E)
-F (.\I2C\INA219.c)(0x64B09B61)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\ina219.o --omf_browse .\objects\ina219.crf --depend .\objects\ina219.d)
+F (.\I2C\INA219.c)(0x64B09B61)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\ina219.o --omf_browse .\objects\ina219.crf --depend .\objects\ina219.d)
 I (.\User\inc\PMBUS.h)(0x647BE621)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\delay.h)(0x647BE621)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
@@ -1770,12 +1770,12 @@ I (.\User\inc\INA219.h)(0x64A6E223)
 I (.\User\inc\LEDMgmt.h)(0x648145DB)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
-F (.\I2C\AD5693R.c)(0x64A5373B)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\ad5693r.o --omf_browse .\objects\ad5693r.crf --depend .\objects\ad5693r.d)
+F (.\I2C\AD5693R.c)(0x64B225E5)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\ad5693r.o --omf_browse .\objects\ad5693r.crf --depend .\objects\ad5693r.d)
 I (.\User\inc\PMBUS.h)(0x647BE621)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\delay.h)(0x647BE621)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
@@ -1826,7 +1826,7 @@ I (.\User\inc\LEDMgmt.h)(0x648145DB)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-F (.\I2C\24Cxx.c)(0x64B1ED95)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\24cxx.o --omf_browse .\objects\24cxx.crf --depend .\objects\24cxx.d)
+F (.\I2C\24Cxx.c)(0x64B1ED95)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\24cxx.o --omf_browse .\objects\24cxx.crf --depend .\objects\24cxx.d)
 I (.\User\inc\delay.h)(0x647BE621)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -1874,13 +1874,13 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
-F (.\Command\System\cfgmgmt.c)(0x64B14562)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\cfgmgmt.o --omf_browse .\objects\cfgmgmt.crf --depend .\objects\cfgmgmt.d)
+I (.\Config\FirmwareConf.h)(0x64B22567)
+F (.\Command\System\cfgmgmt.c)(0x64B14562)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\cfgmgmt.o --omf_browse .\objects\cfgmgmt.crf --depend .\objects\cfgmgmt.d)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\INA219.h)(0x64A6E223)
@@ -1933,7 +1933,7 @@ I (.\User\inc\runtimelogger.h)(0x64B02264)
 I (.\User\inc\logger.h)(0x64AC0453)
 I (.\User\inc\ADC.h)(0x64B2021E)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
-F (.\Command\System\clear.c)(0x647BE776)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\clear.o --omf_browse .\objects\clear.crf --depend .\objects\clear.d)
+F (.\Command\System\clear.c)(0x647BE776)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\clear.o --omf_browse .\objects\clear.crf --depend .\objects\clear.d)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -1981,13 +1981,13 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
-F (.\Command\System\LoginLogout.c)(0x64AAB4C7)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\loginlogout.o --omf_browse .\objects\loginlogout.crf --depend .\objects\loginlogout.d)
+I (.\Config\FirmwareConf.h)(0x64B22567)
+F (.\Command\System\LoginLogout.c)(0x64AAB4C7)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\loginlogout.o --omf_browse .\objects\loginlogout.crf --depend .\objects\loginlogout.d)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\INA219.h)(0x64A6E223)
@@ -2036,12 +2036,12 @@ I (.\Library\inc\ht32_serial.h)(0x647BE6B5)
 I (.\Library\inc\ht32_div.h)(0x647BE6B5)
 I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
-F (.\Command\System\usrmod.c)(0x64A3E3E7)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\usrmod.o --omf_browse .\objects\usrmod.crf --depend .\objects\usrmod.d)
+F (.\Command\System\usrmod.c)(0x64A3E3E7)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\usrmod.o --omf_browse .\objects\usrmod.crf --depend .\objects\usrmod.d)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\INA219.h)(0x64A6E223)
@@ -2090,7 +2090,7 @@ I (.\Library\inc\ht32_serial.h)(0x647BE6B5)
 I (.\Library\inc\ht32_div.h)(0x647BE6B5)
 I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
-F (.\Command\System\help.c)(0x648121AE)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\help.o --omf_browse .\objects\help.crf --depend .\objects\help.d)
+F (.\Command\System\help.c)(0x648121AE)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\help.o --omf_browse .\objects\help.crf --depend .\objects\help.d)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -2138,9 +2138,9 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
-F (.\Command\System\termcfg.c)(0x64AFC0C4)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\termcfg.o --omf_browse .\objects\termcfg.crf --depend .\objects\termcfg.d)
+F (.\Command\System\termcfg.c)(0x64AFC0C4)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\termcfg.o --omf_browse .\objects\termcfg.crf --depend .\objects\termcfg.d)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -2188,14 +2188,14 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599EDB3C)
-F (.\Command\System\reboot.c)(0x6480B474)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\reboot.o --omf_browse .\objects\reboot.crf --depend .\objects\reboot.d)
+F (.\Command\System\reboot.c)(0x6480B474)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\reboot.o --omf_browse .\objects\reboot.crf --depend .\objects\reboot.d)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -2243,9 +2243,9 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\delay.h)(0x647BE621)
-F (.\ExtPeriphal\LEDMgmt.c)(0x64B1FA96)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\ledmgmt.o --omf_browse .\objects\ledmgmt.crf --depend .\objects\ledmgmt.d)
+F (.\ExtPeriphal\LEDMgmt.c)(0x64B1FA96)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\ledmgmt.o --omf_browse .\objects\ledmgmt.crf --depend .\objects\ledmgmt.d)
 I (.\User\inc\delay.h)(0x647BE621)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -2294,10 +2294,10 @@ I (.\User\inc\console.h)(0x64B12177)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\LEDMgmt.h)(0x648145DB)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
-F (.\ExtPeriphal\ADC.c)(0x64B1FAA9)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\adc.o --omf_browse .\objects\adc.crf --depend .\objects\adc.d)
+F (.\ExtPeriphal\ADC.c)(0x64B1FAA9)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\adc.o --omf_browse .\objects\adc.crf --depend .\objects\adc.d)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -2345,7 +2345,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -2354,7 +2354,7 @@ I (.\User\inc\delay.h)(0x647BE621)
 I (.\User\inc\ADC.h)(0x64B2021E)
 I (.\User\inc\LEDMgmt.h)(0x648145DB)
 I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x599EDB3E)
-F (.\ExtPeriphal\SideKey.c)(0x64AE3C66)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\sidekey.o --omf_browse .\objects\sidekey.crf --depend .\objects\sidekey.d)
+F (.\ExtPeriphal\SideKey.c)(0x64AE3C66)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\sidekey.o --omf_browse .\objects\sidekey.crf --depend .\objects\sidekey.d)
 I (.\User\inc\delay.h)(0x647BE621)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -2405,11 +2405,11 @@ I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\Cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
-F (.\ExtPeriphal\PWMDIM.c)(0x6499123C)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\pwmdim.o --omf_browse .\objects\pwmdim.crf --depend .\objects\pwmdim.d)
+F (.\ExtPeriphal\PWMDIM.c)(0x6499123C)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\pwmdim.o --omf_browse .\objects\pwmdim.crf --depend .\objects\pwmdim.d)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -2457,14 +2457,14 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\delay.h)(0x647BE621)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
 I (.\User\inc\PWMDIM.h)(0x64991030)
-F (.\ExtPeriphal\LinearDIM.c)(0x64B12285)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\lineardim.o --omf_browse .\objects\lineardim.crf --depend .\objects\lineardim.d)
+F (.\ExtPeriphal\LinearDIM.c)(0x64B12285)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\lineardim.o --omf_browse .\objects\lineardim.crf --depend .\objects\lineardim.d)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -2512,7 +2512,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\AD5693R.h)(0x64A6E2F0)
 I (.\User\inc\delay.h)(0x647BE621)
 I (.\User\inc\LEDMgmt.h)(0x648145DB)
@@ -2525,7 +2525,7 @@ I (.\Config\I2CAddr.h)(0x64A6E3AA)
 I (.\User\inc\runtimelogger.h)(0x64B02264)
 I (.\User\inc\logger.h)(0x64AC0453)
 I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x599EDB3E)
-F (.\ExtPeriphal\BattMonitor.c)(0x64B1168C)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\battmonitor.o --omf_browse .\objects\battmonitor.crf --depend .\objects\battmonitor.d)
+F (.\ExtPeriphal\BattMonitor.c)(0x64B1168C)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\battmonitor.o --omf_browse .\objects\battmonitor.crf --depend .\objects\battmonitor.d)
 I (.\User\inc\AD5693R.h)(0x64A6E2F0)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\delay.h)(0x647BE621)
@@ -2576,7 +2576,7 @@ I (.\User\inc\PWMDIM.h)(0x64991030)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\User\inc\INA219.h)(0x64A6E223)
 I (.\User\inc\ADC.h)(0x64B2021E)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
@@ -2584,7 +2584,7 @@ I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\LEDMgmt.h)(0x648145DB)
 I (.\User\inc\runtimelogger.h)(0x64B02264)
 I (.\User\inc\logger.h)(0x64AC0453)
-F (.\ModeLogic\DeepSleep.c)(0x64AD0A11)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\deepsleep.o --omf_browse .\objects\deepsleep.crf --depend .\objects\deepsleep.d)
+F (.\ModeLogic\DeepSleep.c)(0x64AD0A11)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\deepsleep.o --omf_browse .\objects\deepsleep.crf --depend .\objects\deepsleep.d)
 I (.\User\inc\delay.h)(0x647BE621)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -2633,7 +2633,7 @@ I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\User\inc\Cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
@@ -2641,9 +2641,9 @@ I (.\Config\I2CAddr.h)(0x64A6E3AA)
 I (.\User\inc\LEDMgmt.h)(0x648145DB)
 I (.\User\inc\AD5693R.h)(0x64A6E2F0)
 I (.\User\inc\ADC.h)(0x64B2021E)
-F (.\Shell\CommandHandler.c)(0x64AD442B)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\commandhandler.o --omf_browse .\objects\commandhandler.crf --depend .\objects\commandhandler.d)
+F (.\Shell\CommandHandler.c)(0x64AD442B)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\commandhandler.o --omf_browse .\objects\commandhandler.crf --depend .\objects\commandhandler.d)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
-I (.\User\inc\command.h)(0x64B14146)
+I (.\User\inc\command.h)(0x64B224E6)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -2691,7 +2691,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\cmdentry.h)(0x64B0E863)
 I (.\User\inc\CmdArgHelp.h)(0x64B0E852)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
@@ -2700,7 +2700,7 @@ I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
 I (C:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x599EDB3A)
 I (.\User\inc\AES256.h)(0x647BE621)
-F (.\Shell\CommandHistory.c)(0x64B121AF)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\commandhistory.o --omf_browse .\objects\commandhistory.crf --depend .\objects\commandhistory.d)
+F (.\Shell\CommandHistory.c)(0x64B121AF)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\commandhistory.o --omf_browse .\objects\commandhistory.crf --depend .\objects\commandhistory.d)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
@@ -2749,13 +2749,13 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599EDB3C)
-F (.\Shell\CommandProcUtil.c)(0x64B1215A)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\commandprocutil.o --omf_browse .\objects\commandprocutil.crf --depend .\objects\commandprocutil.d)
+F (.\Shell\CommandProcUtil.c)(0x64B1215A)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\commandprocutil.o --omf_browse .\objects\commandprocutil.crf --depend .\objects\commandprocutil.d)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
@@ -2804,13 +2804,13 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
 I (C:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x599EDB3A)
-F (.\Shell\UsartRxSupport.c)(0x64ACEF6F)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\usartrxsupport.o --omf_browse .\objects\usartrxsupport.crf --depend .\objects\usartrxsupport.d)
+F (.\Shell\UsartRxSupport.c)(0x64ACEF6F)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\usartrxsupport.o --omf_browse .\objects\usartrxsupport.crf --depend .\objects\usartrxsupport.d)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -2858,7 +2858,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\delay.h)(0x647BE621)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
@@ -2872,7 +2872,7 @@ I (.\User\inc\Xmodem.h)(0x64AD2112)
 I (.\User\inc\runtimelogger.h)(0x64B02264)
 I (.\User\inc\logger.h)(0x64AC0453)
 I (.\User\inc\ADC.h)(0x64B2021E)
-F (.\Shell\UsartTxSupport.c)(0x64B0253B)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\usarttxsupport.o --omf_browse .\objects\usarttxsupport.crf --depend .\objects\usarttxsupport.d)
+F (.\Shell\UsartTxSupport.c)(0x64B0253B)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\usarttxsupport.o --omf_browse .\objects\usarttxsupport.crf --depend .\objects\usarttxsupport.d)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -2920,11 +2920,11 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x599EDB3A)
-F (.\Shell\UserIdleTimer.c)(0x64ABF607)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\useridletimer.o --omf_browse .\objects\useridletimer.crf --depend .\objects\useridletimer.d)
+F (.\Shell\UserIdleTimer.c)(0x64ABF607)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\useridletimer.o --omf_browse .\objects\useridletimer.crf --depend .\objects\useridletimer.d)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -2972,12 +2972,12 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
-F (.\Shell\HandlerEntry.c)(0x64B0E913)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\handlerentry.o --omf_browse .\objects\handlerentry.crf --depend .\objects\handlerentry.d)
+F (.\Shell\HandlerEntry.c)(0x64B0E913)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\handlerentry.o --omf_browse .\objects\handlerentry.crf --depend .\objects\handlerentry.d)
 I (.\User\inc\cmdentry.h)(0x64B0E863)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
@@ -3026,8 +3026,8 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
-F (.\Shell\ParameterProcessor.c)(0x64AEC5E0)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\parameterprocessor.o --omf_browse .\objects\parameterprocessor.crf --depend .\objects\parameterprocessor.d)
+I (.\Config\FirmwareConf.h)(0x64B22567)
+F (.\Shell\ParameterProcessor.c)(0x64AEC5E0)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\parameterprocessor.o --omf_browse .\objects\parameterprocessor.crf --depend .\objects\parameterprocessor.d)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -3075,10 +3075,10 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
-F (.\Shell\TinyShell.c)(0x64B0F89A)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\tinyshell.o --omf_browse .\objects\tinyshell.crf --depend .\objects\tinyshell.d)
+F (.\Shell\TinyShell.c)(0x64B0F89A)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\tinyshell.o --omf_browse .\objects\tinyshell.crf --depend .\objects\tinyshell.d)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -3126,7 +3126,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\Xmodem.h)(0x64AD2112)
 I (.\User\inc\runtimelogger.h)(0x64B02264)
 I (.\User\inc\logger.h)(0x64AC0453)
@@ -3137,7 +3137,7 @@ I (.\Config\I2CAddr.h)(0x64A6E3AA)
 I (.\User\inc\ADC.h)(0x64B2021E)
 I (.\User\inc\delay.h)(0x647BE621)
 I (.\User\inc\selftestlogger.h)(0x64B1EF54)
-F (.\Command\User\cprtxtgen.c)(0x64AAB2E9)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\cprtxtgen.o --omf_browse .\objects\cprtxtgen.crf --depend .\objects\cprtxtgen.d)
+F (.\Command\User\cprtxtgen.c)(0x64AAB2E9)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\cprtxtgen.o --omf_browse .\objects\cprtxtgen.crf --depend .\objects\cprtxtgen.d)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -3185,7 +3185,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -3193,7 +3193,7 @@ I (.\Config\I2CAddr.h)(0x64A6E3AA)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
 I (.\User\inc\AES256.h)(0x647BE621)
 I (C:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x599EDB3A)
-F (.\Command\User\ver.c)(0x6480B667)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\ver.o --omf_browse .\objects\ver.crf --depend .\objects\ver.d)
+F (.\Command\User\ver.c)(0x6480B667)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\ver.o --omf_browse .\objects\ver.crf --depend .\objects\ver.d)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -3241,7 +3241,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -3249,7 +3249,7 @@ I (.\Config\I2CAddr.h)(0x64A6E3AA)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
 I (.\User\inc\AES256.h)(0x647BE621)
 I (C:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x599EDB3A)
-F (.\Command\User\imonadj.c)(0x64A53D58)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\imonadj.o --omf_browse .\objects\imonadj.crf --depend .\objects\imonadj.d)
+F (.\Command\User\imonadj.c)(0x64A53D58)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\imonadj.o --omf_browse .\objects\imonadj.crf --depend .\objects\imonadj.d)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -3297,7 +3297,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -3306,7 +3306,7 @@ I (.\User\inc\ADC.h)(0x64B2021E)
 I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x599EDB3E)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599EDB3C)
-F (.\Command\User\logview.c)(0x64ACF4BC)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\logview.o --omf_browse .\objects\logview.crf --depend .\objects\logview.d)
+F (.\Command\User\logview.c)(0x64ACF4BC)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\logview.o --omf_browse .\objects\logview.crf --depend .\objects\logview.d)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -3354,7 +3354,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -3363,7 +3363,7 @@ I (.\User\inc\logger.h)(0x64AC0453)
 I (.\User\inc\ADC.h)(0x64B2021E)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x599EDB3E)
-F (.\Command\User\logclr.c)(0x64A7DE52)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\logclr.o --omf_browse .\objects\logclr.crf --depend .\objects\logclr.d)
+F (.\Command\User\logclr.c)(0x64A7DE52)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\logclr.o --omf_browse .\objects\logclr.crf --depend .\objects\logclr.d)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -3411,14 +3411,14 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\logger.h)(0x64AC0453)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
 I (.\User\inc\ADC.h)(0x64B2021E)
-F (.\Command\User\runlogview.c)(0x64AF85F7)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\runlogview.o --omf_browse .\objects\runlogview.crf --depend .\objects\runlogview.d)
+F (.\Command\User\runlogview.c)(0x64AF85F7)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\runlogview.o --omf_browse .\objects\runlogview.crf --depend .\objects\runlogview.d)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -3466,7 +3466,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -3476,7 +3476,7 @@ I (.\User\inc\logger.h)(0x64AC0453)
 I (.\User\inc\ADC.h)(0x64B2021E)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x599EDB3E)
-F (.\Command\User\runlogcfg.c)(0x64AD526C)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\runlogcfg.o --omf_browse .\objects\runlogcfg.crf --depend .\objects\runlogcfg.d)
+F (.\Command\User\runlogcfg.c)(0x64AD526C)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\runlogcfg.o --omf_browse .\objects\runlogcfg.crf --depend .\objects\runlogcfg.d)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -3524,7 +3524,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -3536,7 +3536,7 @@ I (.\User\inc\Xmodem.h)(0x64AD2112)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x599EDB3E)
-F (.\Command\User\logbkup.c)(0x64AC0912)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\logbkup.o --omf_browse .\objects\logbkup.crf --depend .\objects\logbkup.d)
+F (.\Command\User\logbkup.c)(0x64AC0912)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\logbkup.o --omf_browse .\objects\logbkup.crf --depend .\objects\logbkup.d)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -3584,7 +3584,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -3596,7 +3596,7 @@ I (.\User\inc\Xmodem.h)(0x64AD2112)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x599EDB3E)
-F (.\Command\User\modeenacfg.c)(0x64B103DE)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\modeenacfg.o --omf_browse .\objects\modeenacfg.crf --depend .\objects\modeenacfg.d)
+F (.\Command\User\modeenacfg.c)(0x64B103DE)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\modeenacfg.o --omf_browse .\objects\modeenacfg.crf --depend .\objects\modeenacfg.d)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -3644,14 +3644,14 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
-F (.\Command\User\modecurcfg.c)(0x64B103F8)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\modecurcfg.o --omf_browse .\objects\modecurcfg.crf --depend .\objects\modecurcfg.d)
+F (.\Command\User\modecurcfg.c)(0x64B103F8)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\modecurcfg.o --omf_browse .\objects\modecurcfg.crf --depend .\objects\modecurcfg.d)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -3699,63 +3699,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
-I (.\User\inc\CfgFile.h)(0x64B1EACF)
-I (.\User\inc\I2C.h)(0x64B1F2D1)
-I (.\Config\Pindefs.h)(0x64A2C7E0)
-I (.\Config\I2CAddr.h)(0x64A6E3AA)
-I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599EDB3C)
-I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
-I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x599EDB3E)
-F (.\Command\User\modeadvcfg.c)(0x64B1035A)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\modeadvcfg.o --omf_browse .\objects\modeadvcfg.crf --depend .\objects\modeadvcfg.d)
-I (.\User\inc\console.h)(0x64B12177)
-I (.\Library\inc\ht32.h)(0x647BE6B5)
-I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
-I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32_config.h)(0x63906E64)
-I (.\CMSIS\Core\Include\core_cm0plus.h)(0x647BE7BB)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x599EDB3E)
-I (.\CMSIS\Core\Include\cmsis_version.h)(0x647BE7BB)
-I (.\CMSIS\Core\Include\cmsis_compiler.h)(0x647BE7BB)
-I (.\CMSIS\Core\Include\cmsis_armcc.h)(0x647BE7BB)
-I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\system_ht32f5xxxx_01.h)(0x635A3BFA)
-I (.\Library\inc\ht32f5xxxx_lib.h)(0x647BE6B5)
-I (.\Library\inc\ht32f52342_52_libcfg.h)(0x647BE6B5)
-I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x599EDB3C)
-I (.\MCUConfig\ht32f5xxxx_conf.h)(0x647BE74A)
-I (.\Library\inc\ht32f5xxxx_adc.h)(0x647BE6B5)
-I (.\Library\inc\ht32f5xxxx_bftm.h)(0x647BE6B5)
-I (.\Library\inc\ht32f5xxxx_ckcu.h)(0x647BE6B5)
-I (.\Library\inc\ht32f5xxxx_cmp.h)(0x647BE6B5)
-I (.\Library\inc\ht32f5xxxx_crc.h)(0x647BE6B5)
-I (.\Library\inc\ht32f5xxxx_ebi.h)(0x647BE6B5)
-I (.\Library\inc\ht32f5xxxx_exti.h)(0x647BE6B5)
-I (.\Library\inc\ht32f5xxxx_flash.h)(0x647BE6B5)
-I (.\Library\inc\ht32f5xxxx_gpio.h)(0x647BE6B5)
-I (.\Library\inc\ht32f5xxxx_tm_type.h)(0x647BE6B5)
-I (.\Library\inc\ht32f5xxxx_tm.h)(0x647BE6B5)
-I (.\Library\inc\ht32f5xxxx_i2c.h)(0x647BE6B5)
-I (.\Library\inc\ht32f5xxxx_i2s.h)(0x647BE6B5)
-I (.\Library\inc\ht32f5xxxx_mctm.h)(0x647BE6B5)
-I (.\Library\inc\ht32f5xxxx_pdma.h)(0x647BE6B5)
-I (.\Library\inc\ht32f5xxxx_pwrcu.h)(0x647BE6B5)
-I (.\Library\inc\ht32f5xxxx_rstcu.h)(0x647BE6B5)
-I (.\Library\inc\ht32f5xxxx_rtc.h)(0x647BE6B5)
-I (.\Library\inc\ht32f5xxxx_sci.h)(0x647BE6B5)
-I (.\Library\inc\ht32f5xxxx_spi.h)(0x647BE6B5)
-I (.\Library\inc\ht32f5xxxx_usart.h)(0x647BE6B5)
-I (.\Library\inc\ht32f5xxxx_usbd.h)(0x647BE6B5)
-I (.\MCUConfig\ht32f5xxxx_01_usbdconf.h)(0x647BE74A)
-I (.\Library\inc\ht32f5xxxx_usbdinit.h)(0x647BE6B5)
-I (.\Library\inc\ht32_retarget_usbdconf.h)(0x647BE6B5)
-I (.\Library\inc\ht32f5xxxx_wdt.h)(0x647BE6B5)
-I (.\Library\inc\ht32_cm0plus_misc.h)(0x647BE6B5)
-I (.\Library\inc\ht32_serial.h)(0x647BE6B5)
-I (.\Library\inc\ht32_div.h)(0x647BE6B5)
-I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
-I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
-I (.\User\inc\modelogic.h)(0x64B1ECC2)
-I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -3763,7 +3707,7 @@ I (.\Config\I2CAddr.h)(0x64A6E3AA)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x599EDB3E)
-F (.\Command\User\strobecfg.c)(0x64B10415)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\strobecfg.o --omf_browse .\objects\strobecfg.crf --depend .\objects\strobecfg.d)
+F (.\Command\User\modeadvcfg.c)(0x64B1035A)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\modeadvcfg.o --omf_browse .\objects\modeadvcfg.crf --depend .\objects\modeadvcfg.d)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -3811,7 +3755,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -3819,7 +3763,7 @@ I (.\Config\I2CAddr.h)(0x64A6E3AA)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x599EDB3E)
-F (.\Command\User\mostrancfg.c)(0x64B1042C)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\mostrancfg.o --omf_browse .\objects\mostrancfg.crf --depend .\objects\mostrancfg.d)
+F (.\Command\User\strobecfg.c)(0x64B10415)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\strobecfg.o --omf_browse .\objects\strobecfg.crf --depend .\objects\strobecfg.d)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -3867,7 +3811,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -3875,7 +3819,7 @@ I (.\Config\I2CAddr.h)(0x64A6E3AA)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x599EDB3E)
-F (.\Command\User\breathecfg.c)(0x64B10447)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\breathecfg.o --omf_browse .\objects\breathecfg.crf --depend .\objects\breathecfg.d)
+F (.\Command\User\mostrancfg.c)(0x64B1042C)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\mostrancfg.o --omf_browse .\objects\mostrancfg.crf --depend .\objects\mostrancfg.d)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -3923,7 +3867,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -3931,7 +3875,7 @@ I (.\Config\I2CAddr.h)(0x64A6E3AA)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x599EDB3E)
-F (.\Command\User\thermalcfg.c)(0x64AED57E)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\thermalcfg.o --omf_browse .\objects\thermalcfg.crf --depend .\objects\thermalcfg.d)
+F (.\Command\User\breathecfg.c)(0x64B10447)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\breathecfg.o --omf_browse .\objects\breathecfg.crf --depend .\objects\breathecfg.d)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -3979,7 +3923,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -3987,7 +3931,7 @@ I (.\Config\I2CAddr.h)(0x64A6E3AA)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x599EDB3E)
-F (.\Command\User\modeporcfg.c)(0x64AF575E)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\modeporcfg.o --omf_browse .\objects\modeporcfg.crf --depend .\objects\modeporcfg.d)
+F (.\Command\User\thermalcfg.c)(0x64AED57E)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\thermalcfg.o --omf_browse .\objects\thermalcfg.crf --depend .\objects\thermalcfg.d)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -4035,7 +3979,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -4043,7 +3987,7 @@ I (.\Config\I2CAddr.h)(0x64A6E3AA)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x599EDB3E)
-F (.\Command\User\battcfg.c)(0x64AF92A0)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\battcfg.o --omf_browse .\objects\battcfg.crf --depend .\objects\battcfg.d)
+F (.\Command\User\modeporcfg.c)(0x64AF575E)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\modeporcfg.o --omf_browse .\objects\modeporcfg.crf --depend .\objects\modeporcfg.d)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -4091,7 +4035,63 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
+I (.\User\inc\CfgFile.h)(0x64B1EACF)
+I (.\User\inc\I2C.h)(0x64B1F2D1)
+I (.\Config\Pindefs.h)(0x64A2C7E0)
+I (.\Config\I2CAddr.h)(0x64A6E3AA)
+I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599EDB3C)
+I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
+I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x599EDB3E)
+F (.\Command\User\battcfg.c)(0x64AF92A0)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\battcfg.o --omf_browse .\objects\battcfg.crf --depend .\objects\battcfg.d)
+I (.\User\inc\console.h)(0x64B12177)
+I (.\Library\inc\ht32.h)(0x647BE6B5)
+I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
+I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32_config.h)(0x63906E64)
+I (.\CMSIS\Core\Include\core_cm0plus.h)(0x647BE7BB)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x599EDB3E)
+I (.\CMSIS\Core\Include\cmsis_version.h)(0x647BE7BB)
+I (.\CMSIS\Core\Include\cmsis_compiler.h)(0x647BE7BB)
+I (.\CMSIS\Core\Include\cmsis_armcc.h)(0x647BE7BB)
+I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\system_ht32f5xxxx_01.h)(0x635A3BFA)
+I (.\Library\inc\ht32f5xxxx_lib.h)(0x647BE6B5)
+I (.\Library\inc\ht32f52342_52_libcfg.h)(0x647BE6B5)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x599EDB3C)
+I (.\MCUConfig\ht32f5xxxx_conf.h)(0x647BE74A)
+I (.\Library\inc\ht32f5xxxx_adc.h)(0x647BE6B5)
+I (.\Library\inc\ht32f5xxxx_bftm.h)(0x647BE6B5)
+I (.\Library\inc\ht32f5xxxx_ckcu.h)(0x647BE6B5)
+I (.\Library\inc\ht32f5xxxx_cmp.h)(0x647BE6B5)
+I (.\Library\inc\ht32f5xxxx_crc.h)(0x647BE6B5)
+I (.\Library\inc\ht32f5xxxx_ebi.h)(0x647BE6B5)
+I (.\Library\inc\ht32f5xxxx_exti.h)(0x647BE6B5)
+I (.\Library\inc\ht32f5xxxx_flash.h)(0x647BE6B5)
+I (.\Library\inc\ht32f5xxxx_gpio.h)(0x647BE6B5)
+I (.\Library\inc\ht32f5xxxx_tm_type.h)(0x647BE6B5)
+I (.\Library\inc\ht32f5xxxx_tm.h)(0x647BE6B5)
+I (.\Library\inc\ht32f5xxxx_i2c.h)(0x647BE6B5)
+I (.\Library\inc\ht32f5xxxx_i2s.h)(0x647BE6B5)
+I (.\Library\inc\ht32f5xxxx_mctm.h)(0x647BE6B5)
+I (.\Library\inc\ht32f5xxxx_pdma.h)(0x647BE6B5)
+I (.\Library\inc\ht32f5xxxx_pwrcu.h)(0x647BE6B5)
+I (.\Library\inc\ht32f5xxxx_rstcu.h)(0x647BE6B5)
+I (.\Library\inc\ht32f5xxxx_rtc.h)(0x647BE6B5)
+I (.\Library\inc\ht32f5xxxx_sci.h)(0x647BE6B5)
+I (.\Library\inc\ht32f5xxxx_spi.h)(0x647BE6B5)
+I (.\Library\inc\ht32f5xxxx_usart.h)(0x647BE6B5)
+I (.\Library\inc\ht32f5xxxx_usbd.h)(0x647BE6B5)
+I (.\MCUConfig\ht32f5xxxx_01_usbdconf.h)(0x647BE74A)
+I (.\Library\inc\ht32f5xxxx_usbdinit.h)(0x647BE6B5)
+I (.\Library\inc\ht32_retarget_usbdconf.h)(0x647BE6B5)
+I (.\Library\inc\ht32f5xxxx_wdt.h)(0x647BE6B5)
+I (.\Library\inc\ht32_cm0plus_misc.h)(0x647BE6B5)
+I (.\Library\inc\ht32_serial.h)(0x647BE6B5)
+I (.\Library\inc\ht32_div.h)(0x647BE6B5)
+I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
+I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
+I (.\User\inc\modelogic.h)(0x64B1ECC2)
+I (.\User\inc\INA219.h)(0x64A6E223)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -4102,7 +4102,7 @@ I (.\User\inc\ADC.h)(0x64B2021E)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x599EDB3E)
-F (.\Command\User\customflashcfg.c)(0x64B146A3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\customflashcfg.o --omf_browse .\objects\customflashcfg.crf --depend .\objects\customflashcfg.d)
+F (.\Command\User\customflashcfg.c)(0x64B146A3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\customflashcfg.o --omf_browse .\objects\customflashcfg.crf --depend .\objects\customflashcfg.d)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -4150,7 +4150,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -4158,7 +4158,7 @@ I (.\Config\I2CAddr.h)(0x64A6E3AA)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x599EDB3E)
-F (.\Command\User\modeview.c)(0x64B10492)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\modeview.o --omf_browse .\objects\modeview.crf --depend .\objects\modeview.d)
+F (.\Command\User\modeview.c)(0x64B10492)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\modeview.o --omf_browse .\objects\modeview.crf --depend .\objects\modeview.d)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -4206,7 +4206,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -4214,7 +4214,7 @@ I (.\Config\I2CAddr.h)(0x64A6E3AA)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
 F (.\User\inc\modelogic.h)(0x64B1ECC2)()
-F (.\ModeLogic\ModeSwitchLogic.c)(0x64B1EBBC)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\modeswitchlogic.o --omf_browse .\objects\modeswitchlogic.crf --depend .\objects\modeswitchlogic.d)
+F (.\ModeLogic\ModeSwitchLogic.c)(0x64B1EBBC)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\modeswitchlogic.o --omf_browse .\objects\modeswitchlogic.crf --depend .\objects\modeswitchlogic.d)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -4262,7 +4262,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -4272,7 +4272,7 @@ I (.\User\inc\LEDMgmt.h)(0x648145DB)
 I (.\User\inc\logger.h)(0x64AC0453)
 I (.\User\inc\ADC.h)(0x64B2021E)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
-F (.\ModeLogic\OnOffSwitchLogic.c)(0x64B11CF3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\onoffswitchlogic.o --omf_browse .\objects\onoffswitchlogic.crf --depend .\objects\onoffswitchlogic.d)
+F (.\ModeLogic\OnOffSwitchLogic.c)(0x64B11CF3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\onoffswitchlogic.o --omf_browse .\objects\onoffswitchlogic.crf --depend .\objects\onoffswitchlogic.d)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -4320,7 +4320,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -4330,11 +4330,11 @@ I (.\User\inc\LEDMgmt.h)(0x648145DB)
 I (.\User\inc\logger.h)(0x64AC0453)
 I (.\User\inc\ADC.h)(0x64B2021E)
 I (.\User\inc\runtimelogger.h)(0x64B02264)
-F (.\ModeLogic\SpecialModeTimer.c)(0x64B116E3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\specialmodetimer.o --omf_browse .\objects\specialmodetimer.crf --depend .\objects\specialmodetimer.d)
+F (.\ModeLogic\SpecialModeTimer.c)(0x64B116E3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\specialmodetimer.o --omf_browse .\objects\specialmodetimer.crf --depend .\objects\specialmodetimer.d)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -4387,11 +4387,11 @@ I (.\User\inc\PWMDIM.h)(0x64991030)
 I (.\User\inc\runtimelogger.h)(0x64B02264)
 I (.\User\inc\logger.h)(0x64AC0453)
 I (.\User\inc\ADC.h)(0x64B2021E)
-F (.\ModeLogic\BreathMode.c)(0x64B02025)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\breathmode.o --omf_browse .\objects\breathmode.crf --depend .\objects\breathmode.d)
+F (.\ModeLogic\BreathMode.c)(0x64B02025)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\breathmode.o --omf_browse .\objects\breathmode.crf --depend .\objects\breathmode.d)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -4442,14 +4442,14 @@ I (.\Library\inc\ht32_div.h)(0x647BE6B5)
 I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (.\User\inc\PWMDIM.h)(0x64991030)
 I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x599EDB3E)
-F (.\ModeLogic\RampMode.c)(0x64B0CE0B)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\rampmode.o --omf_browse .\objects\rampmode.crf --depend .\objects\rampmode.d)
+F (.\ModeLogic\RampMode.c)(0x64B0CE0B)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\rampmode.o --omf_browse .\objects\rampmode.crf --depend .\objects\rampmode.d)
 I (.\User\inc\runtimelogger.h)(0x64B02264)
 I (.\User\inc\logger.h)(0x64AC0453)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\INA219.h)(0x64A6E223)
@@ -4457,11 +4457,11 @@ I (.\User\inc\ADC.h)(0x64B2021E)
 I (.\User\inc\Sidekey.h)(0x64AE3C49)
 I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x599EDB3E)
 I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x599EDB3C)
-F (.\ModeLogic\MorseCodeTransmitMode.c)(0x64AE647B)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\morsecodetransmitmode.o --omf_browse .\objects\morsecodetransmitmode.crf --depend .\objects\morsecodetransmitmode.d)
+F (.\ModeLogic\MorseCodeTransmitMode.c)(0x64AE647B)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\morsecodetransmitmode.o --omf_browse .\objects\morsecodetransmitmode.crf --depend .\objects\morsecodetransmitmode.d)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -4512,11 +4512,11 @@ I (.\Library\inc\ht32_div.h)(0x647BE6B5)
 I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (.\User\inc\PWMDIM.h)(0x64991030)
 I (.\User\inc\console.h)(0x64B12177)
-F (.\ModeLogic\Customflash.c)(0x64B146D7)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\customflash.o --omf_browse .\objects\customflash.crf --depend .\objects\customflash.d)
+F (.\ModeLogic\Customflash.c)(0x64B146D7)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\customflash.o --omf_browse .\objects\customflash.crf --depend .\objects\customflash.d)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -4568,7 +4568,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (.\User\inc\PWMDIM.h)(0x64991030)
 I (.\User\inc\console.h)(0x64B12177)
 I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x599EDB3E)
-F (.\Xmodem\XmodemRX.c)(0x64AD2465)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\xmodemrx.o --omf_browse .\objects\xmodemrx.crf --depend .\objects\xmodemrx.d)
+F (.\Xmodem\XmodemRX.c)(0x64AD2465)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\xmodemrx.o --omf_browse .\objects\xmodemrx.crf --depend .\objects\xmodemrx.d)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
 I (.\User\inc\console.h)(0x64B12177)
@@ -4618,7 +4618,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
@@ -4630,7 +4630,7 @@ I (.\User\inc\ADC.h)(0x64B2021E)
 I (.\User\inc\AES256.h)(0x647BE621)
 I (C:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x599EDB3A)
 I (.\User\inc\delay.h)(0x647BE621)
-F (.\Xmodem\XmodemTX.c)(0x64AD2189)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\xmodemtx.o --omf_browse .\objects\xmodemtx.crf --depend .\objects\xmodemtx.d)
+F (.\Xmodem\XmodemTX.c)(0x64AD2189)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\xmodemtx.o --omf_browse .\objects\xmodemtx.crf --depend .\objects\xmodemtx.d)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
 I (.\User\inc\console.h)(0x64B12177)
@@ -4680,7 +4680,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
@@ -4692,7 +4692,7 @@ I (.\User\inc\ADC.h)(0x64B2021E)
 I (.\User\inc\AES256.h)(0x647BE621)
 I (C:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x599EDB3A)
 I (.\User\inc\delay.h)(0x647BE621)
-F (.\Xmodem\XmodemDigestEncrypt.c)(0x64ACAF09)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\xmodemdigestencrypt.o --omf_browse .\objects\xmodemdigestencrypt.crf --depend .\objects\xmodemdigestencrypt.d)
+F (.\Xmodem\XmodemDigestEncrypt.c)(0x64ACAF09)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\xmodemdigestencrypt.o --omf_browse .\objects\xmodemdigestencrypt.crf --depend .\objects\xmodemdigestencrypt.d)
 I (.\User\inc\Xmodem.h)(0x64AD2112)
 I (.\User\inc\runtimelogger.h)(0x64B02264)
 I (.\User\inc\logger.h)(0x64AC0453)
@@ -4700,12 +4700,12 @@ I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\INA219.h)(0x64A6E223)
 I (.\User\inc\ADC.h)(0x64B2021E)
-F (.\Xmodem\XmodemInfo.c)(0x64AC06A7)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\xmodeminfo.o --omf_browse .\objects\xmodeminfo.crf --depend .\objects\xmodeminfo.d)
+F (.\Xmodem\XmodemInfo.c)(0x64AC06A7)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352-o .\objects\xmodeminfo.o --omf_browse .\objects\xmodeminfo.crf --depend .\objects\xmodeminfo.d)
 I (.\User\inc\Xmodem.h)(0x64AD2112)
 I (.\User\inc\runtimelogger.h)(0x64B02264)
 I (.\User\inc\logger.h)(0x64AC0453)
@@ -4713,7 +4713,7 @@ I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
-I (.\Config\FirmwareConf.h)(0x64B2022B)
+I (.\Config\FirmwareConf.h)(0x64B22567)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\INA219.h)(0x64A6E223)
@@ -4763,6 +4763,6 @@ I (.\Library\inc\ht32_serial.h)(0x647BE6B5)
 I (.\Library\inc\ht32_div.h)(0x647BE6B5)
 I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (.\User\inc\delay.h)(0x647BE621)
-F (.\Config\FirmwareConf.h)(0x64B2022B)()
+F (.\Config\FirmwareConf.h)(0x64B22567)()
 F (.\Config\I2CAddr.h)(0x64A6E3AA)()
 F (.\Config\Pindefs.h)(0x64A2C7E0)()

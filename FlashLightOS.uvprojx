@@ -336,7 +336,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls>--locale=english</MiscControls>
-              <Define>USE_HT32_DRIVER, USE_HT32F52352_SK, USE_HT32F52342_52, USE_MEM_HT32F52352,Firmware_DIY_Mode</Define>
+              <Define>USE_HT32_DRIVER, USE_HT32F52352_SK, USE_HT32F52342_52, USE_MEM_HT32F52352</Define>
               <Undefine></Undefine>
               <IncludePath>.\User\inc;.\MCUConfig;.\MDK-ARM;.\CMSIS\Core\Include;.\CMSIS\Include;.\Library\inc;.\Config</IncludePath>
             </VariousControls>

@@ -4,6 +4,7 @@
 #include "console.h"
 #include "cmdentry.h"
 #include "CmdArgHelp.h"
+#include "FirmwareConf.h"
 
 const ComamandStringStr Commands[TotalCommandCount]=
 //命令
