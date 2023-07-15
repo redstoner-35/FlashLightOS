@@ -1,0 +1,15 @@
+.\objects\rampmode.o: ModeLogic\RampMode.c
+.\objects\rampmode.o: .\User\inc\runtimelogger.h
+.\objects\rampmode.o: .\User\inc\logger.h
+.\objects\rampmode.o: .\User\inc\cfgfile.h
+.\objects\rampmode.o: .\User\inc\I2C.h
+.\objects\rampmode.o: .\Config\Pindefs.h
+.\objects\rampmode.o: .\Config\I2CAddr.h
+.\objects\rampmode.o: .\Config\FirmwareConf.h
+.\objects\rampmode.o: .\User\inc\modelogic.h
+.\objects\rampmode.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+.\objects\rampmode.o: .\User\inc\INA219.h
+.\objects\rampmode.o: .\User\inc\ADC.h
+.\objects\rampmode.o: .\User\inc\Sidekey.h
+.\objects\rampmode.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
+.\objects\rampmode.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
