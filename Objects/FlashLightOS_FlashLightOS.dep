@@ -48,14 +48,14 @@ I (.\User\inc\console.h)(0x64B12177)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
 I (.\User\inc\SideKey.h)(0x64AE3C49)
 I (.\User\inc\LEDMgmt.h)(0x648145DB)
-I (.\User\inc\ADC.h)(0x64AD09FD)
+I (.\User\inc\ADC.h)(0x64B2021E)
 I (.\User\inc\PWMDIM.h)(0x64991030)
 I (.\User\inc\AD5693R.h)(0x64A6E2F0)
 I (.\User\inc\logger.h)(0x64AC0453)
@@ -201,7 +201,7 @@ I (.\User\inc\console.h)(0x64B12177)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\delay.h)(0x647BE621)
 F (.\User\LinearTabOp.c)(0x64AECF73)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\lineartabop.o --omf_browse .\objects\lineartabop.crf --depend .\objects\lineartabop.d)
 I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x599EDB3E)
@@ -253,7 +253,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 F (.\MCUConfig\ht32_board_config.h)(0x647BE74A)()
 F (.\MCUConfig\ht32_op.s)(0x647BE85E)(--cpu Cortex-M0+ -g --apcs=interwork -I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include--pd "__UVISION_VERSION SETA 527" --pd "USE_HT32F52342_52 SETA 1" --pd "USE_HT32_CHIP SETA 4"--list .\listings\ht32_op.lst --xref -o .\objects\ht32_op.o --depend .\objects\ht32_op.d)
 F (.\MCUConfig\ht32f5xxxx_01_usbdconf.h)(0x647BE74A)()
@@ -1327,7 +1327,7 @@ I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\INA219.h)(0x64A6E223)
@@ -1383,7 +1383,7 @@ I (.\User\inc\LEDMgmt.h)(0x648145DB)
 I (.\User\inc\Xmodem.h)(0x64AD2112)
 I (.\User\inc\runtimelogger.h)(0x64B02264)
 I (.\User\inc\logger.h)(0x64AC0453)
-I (.\User\inc\ADC.h)(0x64AD09FD)
+I (.\User\inc\ADC.h)(0x64B2021E)
 F (.\ConfFileMgmt\AES256.c)(0x64AB5F5B)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\aes256.o --omf_browse .\objects\aes256.crf --depend .\objects\aes256.d)
 I (.\User\inc\AES256.h)(0x647BE621)
 I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x599EDB3C)
@@ -1480,9 +1480,9 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\delay.h)(0x647BE621)
-I (.\User\inc\ADC.h)(0x64AD09FD)
+I (.\User\inc\ADC.h)(0x64B2021E)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
@@ -1538,13 +1538,13 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
 I (.\User\inc\delay.h)(0x647BE621)
-I (.\User\inc\ADC.h)(0x64AD09FD)
+I (.\User\inc\ADC.h)(0x64B2021E)
 I (.\User\inc\runtimelogger.h)(0x64B02264)
 I (.\User\inc\logger.h)(0x64AC0453)
 I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x599EDB3E)
@@ -1556,11 +1556,11 @@ I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\User\inc\ADC.h)(0x64AD09FD)
+I (.\User\inc\ADC.h)(0x64B2021E)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -1656,7 +1656,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\delay.h)(0x647BE621)
 I (.\User\inc\console.h)(0x64B12177)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
@@ -1668,7 +1668,7 @@ I (.\User\inc\PMBUS.h)(0x647BE621)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\delay.h)(0x647BE621)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
@@ -1720,7 +1720,7 @@ I (.\User\inc\PMBUS.h)(0x647BE621)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\delay.h)(0x647BE621)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
@@ -1775,7 +1775,7 @@ I (.\User\inc\PMBUS.h)(0x647BE621)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\delay.h)(0x647BE621)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
@@ -1874,13 +1874,13 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 F (.\Command\System\cfgmgmt.c)(0x64B14562)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\cfgmgmt.o --omf_browse .\objects\cfgmgmt.crf --depend .\objects\cfgmgmt.d)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\INA219.h)(0x64A6E223)
@@ -1931,7 +1931,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (.\User\inc\Xmodem.h)(0x64AD2112)
 I (.\User\inc\runtimelogger.h)(0x64B02264)
 I (.\User\inc\logger.h)(0x64AC0453)
-I (.\User\inc\ADC.h)(0x64AD09FD)
+I (.\User\inc\ADC.h)(0x64B2021E)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
 F (.\Command\System\clear.c)(0x647BE776)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\clear.o --omf_browse .\objects\clear.crf --depend .\objects\clear.d)
 I (.\User\inc\console.h)(0x64B12177)
@@ -1981,13 +1981,13 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 F (.\Command\System\LoginLogout.c)(0x64AAB4C7)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\loginlogout.o --omf_browse .\objects\loginlogout.crf --depend .\objects\loginlogout.d)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\INA219.h)(0x64A6E223)
@@ -2041,7 +2041,7 @@ I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\INA219.h)(0x64A6E223)
@@ -2138,7 +2138,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
 F (.\Command\System\termcfg.c)(0x64AFC0C4)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\termcfg.o --omf_browse .\objects\termcfg.crf --depend .\objects\termcfg.d)
 I (.\User\inc\console.h)(0x64B12177)
@@ -2188,7 +2188,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -2243,9 +2243,9 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\delay.h)(0x647BE621)
-F (.\ExtPeriphal\LEDMgmt.c)(0x64ACF4E8)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\ledmgmt.o --omf_browse .\objects\ledmgmt.crf --depend .\objects\ledmgmt.d)
+F (.\ExtPeriphal\LEDMgmt.c)(0x64B1FA96)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\ledmgmt.o --omf_browse .\objects\ledmgmt.crf --depend .\objects\ledmgmt.d)
 I (.\User\inc\delay.h)(0x647BE621)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -2294,10 +2294,10 @@ I (.\User\inc\console.h)(0x64B12177)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\LEDMgmt.h)(0x648145DB)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
-F (.\ExtPeriphal\ADC.c)(0x64B09B61)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\adc.o --omf_browse .\objects\adc.crf --depend .\objects\adc.d)
+F (.\ExtPeriphal\ADC.c)(0x64B1FAA9)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\adc.o --omf_browse .\objects\adc.crf --depend .\objects\adc.d)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -2345,13 +2345,13 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
 I (.\User\inc\delay.h)(0x647BE621)
-I (.\User\inc\ADC.h)(0x64AD09FD)
+I (.\User\inc\ADC.h)(0x64B2021E)
 I (.\User\inc\LEDMgmt.h)(0x648145DB)
 I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x599EDB3E)
 F (.\ExtPeriphal\SideKey.c)(0x64AE3C66)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\sidekey.o --omf_browse .\objects\sidekey.crf --depend .\objects\sidekey.d)
@@ -2405,7 +2405,7 @@ I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\Cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
@@ -2457,7 +2457,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\delay.h)(0x647BE621)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
@@ -2512,13 +2512,13 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\AD5693R.h)(0x64A6E2F0)
 I (.\User\inc\delay.h)(0x647BE621)
 I (.\User\inc\LEDMgmt.h)(0x648145DB)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\User\inc\PWMDIM.h)(0x64991030)
-I (.\User\inc\ADC.h)(0x64AD09FD)
+I (.\User\inc\ADC.h)(0x64B2021E)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
@@ -2575,11 +2575,11 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (.\User\inc\PWMDIM.h)(0x64991030)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\User\inc\ADC.h)(0x64AD09FD)
+I (.\User\inc\ADC.h)(0x64B2021E)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\LEDMgmt.h)(0x648145DB)
 I (.\User\inc\runtimelogger.h)(0x64B02264)
@@ -2633,14 +2633,14 @@ I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\User\inc\Cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
 I (.\User\inc\LEDMgmt.h)(0x648145DB)
 I (.\User\inc\AD5693R.h)(0x64A6E2F0)
-I (.\User\inc\ADC.h)(0x64AD09FD)
+I (.\User\inc\ADC.h)(0x64B2021E)
 F (.\Shell\CommandHandler.c)(0x64AD442B)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\commandhandler.o --omf_browse .\objects\commandhandler.crf --depend .\objects\commandhandler.d)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
 I (.\User\inc\command.h)(0x64B14146)
@@ -2691,7 +2691,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\cmdentry.h)(0x64B0E863)
 I (.\User\inc\CmdArgHelp.h)(0x64B0E852)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
@@ -2749,7 +2749,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -2804,7 +2804,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -2858,7 +2858,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\delay.h)(0x647BE621)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
@@ -2871,7 +2871,7 @@ I (C:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x599EDB3A)
 I (.\User\inc\Xmodem.h)(0x64AD2112)
 I (.\User\inc\runtimelogger.h)(0x64B02264)
 I (.\User\inc\logger.h)(0x64AC0453)
-I (.\User\inc\ADC.h)(0x64AD09FD)
+I (.\User\inc\ADC.h)(0x64B2021E)
 F (.\Shell\UsartTxSupport.c)(0x64B0253B)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\usarttxsupport.o --omf_browse .\objects\usarttxsupport.crf --depend .\objects\usarttxsupport.d)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
@@ -2920,7 +2920,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x599EDB3A)
@@ -2972,7 +2972,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -3026,7 +3026,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 F (.\Shell\ParameterProcessor.c)(0x64AEC5E0)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\parameterprocessor.o --omf_browse .\objects\parameterprocessor.crf --depend .\objects\parameterprocessor.d)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
@@ -3075,7 +3075,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
 F (.\Shell\TinyShell.c)(0x64B0F89A)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\tinyshell.o --omf_browse .\objects\tinyshell.crf --depend .\objects\tinyshell.d)
@@ -3126,7 +3126,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\Xmodem.h)(0x64AD2112)
 I (.\User\inc\runtimelogger.h)(0x64B02264)
 I (.\User\inc\logger.h)(0x64AC0453)
@@ -3134,7 +3134,7 @@ I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
-I (.\User\inc\ADC.h)(0x64AD09FD)
+I (.\User\inc\ADC.h)(0x64B2021E)
 I (.\User\inc\delay.h)(0x647BE621)
 I (.\User\inc\selftestlogger.h)(0x64B1EF54)
 F (.\Command\User\cprtxtgen.c)(0x64AAB2E9)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\cprtxtgen.o --omf_browse .\objects\cprtxtgen.crf --depend .\objects\cprtxtgen.d)
@@ -3185,7 +3185,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -3241,7 +3241,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -3297,12 +3297,12 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
-I (.\User\inc\ADC.h)(0x64AD09FD)
+I (.\User\inc\ADC.h)(0x64B2021E)
 I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x599EDB3E)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599EDB3C)
@@ -3354,13 +3354,13 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
 I (.\User\inc\logger.h)(0x64AC0453)
-I (.\User\inc\ADC.h)(0x64AD09FD)
+I (.\User\inc\ADC.h)(0x64B2021E)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x599EDB3E)
 F (.\Command\User\logclr.c)(0x64A7DE52)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\logclr.o --omf_browse .\objects\logclr.crf --depend .\objects\logclr.d)
@@ -3411,13 +3411,13 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\logger.h)(0x64AC0453)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
-I (.\User\inc\ADC.h)(0x64AD09FD)
+I (.\User\inc\ADC.h)(0x64B2021E)
 F (.\Command\User\runlogview.c)(0x64AF85F7)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\runlogview.o --omf_browse .\objects\runlogview.crf --depend .\objects\runlogview.d)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
@@ -3466,14 +3466,14 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
 I (.\User\inc\runtimelogger.h)(0x64B02264)
 I (.\User\inc\logger.h)(0x64AC0453)
-I (.\User\inc\ADC.h)(0x64AD09FD)
+I (.\User\inc\ADC.h)(0x64B2021E)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x599EDB3E)
 F (.\Command\User\runlogcfg.c)(0x64AD526C)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\runlogcfg.o --omf_browse .\objects\runlogcfg.crf --depend .\objects\runlogcfg.d)
@@ -3524,14 +3524,14 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
 I (.\User\inc\runtimelogger.h)(0x64B02264)
 I (.\User\inc\logger.h)(0x64AC0453)
-I (.\User\inc\ADC.h)(0x64AD09FD)
+I (.\User\inc\ADC.h)(0x64B2021E)
 I (.\User\inc\Xmodem.h)(0x64AD2112)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
@@ -3584,14 +3584,14 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
 I (.\User\inc\runtimelogger.h)(0x64B02264)
 I (.\User\inc\logger.h)(0x64AC0453)
-I (.\User\inc\ADC.h)(0x64AD09FD)
+I (.\User\inc\ADC.h)(0x64B2021E)
 I (.\User\inc\Xmodem.h)(0x64AD2112)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
@@ -3644,7 +3644,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -3699,7 +3699,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -3755,7 +3755,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -3811,7 +3811,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -3867,7 +3867,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -3923,7 +3923,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -3979,7 +3979,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -4035,7 +4035,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -4091,14 +4091,14 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
 I (.\User\inc\runtimelogger.h)(0x64B02264)
 I (.\User\inc\logger.h)(0x64AC0453)
-I (.\User\inc\ADC.h)(0x64AD09FD)
+I (.\User\inc\ADC.h)(0x64B2021E)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
 I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x599EDB3E)
@@ -4150,7 +4150,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -4206,7 +4206,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\CfgFile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -4262,7 +4262,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -4270,7 +4270,7 @@ I (.\Config\I2CAddr.h)(0x64A6E3AA)
 I (.\User\inc\SideKey.h)(0x64AE3C49)
 I (.\User\inc\LEDMgmt.h)(0x648145DB)
 I (.\User\inc\logger.h)(0x64AC0453)
-I (.\User\inc\ADC.h)(0x64AD09FD)
+I (.\User\inc\ADC.h)(0x64B2021E)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x599EDB3C)
 F (.\ModeLogic\OnOffSwitchLogic.c)(0x64B11CF3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\onoffswitchlogic.o --omf_browse .\objects\onoffswitchlogic.crf --depend .\objects\onoffswitchlogic.d)
 I (.\User\inc\console.h)(0x64B12177)
@@ -4320,7 +4320,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -4328,13 +4328,13 @@ I (.\Config\I2CAddr.h)(0x64A6E3AA)
 I (.\User\inc\SideKey.h)(0x64AE3C49)
 I (.\User\inc\LEDMgmt.h)(0x648145DB)
 I (.\User\inc\logger.h)(0x64AC0453)
-I (.\User\inc\ADC.h)(0x64AD09FD)
+I (.\User\inc\ADC.h)(0x64B2021E)
 I (.\User\inc\runtimelogger.h)(0x64B02264)
 F (.\ModeLogic\SpecialModeTimer.c)(0x64B116E3)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\specialmodetimer.o --omf_browse .\objects\specialmodetimer.crf --depend .\objects\specialmodetimer.d)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -4386,12 +4386,12 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (.\User\inc\PWMDIM.h)(0x64991030)
 I (.\User\inc\runtimelogger.h)(0x64B02264)
 I (.\User\inc\logger.h)(0x64AC0453)
-I (.\User\inc\ADC.h)(0x64AD09FD)
+I (.\User\inc\ADC.h)(0x64B2021E)
 F (.\ModeLogic\BreathMode.c)(0x64B02025)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\breathmode.o --omf_browse .\objects\breathmode.crf --depend .\objects\breathmode.d)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -4449,11 +4449,11 @@ I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\User\inc\ADC.h)(0x64AD09FD)
+I (.\User\inc\ADC.h)(0x64B2021E)
 I (.\User\inc\Sidekey.h)(0x64AE3C49)
 I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x599EDB3E)
 I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x599EDB3C)
@@ -4461,7 +4461,7 @@ F (.\ModeLogic\MorseCodeTransmitMode.c)(0x64AE647B)(-c --cpu Cortex-M0+ -g -O3 -
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -4516,7 +4516,7 @@ F (.\ModeLogic\Customflash.c)(0x64B146D7)(-c --cpu Cortex-M0+ -g -O3 -Otime --ap
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
@@ -4618,7 +4618,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
@@ -4626,7 +4626,7 @@ I (.\User\inc\Xmodem.h)(0x64AD2112)
 I (.\User\inc\runtimelogger.h)(0x64B02264)
 I (.\User\inc\logger.h)(0x64AC0453)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
-I (.\User\inc\ADC.h)(0x64AD09FD)
+I (.\User\inc\ADC.h)(0x64B2021E)
 I (.\User\inc\AES256.h)(0x647BE621)
 I (C:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x599EDB3A)
 I (.\User\inc\delay.h)(0x647BE621)
@@ -4680,7 +4680,7 @@ I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
@@ -4688,7 +4688,7 @@ I (.\User\inc\Xmodem.h)(0x64AD2112)
 I (.\User\inc\runtimelogger.h)(0x64B02264)
 I (.\User\inc\logger.h)(0x64AC0453)
 I (.\User\inc\cfgfile.h)(0x64B1EACF)
-I (.\User\inc\ADC.h)(0x64AD09FD)
+I (.\User\inc\ADC.h)(0x64B2021E)
 I (.\User\inc\AES256.h)(0x647BE621)
 I (C:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x599EDB3A)
 I (.\User\inc\delay.h)(0x647BE621)
@@ -4700,11 +4700,11 @@ I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\User\inc\ADC.h)(0x64AD09FD)
+I (.\User\inc\ADC.h)(0x64B2021E)
 F (.\Xmodem\XmodemInfo.c)(0x64AC06A7)(-c --cpu Cortex-M0+ -g -O3 -Otime --apcs=interwork --split_sections -I .\User\inc -I .\MCUConfig -I .\MDK-ARM -I .\CMSIS\Core\Include -I .\CMSIS\Include -I .\Library\inc -I .\Config --locale=english-I.\RTE\_FlashLightOS-IC:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="527" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352 -DFirmware_DIY_Mode-o .\objects\xmodeminfo.o --omf_browse .\objects\xmodeminfo.crf --depend .\objects\xmodeminfo.d)
 I (.\User\inc\Xmodem.h)(0x64AD2112)
 I (.\User\inc\runtimelogger.h)(0x64B02264)
@@ -4713,11 +4713,11 @@ I (.\User\inc\cfgfile.h)(0x64B1EACF)
 I (.\User\inc\I2C.h)(0x64B1F2D1)
 I (.\Config\Pindefs.h)(0x64A2C7E0)
 I (.\Config\I2CAddr.h)(0x64A6E3AA)
-I (.\Config\FirmwareConf.h)(0x64B1F2E2)
+I (.\Config\FirmwareConf.h)(0x64B2022B)
 I (.\User\inc\modelogic.h)(0x64B1ECC2)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x599EDB3E)
 I (.\User\inc\INA219.h)(0x64A6E223)
-I (.\User\inc\ADC.h)(0x64AD09FD)
+I (.\User\inc\ADC.h)(0x64B2021E)
 I (.\User\inc\console.h)(0x64B12177)
 I (.\Library\inc\ht32.h)(0x647BE6B5)
 I (C:\Keil_v5\ARM\PACK\Holtek\HT32_DFP\1.0.44\ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h)(0x635B7220)
@@ -4763,6 +4763,6 @@ I (.\Library\inc\ht32_serial.h)(0x647BE6B5)
 I (.\Library\inc\ht32_div.h)(0x647BE6B5)
 I (.\Library\inc\ht32_rand.h)(0x647BE6B5)
 I (.\User\inc\delay.h)(0x647BE621)
-F (.\Config\FirmwareConf.h)(0x64B1F2E2)()
+F (.\Config\FirmwareConf.h)(0x64B2022B)()
 F (.\Config\I2CAddr.h)(0x64A6E3AA)()
 F (.\Config\Pindefs.h)(0x64A2C7E0)()

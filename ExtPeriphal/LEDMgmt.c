@@ -13,7 +13,7 @@
 2=红色  
 E=强制结束当前pattern
 */
-#define LEDPatternSize 29
+#define LEDPatternSize 30
 const char *LEDPattern[LEDPatternSize]=
  {
    "00",//LED熄灭 0
@@ -44,6 +44,7 @@ const char *LEDPattern[LEDPatternSize]=
 	 "22221111E", //红灯亮一下然后转到绿灯表示手电已经解锁 25
 	 "11112222E", //绿灯亮一下然后转到红灯表示手电已被锁定 26
 	 "202020E", //红灯快速闪三次表示手电被锁定 27
+	 "202002020020000000000000",//红色灯快速闪烁5次，停1.5秒循环 28
 	 NULL//结束符
  };
 //变量

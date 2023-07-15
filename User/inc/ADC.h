@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include "Pindefs.h"
+#include "FirmwareConf.h"
 
 /*下面的自动Define负责处理ADC的IO，ADC通道定义，不允许修改！*/
 #define LED_Vf_IOP STRCAT2(AFIO_PIN_,LED_Vf_ADC_Ch)
@@ -16,20 +17,6 @@
 
 //ADC的平均次数
 #define ADCAvg 5  
-
-//SPS功率级的温度和电流report参数配置
-#define SPSIMONDiffOpGain 50 //SPS电流差分采样放大器的增益，单位*V/V
-#define SPSIMONScale 5 //电流回报数值，单位uA/A
-#define SPSIMONShunt 200 //SPS的电流回报分压电阻，单位欧姆
-
-#define SPSTMONScale 8 //温度回报数值，单位mV/℃
-#define SPSTMONStdVal 0.6 //SPS为0度时的温度，单位V
-
-//NTC温度测量设置
-#define UpperResValueK 10 //NTC测温电路上面串联的电阻（单位KΩ）
-#define TRIM 0.5 //温度修正值，单位℃
-#define B 3450 //NTC热敏电阻的B值
-#define T0 25 //NTC电阻的标定温度，一般是25℃
 
 //温度传感器状态Enum
 typedef enum

@@ -50,10 +50,10 @@
 .\objects\battmonitor.o: .\Config\Pindefs.h
 .\objects\battmonitor.o: .\User\inc\INA219.h
 .\objects\battmonitor.o: .\User\inc\ADC.h
+.\objects\battmonitor.o: .\Config\FirmwareConf.h
 .\objects\battmonitor.o: .\User\inc\cfgfile.h
 .\objects\battmonitor.o: .\User\inc\I2C.h
 .\objects\battmonitor.o: .\Config\I2CAddr.h
-.\objects\battmonitor.o: .\Config\FirmwareConf.h
 .\objects\battmonitor.o: .\User\inc\modelogic.h
 .\objects\battmonitor.o: .\User\inc\LEDMgmt.h
 .\objects\battmonitor.o: .\User\inc\runtimelogger.h

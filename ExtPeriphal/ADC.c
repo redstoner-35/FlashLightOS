@@ -212,6 +212,13 @@ void InternalADC_Init(void)
 	 if(ADCO.NTCState==LED_NTC_OK)
 		 UartPost(Msg_info,"IntADC","LED BasePlate Temperature : %.1f'C",ADCO.LEDTemp);
 	 else 
+	   {
+		 #ifndef ForceRequireLEDNTC
 		 UartPost(msg_error,"IntADC","Base Plate temperature sensor did not work properly.");
+		 #else
+		 UartPost(Msg_critical,"IntADC","LED Base Plate temperature sensor failure detected.");
+		 CurrentLEDIndex=28;//指示LED基板NTC异常
+		 SelfTestErrorHandler();	 
+		 #endif
+		 }
 	}
-
