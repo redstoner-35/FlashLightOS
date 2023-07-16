@@ -14,6 +14,7 @@ A对应100%电流。（这些字符串会让灯珠点亮并按照指定电流工
 #include "PWMDIM.h"
 #include "console.h"
 #include <math.h>
+#include <stdlib.h>
 
 static char StrPtr=0;
 static char CustomFlashTimer;//实现延时功能用于计时的变量
@@ -35,7 +36,8 @@ int CheckForCustomFlashStr(char *Str)
 	if(Str==NULL)return 0;
 	for(i=0;i<32;i++)
 		{
-    if(Str[i]=='A'||Str[i]=='-')result=true;
+		if(Str[i]=='R')result=true;
+    else if(Str[i]=='A'||Str[i]=='-')result=true;
 		else if(Str[i]>='W'&&Str[i]<='Z')result=true;
 		else if(Str[i]>='1'&&Str[i]<='9')result=true;
 		else if(Str[i]=='\0')return -1;//检查到末尾空字符，检查成功
@@ -76,6 +78,7 @@ void CustomFlashHandler(void)
 		case '8':buf=80;break;
 		case '9':buf=90;break;
 		case 'A':buf=100;break; //10-100%亮度控制
+		case 'R':buf=(float)((rand()+10)%100);break; //随机亮度
 		case '-':buf=0;break;  //熄灭
 		default:buf=-1;  //非法字符
 		}

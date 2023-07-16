@@ -8,6 +8,7 @@
 #include "cfgfile.h"
 #include "runtimelogger.h"
 #include <math.h>
+#include <stdlib.h>
 
 //声明一下fmax和fmin的定义
 float fmaxf(float x,float y);
@@ -345,6 +346,7 @@ void RuntimeModeCurrentHandler(void)
 	   RunTimeErrorReportHandler(Error_LED_Open);
 		 return;
 	   }
+ srand((int)(ADCO.LEDVf*ADCO.LEDIf));//使用ADC测量结果作为随机种子
  /********************************************************
  运行时挡位处理的第二步.我们根据用户配置的温度曲线和当前
  ADC读取到的各组件温度计算出降档的幅度，并且最终汇总为一个
