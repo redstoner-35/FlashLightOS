@@ -3,6 +3,8 @@
 #include "cfgfile.h"
 #include "PWMDIM.h"
 
+extern bool IsParameterAdjustMode;
+
 //设置占空比
 void SetPWMDuty(float Duty)
  { 
@@ -27,8 +29,21 @@ void PWMTimerInit(void)
  TM_TimeBaseInitTypeDef MCTM_TimeBaseInitStructure;
  TM_OutputInitTypeDef MCTM_OutputInitStructure;
  MCTM_CHBRKCTRInitTypeDef MCTM_CHBRKCTRInitStructure;
+ UartPost(Msg_info,"HostIf","Detecting host computer connection...."); 
+ //通过PWM引脚检测主机的连接
+ AFIO_GPxConfig(ExtKey_IOB,PWMO_IOP, AFIO_FUN_GPIO);//GPIO功能
+ GPIO_DirectionConfig(PWMO_IOG,PWMO_IOP,GPIO_DIR_IN);//配置为输入
+ GPIO_InputConfig(PWMO_IOG,PWMO_IOP,ENABLE);//启用IDR 
+ delay_ms(10);
+ if(GPIO_ReadInBit(PWMO_IOG,PWMO_IOP))//当主机连接时，PWM引脚会被主机的5V输入拉高，此时驱动将进入调参模式
+   {
+	 UartPost(Msg_info,"HostIf","Host computer is connected via USB-TypeC port,Driver will enter tuning mode."); 
+	 IsParameterAdjustMode=true;
+	 return;
+	 }
+ else UartPost(Msg_info,"HostIf","Host computer is not connected,resume normal selftest.");	 
+ //配置GPIO为PWM输出模式 
  UartPost(Msg_info,"MoonPWMDIM","Starting PWM Generator TIM...");
- //配置GPIO为PWM输出模式
  AFIO_GPxConfig(PWMO_IOB,PWMO_IOP, AFIO_FUN_MCTM_GPTM);
  //配置TBU(脉冲生成基本时基单元)
  MCTM_TimeBaseInitStructure.CounterReload = (SYSHCLKFreq / CfgFile.PWMDIMFreq) - 1; //计数分频值按照设置频率来

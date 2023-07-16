@@ -14,6 +14,7 @@
 #define BatteryCellCount 3 //默认情况下驱动使用的电池组中锂电池的串数(按照三元锂电池计算)
 #define DeepsleepDelay 40 //驱动的出厂深度睡眠时间,40秒内没有操作则睡眠
 //#define ForceRequireLEDNTC //驱动的LED NTC热敏电阻强制要求存在,如果检测不到热敏电阻则驱动将自检失败
+#define SideKeyPolar_positive  //侧按的极性，保留此define表示侧按按键高有效，否则低有效
 
 //挡位配置
 //#define DefaultRampMode //保留此define则驱动的出厂挡位配置为无极调光模式,否则为5挡位模式

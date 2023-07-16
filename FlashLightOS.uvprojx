@@ -722,6 +722,11 @@
               <FileType>1</FileType>
               <FilePath>.\ModeLogic\DeepSleep.c</FilePath>
             </File>
+            <File>
+              <FileName>FlashProt.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\ExtPeriphal\FlashProt.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

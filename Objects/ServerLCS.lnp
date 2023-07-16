@@ -54,6 +54,7 @@
 ".\objects\lineardim.o"
 ".\objects\battmonitor.o"
 ".\objects\deepsleep.o"
+".\objects\flashprot.o"
 ".\objects\commandhandler.o"
 ".\objects\commandhistory.o"
 ".\objects\commandprocutil.o"

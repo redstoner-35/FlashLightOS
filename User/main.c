@@ -15,6 +15,7 @@
 
 bool SensorRefreshFlag=false;
 bool EnteredMainApp=false;
+bool IsParameterAdjustMode=false;
 
 int main(void)
  {
@@ -33,8 +34,12 @@ int main(void)
  CKCU_PeripClockConfig(CLKConfig,ENABLE);
  delay_init();//初始化systick
  //外设初始化
+ #ifndef FlashLightOS_Debug_Mode
+ GPIO_DisableDebugPort();//关闭debug口
+ #endif
  ConsoleInit();//初始化串行 
  SMBUS_Init();//初始化SMBUS 
+ CheckForFlashLock();//安全功能，检查程序区是否被锁定
  EnableHBTimer();//启用系统心跳定时器
  CheckHBTimerIsEnabled();//对心跳定时器进行测试
  LED_Init();//启动LED管理器 
@@ -45,15 +50,25 @@ int main(void)
  ModeSwitchInit();//模式选择挡位的配置初始化
  PStateInit();//电源状态初始化
  PWMTimerInit();//PWM调光器初始化
- LinearDIM_POR();//DAC校准
+ if(!IsParameterAdjustMode)LinearDIM_POR();//DAC校准(仅在正常运行模式下启动)
  LoggerHeader_POR();//事件日志记录器初始化
  RunLogModule_POR();//运行日志模块POR
  DriverLockPOR();//初始化上电锁定状态
  ConsoleReconfigure();//自检完毕后输出配置信息
- //主循环
  EnteredMainApp=true;//标记已进入主APP,不在定时器中断内处理LED控制器
- while(1)
+ //调参模式下只处理shell事务的主循环
+ if(IsParameterAdjustMode)while(1)	 
+	 {
+	 ShellProcUtilHandler();	//处理shell事务
+	 if(!SensorRefreshFlag)continue; //当前时间没到跳过下面的代码
+	 CurrentLEDIndex=29;//绿灯慢闪提示进入调参模式
+	 LEDMgmt_CallBack();//LED管理器
+	 SensorRefreshFlag=false;
+	 }
+ //正常运行模式的主循环
+ else while(1)
    {
+
 	 //处理shell事务(为了保证性能,在手电筒运行时会直接跳过所有的shell事务)	 
    if(SysPstatebuf.Pstate!=PState_LEDOn&&SysPstatebuf.Pstate!=PState_LEDOnNonHold)
 		  ShellProcUtilHandler();	 

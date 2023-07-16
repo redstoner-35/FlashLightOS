@@ -76,8 +76,11 @@ void SideKey_Callback(void)
 	if(CfgFile.DeepSleepTimeOut>0)DeepSleepTimer=CfgFile.DeepSleepTimeOut;
   else DeepSleepTimer=-1;//复位定时器
 	//给内部处理变量赋值
-	delay_ms(5);
+	#ifdef SideKeyPolar_positive	
 	if(GPIO_ReadInBit(ExtKey_IOG,ExtKey_IOP))
+	#else	
+	if(!GPIO_ReadInBit(ExtKey_IOG,ExtKey_IOP))	
+  #endif
 	  {
 		IsKeyPressed = true;//标记按键按下
 		if(KeyTimer[1]&0x80)KeyTimer[1]=0x80;//复位
