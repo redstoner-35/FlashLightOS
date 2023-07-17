@@ -23,7 +23,6 @@ int main(void)
  CKCU_PeripClockConfig_TypeDef CLKConfig={{0}};
  CLKConfig.Bit.PA=1;
  CLKConfig.Bit.PB=1;
- CLKConfig.Bit.PC=1;
  CLKConfig.Bit.AFIO=1;
  CLKConfig.Bit.EXTI=1;
  CLKConfig.Bit.USART1=1;
@@ -43,6 +42,7 @@ int main(void)
  EnableHBTimer();//启用系统心跳定时器
  CheckHBTimerIsEnabled();//对心跳定时器进行测试
  LED_Init();//启动LED管理器 
+ FirmwareVersionCheck();//检查固件版本信息
  INA219_POR();//初始化INA219
  PORConfHandler();//初始化配置文件
  InternalADC_Init();//初始化内部ADC

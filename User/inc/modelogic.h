@@ -5,11 +5,33 @@
 #include "INA219.h"
 #include "FirmwareConf.h"
 
+/* LEDVf检测的自动宏定义，不允许修改！*/
+#ifdef UsingLED_3V
+#define LEDVfMax 4.5
+#define LEDVfMin 2.1
+/* 最大电流限制 */
+  #if (FusedMaxCurrent > 50)
+  #error "Maxmium fused current should not exceed 50A for 3V LEDs!"
+  #endif
+#endif
+
+#ifdef UsingLED_6V
+#define LEDVfMax 7.2
+#define LEDVfMin 4.7
+/* 最大电流限制 */
+  #if (FusedMaxCurrent > 30)
+  #error "Maxmium fused current should not exceed 30A for 6V LEDs!"
+  #endif
+#endif
+
 /*安全保护用的define，不允许修改！*/
 #if (BreathTIMFreq < 20 || BreathTIMFreq >50)
  #error "Breath Timer Frequency should be set in range of 20-50Hz!"
 #endif
 
+#ifndef LEDVfMax
+ #error "You forgot to define typical LED Voltage!"
+#endif
 //挡位模式enum
 typedef enum
  {

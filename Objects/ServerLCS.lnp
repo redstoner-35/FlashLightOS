@@ -35,6 +35,7 @@
 ".\objects\logger.o"
 ".\objects\runtimelogger.o"
 ".\objects\selftestlogger.o"
+".\objects\firmwareversionlock.o"
 ".\objects\i2cdrv.o"
 ".\objects\pmbus.o"
 ".\objects\ina219.o"

@@ -73,6 +73,7 @@ int CheckConfigurationInROM(cfgfiletype cfgtyp,unsigned int *CRCResultO);//检�
 int ReadConfigurationFromROM(cfgfiletype cfgtyp);//读取配置
 unsigned int ActiveConfigurationCRC(void);
 void CheckForFlashLock(void);//检查程序区是否被锁定
+void FirmwareVersionCheck(void);//检查固件版本
 
 //硬件安全保护define
 #if (FusedMaxCurrent > 50)

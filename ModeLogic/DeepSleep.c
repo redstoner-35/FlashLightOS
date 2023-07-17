@@ -40,7 +40,6 @@ void EnteredLowPowerMode(void)
 	GPIO_DirectionConfig(IIC_SCL_IOG,IIC_SCL_IOP,GPIO_DIR_IN);
 	GPIO_DirectionConfig(IIC_SDA_IOG,IIC_SDA_IOP,GPIO_DIR_IN);//SCL SDA配置为高阻
 	//关闭外设时钟
-	CLKConfig.Bit.PA=1;
   CLKConfig.Bit.PB=1;
   CLKConfig.Bit.USART1=1;
   CLKConfig.Bit.PDMA=1;
@@ -79,9 +78,8 @@ void ExitLowPowerMode(void)
 	HT_CKCU->GCCR|=0x200;//启用PLL
 	while(!(HT_CKCU->GCSR&0x02));//等待PLL就绪
 	HT_CKCU->GCCR&=0xFFFFFFF8; //令PLL作为系统时钟源	
-	while((HT_CKCU->CKST&0xF00)!=0x100);//等待48MHz的PLL输出切换为时钟源
+	while((HT_CKCU->CKST&0xF00)!=0x100){};//等待48MHz的PLL输出切换为时钟源
 	//打开外设时钟
-	CLKConfig.Bit.PA=1;
   CLKConfig.Bit.PB=1;
   CLKConfig.Bit.USART1=1;
   CLKConfig.Bit.PDMA=1;

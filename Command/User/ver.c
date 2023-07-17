@@ -3,10 +3,11 @@
 #include <stdio.h>
 #include <string.h>
 #include "AES256.h"
+#include "FirmwareConf.h"
 
+extern const char FRUVersion[3];
 
-
-
+//logo
 const char *FlashLightOSIcon[12]=
  {
 	" _______ ___     _______ _______ __   __ ___     ___ _______ __   __ _______    _______ _______ ",
@@ -48,6 +49,7 @@ void verHandler(void)
 		 UARTPuts((char *)FlashLightOSIcon[i]);
 		 }
 	UartPrintf("\r\n\r\nPowered by FlashLight OS version-%d.%d.%d,终端波特率:%dbps",MajorVersion,MinorVersion,HotfixVersion,CfgFile.USART_Baud);
+	UartPrintf("\r\n硬件平台:%s V%d.%d for %dV LED.",HardwarePlatformString,FRUVersion[1],FRUVersion[2],FRUVersion[0]);
 	switch(AccountState)//根据当前登录状态显示信息
 	   {
 		 case Log_Perm_Guest:LogPerm="游客";break;

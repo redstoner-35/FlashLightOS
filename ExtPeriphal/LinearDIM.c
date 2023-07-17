@@ -289,8 +289,8 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
  ********************************************************/
  if(!ADC_GetResult(&ADCO))return Error_ADC_Logic;
  //DAC的输出电压已经到了最高允许值,但是电流仍然未达标,这意味着LED可能短路或PWM逻辑异常
- if(VID==100)return  ADCO.LEDVf>=4.5?Error_LED_Open:Error_PWM_Logic;
- if(ADCO.LEDVf<2.1)return Error_LED_Short;		 //LEDVf过低,LED可能短路
+ if(VID==100)return  ADCO.LEDVf>=LEDVfMax?Error_LED_Open:Error_PWM_Logic;
+ if(ADCO.LEDVf<LEDVfMin)return Error_LED_Short;		 //LEDVf过低,LED可能短路
  /********************************************************
  LED自检顺利结束,驱动硬件和负载工作正常,此时返回无错误代码
  交由驱动的其余逻辑完成处理
@@ -340,7 +340,7 @@ void RuntimeModeCurrentHandler(void)
 		 RunTimeErrorReportHandler(Error_LED_OverCurrent);
 		 return;
 	   }	 
- if(ADCO.LEDVf>4.5)
+ if(ADCO.LEDVf>LEDVfMax)
      {
 		 //LED的两端电压过高(LED开路),这是严重故障,立即写log并停止驱动运行
 	   RunTimeErrorReportHandler(Error_LED_Open);
@@ -491,7 +491,7 @@ void RuntimeModeCurrentHandler(void)
 	   }
  if(Current>0&&SysPstatebuf.ToggledFlash)//额定电流大于0且LED被启动才积分
      {
-     if(LEDVfFilter(ADCO.LEDVf)>2.1)SysPstatebuf.IsLEDShorted=false; //LEDVf大于2.1正常运行
+     if(LEDVfFilter(ADCO.LEDVf)>LEDVfMin)SysPstatebuf.IsLEDShorted=false; //LEDVf大于短路保护值，正常运行
      else SysPstatebuf.IsLEDShorted=true;
      }
  }

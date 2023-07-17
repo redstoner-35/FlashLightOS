@@ -36,6 +36,7 @@ void CheckForFlashLock(void)
  unsigned int ProgramAreaCRC;
  #ifdef FlashLightOS_Debug_Mode
  UartPost(Msg_warning,"FWSec","Debug mode Enabled,firmware security feature will be disabled.");	 
+ return;
  #endif	 
  //检查option byte是否开启
  FLASH_GetOptionByteStatus(&Option);

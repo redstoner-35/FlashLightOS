@@ -22,6 +22,13 @@
   #error "You forgot to select which EEPROM you want to use!"
 #endif
 
+//I2C总线操作自动define，禁止修改！
+#define IIC_SDA_Set() GPIO_SetOutBits(IIC_SDA_IOG,IIC_SDA_IOP)
+#define IIC_SDA_Clr() GPIO_ClearOutBits(IIC_SDA_IOG,IIC_SDA_IOP)
+#define IIC_SCL_Set() GPIO_SetOutBits(IIC_SCL_IOG,IIC_SCL_IOP)
+#define IIC_SCL_Clr() GPIO_ClearOutBits(IIC_SCL_IOG,IIC_SCL_IOP)
+#define READ_SDA GPIO_ReadInBit(IIC_SDA_IOG,IIC_SDA_IOP)
+
 typedef enum
 {
 SMBUS_DIR_MOTS,//主机到从机
