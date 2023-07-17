@@ -1,6 +1,7 @@
 #include "console.h"
 #include "CfgFile.h"
 #include "runtimelogger.h"
+#include "selftestlogger.h"
 #include "Xmodem.h"
 #include <stdlib.h>
 #include <string.h>
@@ -28,6 +29,8 @@ const char *logbkupArgument(int ArgCount)
 		case 1:return "将错误日志以Xmodem的方式保存到电脑进行分析";
 		case 2:
 		case 3:return "从电脑端以Xmodem的方式接收并恢复已有的错误日志";
+		case 4:
+	  case 5:return "将系统的自检日志以Xmodem的方式下载到电脑";
 		}
 	return NULL;
 	} 
@@ -79,7 +82,7 @@ void RestoreErrorLogFromXmodem(void)
 //命令处理函数
 void logbkupHandler(void)
  {
- char RxParamOK,TxParamOK;
+ char RxParamOK,TxParamOK,errlogOK;
  //状态机
  switch(logbkupcmdstate)
   {
@@ -87,7 +90,22 @@ void logbkupHandler(void)
 	   {
 		 IsParameterExist("01",15,&TxParamOK);
 		 IsParameterExist("23",15,&RxParamOK);
-	   if(TxParamOK) //发送
+		 IsParameterExist("45",15,&errlogOK);
+		 if(errlogOK)  //自检日志
+		    {
+				#ifndef Firmware_DIY_Mode
+	      if(AccountState!=Log_Perm_Root)
+		      {
+			    UartPrintf((char *)NeedRoot,"下载自检日志到电脑!"); 
+			    ExitRunLogCmdHandler();
+			    return;
+			    }			 
+	      #endif
+				XmodemInitTxModule((SelftestLogDepth*sizeof(SelfTestLogUnion)),SelfTestLogBase);
+		    logbkupcmdstate=logbkup_XmodemTxInprogress;
+				DisplayXmodemBackUp("自检日志文件",false); //显示提示信息
+				}
+	   else if(TxParamOK) //发送
 	      {
 	      XmodemInitTxModule(LoggerAreaSize,LoggerBase);
 		    logbkupcmdstate=logbkup_XmodemTxInprogress;
@@ -114,7 +132,7 @@ void logbkupHandler(void)
 				}
 		 break;
 		 }
-	 case logbkup_XmodemTxInprogress:XmodemTxDisplayHandler("错误日志文件",&logbkupCmdEndHandler,&logbkupCmdEndHandler);break; //发送中
+	 case logbkup_XmodemTxInprogress:XmodemTxDisplayHandler("指定的日志文件",&logbkupCmdEndHandler,&logbkupCmdEndHandler);break; //发送中
 	 case logbkup_XmodemRxInprogress:XmodemRxDisplayHandler("错误日志文件",&logbkupCmdEndHandler,&RestoreErrorLogFromXmodem);break;  //Xmodem接收进行中
 	}
  }

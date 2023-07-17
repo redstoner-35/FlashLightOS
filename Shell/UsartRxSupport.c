@@ -58,7 +58,7 @@ void ConsoleInit(void)
 	char EncryptBUF[48];
 	//配置USART1 GPIO
   AFIO_GPxConfig(GPIO_PA,GPIO_PIN_4,AFIO_FUN_USART_UART);
-  AFIO_GPxConfig(GPIO_PA,GPIO_PIN_5,AFIO_FUN_USART_UART); //将PC14-15配置为USART1复用IO
+  AFIO_GPxConfig(GPIO_PA,GPIO_PIN_5,AFIO_FUN_USART_UART); //将PA4-5配置为USART1复用IO
   GPIO_PullResistorConfig(HT_GPIOA,GPIO_PIN_5,GPIO_PR_UP);//启用上拉
 	//配置USART1波特率，数据位数，校验，停止位
 	USART1InitStr.USART_BaudRate=BISTBaud;

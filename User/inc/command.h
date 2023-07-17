@@ -181,9 +181,9 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		{
 		 {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//15
      "logbkup",
-		 "允许系统管理员保存错误日志到电脑或从电脑端下载并恢复错误日志.",
-     "-s\0--save\0-r\0--restore\0\n",
-		 "\0 \0 \0 \0 \0\n",
+		 "允许系统管理员保存错误以及系统自检日志到电脑,或从电脑端下载并恢复错误日志.",
+     "-serr\0--save_error_logs\0-r\0--restore\0-spos\0--save_post_logs\0\n",
+		 " \0 \0 \0 \0 \0 \0\n",
 		 &logbkupArgument,
 		 Command_logbkup,
 		 NULL,

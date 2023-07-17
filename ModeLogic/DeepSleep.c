@@ -35,8 +35,14 @@ void EnteredLowPowerMode(void)
 	DACPoffStr.IsOnchipRefEnabled=false; 
 	if(!AD5693R_SetChipConfig(&DACPoffStr))return;//让DAC输出高阻关闭基准电压，进入掉电状态
 	DisableHBTimer(); //关闭定时器
+	ADC_DeInit(HT_ADC0);//将ADC复位
 	USART_TxCmd(HT_USART1, DISABLE);
   USART_RxCmd(HT_USART1, DISABLE); //关闭shell串口	
+	AFIO_GPxConfig(GPIO_PA,GPIO_PIN_4,AFIO_FUN_GPIO);
+  AFIO_GPxConfig(GPIO_PA,GPIO_PIN_5,AFIO_FUN_GPIO); //配置为普通GPIO模式
+  GPIO_PullResistorConfig(HT_GPIOA,GPIO_PIN_5,GPIO_PR_DISABLE);//关闭内部上拉电阻
+	GPIO_DirectionConfig(GPIO_PA,GPIO_PIN_5,GPIO_DIR_IN);
+	GPIO_DirectionConfig(GPIO_PA,GPIO_PIN_5,GPIO_DIR_IN); //将PA4-5配置为高阻GPIO避免TX和RX往外漏电
 	GPIO_DirectionConfig(IIC_SCL_IOG,IIC_SCL_IOP,GPIO_DIR_IN);
 	GPIO_DirectionConfig(IIC_SDA_IOG,IIC_SDA_IOP,GPIO_DIR_IN);//SCL SDA配置为高阻
 	//关闭外设时钟
@@ -90,8 +96,11 @@ void ExitLowPowerMode(void)
 	//打开外设
 	delay_init();//重新初始化Systick
 	EnableHBTimer(); //打开定时器
+  AFIO_GPxConfig(GPIO_PA,GPIO_PIN_4,AFIO_FUN_USART_UART);
+  AFIO_GPxConfig(GPIO_PA,GPIO_PIN_5,AFIO_FUN_USART_UART); //将PA4-5配置为USART1复用IO
+  GPIO_PullResistorConfig(HT_GPIOA,GPIO_PIN_5,GPIO_PR_UP);//启用上拉
 	USART_TxCmd(HT_USART1, ENABLE);
-  USART_RxCmd(HT_USART1, ENABLE); //关闭shell串口	
+  USART_RxCmd(HT_USART1, ENABLE); //重新启用shell的串口	
 	GPIO_DirectionConfig(IIC_SCL_IOG,IIC_SCL_IOP,GPIO_DIR_OUT);
 	GPIO_DirectionConfig(IIC_SDA_IOG,IIC_SDA_IOP,GPIO_DIR_OUT);//SCL SDA配置为低阻输出
 	//重新复位并初始化ADC

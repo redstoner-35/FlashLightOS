@@ -164,7 +164,6 @@ bool ADC_GetResult(ADCOutTypeDef *ADCOut)
 //内部ADC快速初始化
 void InternalADC_QuickInit(void)
   {
-	ADC_DeInit(HT_ADC0);//重新初始化ADC
 	CKCU_SetADCnPrescaler(CKCU_ADCPRE_ADC0, CKCU_ADCPRE_DIV16);//ADC时钟为主时钟16分频=3MHz                                               
   ADC_RegularGroupConfig(HT_ADC0,DISCONTINUOUS_MODE, 4, 0);//单次触发模式,一次完成4个数据的转换
   ADC_SamplingTimeConfig(HT_ADC0,25); //采样时间（25个ADC时钟）
