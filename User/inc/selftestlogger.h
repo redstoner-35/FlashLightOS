@@ -27,4 +27,6 @@ SelfTestLogEntryStr Log;
 char ByteBuf[sizeof(SelfTestLogEntryStr)];
 }SelfTestLogUnion;
 
+bool DisplayLastTraceBackMessage(void);//显示最后的一条trace信息
+
 #endif

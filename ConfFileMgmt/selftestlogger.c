@@ -8,6 +8,39 @@
 bool IsSelftestLoggerReady=false;
 static char SelfTestLogEntry=0;
 
+//显示本次启动的最后一条traceback信息
+bool DisplayLastTraceBackMessage(void)
+  {
+	SelfTestLogUnion LogEntry;
+	char ModCheckSum,Msgchecksum;
+  char SBUF[32]={0};
+	const char *Msg=NULL;
+	int MessageCount;
+	//读取数据
+	MessageCount=SelfTestLogEntry>0?SelfTestLogEntry-1:0;//计算出最后一条消息的entry
+	if(M24C512_PageRead(LogEntry.ByteBuf,SelfTestLogBase+(MessageCount*sizeof(SelfTestLogUnion)),sizeof(SelfTestLogUnion)))
+		return false;//从ROM中取数据时失败了
+	//检查消息内容是否合法
+	ModCheckSum=(char)Checksum8(LogEntry.Log.ModuleName,strlen(LogEntry.Log.ModuleName));
+	Msgchecksum=(char)Checksum8(LogEntry.Log.Message,strlen(LogEntry.Log.Message)); //计算校验和
+	if(LogEntry.Log.LogContentCheckByte!=0x35)return false;  //检查byte错误
+	if(ModCheckSum!=LogEntry.Log.ModuleNameChecksum)return false;
+	if(Msgchecksum!=LogEntry.Log.MessageCheckSum)return false; //消息校验和错误
+	//打印内容
+	strncat(SBUF,"\r\n",32);
+	if(LogEntry.Log.Level==Msg_info)Msg="\033[40;32m[INFO]";
+	else if(LogEntry.Log.Level==Msg_warning)Msg="\033[40;33m[WARN]";
+	else if(LogEntry.Log.Level==msg_error)Msg="\033[40;35m[ERROR]";
+	else Msg="\033[40;31m[FATAL]";
+	strncat(SBUF,Msg,32-strlen(SBUF));
+	strncat(SBUF,"\033[0m",32-strlen(SBUF));
+	strncat(SBUF,LogEntry.Log.ModuleName,32-strlen(SBUF));
+  strncat(SBUF,":",32-strlen(SBUF));
+	UARTPuts(SBUF); 
+	UARTPuts(LogEntry.Log.Message);//把头部信息和消息内容打印出来
+	return true;
+	}
+
 //从ROM中仅读取5个字节的头部,提高速度
 bool ReadSelfTestLogHeader(char EntryNum,SelfTestLogUnion *Dout)
   {

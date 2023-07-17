@@ -19,7 +19,8 @@ static const char *TinyShellText[]=
 "\r\n'X'或'x' : 通过xmodem方式将自检日志下载到电脑进行分析.",//1
 "\r\n'E'或'e' : 通过xmodem方式将错误日志下载到电脑进行分析.", //2
 "\r\n'R'或'r' : 重启驱动的固件并重新尝试自检.",//3
-"\r\n\r\nRescue:>"//4
+"\r\n'M'或'm' : 查看系统在自检失败前输出的最后一条自检日志信息.",//4
+"\r\n\r\nRescue:>"//5
 };
 
 
@@ -61,7 +62,7 @@ void TinyshellXmodemHandler(void)
  TinyShellPtr=0;
  TinyShellBuf=0;// 完成处理开始处理别的	
  delay_ms(100);
- UARTPuts((char *)TinyShellText[4]);
+ UARTPuts((char *)TinyShellText[5]);
  }	
  
 //自检错误的时候进入的简易shell环境
@@ -75,7 +76,7 @@ void SelfTestErrorHandler(void)
  UARTPuts("\r\n进入到Rescue TinyShell环境.此时手电筒功能将不可用直到问题解决.");
  UARTPuts("\r\n对于消费者而言,您可准备好SecureCRT软件,连接到驱动后输入'X'然后选择文件->");
  UARTPuts("\r\n接收Xmodem选项接收自检日志,接着将收到的自检日志文件发送给商家或厂家以分析\r\n问题所在.");
- for(i=0;i<5;i++)UARTPuts((char *)TinyShellText[i]);
+ for(i=0;i<6;i++)UARTPuts((char *)TinyShellText[i]);
  while(1)//主循环
   {
 	TinyshellGetData();//收取数据
@@ -87,8 +88,18 @@ void SelfTestErrorHandler(void)
 		  UARTPutc(TinyShellBuf,1);
 		  UARTPuts("\r\n");
 		  }
+		//显示最后一条自检信息
+		if(TinyShellBuf=='M'||TinyShellBuf=='m')
+		  {
+			UARTPuts("\r\n您请求了显示最后一条自检的日志信息,请等待系统从存储器内取出该信息...");
+			if(!DisplayLastTraceBackMessage())
+			  UARTPuts("\r\n系统取出该信息时遇到了错误,请重试.");
+			else
+				UARTPuts("\r\n\r\n系统已成功取出该信息,该信息内容如上.");
+			UARTPuts((char *)TinyShellText[5]);//显示shell字符
+			}
 		//重启系统
-		if(TinyShellBuf=='R'||TinyShellBuf=='r')
+		else if(TinyShellBuf=='R'||TinyShellBuf=='r')
 		  {
 			UARTPuts("\r\n您请求了手动重启,系统将在3秒后重启...\r\n\r\n");
 			delay_Second(3);
@@ -107,11 +118,12 @@ void SelfTestErrorHandler(void)
 			UARTPuts("\r\n您请求了下载自检日志,请打开Xmodem传输软件进行自检日志的接收.\r\n\r\n");
 			XmodemInitTxModule((SelftestLogDepth*sizeof(SelfTestLogUnion)),SelfTestLogBase);
 			}
-		else if(InputDataBlackList(TinyShellBuf))//显示内容
+		//输入了非法内容
+		else if(InputDataBlackList(TinyShellBuf))
 		  {
 			UARTPuts("\x0C\033[2J");
 			UARTPuts("\r\n您输入的命令不合法,请重试.");
-      for(i=0;i<5;i++)UARTPuts((char *)TinyShellText[i]);
+      for(i=0;i<6;i++)UARTPuts((char *)TinyShellText[i]);
 			}
 	  TinyShellPtr=0;
 		TinyShellBuf=0;// 完成处理开始处理别的	

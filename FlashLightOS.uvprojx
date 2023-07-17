@@ -14,16 +14,16 @@
       <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
-          <Device>HT32F52352_64LQFP</Device>
+          <Device>HT32F52352_33QFN</Device>
           <Vendor>Holtek</Vendor>
           <PackID>Holtek.HT32_DFP.1.0.44</PackID>
           <PackURL>https://mcu.holtek.com.tw/pack</PackURL>
           <Cpu>IRAM(0x20000000,0x4000) IROM(0x00000000,0x1FE00) CPUTYPE("Cortex-M0+") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
           <StartupFile></StartupFile>
-          <FlashDriverDll>UL2CM3(-S0 -C0 -P0 -FD20000000 -FC1000 -FN2 -FF0HT32F -FS00 -FL0100000 -FF1HT32F_OPT -FS11FF00000 -FL11000 -FP0($$Device:HT32F52352_64LQFP$ARM\Flash\HT32F.FLM) -FP1($$Device:HT32F52352_64LQFP$ARM\Flash\HT32F_OPT.FLM))</FlashDriverDll>
+          <FlashDriverDll>UL2CM3(-S0 -C0 -P0 -FD20000000 -FC1000 -FN2 -FF0HT32F -FS00 -FL0100000 -FF1HT32F_OPT -FS11FF00000 -FL11000 -FP0($$Device:HT32F52352_33QFN$ARM\Flash\HT32F.FLM) -FP1($$Device:HT32F52352_33QFN$ARM\Flash\HT32F_OPT.FLM))</FlashDriverDll>
           <DeviceId>0</DeviceId>
-          <RegisterFile>$$Device:HT32F52352_64LQFP$ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h</RegisterFile>
+          <RegisterFile>$$Device:HT32F52352_33QFN$ARM\INC\Holtek\HT32F5xxxx\ht32f5xxxx_01.h</RegisterFile>
           <MemoryEnv></MemoryEnv>
           <Cmp></Cmp>
           <Asm></Asm>
@@ -33,7 +33,7 @@
           <SLE66CMisc></SLE66CMisc>
           <SLE66AMisc></SLE66AMisc>
           <SLE66LinkerMisc></SLE66LinkerMisc>
-          <SFDFile>$$Device:HT32F52352_64LQFP$SVD\HT32F52342_52.svd</SFDFile>
+          <SFDFile>$$Device:HT32F52352_33QFN$SVD\HT32F52342_52.svd</SFDFile>
           <bCustSvd>0</bCustSvd>
           <UseEnv>0</UseEnv>
           <BinPath></BinPath>
