@@ -1,11 +1,7 @@
 #include "delay.h"
 #include "console.h"
+#include "modelogic.h"
 #include "LEDMgmt.h"
-
-
-#pragma push
-#pragma Otime//优化该函数使用3级别优化
-#pragma O3
 
 /*LED闪烁的pattern(每阶段0.25秒)
 0=熄灭，
@@ -18,8 +14,8 @@ const char *LEDPattern[LEDPatternSize]=
  {
    "00",//LED熄灭 0
    "111122220000E",//红绿交错闪一次然后结束 1
-	 "11",//绿灯常亮 2
-	 "22",//红灯常亮 3 
+	 "111",//绿灯常亮 2
+	 "222",//红灯常亮 3 
 	 "20202000000000202000000000",//快速闪烁三次，暂停两秒，快速闪烁两次 #INA219初始化异常 4
 	 "2020200000000020202000000000",//快速闪烁三次，暂停两秒，快速闪烁三次 #INA219测量失败异常 5
 	 "2020000000002000000000",//快速闪烁两次，暂停两秒，闪一次  #EEPROM连接异常 6
@@ -39,7 +35,7 @@ const char *LEDPattern[LEDPatternSize]=
 	 "2020202000000000202000000000",//快速闪烁四次，暂停两秒，闪两次 #DAC初始化失败 20
 	 "201020103010301000000000",//红绿色交替闪烁两次，橙绿交替闪烁两次然后暂停2秒重复 #内部挡位逻辑错误 21
 	 "2010201030103010301000000000",//红绿色交替闪烁两次，橙绿交替闪烁3次然后暂停2秒重复 #电池过流保护 22
-	 "33", //橙色常亮表示电池电量中等 23
+	 "333", //橙色常亮表示电池电量中等 23
 	 "20202000010100101001010010000", // //红色灯快速闪三次，绿色灯闪7次，SPS自检异常 24
 	 "22221111E", //红灯亮一下然后转到绿灯表示手电已经解锁 25
 	 "11112222E", //绿灯亮一下然后转到红灯表示手电已被锁定 26
@@ -52,15 +48,29 @@ const char *LEDPattern[LEDPatternSize]=
 static int ConstReadPtr;
 static int LastLEDIndex;
 int CurrentLEDIndex;
+static char LEDThermalBlinkTimer=20;//用于在温控介入时闪侧按指示灯
 char *ExtLEDIndex = NULL; //用于传入的外部序列
 static char *LastExtLEDIdx = NULL;
 
  //复位LED管理器从0开始读取
 void LED_Reset(void)
   {
+	LEDThermalBlinkTimer=20; //复位定时器
   GPIO_ClearOutBits(LED_Green_IOG,LED_Green_IOP);//输出设置为0
   GPIO_ClearOutBits(LED_Red_IOG,LED_Red_IOP);//输出设置为0	 	
 	ConstReadPtr=0;//从初始状态开始读取
+	}
+	//执行温控介入提示逻辑前的检查
+static bool CheckForLEDOnStatus(void)	
+  {
+	if(SysPstatebuf.Pstate!=PState_LEDOn&&SysPstatebuf.Pstate!=PState_LEDOnNonHold)return false;//LED熄灭
+	else if(LEDPattern[LastLEDIndex<LEDPatternSize?LastLEDIndex:0][ConstReadPtr]=='\0')return false;//目前已经运行到序列的末尾，不能熄灭
+	else if(SysPstatebuf.CurrentThrottleLevel<4)return false;//温控降档未介入
+	else if(LastExtLEDIdx!=NULL)return false;//外部指定了LED闪烁内容
+	else if(CurrentLEDIndex==2||CurrentLEDIndex==3)return true;
+	else if(CurrentLEDIndex==23)return true; //电量提示
+  //其余情况不执行
+  return false;
 	}
 
 //LED控制器初始化
@@ -95,7 +105,20 @@ void LEDMgmt_CallBack(void)
 		if(CurrentLEDIndex!=LastLEDIndex)LastLEDIndex=CurrentLEDIndex;//同步index 
 		LED_Reset();//复位LED状态机
 		}
-	//开始操作LED
+	//当手电开启，且温控介入后，侧按指示灯闪
+	if(CheckForLEDOnStatus())	
+	  {
+		if(LEDThermalBlinkTimer==20)LEDThermalBlinkTimer=0; //时间到，翻转回去
+		else if(LEDThermalBlinkTimer==0||LEDThermalBlinkTimer==2) //令所有LED熄灭后下个周期再动作
+		  {
+			LEDThermalBlinkTimer++;
+			GPIO_ClearOutBits(LED_Green_IOG,LED_Green_IOP);
+		  GPIO_ClearOutBits(LED_Red_IOG,LED_Red_IOP);
+			return;
+			}			
+		else LEDThermalBlinkTimer++;//继续计时
+		}
+	//正常执行		
 	if(LEDPattern[LastLEDIndex<LEDPatternSize?LastLEDIndex:0]==NULL)return;//指针为空，不执行
 	switch(LastExtLEDIdx==NULL?LEDPattern[LastLEDIndex<LEDPatternSize?LastLEDIndex:0][ConstReadPtr]:LastExtLEDIdx[ConstReadPtr])
 	  {
@@ -139,4 +162,3 @@ void LEDMgmt_CallBack(void)
 		default:ConstReadPtr=0;//其他任何非法值，直接回到开始点
 		}
 	}
-#pragma pop

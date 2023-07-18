@@ -80,9 +80,11 @@ void RunTimeBatteryTelemetry(void)
      RunTimeErrorReportHandler(Error_Input_OVP);//电池过压保护,这是严重故障,立即写log并停止驱动运行
  if(RunTimeBattTelemResult.BusCurrent>CfgFile.OverCurrentTrip)
 		 RunTimeErrorReportHandler(Error_Input_OCP);//电池过流保护,这是严重故障,立即写log并停止驱动运行
+ #ifndef FlashLightOS_Debug_Mode
  //如果电压低于警告值则强制锁定驱动的输出电流为指定值
  if(RunTimeBattTelemResult.BusVolt<CfgFile.VoltageAlert)
 		RunLogEntry.Data.DataSec.IsLowVoltageAlert=true;
+ #endif
  if(RunTimeBattTelemResult.BusVolt<CfgFile.VoltageTrip)//电池电量过低，关机保护的同时执行检测逻辑,写ROM	
      {
 		 if(RunLogEntry.Data.DataSec.BattUsage.IsLearningEnabled&&UsedCapacity>2000) //已用容量大于2000且使能自学习,完成校准

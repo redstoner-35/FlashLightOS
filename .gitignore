@@ -9,3 +9,6 @@
 *.d
 *.rcx
 *.sct
+*.axf
+*.dep
+*.lnp
