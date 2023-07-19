@@ -7,18 +7,32 @@
 
 /* LEDVf检测的自动宏定义，不允许修改！*/
 #ifdef UsingLED_3V
-#define LEDVfMax 4.5
-#define LEDVfMin 2.1
-/* 最大电流限制 */
+
+#ifndef Using_SBT90R
+  /* 最大电流限制 */
   #if (FusedMaxCurrent > 50)
   #error "Maxmium fused current should not exceed 50A for 3V LEDs!"
   #endif
+  #define LEDVfMin 2.1
+	#define LEDVfMax 4.5
+#else
+  /* 最大电流限制 */
+  #if (FusedMaxCurrent > 20)
+  #error "Maxmium fused current should not exceed 20A for SBT-90 RED LEDs!"
+  #endif
+  #define LEDVfMin 1.3
+	#define LEDVfMax 3.9
+#endif
+
 #endif
 
 #ifdef UsingLED_6V
 #define LEDVfMax 7.2
 #define LEDVfMin 4.7
-/* 最大电流限制 */
+  #ifdef Using_SBT90R
+  #error "SBT-90 RED LED is rated at 3V,Not 6V!"
+  #endif
+  /* 最大电流限制 */
   #if (FusedMaxCurrent > 30)
   #error "Maxmium fused current should not exceed 30A for 6V LEDs!"
   #endif
