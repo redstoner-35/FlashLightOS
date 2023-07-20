@@ -4,6 +4,11 @@
 #include "Pindefs.h" //引脚定义
 #include <stdbool.h>
 
+//PWM引脚自动定义
+#define PWMO_IOG STRCAT2(HT_GPIO,PWMO_IOBank)
+#define PWMO_IOB STRCAT2(GPIO_P,PWMO_IOBank)
+#define PWMO_IOP STRCAT2(GPIO_PIN_,PWMO_IOPinNum)
+
 //定义
 #define SYSHCLKFreq 48000000  //系统AHB频率48MHz
 

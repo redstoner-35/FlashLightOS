@@ -9,10 +9,17 @@
 #define ContShortPressWindow 3 //连续多次按下时侧按的检测释抑时间(在该时间以内按下的短按才算入短按次数内)
 
 /*负责处理外部中断的自动Define，不允许修改！*/
+#define ExtKey_IOB STRCAT2(GPIO_P,ExtKey_IOBank)
+#define ExtKey_IOG STRCAT2(HT_GPIO,ExtKey_IOBank)
 #define ExtKey_IOP STRCAT2(GPIO_PIN_,ExtKey_IOPN) 
 #define ExtKey_EXTI_CHANNEL  STRCAT2(EXTI_CHANNEL_,ExtKey_IOPN)
 #define _ExtKey_EXTI_IRQn STRCAT2(EXTI,ExtKey_IOPN)
 #define ExtKey_EXTI_IRQn  STRCAT2(_ExtKey_EXTI_IRQn,_IRQn)
+
+/* 负责处理外部按键锁存器的使能脚的自动define 不允许修改！*/
+#define ExtKey_EN_IOB STRCAT2(GPIO_P,ExtKeyLatch_IOBank)
+#define ExtKey_EN_IOG STRCAT2(HT_GPIO,ExtKeyLatch_IOBank)
+#define ExtKey_EN_IOP STRCAT2(GPIO_PIN_,ExtKeyLatch_IOPN) 
 
 //按键事件结构体定义
 typedef struct

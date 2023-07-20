@@ -31,7 +31,7 @@ void PWMTimerInit(void)
  MCTM_CHBRKCTRInitTypeDef MCTM_CHBRKCTRInitStructure;
  UartPost(Msg_info,"HostIf","Detecting host computer connection...."); 
  //通过PWM引脚检测主机的连接
- AFIO_GPxConfig(ExtKey_IOB,PWMO_IOP, AFIO_FUN_GPIO);//GPIO功能
+ AFIO_GPxConfig(PWMO_IOB,PWMO_IOP, AFIO_FUN_GPIO);//GPIO功能
  GPIO_DirectionConfig(PWMO_IOG,PWMO_IOP,GPIO_DIR_IN);//配置为输入
  GPIO_InputConfig(PWMO_IOG,PWMO_IOP,ENABLE);//启用IDR 
  delay_ms(10);

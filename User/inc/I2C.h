@@ -23,6 +23,14 @@
 #endif
 
 //I2C总线操作自动define，禁止修改！
+#define IIC_SCL_IOB STRCAT2(GPIO_P,IIC_SCL_IOBank)
+#define IIC_SCL_IOG STRCAT2(HT_GPIO,IIC_SCL_IOBank)
+#define IIC_SCL_IOP STRCAT2(GPIO_PIN_,IIC_SCL_IOPinNum) //SCL自动Define
+
+#define IIC_SDA_IOB STRCAT2(GPIO_P,IIC_SDA_IOBank)
+#define IIC_SDA_IOG STRCAT2(HT_GPIO,IIC_SDA_IOBank)
+#define IIC_SDA_IOP STRCAT2(GPIO_PIN_,IIC_SDA_IOPinNum) //SDA自动Define
+
 #define IIC_SDA_Set() GPIO_SetOutBits(IIC_SDA_IOG,IIC_SDA_IOP)
 #define IIC_SDA_Clr() GPIO_ClearOutBits(IIC_SDA_IOG,IIC_SDA_IOP)
 #define IIC_SCL_Set() GPIO_SetOutBits(IIC_SCL_IOG,IIC_SCL_IOP)

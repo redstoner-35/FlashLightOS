@@ -38,9 +38,9 @@
 #define SPSTMONStdVal 0.6 //SPS为0度时的温度，单位V
 
 //NTC温度测量设置
-#define UpperResValueK 10 //NTC测温电路上面串联的电阻（单位KΩ）
-#define TRIM 0.5 //温度修正值，单位℃
-#define B 3450 //NTC热敏电阻的B值
-#define T0 25 //NTC电阻的标定温度，一般是25℃
+#define NTCUpperResValueK 10 //NTC测温电路上面串联的电阻（单位KΩ）
+#define NTCTRIM 0.5 //温度修正值，单位℃
+#define NTCB 3450 //NTC热敏电阻的B值
+#define NTCT0 25 //NTC电阻的标定温度，一般是25℃
 
 #endif

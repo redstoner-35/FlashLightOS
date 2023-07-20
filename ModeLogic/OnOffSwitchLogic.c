@@ -8,6 +8,11 @@
 
 SYSPStateStrDef SysPstatebuf;
 
+/*  辅助电源引脚的自动define,不允许修改！  */
+#define AUXPWR_EN_IOB STRCAT2(GPIO_P,AUXPWR_EN_IOBank)
+#define AUXPWR_EN_IOG STRCAT2(HT_GPIO,AUXPWR_EN_IOBank)
+#define AUXPWR_EN_IOP STRCAT2(GPIO_PIN_,AUXPWR_EN_IOPinNum)
+
 //初始化系统的电源状态的状态机
 void PStateInit(void)
   {

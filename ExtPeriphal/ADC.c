@@ -89,10 +89,10 @@ bool ADC_GetResult(ADCOutTypeDef *ADCOut)
 	ADCOut->LEDVf=buf;
   //计算温度
 	buf=(float)ADCResult[NTC_ADC_Ch]*(3.3/(float)4096);//将AD值转换为电压
-	Rt=((float)UpperResValueK*buf)/(3.3-buf);//得到NTC的电阻
-	buf=1/((1/(273.15+(float)T0))+log(Rt/(float)UpperResValueK)/(float)B);//计算出温度
+	Rt=((float)NTCUpperResValueK*buf)/(3.3-buf);//得到NTC的电阻
+	buf=1/((1/(273.15+(float)NTCT0))+log(Rt/(float)NTCUpperResValueK)/(float)NTCB);//计算出温度
 	buf-=273.15;//减去开氏温标常数变为摄氏度
-	buf+=(float)TRIM;//加上修正值	
+	buf+=(float)NTCTRIM;//加上修正值	
 	if(buf<(-40)||buf>125)	//温度传感器异常
 	  {
 		ADCOut->NTCState=buf<(-40)?LED_NTC_Open:LED_NTC_Short;
