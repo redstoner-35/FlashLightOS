@@ -2,7 +2,7 @@
 #include "FirmwareConf.h"
 #include "delay.h"
 
-#define ProgramSize 0x1EA00  //程序的大小
+#define ProgramSize 0x1FBFF  //程序的大小
 #define CRCWordAddress 0x1FC00  //存储CRC字的存储器
 
 //计算主程序区域的CRC-32

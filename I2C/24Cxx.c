@@ -1,6 +1,51 @@
 #include "delay.h"
 #include "I2C.h"
 
+//检查FM24C512的安全扇区是否被锁定
+SecuLockState M24C512_QuerySecuSetLockStat(void)
+ {
+ #ifndef EnableSecureStor
+ return LockState_Unlocked; //没使能安全存储，此功能无效	 
+ #else
+ char buf;	 
+ //发送地址，目标要读写的位置
+ IIC_Start();
+ IIC_Send_Byte(M24C512SecuADDR);
+ if(IIC_Wait_Ack())return LockState_EEPROM_NACK;
+ IIC_Send_Byte(0x04);	 //高位地址XXXX_X10X 
+ if(IIC_Wait_Ack())return LockState_EEPROM_NACK;
+ IIC_Send_Byte(0x00); //低位地址XXXX_XXXX
+ if(IIC_Wait_Ack())return LockState_EEPROM_NACK;	 
+ //读取
+ IIC_Start();
+ IIC_Send_Byte(M24C512SecuADDR+1);
+ if(IIC_Wait_Ack())return LockState_EEPROM_NACK; //重复启动一次开始读数据	 
+ buf=IIC_Read_Byte(0);//读一字节之后NACK表示不读了
+ IIC_Stop();
+ //如果锁定字节的第2位为1则表示已锁定	 
+ if(buf&0x02)return LockState_Locked;
+ return LockState_Unlocked;
+ #endif
+ }
+//给安全存储区上锁
+char M24C512_LockSecuSct(void)
+ {
+  //发送地址，目标要读写的位置
+ IIC_Start();
+ IIC_Send_Byte(M24C512SecuADDR);
+ if(IIC_Wait_Ack())return 1;
+ IIC_Send_Byte(0x04);	 //高位地址XXXX_X10X 
+ if(IIC_Wait_Ack())return 1;
+ IIC_Send_Byte(0x00); //低位地址XXXX_XXXX
+ if(IIC_Wait_Ack())return 1;
+ IIC_Send_Byte(0x02); //锁定字节XXXX_XX1X
+ if(!IIC_Wait_Ack())
+   {
+	 IIC_Stop();
+	 return 1;//发送完毕后回复ACK，锁定失败 
+	 }
+ return 0;
+ }
 //写入FM24C512的Security Sector
 char M24C512_WriteSecuSct(char *Data,int StartAddr,int len)
  {

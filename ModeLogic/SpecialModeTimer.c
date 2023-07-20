@@ -84,7 +84,7 @@ void FlashTimerInitHandler(void)
  switch(CurrentMode->Mode)
    {
 	 case LightMode_On:DisableFlashTimer();TimerHasStarted=true;return;//常亮档不需要启用定时器,关闭定时器后退出
-	 case LightMode_CustomFlash:Freq=CurrentMode->CustomFlashSpeed*2;break;//自定义闪模式按照指定频率2倍，这样'1010'的序列才是10Hz
+	 case LightMode_CustomFlash:Freq=CurrentMode->CustomFlashSpeed;break;//自定义闪模式按照指定频率
 	 case LightMode_Ramp:Freq=BreathTIMFreq;break;
 	 case LightMode_Breath:Freq=BreathTIMFreq;break;//呼吸和无极调光模式下，定时器生成的中断频率配置为指定值
 	 case LightMode_Flash:Freq=(float)2*CurrentMode->StrobeFrequency;break;//按照爆闪频率的2倍去配置

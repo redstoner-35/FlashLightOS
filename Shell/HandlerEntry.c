@@ -36,6 +36,7 @@ void CommandHandler(void)
 		case Command_battcfg:battcfghandler();break;//battcfg
 		case Command_customflashcfg:customflashcfgHandler();break;//customflashcfg
 		case Command_modeview:modeviewhandler();break;//modeview
+	  case Command_fruedit:fruedithandler();break;//fruedit
 		//其余情况，显示错误或者直接退出
     default:
 		  {

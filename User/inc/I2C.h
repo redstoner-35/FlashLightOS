@@ -35,6 +35,13 @@ SMBUS_DIR_MOTS,//主机到从机
 SMBUS_DIR_SOTM//从机到主机
 }BDIR;
 
+typedef enum
+{
+LockState_EEPROM_NACK, //EEPROM没有回复
+LockState_Locked,  //已上锁
+LockState_Unlocked  //未上锁	
+}SecuLockState;
+
 //函数
 void SMBUS_Init(void);
 void IIC_Start(void);
@@ -52,5 +59,7 @@ char M24C512_Erase(int StartAddr,int len);//擦除
 char M24C512_WriteSecuSct(char *Data,int StartAddr,int len);//写安全扇区
 char M24C512_ReadSecuSct(char *Data,int StartAddr,int len);//读安全扇区
 char M24C512_ReadUID(char *Data,int len);//读取128Bit UID
+SecuLockState M24C512_QuerySecuSetLockStat(void);//检查FM24C512的安全扇区是否被锁定
+char M24C512_LockSecuSct(void);//给安全存储区上锁
 
 #endif

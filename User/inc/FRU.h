@@ -32,5 +32,7 @@ typedef union
 //函数
 bool CheckFRUInfoCRC(FRUBlockUnion *FRU);//检查FRU CRC
 bool CalcFRUCRC(FRUBlockUnion *FRU);//计算CRC
+char WriteFRU(FRUBlockUnion *FRU);
+char ReadFRU(FRUBlockUnion *FRU);//读写FRU 
  
 #endif

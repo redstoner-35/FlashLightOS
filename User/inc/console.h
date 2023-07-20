@@ -11,7 +11,7 @@
 #define CmdBufLen 134 //命令输入缓冲区的长度(字节)
 #define TxqueueLen 384 //发送缓冲区的长度(字节)
 #define RXDMAIdleCount 5 //RX DMA Idle trigger count
-#define TotalCommandCount 27  //总命令数
+#define TotalCommandCount 28  //总命令数
 #define DefaultTimeOutSec 90  //默认的命令行超时时间(秒)
 
 //内部包含
@@ -79,7 +79,8 @@ Command_thermalcfg,
 Command_modeporcfg,
 Command_battcfg,
 Command_customflashcfg,
-Command_modeview
+Command_modeview,
+Command_fruedit,
 }CommandHandle;
 
 /*******************************************

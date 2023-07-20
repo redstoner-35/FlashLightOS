@@ -4,6 +4,14 @@
 #include <stdlib.h>
 #include <math.h>
 
+const char *Rlvstr[]=
+{
+"\r\n  LED",//0
+"\r\n  驱动",//1
+"\r\n  ",//2
+"\r\n  电池",//3
+};
+
 void DisplayLampTime(double time)
   {
   //秒	
@@ -32,53 +40,56 @@ void runlogviewHandler(void)
 	else
 	  {
 		//正常显示
-		  UARTPuts("\r\n----------- 系统运行日志查看器(详细视图) -----------\r\n");
-		UartPrintf("\r\n  运行日志CRC-32 : 0x%08X\r\n",CalcRunLogCRC32(&RunLogEntry.Data));	
+		UARTPuts("\r\n");
+		UARTPutc('-',11);
+		UARTPuts(" 系统运行日志查看器(详细视图) ");
+		UARTPutc('-',11);
+		UartPrintf("\r\n%s运行日志CRC-32 : 0x%08X\r\n",Rlvstr[2],CalcRunLogCRC32(&RunLogEntry.Data));	
 		PrintStatuBar("系统主LED");
-		UartPrintf("\r\n  LED平均电流 : %.2fA",RunLogEntry.Data.DataSec.AverageLEDIf);
-		UartPrintf("\r\n  LED最大电流 : %.2fA",RunLogEntry.Data.DataSec.MaximumLEDIf);	
-		UartPrintf("\r\n  LED平均压降 : %.2fV",RunLogEntry.Data.DataSec.AverageLEDVf);
-		UartPrintf("\r\n  LED最大压降 : %.2fV",RunLogEntry.Data.DataSec.AverageLEDVf);	
-		UartPrintf("\r\n  LED平均功率 : %.2fW",RunLogEntry.Data.DataSec.AverageLEDIf*RunLogEntry.Data.DataSec.AverageLEDVf);
-		UartPrintf("\r\n  LED最大功率 : %.2fW",RunLogEntry.Data.DataSec.MaximumLEDIf*RunLogEntry.Data.DataSec.AverageLEDVf);		
+		UartPrintf("%s平均电流 : %.2fA",Rlvstr[0],RunLogEntry.Data.DataSec.AverageLEDIf);
+		UartPrintf("%s最大电流 : %.2fA",Rlvstr[0],RunLogEntry.Data.DataSec.MaximumLEDIf);	
+		UartPrintf("%s平均压降 : %.2fV",Rlvstr[0],RunLogEntry.Data.DataSec.AverageLEDVf);
+		UartPrintf("%s最大压降 : %.2fV",Rlvstr[0],RunLogEntry.Data.DataSec.AverageLEDVf);	
+		UartPrintf("%s平均功率 : %.2fW",Rlvstr[0],RunLogEntry.Data.DataSec.AverageLEDIf*RunLogEntry.Data.DataSec.AverageLEDVf);
+		UartPrintf("%s最大功率 : %.2fW",Rlvstr[0],RunLogEntry.Data.DataSec.MaximumLEDIf*RunLogEntry.Data.DataSec.AverageLEDVf);		
 			
 		if(RunLogEntry.Data.DataSec.AverageLEDTemp!=NAN)
-		  UartPrintf("\r\n  LED平均运行温度 : %.2f'C",RunLogEntry.Data.DataSec.AverageLEDTemp);
+		  UartPrintf("%s平均运行温度 : %.2f'C",Rlvstr[0],RunLogEntry.Data.DataSec.AverageLEDTemp);
 		else
 			UARTPuts("\r\n  LED平均运行温度 : 数据不可用");
 		if(RunLogEntry.Data.DataSec.MaximumLEDTemp!=NAN)
-		  UartPrintf("\r\n  LED最高运行温度 : %.2f'C",RunLogEntry.Data.DataSec.MaximumLEDTemp);				
+		  UartPrintf("%s最高运行温度 : %.2f'C",Rlvstr[0],RunLogEntry.Data.DataSec.MaximumLEDTemp);				
 	  else
 			UARTPuts("\r\n  LED最高运行温度 : 数据不可用");
 	  UARTPuts("\r\n  LED总计运行时长 : ");DisplayLampTime(RunLogEntry.Data.DataSec.LEDRunTime);
 		PrintStatuBar("驱动模块");
 		if(RunLogEntry.Data.DataSec.AverageSPSTemp!=NAN)
-		  UartPrintf("\r\n  驱动MOS平均运行温度 : %.2f'C",RunLogEntry.Data.DataSec.AverageSPSTemp);
+		  UartPrintf("%sMOS平均运行温度 : %.2f'C",Rlvstr[1],RunLogEntry.Data.DataSec.AverageSPSTemp);
 		else
 			UARTPuts("\r\n  驱动MOS平均运行温度 : 数据不可用");
 		if(RunLogEntry.Data.DataSec.MaximumSPSTemp!=NAN)
-		  UartPrintf("\r\n  驱动MOS最高运行温度 : %.2f'C",RunLogEntry.Data.DataSec.MaximumSPSTemp);				
+		  UartPrintf("%sMOS最高运行温度 : %.2f'C",Rlvstr[1],RunLogEntry.Data.DataSec.MaximumSPSTemp);				
 	  else
-			UARTPuts("\r\n  驱动MOS最高运行温度 : 数据不可用");
-		UartPrintf("\r\n  驱动温度降档比例 : %.1f%%",RunLogEntry.Data.DataSec.ThermalStepDownValue);	
-	  UartPrintf("\r\n  驱动平均运行效率 : %.1f%%",RunLogEntry.Data.DataSec.AverageDriverEfficiency);
-	  UartPrintf("\r\n  无极调光亮度百分比 : %.1f%%",RunLogEntry.Data.DataSec.RampModeConf*(float)100);
-		UartPrintf("\r\n  目前无极调光方向 : %s",RunLogEntry.Data.DataSec.RampModeDirection?"从暗到亮":"从亮到暗");
-		UartPrintf("\r\n  驱动是否锁定 : %s",RunLogEntry.Data.DataSec.IsFlashLightLocked?"是":"否");
+			UARTPuts("%sMOS最高运行温度 : 数据不可用");
+		UartPrintf("%s温度降档比例 : %.1f%%",Rlvstr[1],RunLogEntry.Data.DataSec.ThermalStepDownValue);	
+	  UartPrintf("%s平均运行效率 : %.1f%%",Rlvstr[1],RunLogEntry.Data.DataSec.AverageDriverEfficiency);
+	  UartPrintf("%s无极调光亮度百分比 : %.1f%%",Rlvstr[2],RunLogEntry.Data.DataSec.RampModeConf*(float)100);
+		UartPrintf("%s目前无极调光方向 : %s",Rlvstr[2],RunLogEntry.Data.DataSec.RampModeDirection?"从暗到亮":"从亮到暗");
+		UartPrintf("%s是否锁定 : %s",Rlvstr[2],RunLogEntry.Data.DataSec.IsFlashLightLocked?"是":"否");
 		PrintStatuBar("电池输入");
-	  UartPrintf("\r\n  电池输入低压告警 : %s",RunLogEntry.Data.DataSec.IsLowVoltageAlert?"是":"否");
-	  UartPrintf("\r\n  电池最低电压 : %.3fV",RunLogEntry.Data.DataSec.MinimumBatteryVoltage);
-    UartPrintf("\r\n  电池平均电压 : %.3fV",RunLogEntry.Data.DataSec.AverageBatteryVoltage);
-		UartPrintf("\r\n  电池最高电压 : %.3fV",RunLogEntry.Data.DataSec.MaximumBatteryVoltage);	
-		UartPrintf("\r\n  电池平均输出电流 : %.2fA",RunLogEntry.Data.DataSec.AverageBatteryCurrent);
-		UartPrintf("\r\n  电池最大输出电流 : %.2fA",RunLogEntry.Data.DataSec.MaximumBatteryCurrent);	
-		UartPrintf("\r\n  电池平均输出功率 : %.2fW",RunLogEntry.Data.DataSec.AverageBatteryPower);
-		UartPrintf("\r\n  电池最大输出功率 : %.2fW",RunLogEntry.Data.DataSec.MaximumBatteryPower);	
-    UartPrintf("\r\n  电池总放电量 : %.1fmAH",RunLogEntry.Data.DataSec.TotalBatteryCapDischarged);			
+	  UartPrintf("%s输入低压告警 : %s",Rlvstr[3],RunLogEntry.Data.DataSec.IsLowVoltageAlert?"是":"否");
+	  UartPrintf("%s最低电压 : %.3fV",Rlvstr[3],RunLogEntry.Data.DataSec.MinimumBatteryVoltage);
+    UartPrintf("%s平均电压 : %.3fV",Rlvstr[3],RunLogEntry.Data.DataSec.AverageBatteryVoltage);
+		UartPrintf("%s最高电压 : %.3fV",Rlvstr[3],RunLogEntry.Data.DataSec.MaximumBatteryVoltage);	
+		UartPrintf("%s平均输出电流 : %.2fA",Rlvstr[3],RunLogEntry.Data.DataSec.AverageBatteryCurrent);
+		UartPrintf("%s最大输出电流 : %.2fA",Rlvstr[3],RunLogEntry.Data.DataSec.MaximumBatteryCurrent);	
+		UartPrintf("%s平均输出功率 : %.2fW",Rlvstr[3],RunLogEntry.Data.DataSec.AverageBatteryPower);
+		UartPrintf("%s最大输出功率 : %.2fW",Rlvstr[3],RunLogEntry.Data.DataSec.MaximumBatteryPower);	
+    UartPrintf("%s总放电量 : %.1fmAH",Rlvstr[3],RunLogEntry.Data.DataSec.TotalBatteryCapDischarged);			
 		if(RunLogEntry.Data.DataSec.BattUsage.IsCalibrationDone)
 		  {
 			UartPrintf("(相当于电池的%.3f个循环)",RunLogEntry.Data.DataSec.TotalBatteryCapDischarged/(double)RunLogEntry.Data.DataSec.BattUsage.DesignedCapacity);
-			UartPrintf("\r\n  电池设计容量 : %.1fmAH",RunLogEntry.Data.DataSec.BattUsage.DesignedCapacity);
+			UartPrintf("%s设计容量 : %.1fmAH",Rlvstr[3],RunLogEntry.Data.DataSec.BattUsage.DesignedCapacity);
 			UartPrintf("\r\n  当前已用容量 : %.1fmAH",UsedCapacity);
 			}
 		UartPrintf("\r\n  库仑计校准完毕 : %s",RunLogEntry.Data.DataSec.BattUsage.IsCalibrationDone?"是":"否");

@@ -56,9 +56,9 @@ const ComamandStringStr Commands[TotalCommandCount]=
     {
 	   {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//4
 		"cfgmgmt",
-		 "管理系统中的配置文件(例如保存/加载/校验和恢复出厂设置)",
+		 "管理系统中的Main或Backup配置文件(例如保存/加载/校验和恢复出厂设置)并且允许用户从电脑备份和恢复配置文件.",
 		"-rf\0--restore_factory\0-s\0--save\0-v\0--verify\0-l\0--load\0-b\0--backup\0-rx\0--restore_xmodem\0\n",
-		" \0 \0 <配置名(Main或Backup)>\0 <配置名(Main或Backup)>\0 <配置名(Main或Backup)>\0 <配置名(Main或Backup)>\0 <配置名(Main或Backup)>\0 <配置名(Main或Backup)>\0 <配置名(Main或Backup)>\0 <配置名(Main或Backup)>\0 \0 \0\n",
+		" \0 \0 <配置名>\0 <配置名>\0 <配置名>\0 <配置名>\0 <配置名>\0 <配置名>\0 <配置名>\0 <配置名>\0 \0 \0\n",
 		&cfgmgmtArgument,
 		Command_cfgmgmt,
 		&cfgmgmt_ctrlc_handler,
@@ -295,9 +295,9 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		{
 		 {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//25
      "customflashcfg",
-		 "允许用户给某个指定的挡位通过特定的ASCII字符[数字1-9,大写字母'AWXYZ'和'_']组成的字符串创建完全自定义的特殊闪烁模式.并且可以编程闪烁的速度.详细使用方法如下:\r\n数字1-9和大写字母A以及R设定该时刻LED亮度的百分比,1-9表示10-90%,A表示100%,R则是随机生成一个10-99%的亮度值.如果输入'_'则该时刻LED熄灭.对于'WXYZ'则是保持在上一个命令指定的输出下0.5/1/2/4秒然后继续执行后面的命令.例如'9_8_'表示LED以90,80%的亮度各闪烁一次反复循环.\r\n",
+		 "允许用户配置某个挡位的自定义闪模块的工作参数.",
      "-mg\0--mode_group\0-mn\0--mode_number\0-ps\0--pattern_string\0-bf\0--blinking_freq\0\n",
-		 " <模式组名称.>\0 <模式组名称.>\0 <挡位序号.>\0 <挡位序号.>\0 <闪烁模式字符串>\0 <闪烁模式字符串>\0 <最高闪烁频率(Hz)>\0 <最高闪烁频率(Hz)>\0\n",
+		 " <模式组名称.>\0 <模式组名称.>\0 <挡位序号.>\0 <挡位序号.>\0 <闪烁模式字符串>\0 <闪烁模式字符串>\0 <序列频率(Hz)>\0 <序列频率(Hz)>\0\n",
 		 &customflashcfgArgument,
 		 Command_customflashcfg,
 		 NULL,
@@ -306,11 +306,22 @@ const ComamandStringStr Commands[TotalCommandCount]=
 	  {
 		 {Log_Perm_Guest,Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//26
      "modeview",
-		 "允许用户查看目前驱动的挡位组设置和某一个特定挡位的详细信息",
+		 "允许用户查看目前驱动的挡位组设置和某一个特定挡位的详细信息.",
      "-mg\0--mode_group\0-mn\0--mode_number\0\n",
 		 " <模式组名称.>\0 <模式组名称.>\0 <挡位序号.>\0 <挡位序号.>\0\n",
 		 &modeviewArgument,
 		 Command_modeview,
+		 NULL,
+		 false		
+		},
+		{
+		 {Log_Perm_Root,Log_Perm_End},//27
+     "fruedit",
+		 "允许厂家工程师编辑驱动中的FRU信息并给FRU永久上锁.",
+     "-sn\0--serial_number\0-imax\0--maximum_current\0-l\0--lock\0\n",
+		 " <序列号字符串>\0 <序列号字符串>\0 <最大电流(A)>\0 <最大电流(A)>\0 \0 \0\n",
+		 &frueditArgument,
+		 Command_fruedit,
 		 NULL,
 		 false		
 		}

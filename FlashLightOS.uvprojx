@@ -882,6 +882,11 @@
               <FileType>1</FileType>
               <FilePath>.\Command\User\modeview.c</FilePath>
             </File>
+            <File>
+              <FileName>fruedit.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Command\User\fruedit.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

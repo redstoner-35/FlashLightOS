@@ -18,9 +18,9 @@ const char *customflashcfgArgument(int ArgCount)
 		case 2:
 		case 3:return ModeSelectStr[3];
 		case 4:
-		case 5:return "设置自定义闪的闪烁序列字符串(需要用双引号括起来)";
+		case 5:return "设置自定义闪的闪烁序列字符串";
 	  case 6:
-		case 7:return "设定自定义闪的最高闪烁频率(Hz,以'101010'这样的密集字符串来计算)";
+		case 7:return "设定自定义闪的序列运行频率(多少指令/s)";
 		}
 	return NULL;
 	}
@@ -114,10 +114,10 @@ void customflashcfgHandler(void)
 		TargetMode=GetSelectedModeConfig(UserSelect,modenum);
 		if(TargetMode==NULL)
 		   UARTPuts((char *)ModeSelectStr[4]);
-		else if(buf==NAN||buf<2||buf>15) //数值非法
+		else if(buf==NAN||buf<4||buf>25) //数值非法
 		  {
 			DisplayIllegalParam(ParamPtr,25,4);//显示用户输入了非法参数  
-			UARTPuts("\r\n您设定的自定义闪最高闪烁频率应当在2Hz到15.0Hz之间的正数,负数值和0均为非法值.");
+			UARTPuts("\r\n您设定的自定义闪序列的运行频率应当在4Hz到25.0Hz之间的正数,负数值和0均为非法值.");
 			}
 		else //更改
 		  {

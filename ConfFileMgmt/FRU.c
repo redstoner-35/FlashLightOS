@@ -16,6 +16,37 @@ const char FRUVersion[3]={0x06,0x01,0x01}; //分别表示适用LED电压6V，硬
 #endif 
 
 /**************************************************************
+这个函数主要用于从ROM内读取FRU的数据，如果成功，会返回0，否则返
+回1
+**************************************************************/
+char ReadFRU(FRUBlockUnion *FRU)
+ {
+ 
+ #ifndef EnableSecureStor
+ if(M24C512_PageRead(FRU.FRUBUF,SelftestLogEnd,sizeof(FRUBlockUnion)))return 1;
+ #else
+ if(M24C512_ReadSecuSct(FRU->FRUBUF,0,sizeof(FRUBlockUnion)))return 1; 
+ #endif	 
+ //读取完毕，返回0
+ return 0;
+ }
+/**************************************************************
+这个函数主要用于向ROM内写入FRU的数据，如果成功，会返回0，否则返
+回1
+**************************************************************/
+char WriteFRU(FRUBlockUnion *FRU)
+ {
+ #ifndef EnableSecureStor
+ CalcFRUCRC(FRUBlockUnion *FRU);
+ if(M24C512_PageWrite(FRU.FRUBUF,SelftestLogEnd,sizeof(FRUBlockUnion)))return 1; //计算校验和然后写入
+ #else
+ if(!CalcFRUCRC(FRU))return 1;//CRC计算失败
+ if(M24C512_WriteSecuSct(FRU->FRUBUF,0,sizeof(FRUBlockUnion)))return 1; //写入失败
+ #endif
+ //写入完毕，返回0
+ return 0;
+ }
+/**************************************************************
 这个函数主要用于检查读出来的FRU数据是否匹配CRC32校验和。如果匹配
 则返回true 否则返回false
 **************************************************************/
@@ -114,11 +145,7 @@ void FirmwareVersionCheck(void)
  memcpy(checksumbuf,FRUVersion,3);
  checksumbuf[3]=Checksum8(checksumbuf,3)^0xAF; //计算校验和
  //读取	 
- #ifndef EnableSecureStor
- if(M24C512_PageRead(FRU.FRUBUF,SelftestLogEnd,sizeof(FRUBlockUnion)))
- #else
- if(M24C512_ReadSecuSct(FRU.FRUBUF,0,sizeof(FRUBlockUnion))) 
- #endif	 
+ if(ReadFRU(&FRU))
  	 {
 	 CurrentLEDIndex=6;//EEPROM不工作
 	 UartPost(Msg_critical,"FRUChk","Failed to check Hardware FRU info in EEPROM.");
@@ -128,26 +155,18 @@ void FirmwareVersionCheck(void)
  if(!CheckFRUInfoCRC(&FRU))
    {
 	 #ifndef FlashLightOS_Debug_Mode
-	 CurrentLEDIndex=6;//EEPROM不工作
+	 CurrentLEDIndex=3;//红灯常亮表示固件EEPROM损坏
 	 UartPost(Msg_critical,"FRUChk","FRU information corrupted and not usable.System halted!");
 	 SelfTestErrorHandler();//FRU信息损坏
 	 #endif
-	 //填写数据，计算校验和
+	 //生成新的FRU数据并写入到EEPROM
 	 FRU.FRUBlock.Data.Data.MaxLEDCurrent=MaxAllowedLEDCurrent;//设置电流信息
 	 strncpy(FRU.FRUBlock.Data.Data.SerialNumber,"Serial Undefined",32);	//复制序列号信息
 	 memcpy(FRU.FRUBlock.Data.Data.FRUVersion,FRUVersion,3);//复制FRU信息		
-	 #ifndef EnableSecureStor
-	 CalcFRUCRC(FRUBlockUnion *FRU);
-	 M24C512_PageWrite(FRU.FRUBUF,SelftestLogEnd,sizeof(FRUBlockUnion)); //计算校验和然后写入
-	 #else
-	 if(!CalcFRUCRC(&FRU))//写入失败
-		  {
-			UartPost(Msg_critical,"FRUChk","FRU information overwrite failed due to not UID info available.");
-			SelfTestErrorHandler();//固件版本不匹配
-			}
-	 else M24C512_WriteSecuSct(FRU.FRUBUF,0,sizeof(FRUBlockUnion));
-	 #endif
-	 UartPost(Msg_warning,"FRUChk","FRU Record is broken and has been refreshed.");
+   if(!WriteFRU(&FRU))
+	   UartPost(Msg_warning,"FRUChk","FRU Record is broken and has been refreshed.");
+	 else
+		 UartPost(Msg_warning,"FRUChk","Failed to overwrite broken FRU.");
 	 }
  //检查平台版本是否匹配
  else if(memcmp(FRU.FRUBlock.Data.Data.FRUVersion,checksumbuf,3)) //信息不匹配
@@ -157,23 +176,17 @@ void FirmwareVersionCheck(void)
 		UartPost(Msg_critical,"FRUChk","hardware platform mismatch!This firmware is for %dV LED platform and Hardware Rev. of V%d.%d.System halted!",FRUVersion[0],FRUVersion[1],FRUVersion[2]);
 		SelfTestErrorHandler();//固件版本不匹配
 	  #endif
-		//填写数据，计算校验和
-		FRU.FRUBlock.Data.Data.MaxLEDCurrent=MaxAllowedLEDCurrent;//设置电流信息
-		strncpy(FRU.FRUBlock.Data.Data.SerialNumber,"Serial Undefined",32);	//复制序列号信息
+		//生成新的FRU数据并写入到EEPROM
+	  FRU.FRUBlock.Data.Data.MaxLEDCurrent=MaxAllowedLEDCurrent;//设置电流信息
+	  strncpy(FRU.FRUBlock.Data.Data.SerialNumber,"Serial Undefined",32);	//复制序列号信息
 	  memcpy(FRU.FRUBlock.Data.Data.FRUVersion,FRUVersion,3);//复制FRU信息		
-		#ifndef EnableSecureStor
-		CalcFRUCRC(FRUBlockUnion *FRU);
-		M24C512_PageWrite(FRU.FRUBUF,SelftestLogEnd,sizeof(FRUBlockUnion)); //计算校验和然后写入
-		#else
-		if(!CalcFRUCRC(&FRU))//写入失败
+    if(!WriteFRU(&FRU))
 		  {
-			UartPost(Msg_critical,"FRUChk","FRU information overwrite failed due to not UID info available.");
-			SelfTestErrorHandler();//固件版本不匹配
+	    UartPost(Msg_warning,"FRUChk","hardware platform mismatch,FRU Record Has been refreshed.");
+		  UartPost(Msg_info,"FRUChk","New recoed is %dV LED platform,Hardware Rev. V%d.%d.",FRU.FRUBlock.Data.Data.FRUVersion[0],FRU.FRUBlock.Data.Data.FRUVersion[1],FRU.FRUBlock.Data.Data.FRUVersion[2]);
 			}
-		else M24C512_WriteSecuSct(FRU.FRUBUF,0,sizeof(FRUBlockUnion));
-		#endif
-		UartPost(Msg_warning,"FRUChk","hardware platform mismatch,FRU Record Has been refreshed.");
-		UartPost(Msg_info,"FRUChk","New recoed is %dV LED platform,Hardware Rev. V%d.%d.",FRU.FRUBlock.Data.Data.FRUVersion[0],FRU.FRUBlock.Data.Data.FRUVersion[1],FRU.FRUBlock.Data.Data.FRUVersion[2]);
+	  else
+		  UartPost(Msg_warning,"FRUChk","Failed to overwrite broken FRU.");
 		}
  //信息匹配，加载数据，显示信息
  else

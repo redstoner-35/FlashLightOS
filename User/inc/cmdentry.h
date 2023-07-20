@@ -29,6 +29,7 @@ void modeporcfghandler(void);
 void battcfghandler(void);
 void customflashcfgHandler(void);
 void modeviewhandler(void);
+void fruedithandler(void);
 
 //Ctrl+C force stop entry
 void cfgmgmt_ctrlc_handler(void);
