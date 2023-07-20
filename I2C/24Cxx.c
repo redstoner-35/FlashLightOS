@@ -1,6 +1,95 @@
 #include "delay.h"
 #include "I2C.h"
 
+//写入FM24C512的Security Sector
+char M24C512_WriteSecuSct(char *Data,int StartAddr,int len)
+ {
+ int i;
+ //判断参数
+ if(StartAddr>127)return 1; //安全扇区固定128字节大小
+ if(len+StartAddr>127)len=127-StartAddr;//写入超长度，限制长度 
+ //发送地址，目标要读写的位置
+ IIC_Start();
+ IIC_Send_Byte(M24C512SecuADDR);
+ if(IIC_Wait_Ack())return 1;
+ IIC_Send_Byte(0x00);	 //高位地址XXXX_X00X 
+ if(IIC_Wait_Ack())return 1;
+ IIC_Send_Byte(StartAddr&0x7F); //低位地址
+ if(IIC_Wait_Ack())return 1;
+ //发送数据
+ for(i=0;i<len;i++)
+    {
+	  IIC_Send_Byte(Data[i]);
+	  if(IIC_Wait_Ack())return 1;
+	  }	 
+ IIC_Stop();
+ //发送完毕后等待器件处理
+ i=0;
+ while(i<50)
+    {
+	  IIC_Start();
+	  IIC_Send_Byte(M24C512SecuADDR);
+	  if(!IIC_Wait_Ack())
+	    {
+		  IIC_Stop();
+		  break;
+		  }
+	  delay_ms(1);
+	  i++;
+	  }
+ if(i==50)return 1;//等待超时
+ //写入成功，退出
+ return 0;
+ }
+//读取FM24C512的Security Sector
+char M24C512_ReadSecuSct(char *Data,int StartAddr,int len)
+ {
+ int i;
+ //判断参数
+ if(StartAddr>127)return 1; //安全扇区固定128字节大小
+ if(len+StartAddr>128)len=128-StartAddr;//写入超长度，限制长度 
+ //发送地址，目标要读写的位置
+ IIC_Start();
+ IIC_Send_Byte(M24C512SecuADDR);
+ if(IIC_Wait_Ack())return 1;
+ IIC_Send_Byte(0x00);	 //高位地址XXXX_X00X 
+ if(IIC_Wait_Ack())return 1;
+ IIC_Send_Byte(StartAddr&0x7F); //低位地址
+ if(IIC_Wait_Ack())return 1;
+ //读取数据
+ IIC_Start();
+ IIC_Send_Byte(M24C512SecuADDR+1);
+ if(IIC_Wait_Ack())return 1; //重复启动一次开始读数据
+ for(i=0;i<len;i++)Data[i]=IIC_Read_Byte(i<(len-1)?1:0);//循环读数据，直到最后发送NACK
+ IIC_Stop();
+ //读取成功，退出
+ return 0;
+ }
+
+//读取FM24C512的UID
+char M24C512_ReadUID(char *Data,int len)
+ {
+ int i;
+ //判断参数
+ if(len>128)return 1;//写入超长度，限制长度 
+ //发送地址，目标要读写的位置
+ IIC_Start();
+ IIC_Send_Byte(M24C512SecuADDR);
+ if(IIC_Wait_Ack())return 1;
+ IIC_Send_Byte(0x02);	 //高位地址XXXX_XX1X 
+ if(IIC_Wait_Ack())return 1;
+ IIC_Send_Byte(0x00); //低位地址XXXX_0000
+ if(IIC_Wait_Ack())return 1;
+ //读取数据
+ IIC_Start();
+ IIC_Send_Byte(M24C512SecuADDR+1);
+ if(IIC_Wait_Ack())return 1; //重复启动一次开始读数据
+ for(i=0;i<len;i++)Data[i]=IIC_Read_Byte(i<(len-1)?1:0);//循环读数据，直到最后发送NACK
+ IIC_Stop();
+ //读取成功，退出
+ return 0;
+ } 
+ 
 //M24C512 写入数据
 char M24C512_PageWrite(char *Data,int StartAddr,int len)
  {
@@ -24,7 +113,7 @@ char M24C512_PageWrite(char *Data,int StartAddr,int len)
    if(IIC_Wait_Ack())return 1;
    IIC_Send_Byte(StartAddr&0xFF);
    if(IIC_Wait_Ack())return 1;
-   //
+   //发送数据
    for(i=0;i<txlen;i++)
     {
 	  IIC_Send_Byte(Data[i+offset]);

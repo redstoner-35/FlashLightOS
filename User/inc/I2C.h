@@ -49,5 +49,8 @@ unsigned char IIC_Read_Byte(unsigned char ack);
 char M24C512_PageWrite(char *Data,int StartAddr,int len);//写数据
 char M24C512_PageRead(char *Data,int StartAddr,int len);//读数据
 char M24C512_Erase(int StartAddr,int len);//擦除
+char M24C512_WriteSecuSct(char *Data,int StartAddr,int len);//写安全扇区
+char M24C512_ReadSecuSct(char *Data,int StartAddr,int len);//读安全扇区
+char M24C512_ReadUID(char *Data,int len);//读取128Bit UID
 
 #endif

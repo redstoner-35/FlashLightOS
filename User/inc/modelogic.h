@@ -10,14 +10,14 @@
 
 #ifndef Using_SBT90R
   /* 最大电流限制 */
-  #if (FusedMaxCurrent > 50)
+  #if (MaxAllowedLEDCurrent > 50)
   #error "Maxmium fused current should not exceed 50A for 3V LEDs!"
   #endif
   #define LEDVfMin 2.1
 	#define LEDVfMax 4.5
 #else
   /* 最大电流限制 */
-  #if (FusedMaxCurrent > 20)
+  #if (MaxAllowedLEDCurrent > 20)
   #error "Maxmium fused current should not exceed 20A for SBT-90 RED LEDs!"
   #endif
   #define LEDVfMin 1.3
@@ -33,7 +33,7 @@
   #error "SBT-90 RED LED is rated at 3V,Not 6V!"
   #endif
   /* 最大电流限制 */
-  #if (FusedMaxCurrent > 30)
+  #if (MaxAllowedLEDCurrent > 30)
   #error "Maxmium fused current should not exceed 30A for 6V LEDs!"
   #endif
 #endif
@@ -194,6 +194,7 @@ extern float BreathCurrent;//由呼吸状态机生成的呼吸电流
 extern INADoutSreDef RunTimeBattTelemResult;//电池反馈结果
 extern bool TimerCanTrigger;//内部flag 保证检测逻辑跑完定时器才能触发 
 extern int DeepSleepTimer;//深度睡眠定时器
+extern float FusedMaxCurrent;//熔断的最大电流
 
 //函数
 void DriverLockPOR(void);//初始化上电锁定设置

@@ -613,9 +613,9 @@
               <FilePath>.\ConfFileMgmt\selftestlogger.c</FilePath>
             </File>
             <File>
-              <FileName>FirmwareVersionLock.c</FileName>
+              <FileName>FRU.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\ConfFileMgmt\FirmwareVersionLock.c</FilePath>
+              <FilePath>.\ConfFileMgmt\FRU.c</FilePath>
             </File>
           </Files>
         </Group>

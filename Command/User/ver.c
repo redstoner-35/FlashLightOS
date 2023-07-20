@@ -4,6 +4,7 @@
 #include <string.h>
 #include "AES256.h"
 #include "FirmwareConf.h"
+#include "FRU.h"
 
 extern const char FRUVersion[3];
 
@@ -42,6 +43,7 @@ void verHandler(void)
 	int i;
 	char EncryptBUF[48];
   char *LogPerm;
+	FRUBlockUnion FRU;
 	UARTPuts("\r\n");
 	for(i=0;i<12;i++)//打印logo
 		 {
@@ -49,7 +51,17 @@ void verHandler(void)
 		 UARTPuts((char *)FlashLightOSIcon[i]);
 		 }
 	UartPrintf("\r\n\r\nPowered by FlashLight OS version-%d.%d.%d,终端波特率:%dbps",MajorVersion,MinorVersion,HotfixVersion,CfgFile.USART_Baud);
-	UartPrintf("\r\n硬件平台:%s V%d.%d for %dV LED.",HardwarePlatformString,FRUVersion[1],FRUVersion[2],FRUVersion[0]);
+  #ifndef EnableSecureStor
+  if(!M24C512_PageRead(FRU.FRUBUF,SelftestLogEnd,sizeof(FRUBlockUnion))&&CheckFRUInfoCRC(&FRU))
+  #else
+  if(!M24C512_ReadSecuSct(FRU.FRUBUF,0,sizeof(FRUBlockUnion))&&CheckFRUInfoCRC(&FRU)) //FRU读取成功
+  #endif	 
+	   {
+		 UartPrintf("\r\n硬件平台:%s V%d.%d for %dV LED.",HardwarePlatformString,FRU.FRUBlock.Data.Data.FRUVersion[1],FRU.FRUBlock.Data.Data.FRUVersion[2],FRU.FRUBlock.Data.Data.FRUVersion[0]);
+		 UartPrintf("\r\n产品序列号:%s",FRU.FRUBlock.Data.Data.SerialNumber);
+		 }
+	else //读取失败
+     UARTPuts("\r\n硬件平台:未知平台\r\n产品序列号:未知");
 	switch(AccountState)//根据当前登录状态显示信息
 	   {
 		 case Log_Perm_Guest:LogPerm="游客";break;
