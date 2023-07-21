@@ -49,7 +49,7 @@
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
           <OutputDirectory>.\Objects\</OutputDirectory>
-          <OutputName>ServerLCS</OutputName>
+          <OutputName>FlashLightOS</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
           <CreateHexFile>1</CreateHexFile>
@@ -833,14 +833,14 @@
               <FilePath>.\Command\User\modeenacfg.c</FilePath>
             </File>
             <File>
-              <FileName>modecurcfg.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Command\User\modecurcfg.c</FilePath>
-            </File>
-            <File>
               <FileName>modeadvcfg.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Command\User\modeadvcfg.c</FilePath>
+            </File>
+            <File>
+              <FileName>modecurcfg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Command\User\modecurcfg.c</FilePath>
             </File>
             <File>
               <FileName>strobecfg.c</FileName>

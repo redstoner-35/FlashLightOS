@@ -105,7 +105,7 @@ void LinearDIM_POR(void)
 	if(VGet<(VSet-0.05)||VGet>(VSet+0.05))
 	  {
 		UartPost(Msg_critical,"LineDIM","DAC Loop calibration failure at state #%d.Expected %.2fV but result is %.2fV",i,VSet,VGet);
-	  CurrentLEDIndex=20;//电压误差过大,说明PWM MUX或者电流反馈MUX相关的电流反馈电路有问题。
+	  CurrentLEDIndex=30;//电压误差过大,说明PWM MUX或者电流反馈MUX相关的电流反馈电路有问题。
 	  SelfTestErrorHandler();  		
 		}
 	i++;//成功完成校准的次数+1
@@ -124,7 +124,7 @@ void LinearDIM_POR(void)
     {
 	  //有超过0.05的电压,说明PWM MUX无法切断电压.PWM相关电路有问题
 		UartPost(Msg_critical,"LineDIM","PWM Dimming MUX did not cut DAC output correctly,Expected <0.05V but result is %.2fV",VGet);
-	  CurrentLEDIndex=20;
+	  CurrentLEDIndex=30;
 	  SelfTestErrorHandler();  		
 		}
   /**********************************************************************
