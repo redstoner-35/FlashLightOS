@@ -1,11 +1,6 @@
 #ifndef Console
 #define Console
 
-//version information
-#define MajorVersion 1
-#define MinorVersion 0
-#define HotfixVersion 1
-
 //串口shell的一些定义
 #define BISTBaud 115200 //自检时串口的波特率
 #define CmdBufLen 134 //命令输入缓冲区的长度(字节)

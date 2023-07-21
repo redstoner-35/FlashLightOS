@@ -18,6 +18,9 @@ float fminf(float x,float y);
 float StepDownFilterBuf[10];
 static float LEDVfFilterBuf[12];
 static char ShortCount=0;
+extern float LEDVfMin;
+extern float LEDVfMax; //LEDVf限制
+
 
 //LED短路检测部分的简易数字滤波器（避免PWM调光时某一瞬间的波动）
 float LEDVfFilter(float VfIN)

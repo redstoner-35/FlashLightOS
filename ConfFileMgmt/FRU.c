@@ -8,18 +8,27 @@
 #include <string.h>
 
 //全局变量和常量
-float FusedMaxCurrent=5;//安全电流设置
+float FusedMaxCurrent;//安全电流设置
+float LEDVfMin;
+float LEDVfMax; //LEDVf限制
+const char FRUVersion[3]={FRUVer,HardwareMajorVer,HardwareMinorVer}; //版本信息
 extern const char *LEDInfoStr[];//外部的LED类型常量
 
-#ifdef UsingLED_3V
-   #ifdef Using_SBT90R
-	 const char FRUVersion[3]={0x04,0x01,0x02}; //分别表示适用SBT90-R LED，硬件版本1.2
-   #else
-   const char FRUVersion[3]={0x03,0x01,0x00}; //分别表示适用LED电压3V，硬件版本1.0
-	 #endif
-#else
-const char FRUVersion[3]={0x06,0x01,0x01}; //分别表示适用LED电压6V，硬件版本1.1
-#endif 
+/**************************************************************
+这个函数负责根据传入的LED类型设置LED的最低和最高Vf限制。
+**************************************************************/
+void SetLEDVfMinMax(FRUBlockUnion *FRU)
+	{
+  switch(FRU->FRUBlock.Data.Data.FRUVersion[0]) //显示LED型号
+		{
+		case 0x08:
+		case 0x07:
+		case 0x03:LEDVfMin=1.95;LEDVfMax=4.2;break; //通用3V LED、蓝色SBT70和SBT90.2
+		case 0x04:LEDVfMin=1.3;LEDVfMax=3.2;;break;//红色SBT90
+		case 0x05:LEDVfMin=2.0;LEDVfMax=5.5;break; //绿色SBT70
+		case 0x06:LEDVfMin=4.5;LEDVfMax=6.8;break; //6V LED
+		}
+	}
 /**************************************************************
 这个函数负责接收传入的FRU结构体指针，解析出LED类型后返回最大电流
 限制的合法值
@@ -247,6 +256,7 @@ void FirmwareVersionCheck(void)
  else
     {
 		UartPost(Msg_info,"FRUChk","FRU Information has been loaded.");
+		SetLEDVfMinMax(&FRU);//设置Vmin和Vmax
 		if(FRU.FRUBlock.Data.Data.MaxLEDCurrent>QueryMaximumCurrentLimit(&FRU))//非法的电流设置
 		  {
 			UartPost(msg_error,"FRUChk","Maximum Current value %.2fA is illegal for %s LED and will be trim to %.2fA.",

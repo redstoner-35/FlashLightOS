@@ -11,9 +11,6 @@ int QueueFront;
 int QueueRear; //队列头尾指针
 UARTTXQueueState TDMAStatu;
 
-#pragma push
-#pragma Otime//优化该函数使用3级别优化
-#pragma O3
 //DMATXinit
 void DMATxInit(void)
  {
@@ -197,8 +194,6 @@ void TXDMAConfig(u32 TargetBufAddr,u16 Size)
 	PDMA_EnaCmd(PDMA_USART1_TX,ENABLE);//启动DMA通道3
  } 
 
-#pragma pop 
- 
 #pragma push
 #pragma O0 //优化该函数使用0级别优化
  

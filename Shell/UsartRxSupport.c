@@ -95,8 +95,7 @@ void ConsoleInit(void)
 	memset(EncryptBUF,0x00,48);//销毁原文
   IsUsingFMCUID=true;//重新打开FMC随机加盐
 	//显示其余内容
-	UARTPuts("   All rights reserved.\r\nWarning:The hardware and firmware(FlashLight OS) were distributed");
-	UARTPuts("\r\nunder 'CC-BY-NC-SA-4.0' license and protected by CopyRight Law.\r\n");
+	UARTPuts("   All rights reserved.\r\n");
 	#ifdef FlashLightOS_Debug_Mode
 	UARTPuts("\r\n\r\nWarning:Debug mode has been enabled during FlashLight OS firmware compilation!");
 	UARTPuts("\r\nThis is a special mode only for internal development and SHOULD BE DISABLED in");
