@@ -34,5 +34,7 @@ bool CheckFRUInfoCRC(FRUBlockUnion *FRU);//检查FRU CRC
 bool CalcFRUCRC(FRUBlockUnion *FRU);//计算CRC
 char WriteFRU(FRUBlockUnion *FRU);
 char ReadFRU(FRUBlockUnion *FRU);//读写FRU 
+const char *DisplayLEDType(FRUBlockUnion *FRU);//识别LED类型并返回常量字符串
+float QueryMaximumCurrentLimit(FRUBlockUnion *FRU);//识别LED类型并返回最大电流2
  
 #endif

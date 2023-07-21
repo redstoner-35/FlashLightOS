@@ -273,6 +273,25 @@ unsigned int ActiveConfigurationCRC(void)
  return DATACRCResult;
  }
 
+//校验结果显示 
+void DisplayCheckResult(int Result,bool IsProgram)
+  {
+	 switch(Result)
+     {
+		 case 1:
+			 UartPost(Msg_critical,EEPModName,"Configuration EEPROM offline.");
+		    CurrentLEDIndex=6;
+		    SelfTestErrorHandler();
+		 case 2:
+			  UartPost(Msg_critical,EEPModName,"AES-256 Decrypt routine execution error.");
+		    CurrentLEDIndex=7;
+		    SelfTestErrorHandler();
+	   case 3:
+			 if(IsProgram)break;
+			 UartPost(Msg_warning,EEPModName,"Configuration file Corrupted.");
+		   break;
+	   }
+	}
 //自检校验handler
 void PORConfHandler(void)
  {
@@ -281,20 +300,10 @@ void PORConfHandler(void)
  int checkresult,backupcheckresult;
  UartPost(Msg_info,EEPModName,"Checking main configuration file integrity...");
  checkresult=CheckConfigurationInROM(Config_Main,&MainCRC);
- switch(checkresult)
-   {
-		 case 1:UartPost(Msg_critical,EEPModName,"Configuration EEPROM offline.");CurrentLEDIndex=6;SelfTestErrorHandler();
-		 case 2:UartPost(Msg_critical,EEPModName,"AES-256 Decrypt routine execution error.");CurrentLEDIndex=7;SelfTestErrorHandler();
-	   case 3:UartPost(Msg_warning,EEPModName,"Main Configuration file Corrupted.");break;
-	 }
+ DisplayCheckResult(checkresult,false);
  UartPost(Msg_info,EEPModName,"Checking backup configuration file integrity...");
  backupcheckresult=CheckConfigurationInROM(Config_Backup,&BackupCRC);
- switch(backupcheckresult)
-   {
-		 case 1:UartPost(Msg_critical,EEPModName,"Configuration EEPROM offline.");CurrentLEDIndex=6;SelfTestErrorHandler();
-		 case 2:UartPost(Msg_critical,EEPModName,"AES-256 Decrypt routine execution error.");CurrentLEDIndex=7;SelfTestErrorHandler();
-	   case 3:UartPost(Msg_warning,EEPModName,"Main Configuration file Corrupted.");break;
-	 }
+ DisplayCheckResult(backupcheckresult,false);
  //主文件OK
  if(!checkresult)
    {
@@ -330,14 +339,9 @@ void PORConfHandler(void)
 	 UartPost(msg_error,EEPModName,"No usable Conig in EEPROM.");
 	 UartPost(Msg_info,EEPModName,"driver will use factory default and attempt to fix broken config.");
 	 UartPost(Msg_info,EEPModName,"Programming main config file.");	 
-	 backupcheckresult=WriteConfigurationToROM(Config_Main);
-	 switch(backupcheckresult)
-     {
-		 case 1:UartPost(Msg_critical,EEPModName,"Configuration EEPROM offline.");CurrentLEDIndex=6;SelfTestErrorHandler();
-		 case 2:UartPost(Msg_critical,EEPModName,"AES-256 Encrypt routine execution error.");CurrentLEDIndex=7;SelfTestErrorHandler();
-	   }
+	 DisplayCheckResult(WriteConfigurationToROM(Config_Main),true);
 	 UartPost(Msg_info,EEPModName,"Programming backup config file."); 
-	 WriteConfigurationToROM(Config_Backup);
+	 DisplayCheckResult(WriteConfigurationToROM(Config_Backup),true);
 	 UartPost(Msg_info,EEPModName,"Programming completed,driver will restart automatically."); 
 	 delay_Second(2);		
    NVIC_SystemReset();//硬重启

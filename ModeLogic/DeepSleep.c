@@ -5,7 +5,10 @@
 #include "Cfgfile.h"
 #include "LEDMgmt.h"
 #include "AD5693R.h"
+#include "PWMDIM.h"
 #include "ADC.h"
+
+extern bool IsParameterAdjustMode;
 
 //低功耗睡眠计时器、
 int DeepSleepTimer=0;
@@ -115,6 +118,7 @@ void ExitLowPowerMode(void)
 		SysPstatebuf.ErrorCode=Error_DAC_Logic;//出错了
 		return;
 		}
-	//启动完毕，回到待机模式
-	SysPstatebuf.Pstate=PState_Standby;
+	//启动完毕，检查是否进入调参模式，否则回到待机模式
+	if(IsHostConnectedViaUSB())IsParameterAdjustMode=true;
+  SysPstatebuf.Pstate=PState_Standby;
 	}

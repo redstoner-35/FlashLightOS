@@ -90,7 +90,7 @@ void runlogviewHandler(void)
 		  {
 			UartPrintf("(相当于电池的%.3f个循环)",RunLogEntry.Data.DataSec.TotalBatteryCapDischarged/(double)RunLogEntry.Data.DataSec.BattUsage.DesignedCapacity);
 			UartPrintf("%s设计容量 : %.1fmAH",Rlvstr[3],RunLogEntry.Data.DataSec.BattUsage.DesignedCapacity);
-			UartPrintf("\r\n  当前已用容量 : %.1fmAH",UsedCapacity);
+			UartPrintf("%s已用容量 : %.1fmAH",Rlvstr[3],UsedCapacity);
 			}
 		UartPrintf("\r\n  库仑计校准完毕 : %s",RunLogEntry.Data.DataSec.BattUsage.IsCalibrationDone?"是":"否");
 		UartPrintf("\r\n  库仑计自学习已启用 : %s\r\n",RunLogEntry.Data.DataSec.BattUsage.IsLearningEnabled?"是":"否");

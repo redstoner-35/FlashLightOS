@@ -42,7 +42,7 @@ void verHandler(void)
   {
 	int i;
 	char EncryptBUF[48];
-  char *LogPerm;
+  const char *TextPtr;
 	FRUBlockUnion FRU;
 	UARTPuts("\r\n");
 	for(i=0;i<12;i++)//打印logo
@@ -57,19 +57,20 @@ void verHandler(void)
   if(!M24C512_ReadSecuSct(FRU.FRUBUF,0,sizeof(FRUBlockUnion))&&CheckFRUInfoCRC(&FRU)) //FRU读取成功
   #endif	 
 	   {
-		 UartPrintf("\r\n硬件平台:%s V%d.%d for %dV LED.",HardwarePlatformString,FRU.FRUBlock.Data.Data.FRUVersion[1],FRU.FRUBlock.Data.Data.FRUVersion[2],FRU.FRUBlock.Data.Data.FRUVersion[0]);
+     TextPtr=DisplayLEDType(&FRU);
+		 UartPrintf("\r\n硬件平台:%s V%d.%d for %s LED.",HardwarePlatformString,FRU.FRUBlock.Data.Data.FRUVersion[1],FRU.FRUBlock.Data.Data.FRUVersion[2],TextPtr);
 		 UartPrintf("\r\n产品序列号:%s",FRU.FRUBlock.Data.Data.SerialNumber);
 		 }
 	else //读取失败
      UARTPuts("\r\n硬件平台:未知平台\r\n产品序列号:未知");
 	switch(AccountState)//根据当前登录状态显示信息
 	   {
-		 case Log_Perm_Guest:LogPerm="游客";break;
-		 case Log_Perm_Admin:LogPerm="管理员";break;
-		 case Log_Perm_Root:LogPerm="超级用户";break;
-		 default:LogPerm="未知";
+		 case Log_Perm_Guest:TextPtr="游客";break;
+		 case Log_Perm_Admin:TextPtr="管理员";break;
+		 case Log_Perm_Root:TextPtr="超级用户";break;
+		 default:TextPtr="未知";
 		 }
-	UartPrintf("\r\n当前登录身份:%s                主机名:%s",LogPerm,CfgFile.HostName);
+	UartPrintf("\r\n当前登录身份:%s                主机名:%s",TextPtr,CfgFile.HostName);
 	UartPrintf("\r\n固件构建日期:%s %s\r\n",__DATE__,__TIME__);	 
 	//安全操作，处理密文
 	IsUsingFMCUID=false;//处理密文的时候关闭FMC随机加盐 	

@@ -4,6 +4,77 @@
 #include <string.h>
 #include "modelogic.h"
 
+//获取用户选择的FRU LED类型字符串
+//输入：字符串指针 输出：FRU的LED类型代码，具体请前往FRU.c内查看
+const char *LEDStr[]={"G3V","SBT90R","SBT70G","G6V","SBT70B","SBT90G2"};
+const char *LEDInfoStr[]={"不指定型号的3V","Luminus SBT-90-R","Luminus SBT-70-G","不指定型号的6V","Luminus SBT-70-B","Luminus SBT90.2"};
+
+char GetLEDTypeFromUserInput(char *Param)
+  {
+	int i;
+  int InputLen;
+	if(Param==NULL)return 0; //传入指针为空
+  InputLen=strlen(Param);
+  for(i=0;i<6;i++)//找到匹配的字符串
+  if(InputLen==strlen(ThermalsensorString[i])&&!strcmp(ThermalsensorString[i],Param))
+	 return i+0x03; //将序列数值加3得到FRU内的LEDCode
+	//啥也没找到返回0
+	return 0;
+	}
+
+//打印可选的LED类型字符串让用户知道应该选什么
+void DisplayCorrectLEDType(void) 
+ {
+ int i;
+ UARTPuts("\r\n有效的FRU LED类型参数如下:");
+ for(i=0;i<6;i++)UartPrintf("\r\n%s : 使用%sLED.",LEDStr[i],LEDInfoStr[i]);
+ }	 
+//获取用户输入的模式组和挡位编号
+//输入 命令序号,输出选择的模式组数据和模式的指针
+extern const char *ModeSelectStr[];
+
+bool GetUserModeNum(int cmdindex,ModeGrpSelDef *UserSelect,int *modenum)
+  {
+  char *ParamPtr;
+	int maxmodenum;
+	//识别用户输入的模式组
+  ParamPtr=IsParameterExist("01",cmdindex,NULL);  
+	*UserSelect=CheckUserInputForModeGroup(ParamPtr);
+	if(*UserSelect==ModeGrp_None)
+	  {
+	  ClearRecvBuffer();//清除接收缓冲
+    CmdHandle=Command_None;//命令执行完毕	
+	  DisplayIllegalParam(ParamPtr,cmdindex,0);//显示用户输入了非法参数
+	  DisplayCorrectModeGroup();//显示正确的模式组
+	  return false;
+		}
+	//识别用户输入的挡位编号
+  if(*UserSelect!=ModeGrp_DoubleClick)
+	  {
+	  ParamPtr=IsParameterExist("23",cmdindex,NULL);  
+    if(!CheckIfParamOnlyDigit(ParamPtr))*modenum=atoi(ParamPtr);
+    else *modenum=-1;
+    switch(*UserSelect)
+	    {
+			case ModeGrp_Regular:maxmodenum=8;break;
+		  case ModeGrp_Special:maxmodenum=4;break;
+		  default:maxmodenum=0;break;
+			}
+		if(*modenum==-1||*modenum>=maxmodenum)
+		  {
+			if(*modenum==-1)
+				UARTPuts((char *)ModeSelectStr[0]);
+			else
+				UartPrintf((char *)ModeSelectStr[1],maxmodenum-1);
+			ClearRecvBuffer();//清除接收缓冲
+      CmdHandle=Command_None;//命令执行完毕	
+			return false;
+			}
+		}
+	else *modenum=0;//双击挡位组编号为0
+	return true;
+	}
+
 //检查用户选择了哪个数据来源的温控曲线
 //输入：字符串  输出:枚举方式分别表示用户输入了什么
 const char *ThermalsensorString[2]={"LED基板","驱动MOS"};
@@ -11,11 +82,11 @@ const char *ThermalsensorString[2]={"LED基板","驱动MOS"};
 UserInputThermalSensorDef CheckUserInputForThermalSens(char *Param)
   {
 	int i;
- int InputLen;
- if(Param==NULL)return ThermalSens_None;
- InputLen=strlen(Param);
- for(i=0;i<2;i++)//找到匹配的字符串
- if(InputLen==strlen(ThermalsensorString[i])&&!strcmp(ThermalsensorString[i],Param))switch(i)
+  int InputLen;
+  if(Param==NULL)return ThermalSens_None;
+  InputLen=strlen(Param);
+  for(i=0;i<2;i++)//找到匹配的字符串
+  if(InputLen==strlen(ThermalsensorString[i])&&!strcmp(ThermalsensorString[i],Param))switch(i)
    {
 	 case 0:return ThermalSens_LEDNTC;
 	 case 1:return ThermalSens_DriverSPS;

@@ -100,7 +100,7 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		{
 		 {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//8
 		"termcfg",
-		"配置CLI终端的参数(登录超时时间和波特率等等)并且允许用户配置驱动的自动省电睡眠的超时时间,当驱动的shell退出登录且手电筒处于待机状态超过该时间,则驱动将自动进入低静态电流的睡眠模式以降低电池消耗.",
+		"配置CLI终端的参数(登录超时时间和波特率等等)并且允许用户配置驱动的自动省电睡眠的超时时间.",
 		"-it\0--idle_timeout\0-b\0--baud_rate\0-st\0--sleep_timeout\0\n",
 		" <终端超时时间(秒)>\0 <终端超时时间(秒)>\0 <波特率(bps)>\0 <波特率(bps)>\0 <睡眠超时时间(秒)>\0 <睡眠超时时间(秒)>\0\n",
 		&termcfgArgument,
@@ -262,7 +262,7 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		 {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//22
 		 #endif
      "thermalcfg",
-		 "允许系统管理员配置驱动的两组分别针对LED基板和驱动MOS管的温控降档曲线,并允许系统管理员根据需要调整这两条曲线的权重.\033[40;33m注意:权重设置和LED基板的温控曲线仅在LED的NTC热敏电阻正常工作时生效.\033[0m",
+		 "允许系统管理员配置驱动的两组分别针对LED基板和驱动MOS管的温控降档曲线以及调整这两条曲线的权重.",
      "-ds\0--data_source\0-sn\0--setpoint_num\0-thr\0--threshold_temp\0-outr\0--output_ratio\0-w\0--weight\0-v\0--view\0\n",
 		 " <所属传感器名称>\0 <所属传感器名称>\0 <阈值点编号(0-4)>\0 <阈值点编号(0-4)>\0 <阈值温度('C)>\0 <阈值温度('C)>\0 <输出百分比(%)>\0 <输出百分比(%)>\0 <权重(5-95%)>\0 <权重(5-95%)>\0 \0 \0\n",
 		 &thremalcfgArgument,
@@ -318,8 +318,8 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		 {Log_Perm_Root,Log_Perm_End},//27
      "fruedit",
 		 "允许厂家工程师编辑驱动中的FRU信息并给FRU永久上锁.",
-     "-sn\0--serial_number\0-imax\0--maximum_current\0-l\0--lock\0\n",
-		 " <序列号字符串>\0 <序列号字符串>\0 <最大电流(A)>\0 <最大电流(A)>\0 \0 \0\n",
+     "-sn\0--serial_number\0-imax\0--maximum_current\0-p\0--platform\0-l\0--lock\0\n",
+		 " <序列号字符串>\0 <序列号字符串>\0 <最大电流(A)>\0 <最大电流(A)>\0 <目标LED平台>\0 <目标LED平台>\0 \0 \0\n",
 		 &frueditArgument,
 		 Command_fruedit,
 		 NULL,

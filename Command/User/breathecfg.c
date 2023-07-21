@@ -32,7 +32,7 @@ const char *breathecfgArgument(int ArgCount)
 //命令处理主函数
 void breathecfghandler(void)
   {
-	int modenum,maxmodenum;
+	int modenum;
 	ModeGrpSelDef UserSelect;
 	ModeConfStr *TargetMode;
 	char *ParamPtr;
@@ -50,40 +50,7 @@ void breathecfghandler(void)
 		return;
 		}
 	//识别用户输入的模式组
-  ParamPtr=IsParameterExist("01",21,NULL);  
-	UserSelect=CheckUserInputForModeGroup(ParamPtr);
-	if(UserSelect==ModeGrp_None)
-	  {
-	  ClearRecvBuffer();//清除接收缓冲
-    CmdHandle=Command_None;//命令执行完毕	
-	  DisplayIllegalParam(ParamPtr,20,0);//显示用户输入了非法参数
-	  DisplayCorrectModeGroup();//显示正确的模式组
-	  return;
-		}
-	//识别用户输入的挡位编号
-  if(UserSelect!=ModeGrp_DoubleClick)
-	  {
-	  ParamPtr=IsParameterExist("23",21,NULL);  
-    if(!CheckIfParamOnlyDigit(ParamPtr))modenum=atoi(ParamPtr);
-    else modenum=-1;
-    switch(UserSelect)
-	    {
-			case ModeGrp_Regular:maxmodenum=8;break;
-		  case ModeGrp_Special:maxmodenum=4;break;
-		  default:maxmodenum=0;break;
-			}
-		if(modenum==-1||modenum>=maxmodenum)
-		  {
-			if(modenum==-1)
-				UARTPuts((char *)ModeSelectStr[0]);
-			else
-				UartPrintf((char *)ModeSelectStr[1],maxmodenum-1);
-			ClearRecvBuffer();//清除接收缓冲
-      CmdHandle=Command_None;//命令执行完毕	
-			return;
-			}
-		}
-	else modenum=0;//双击挡位组编号为0
+  if(!GetUserModeNum(21,&UserSelect,&modenum))return;		
 	//处理爬升速度的变更 
 	ParamPtr=IsParameterExist("45",21,NULL); 
 	if(ParamPtr!=NULL)  

@@ -40,7 +40,7 @@ void ModeEnacfghandler(void)
   {
 	ModeGrpSelDef UserSelect;
 	ModeConfStr *TargetMode;
-	int modenum,maxmodenum,i,EnableCount;
+	int modenum,i,maxmodenum,EnableCount;
 	char *ParamPtr;
 	bool IsUserWantToEnable;
 	bool IsCollision;
@@ -55,41 +55,14 @@ void ModeEnacfghandler(void)
 		UartPrintCommandNoParam(16);//显示啥也没找到的信息 
 		return;
 		}
-	//识别用户输入的模式组
-  ParamPtr=IsParameterExist("01",16,NULL);  
-	UserSelect=CheckUserInputForModeGroup(ParamPtr);
-	if(UserSelect==ModeGrp_None)
-	  {
-	  ClearRecvBuffer();//清除接收缓冲
-    CmdHandle=Command_None;//命令执行完毕	
-	  DisplayIllegalParam(ParamPtr,16,0);//显示用户输入了非法参数
-	  DisplayCorrectModeGroup();//显示正确的模式组
-	  return;
-		}
-	//识别用户输入的挡位编号
-  if(UserSelect!=ModeGrp_DoubleClick)
-	  {
-	  ParamPtr=IsParameterExist("23",16,NULL);  
-    if(!CheckIfParamOnlyDigit(ParamPtr))modenum=atoi(ParamPtr);
-    else modenum=-1;
-    switch(UserSelect)
+	//检查用户输入的挡位信息，信息不合法则退出
+  if(!GetUserModeNum(16,&UserSelect,&modenum))return;		
+	switch(UserSelect)//判断并赋值最大的挡位数目
 	    {
 			case ModeGrp_Regular:maxmodenum=8;break;
 		  case ModeGrp_Special:maxmodenum=4;break;
 		  default:maxmodenum=0;break;
 			}
-		if(modenum==-1||modenum>=maxmodenum)
-		  {
-			if(modenum==-1)
-				UARTPuts((char *)ModeSelectStr[0]);
-			else
-				UartPrintf((char *)ModeSelectStr[1],maxmodenum-1);
-			ClearRecvBuffer();//清除接收缓冲
-      CmdHandle=Command_None;//命令执行完毕	
-			return;
-			}
-		}
-	else modenum=0;//双击挡位组编号为0
 	//识别用户Enable与否
 	ParamPtr=IsParameterExist("45",16,NULL); 
 	if(ParamPtr!=NULL)switch(CheckUserInputIsTrue(ParamPtr))

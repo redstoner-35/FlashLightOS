@@ -24,6 +24,20 @@ void SetPWMDuty(float Duty)
  MCTM_CHMOECmd(HT_MCTM0,Duty>0?ENABLE:DISABLE);//根据占空比配置决定是否禁止定时器输出
  }
 
+//检测主机USB是否连接(当主机连接时，PWM引脚会被主机的5V输入拉高,可以利用这个功能检测主机的存在)
+FlagStatus IsHostConnectedViaUSB(void)
+ {
+ FlagStatus result;
+ AFIO_GPxConfig(PWMO_IOB,PWMO_IOP, AFIO_FUN_GPIO);//GPIO功能
+ GPIO_DirectionConfig(PWMO_IOG,PWMO_IOP,GPIO_DIR_IN);//配置为输入
+ GPIO_InputConfig(PWMO_IOG,PWMO_IOP,ENABLE);//启用IDR 
+ delay_ms(1);
+ result=GPIO_ReadInBit(PWMO_IOG,PWMO_IOP);
+ AFIO_GPxConfig(PWMO_IOB,PWMO_IOP, AFIO_FUN_MCTM_GPTM);//重新配置为定时器复用IO
+ return result;
+ }
+ 
+//初始化定时器 
 void PWMTimerInit(void)
  {
  TM_TimeBaseInitTypeDef MCTM_TimeBaseInitStructure;
@@ -31,21 +45,14 @@ void PWMTimerInit(void)
  MCTM_CHBRKCTRInitTypeDef MCTM_CHBRKCTRInitStructure;
  UartPost(Msg_info,"HostIf","Detecting host computer connection...."); 
  //通过PWM引脚检测主机的连接
- AFIO_GPxConfig(PWMO_IOB,PWMO_IOP, AFIO_FUN_GPIO);//GPIO功能
- GPIO_DirectionConfig(PWMO_IOG,PWMO_IOP,GPIO_DIR_IN);//配置为输入
- GPIO_InputConfig(PWMO_IOG,PWMO_IOP,ENABLE);//启用IDR 
- delay_ms(10);
- if(GPIO_ReadInBit(PWMO_IOG,PWMO_IOP))//当主机连接时，PWM引脚会被主机的5V输入拉高，此时驱动将进入调参模式
+ if(IsHostConnectedViaUSB())
    {
 	 UartPost(Msg_info,"HostIf","Host computer is connected via USB-TypeC port,Driver will enter tuning mode."); 
 	 IsParameterAdjustMode=true;
 	 return;
-	 }
- else UartPost(Msg_info,"HostIf","Host computer is not connected,resume normal selftest.");	 
- //配置GPIO为PWM输出模式 
- UartPost(Msg_info,"MoonPWMDIM","Starting PWM Generator TIM...");
- AFIO_GPxConfig(PWMO_IOB,PWMO_IOP, AFIO_FUN_MCTM_GPTM);
+	 } 
  //配置TBU(脉冲生成基本时基单元)
+ UartPost(Msg_info,"MoonPWMDIM","Starting PWM Generator TIM...");
  MCTM_TimeBaseInitStructure.CounterReload = (SYSHCLKFreq / CfgFile.PWMDIMFreq) - 1; //计数分频值按照设置频率来
  MCTM_TimeBaseInitStructure.Prescaler = 0; //分频器禁用
  MCTM_TimeBaseInitStructure.RepetitionCounter = 0; //重复定时器禁用

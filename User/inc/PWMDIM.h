@@ -3,6 +3,7 @@
 
 #include "Pindefs.h" //引脚定义
 #include <stdbool.h>
+#include "ht32.h"
 
 //PWM引脚自动定义
 #define PWMO_IOG STRCAT2(HT_GPIO,PWMO_IOBank)
@@ -15,5 +16,6 @@
 //函数
 void PWMTimerInit(void);//启动定时器
 void SetPWMDuty(float Duty);//设置定时器输出值
+FlagStatus IsHostConnectedViaUSB(void);//检测主机是否连接到USB
 
 #endif
