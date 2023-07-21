@@ -241,7 +241,7 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
  SetAUXPWR(true);
  for(i=0;i<2000;i++)//等待辅助电源上电稳定
 		{
-	  delay_ms(2);
+	  delay_ms(1);
 		if(!ADC_GetResult(&ADCO))return Error_ADC_Logic;//让ADC获取信息
 		if(ADCO.SPSTMONState==SPS_TMON_OK)retry++;
 		else retry=0;
@@ -268,20 +268,20 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
 	 return BattOutput->BusVolt>CfgFile.VoltageOverTrip?Error_Input_OVP:Error_Input_UVP;
  /********************************************************
  电流协商开始,此时系统将会逐步增加DAC的输出值使得电流缓慢
- 爬升到0.6A的小电流.系统将会在协商结束后检测LED的If和Vf和
+ 爬升到0.7A的小电流.系统将会在协商结束后检测LED的If和Vf和
  DAC的VID判断是否短路
  ********************************************************/
- VID=27.0;
+ VID=30.0;
  retry=0;
  while(VID<100)
 		 {
 		 if(!AD5693R_SetOutput(VID/(float)1000))return Error_DAC_Logic;
 		 ADC_GetResult(&ADCO);
-		 if(ADCO.LEDIf>=0.5)retry++; //重试
+		 if(ADCO.LEDIf>=0.7)retry++; //重试
 		 else 
 		   {
 			 retry=0;
-		   VID+=0.5;
+		   VID+=1.0;
 			 }
 		 if(retry==10)break;
 		 }
