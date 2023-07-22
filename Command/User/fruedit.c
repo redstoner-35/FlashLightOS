@@ -49,7 +49,7 @@ void fruedithandler(void)
 		IsCmdParamOK=true;
 		len=strlen(ParamPtr);
 		//读取失败
-	  if(ReadFRU(&FRU)||CheckFRUInfoCRC(&FRU))
+	  if(ReadFRU(&FRU)||!CheckFRUInfoCRC(&FRU))
 			UARTPuts((char *)frueditstr[0]);
 	  //FRU被锁定
 		else if(M24C512_QuerySecuSetLockStat()!=LockState_Unlocked)
@@ -73,7 +73,7 @@ void fruedithandler(void)
 		IsCmdParamOK=true;
 		buf=atof(ParamPtr); //字符串转浮点
 		//读取失败
-	  if(ReadFRU(&FRU)||CheckFRUInfoCRC(&FRU))
+	  if(ReadFRU(&FRU)||!CheckFRUInfoCRC(&FRU))
 			UARTPuts((char *)frueditstr[0]);
 	  //FRU被锁定
 		else if(M24C512_QuerySecuSetLockStat()!=LockState_Unlocked)
@@ -100,7 +100,7 @@ void fruedithandler(void)
 		IsCmdParamOK=true;
 	  ParamOK=GetLEDTypeFromUserInput(ParamPtr);
 		//读取失败
-	  if(ReadFRU(&FRU)||CheckFRUInfoCRC(&FRU))
+	  if(ReadFRU(&FRU)||!CheckFRUInfoCRC(&FRU))
 			UARTPuts((char *)frueditstr[0]);
 	  //FRU被锁定
 		else if(M24C512_QuerySecuSetLockStat()!=LockState_Unlocked)

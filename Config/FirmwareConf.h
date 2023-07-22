@@ -3,7 +3,7 @@
 
 //版本信息
 #define HardwareMajorVer 1
-#define HardwareMinorVer 0  //硬件版本号
+#define HardwareMinorVer 1  //硬件版本号
 
 #define MajorVersion 1
 #define MinorVersion 0
