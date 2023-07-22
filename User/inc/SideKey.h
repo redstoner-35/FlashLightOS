@@ -16,11 +16,6 @@
 #define _ExtKey_EXTI_IRQn STRCAT2(EXTI,ExtKey_IOPN)
 #define ExtKey_EXTI_IRQn  STRCAT2(_ExtKey_EXTI_IRQn,_IRQn)
 
-/* 负责处理外部按键锁存器的使能脚的自动define 不允许修改！*/
-#define ExtKey_EN_IOB STRCAT2(GPIO_P,ExtKeyLatch_IOBank)
-#define ExtKey_EN_IOG STRCAT2(HT_GPIO,ExtKeyLatch_IOBank)
-#define ExtKey_EN_IOP STRCAT2(GPIO_PIN_,ExtKeyLatch_IOPN) 
-
 //按键事件结构体定义
 typedef struct
 {

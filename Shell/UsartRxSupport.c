@@ -56,6 +56,10 @@ void ConsoleInit(void)
 	{
 	USART_InitTypeDef USART1InitStr;
 	char EncryptBUF[48];
+	//使能USB转串口模块
+  AFIO_GPxConfig(ExtKey_EN_IOB,ExtKey_EN_IOP, AFIO_FUN_GPIO);//GPIO功能
+  GPIO_DirectionConfig(ExtKey_EN_IOG,ExtKey_EN_IOP,GPIO_DIR_OUT);//配置为输出
+  GPIO_SetOutBits(ExtKey_EN_IOG,ExtKey_EN_IOP);//输出设置为1,让锁存器将按键状态同步给PA9，与此同时使能USB转串口
 	//配置USART1 GPIO
   AFIO_GPxConfig(GPIO_PA,GPIO_PIN_4,AFIO_FUN_USART_UART);
   AFIO_GPxConfig(GPIO_PA,GPIO_PIN_5,AFIO_FUN_USART_UART); //将PA4-5配置为USART1复用IO

@@ -48,9 +48,6 @@ void SideKeyInit(void)
   AFIO_GPxConfig(ExtKey_IOB,ExtKey_IOP, AFIO_FUN_GPIO);//GPIO功能
   GPIO_DirectionConfig(ExtKey_IOG,ExtKey_IOP,GPIO_DIR_IN);//配置为输入
 	GPIO_InputConfig(ExtKey_IOG,ExtKey_IOP,ENABLE);//启用IDR
-	AFIO_GPxConfig(ExtKey_EN_IOB,ExtKey_EN_IOP, AFIO_FUN_GPIO);//GPIO功能
-  GPIO_DirectionConfig(ExtKey_EN_IOG,ExtKey_EN_IOP,GPIO_DIR_OUT);//配置为输出
-  GPIO_SetOutBits(ExtKey_EN_IOG,ExtKey_EN_IOP);//输出设置为1,让锁存器将按键状态同步给PA9
 	//配置GPIO中断
 	AFIO_EXTISourceConfig(ExtKey_IOPN,ExtKey_IOB); //配置中断源
 	EXTI_InitStruct.EXTI_Channel = ExtKey_EXTI_CHANNEL; //配置选择好的通道

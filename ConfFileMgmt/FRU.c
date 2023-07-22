@@ -119,7 +119,7 @@ bool CheckFRUInfoCRC(FRUBlockUnion *FRU)
  HT_CRC->SDR = 0x0;//CRC-32 poly: 0x04C11DB7  
  HT_CRC->CR = CRC_32_POLY | CRC_BIT_RVS_WR | CRC_BIT_RVS_SUM | CRC_BYTE_RVS_SUM | CRC_CMPL_SUM;
  //开始校验
- for(i=0;i<sizeof(CfgFile);i++)
+ for(i=0;i<sizeof(FRUDataUnion);i++)
 	 wb(&HT_CRC->DR,FRU->FRUBlock.Data.FRUDbuf[i]);//将内容写入到CRC寄存器内
  //校验完毕计算结果
  DATACRCResult=HT_CRC->CSR;
@@ -161,7 +161,7 @@ bool CalcFRUCRC(FRUBlockUnion *FRU)
  HT_CRC->SDR = 0x0;//CRC-32 poly: 0x04C11DB7  
  HT_CRC->CR = CRC_32_POLY | CRC_BIT_RVS_WR | CRC_BIT_RVS_SUM | CRC_BYTE_RVS_SUM | CRC_CMPL_SUM;
  //开始校验
- for(i=0;i<sizeof(CfgFile);i++)
+ for(i=0;i<sizeof(FRUDataUnion);i++)
 	 wb(&HT_CRC->DR,FRU->FRUBlock.Data.FRUDbuf[i]);//将内容写入到CRC寄存器内
  //校验完毕计算结果
  DATACRCResult=HT_CRC->CSR;

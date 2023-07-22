@@ -14,6 +14,11 @@
 #include <stdbool.h>
 #include "modelogic.h"
 
+/* 负责处理外部按键锁存器的使能脚的自动define 不允许修改！*/
+#define ExtKey_EN_IOB STRCAT2(GPIO_P,ExtKeyLatch_IOBank)
+#define ExtKey_EN_IOG STRCAT2(HT_GPIO,ExtKeyLatch_IOBank)
+#define ExtKey_EN_IOP STRCAT2(GPIO_PIN_,ExtKeyLatch_IOPN) 
+
 /*******************************************
 以下是串口接收和发送缓冲区的一些枚举变量。
 负责全局标记串口命令缓冲区和发送队列的状态。
