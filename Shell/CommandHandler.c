@@ -54,7 +54,7 @@ void PasswordVerifyHandler(void)
 	 if(TargetAccount==VerifyAccount_Admin)//验证管理员密码
 	   {	
 		 //进行解密
-		 IsUsingFMCUID=false;//处理密文的时候关闭FMC随机加盐
+		 IsUsingOtherKeySet=false;//处理密文的时候关闭���ص���ͨKey
      memcpy(PasswordBuf,CfgFile.AdminAccountPassword,16);
      AES_EncryptDecryptData(PasswordBuf,0); //将密文复制过来，然后解密	
      //验证密码			 
@@ -63,12 +63,12 @@ void PasswordVerifyHandler(void)
 		 else Verifystat=ACC_Verify_Error;//管理员密码错误
 		 //验证完毕销毁密文
 		 memset(PasswordBuf,0,16);
-		 IsUsingFMCUID=true;//重新打开FMC随机加盐
+		 IsUsingOtherKeySet=true;//重新打开���ص���ͨKey
 		 }
 	 else if(TargetAccount==VerifyAccount_Root)//验证root用户密码
 	   {
 		 //进行解密
-		 IsUsingFMCUID=false;//处理密文的时候关闭FMC随机加盐
+		 IsUsingOtherKeySet=false;//处理密文的时候关闭���ص���ͨKey
      memcpy(PasswordBuf,CfgFile.RootAccountPassword,16);
      AES_EncryptDecryptData(PasswordBuf,0); //将密文复制过来，然后解密	
 		 //验证密码		
@@ -77,7 +77,7 @@ void PasswordVerifyHandler(void)
 		 else Verifystat=ACC_Verify_Error;//Root密码错误
 		 //验证完毕销毁密文
 		 memset(PasswordBuf,0,16);
-		 IsUsingFMCUID=true;//重新打开FMC随机加盐
+		 IsUsingOtherKeySet=true;//重新打开���ص���ͨKey
 		 }
 	 else Verifystat=ACC_Verify_Error;//其余情况，错误
 	 ClearRecvBuffer();//清除接收缓冲	 
@@ -92,38 +92,38 @@ void PasswordVerifyHandler(void)
 		 Verifystat=ACC_ChgPswdErr_NoPerm;//权限不足，只有root用户自身可以改自己的密码
    else if(AccountState==Log_Perm_Admin&&TargetAccount==VerifyAccount_Admin)
 	   {//ADMIN用户改自己密码
-		 IsUsingFMCUID=false;//处理密文的时候关闭FMC随机加盐
+		 IsUsingOtherKeySet=false;//处理密文的时候使用第一组key
 		 memset(PasswordBuf,0,16);
 		 strncpy(PasswordBuf,RXBuffer,16);
      AES_EncryptDecryptData(PasswordBuf,1); //将明文复制过来，然后加密	
 		 memcpy(CfgFile.AdminAccountPassword,PasswordBuf,16);//复制密码字段过去
 		 //验证完毕销毁密文
 		 memset(PasswordBuf,0,16);
-		 IsUsingFMCUID=true;//重新打开FMC随机加盐
+		 IsUsingOtherKeySet=true;//重新使用第二组key
 		 Verifystat=ACC_ChgPswdOK;
 		 }		 
    else if(AccountState==Log_Perm_Root&&TargetAccount==VerifyAccount_Root)
 	   {//Root用户改自己密码
-		 IsUsingFMCUID=false;//处理密文的时候关闭FMC随机加盐
+		 IsUsingOtherKeySet=false;//处理密文的时候使用第一组key
 		 memset(PasswordBuf,0,16);
 		 strncpy(PasswordBuf,RXBuffer,16);
      AES_EncryptDecryptData(PasswordBuf,1); //将明文复制过来，然后加密	
 		 strncpy(CfgFile.RootAccountPassword,PasswordBuf,16);//复制密码字段过去
      //验证完毕销毁密文
 		 memset(PasswordBuf,0,16);
-		 IsUsingFMCUID=true;//重新打开FMC随机加盐
+		 IsUsingOtherKeySet=true;//重新使用第二组key
 		 Verifystat=ACC_ChgPswdOK;
 		 }		 
 	 else if(AccountState==Log_Perm_Root&&TargetAccount==VerifyAccount_Admin)
 		 {//root用户改Admin用户的密码
-		 IsUsingFMCUID=false;//处理密文的时候关闭FMC随机加盐
+		 IsUsingOtherKeySet=false;//处理密文的时候使用第一组key
 		 memset(PasswordBuf,0,16);
 		 strncpy(PasswordBuf,RXBuffer,16);
      AES_EncryptDecryptData(PasswordBuf,1); //将明文复制过来，然后加密	
 		 memcpy(CfgFile.AdminAccountPassword,PasswordBuf,16);//复制密码字段过去
 		 //验证完毕销毁密文
 		 memset(PasswordBuf,0,16);
-		 IsUsingFMCUID=true;//重新打开FMC随机加盐
+		 IsUsingOtherKeySet=true;//重新使用第二组key
 		 Verifystat=ACC_ChgPswdOK;
 		 }		
 	 CurCmdField=TextField;//重新显示

@@ -191,9 +191,9 @@ void XmodemRXStateMachine(void)
 		//将收到的数据写入EEPROM的cache area
 		ROMAddrBase=XmodemTransferCtrl.ReadWriteBase+((XmodemTransferCtrl.CurrentPacketNum-1)*128);
 		ROMWriteSize=XmodemTransferCtrl.MaxTransferSize>128?128:XmodemTransferCtrl.MaxTransferSize; //计算写入的地址offset和大小
-	  IsUsingFMCUID=false;
+	  IsUsingOtherKeySet=false;
 		for(i=0;i<8;i++)AES_EncryptDecryptData(&XmodemTransferCtrl.XmodemRXBuf[3+(i*16)],0);
-		IsUsingFMCUID=true; //对数据进行解密操作
+		IsUsingOtherKeySet=true; //对数据进行解密操作
 		if(M24C512_PageWrite(&XmodemTransferCtrl.XmodemRXBuf[3],ROMAddrBase,ROMWriteSize))
 		  {
 			XmodemTransferCtrl.XmodemRxState=Xmodem_Error_DataProcess;

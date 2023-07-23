@@ -80,9 +80,9 @@ void XmodemTxStateMachine(void)
 			  XmodemTransferCtrl.XmodemTxState=Xmodem_Error_PreparePacket;
 			  UARTPutc(EOT,1);//发送EOT，结束传输跳转到数据处理错误状态
 			  }
-		 IsUsingFMCUID=false;
+		 IsUsingOtherKeySet=false;
 		 for(i=0;i<8;i++)AES_EncryptDecryptData(&XmodemTransferCtrl.XmodemRXBuf[3+(i*16)],1);
-		 IsUsingFMCUID=true; //加密数据
+		 IsUsingOtherKeySet=true; //加密数据
 		 //写帧头部和尾部的数据包校验
 		 XmodemTransferCtrl.XmodemRXBuf[0]=SOH; //帧头
 		 XmodemTransferCtrl.XmodemRXBuf[1]=XmodemTransferCtrl.CurrentPacketNum&0xFF;

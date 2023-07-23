@@ -73,14 +73,14 @@ void verHandler(void)
 	UartPrintf("\r\n当前登录身份:%s                主机名:%s",TextPtr,CfgFile.HostName);
 	UartPrintf("\r\n固件构建日期:%s %s\r\n",__DATE__,__TIME__);	 
 	//安全操作，处理密文
-	IsUsingFMCUID=false;//处理密文的时候关闭FMC随机加盐 	
+	IsUsingOtherKeySet=false;//处理密文的时候使用第一组key
 	memcpy(EncryptBUF,EncryptedCopyRight,48);//将密文复制进来	
 	AES_EncryptDecryptData(&EncryptBUF[0],0);	 
 	AES_EncryptDecryptData(&EncryptBUF[16],0);//解密被加密的文字
 	AES_EncryptDecryptData(&EncryptBUF[32],0);	 	
 	UARTPuts(EncryptBUF);
 	memset(EncryptBUF,0x00,48);//销毁原文
-  IsUsingFMCUID=true;//重新打开FMC随机加盐
+  IsUsingOtherKeySet=true;//重新使用第二组key
 	//显示其余内容
 	UARTPuts("       All rights reserved.\r\n警告:本驱动的硬件和固件(FlashLight OS)基于'CC-BY-NC-SA-4.0'");
 		 UARTPuts("\r\n许可证发布并且受《著作权法》的保护.未经允许不得商用!\r\n");

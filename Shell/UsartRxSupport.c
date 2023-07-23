@@ -90,14 +90,14 @@ void ConsoleInit(void)
 	UARTPuts("\x0C\033[2JWelcome to Project:Diff-Torch Extreme Smart Driver for DDH-D8B.");
 	UartPrintf("\r\nPowered by FlashLight OS version-%d.%d.%d,BIST Baudrate:%dbps\r\n",MajorVersion,MinorVersion,HotfixVersion,BISTBaud);
 	//安全操作区，解密原文，显示之后销毁
-  IsUsingFMCUID=false;//处理密文的时候关闭FMC随机加盐 	 
+  IsUsingOtherKeySet=false;//处理密文的时候使用第一组key
 	memcpy(EncryptBUF,EncryptedCopyRight,48);//将密文复制进来	
 	AES_EncryptDecryptData(&EncryptBUF[0],0);	 
 	AES_EncryptDecryptData(&EncryptBUF[16],0);
 	AES_EncryptDecryptData(&EncryptBUF[32],0);//解密被加密的文字	 	
 	UARTPuts(EncryptBUF);
 	memset(EncryptBUF,0x00,48);//销毁原文
-  IsUsingFMCUID=true;//重新打开FMC随机加盐
+  IsUsingOtherKeySet=true;//重新使用第二组key
 	//显示其余内容
 	UARTPuts("   All rights reserved.\r\n");
 	#ifdef FlashLightOS_Debug_Mode

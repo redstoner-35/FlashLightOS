@@ -1,14 +1,22 @@
 #include "AES256.h"
 
-bool IsUsingFMCUID = true;
+bool IsUsingOtherKeySet = true;
 unsigned int GenerateSeqCodeForAES(void);
 
-//key
+//key set 1
 const unsigned int KeyBox[Nk]=
  {
  0x4F37AD24,0x3EA795DC,0x76e4a3b,0x7A46CED6,
  0xA87E5F4B,0x1C456BA6,0xA746D5C4,0xA69d34E7 
  };
+
+//key set 2
+const unsigned int KeyBox2[Nk]=
+ {
+ 0x351DA345,0xA896FEC2,0x7BA3590D,0x5BC32544,
+ 0x94A6D158,0x9B10ADF5,0x3FE65A8B,0x6418ADBE
+ };	
+ 
 #pragma push
 #pragma Otime//优化该函数使用3级别优化
 #pragma O3
@@ -119,18 +127,14 @@ int aes_ExpRoundKeys(uint32_t *keywords)
  
 	if(keywords==NULL)
 		return -1;
- 
-	if(IsUsingFMCUID==false)for(i=0;i<Nk;i++)
+ /* 从密钥盒里面数值*/
+	if(IsUsingOtherKeySet==false)for(i=0;i<Nk;i++)
 	  {
 		keywords[i]=KeyBox[i];
 		keywords[i]^=GenerateSeqCodeForAES();	//直接从KeyBox里面取内容，如果是Xmodem,则XOR数据包号生成的序列码
 		}
-	/* 从密钥盒里面取值然后用FMC的UID寄存器加盐*/
-	else for( i=0; i<Nk; i++ ) {
-		keywords[i]=KeyBox[i]^(i<4?*(u32*)(0x40080310+(i*4)):
-		~*(u32*)(0x40080310+((i-4)*4)));//从FMC的UID寄存器取值
-	}
- 
+	else for( i=0; i<Nk; i++ ) 
+		keywords[i]=KeyBox2[i]^0x351AFE4D;
 	/* Expend round keys */
 	for(i=Nk; i<Nb*(Nr+1); i++) {
 		temp=keywords[i-1];

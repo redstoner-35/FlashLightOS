@@ -50,7 +50,7 @@ void CopyRightTextGenerator(void)
 				}
 			else strncpy(EncryptBUF,TextContent,47);//直接处理文字内容
 			//开始加密
-			IsUsingFMCUID=false;//处理密文的时候关闭FMC随机加盐
+			IsUsingOtherKeySet=false;//处理密文的时候使用第一组key
 	    AES_EncryptDecryptData(&EncryptBUF[0],1);	 
 	    AES_EncryptDecryptData(&EncryptBUF[16],1);
 	    AES_EncryptDecryptData(&EncryptBUF[32],1);//加密输入的内容
@@ -76,7 +76,7 @@ void CopyRightTextGenerator(void)
 				else j++;
 				}
 			memset(EncryptBUF,0x00,48);//销毁密文
-      IsUsingFMCUID=true;//重新打开FMC随机加盐
+      IsUsingOtherKeySet=true;//重新使用第二组key
 			}
 		}
 	//非法参数

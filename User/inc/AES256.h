@@ -1,4 +1,4 @@
-﻿#ifndef _AES256_
+#ifndef _AES256_
 #define _AES256_
 
 #include "stdio.h"
@@ -125,6 +125,6 @@ int aes_DecryptState(uint32_t *keywords, uint8_t *state);	/* 分组解密 */
 int AES_EncryptDecryptData(char *InputBuf,char Mode);//加密或者解密数据
 
 /* Extern Refs */
-extern bool IsUsingFMCUID;//是否用FMC UID加盐，为0则为否
+extern bool IsUsingOtherKeySet;//选择使用哪一组Key，0则为key1，1则为Key2
 
 #endif
