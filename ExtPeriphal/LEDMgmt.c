@@ -84,10 +84,12 @@ void LED_Init(void)
    AFIO_GPxConfig(LED_Green_IOB,LED_Green_IOP, AFIO_FUN_GPIO);
    GPIO_DirectionConfig(LED_Green_IOG,LED_Green_IOP,GPIO_DIR_OUT);//配置为输出
    GPIO_ClearOutBits(LED_Green_IOG,LED_Green_IOP);//输出设置为0
+	 GPIO_DriveConfig(LED_Green_IOG,LED_Green_IOP,GPIO_DV_16MA);	//设置为16mA最大输出保证指示灯亮度足够
 	 //配置GPIO(红色LED)
    AFIO_GPxConfig(LED_Red_IOB,LED_Red_IOP, AFIO_FUN_GPIO);
    GPIO_DirectionConfig(LED_Red_IOG,LED_Red_IOP,GPIO_DIR_OUT);//配置为输出
    GPIO_ClearOutBits(LED_Red_IOG,LED_Red_IOP);//输出设置为0	 		
+	 GPIO_DriveConfig(LED_Red_IOG,LED_Red_IOP,GPIO_DV_16MA);	//设置为16mA最大输出保证指示灯亮度足够
 	 //初始化变量
 	 ConstReadPtr=0;
 	 LastLEDIndex=0;

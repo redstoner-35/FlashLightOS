@@ -16,6 +16,7 @@ A对应100%电流。（这些字符串会让灯珠点亮并按照指定电流工
 #include <math.h>
 #include <stdlib.h>
 
+static bool IsEndToggle=false;//循环结束操作除能
 static char StrPtr=0;
 static char CustomFlashTimer;//实现延时功能用于计时的变量
 extern float BreathCurrent; //调用呼吸电流标志位控制电流
@@ -23,6 +24,7 @@ extern float BreathCurrent; //调用呼吸电流标志位控制电流
 //复位状态机
 void ResetCustomFlashControl(void)
   {
+	IsEndToggle=false;
 	SysPstatebuf.ToggledFlash=true;//恢复点亮
 	BreathCurrent=0; 
 	StrPtr=0; //复位状态机
@@ -36,7 +38,7 @@ int CheckForCustomFlashStr(char *Str)
 	if(Str==NULL)return 0;
 	for(i=0;i<32;i++)
 		{
-		if(Str[i]=='R')result=true;
+		if(Str[i]=='R'||Str[i]=='T')result=true;
     else if(Str[i]=='A'||Str[i]=='-')result=true;
 		else if(Str[i]>='W'&&Str[i]<='Z')result=true;
 		else if(Str[i]>='1'&&Str[i]<='9')result=true;
@@ -64,6 +66,18 @@ void CustomFlashHandler(void)
 	if(CurrentMode==NULL)return; //字符串为NULL
 	switch(CurrentMode->CustomFlashStr[StrPtr])
 	  {
+		case 'T': //类似T触发的功能
+			if(!IsEndToggle)
+			  {
+				IsEndToggle=true;
+				StrPtr=0; 
+				return;//标志位为0，执行到该指令后直接结束本次循环从头开始
+				}
+			else
+			  {
+				IsEndToggle=false;
+				StrPtr++; //跳过本条指令，继续执行后面的内容
+				}
 		case 'W':StrPtr++;CustomFlashTimer=(char)(CurrentMode->CustomFlashSpeed);return;//0.5秒延时	
 		case 'X':StrPtr++;CustomFlashTimer=(char)(CurrentMode->CustomFlashSpeed*2);return;//1秒延时
 		case 'Y':StrPtr++;CustomFlashTimer=(char)(CurrentMode->CustomFlashSpeed*4);return;//2秒延时

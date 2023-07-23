@@ -85,10 +85,7 @@ void CheckForFlashLock(void)
  UartPost(Msg_info,"FWSec","Firmware signature has been programmed,value is 0x%08X.",ProgramAreaCRC);
  //打开主安全功能
  Option.MainSecurity=1;  //打开ROP
- Option.WriteProtect[0]=0xFFFFFFFF;
- Option.WriteProtect[1]=0xFFFFFFFF;
- Option.WriteProtect[2]=0xFFFFFFFF;
- Option.WriteProtect[3]=0xFFFFFFFF;	 //所有ROM上锁
+ for(i=0;i<4;i++)Option.WriteProtect[i]=0xFFFFFFFF;//所有ROM上锁
  FLASH_EraseOptionByte();
  if(FLASH_ProgramOptionByte(&Option)!=FLASH_COMPLETE)
    {

@@ -39,7 +39,7 @@ void LoginHandler(void)
 				}
 			else if(AccountState!=Log_Perm_Guest)//已登录
 			  {
-				UartPrintf("\r\n你已经以%s身份登录到系统！",AccountState==VerifyAccount_Admin?"管理员":"超级用户");
+				UartPrintf("\r\n你已经以%s身份登录到系统！",AccountState==Log_Perm_Admin?"管理员":"超级用户");
 				UARTPuts("\r\n如果您想切换用户，请退出并重新登录。");
 				TargetAccount=VerifyAccount_None;
 			  CmdHandle=Command_None;//命令执行完毕
