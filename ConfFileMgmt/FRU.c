@@ -21,9 +21,9 @@ void SetLEDVfMinMax(FRUBlockUnion *FRU)
 	{
   switch(FRU->FRUBlock.Data.Data.FRUVersion[0]) //显示LED型号
 		{
-		case 0x08:
+		case 0x08:LEDVfMin=2.3;LEDVfMax=4.2;break; //SBT90.2
 		case 0x07:
-		case 0x03:LEDVfMin=1.95;LEDVfMax=4.2;break; //通用3V LED、蓝色SBT70和SBT90.2
+		case 0x03:LEDVfMin=1.95;LEDVfMax=4.2;break; //通用3V LED、蓝色SBT70
 		case 0x04:LEDVfMin=1.3;LEDVfMax=3.2;;break;//红色SBT90
 		case 0x05:LEDVfMin=2.0;LEDVfMax=5.5;break; //绿色SBT70
 		case 0x06:LEDVfMin=4.5;LEDVfMax=6.8;break; //6V LED
@@ -212,16 +212,13 @@ static void WriteNewFRU(const char *reason)
 #endif
 
 /**************************************************************
-固件启动时检查EEPROM内的FRU信息，如果版本信息不匹配则拒绝启动。
-这是因为3V和6V版本的驱动固件和硬件之间互不兼容，会存在用户OTA更
-新时意外将3V固件刷入6V驱动内的情况，这种情况就会导致不应出现的
-LED开路和短路故障。
+固件启动时加载EEPROM内的FRU信息,然后根据FRU信息加载熔断电流限制
+最低和最高Vf值等运行信息到RAM内。
 **************************************************************/
 void FirmwareVersionCheck(void)
  {
  char checksumbuf[4];
  FRUBlockUnion FRU;
- const char *LEDStrPtr;
  //加载固件信息
  memcpy(checksumbuf,FRUVersion,3);
  checksumbuf[3]=Checksum8(checksumbuf,3)^0xAF; //计算校验和
@@ -243,19 +240,6 @@ void FirmwareVersionCheck(void)
 	 WriteNewFRU("information corrupted");//重写FRU
 	 #endif
 	 }
- //检查平台版本是否匹配
- else if(memcmp(FRU.FRUBlock.Data.Data.FRUVersion,checksumbuf,3)) //信息不匹配
-	  {
-		#ifndef FlashLightOS_Debug_Mode
-		CurrentLEDIndex=3;//红灯常亮
-		FRU.FRUBlock.Data.Data.FRUVersion[0]=FRUVersion[0];//写入固件编译时指定的LED类型
-		LEDStrPtr=DisplayLEDType(&FRU);
-		UartPost(Msg_critical,"FRUChk","hardware platform mismatch!This firmware is for %s LED and Hardware Rev. of V%d.%d.System halted!",LEDStrPtr,FRUVersion[1],FRUVersion[2]);
-		SelfTestErrorHandler();//固件版本不匹配
-	  #else
-		WriteNewFRU("hardware platform mismatch");//重写FRU
-	  #endif	
-		}
  //信息匹配，加载数据，显示信息
  else
     {
@@ -264,9 +248,9 @@ void FirmwareVersionCheck(void)
 		if(FRU.FRUBlock.Data.Data.MaxLEDCurrent>QueryMaximumCurrentLimit(&FRU))//非法的电流设置
 		  {
 			UartPost(msg_error,"FRUChk","Maximum Current value %.2fA is illegal for %s LED and will be trim to %.2fA.",
-				FRU.FRUBlock.Data.Data.MaxLEDCurrent,
-				DisplayLEDType(&FRU),
-				QueryMaximumCurrentLimit(&FRU));
+			  FRU.FRUBlock.Data.Data.MaxLEDCurrent,
+			  DisplayLEDType(&FRU),
+			  QueryMaximumCurrentLimit(&FRU));
 			FusedMaxCurrent=QueryMaximumCurrentLimit(&FRU);
 			FRU.FRUBlock.Data.Data.MaxLEDCurrent=FusedMaxCurrent;//修正数值
 		  if(!WriteFRU(&FRU))UartPost(Msg_info,"FRUChk","FRU Record has been corrected.");
