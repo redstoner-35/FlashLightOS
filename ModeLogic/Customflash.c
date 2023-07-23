@@ -4,8 +4,11 @@
 有用。
 //字符串释义如下:
 1-9分别对应挡位的10-90%电流
-A对应100%电流。（这些字符串会让灯珠点亮并按照指定电流工作）
-' '(空格)表示让灯珠熄灭半个周期
+'A'对应100%电流。（这些字符串会让灯珠点亮并按照指定电流工作）
+'-'表示让灯珠熄灭1个周期
+'R'表示让灯珠以随机的亮度点亮
+'WXYZ'分别延时0.5-1秒-2秒,4秒
+'T'表示序列在奇数次执行时不执行后面的内容，偶数次则执行
 */
 
 #include "modelogic.h"
@@ -78,10 +81,10 @@ void CustomFlashHandler(void)
 				IsEndToggle=false;
 				StrPtr++; //跳过本条指令，继续执行后面的内容
 				}
-		case 'W':StrPtr++;CustomFlashTimer=(char)(CurrentMode->CustomFlashSpeed);return;//0.5秒延时	
-		case 'X':StrPtr++;CustomFlashTimer=(char)(CurrentMode->CustomFlashSpeed*2);return;//1秒延时
-		case 'Y':StrPtr++;CustomFlashTimer=(char)(CurrentMode->CustomFlashSpeed*4);return;//2秒延时
-		case 'Z':StrPtr++;CustomFlashTimer=(char)(CurrentMode->CustomFlashSpeed*8);return;//4秒延时	
+		case 'W':StrPtr++;CustomFlashTimer=(char)(CurrentMode->CustomFlashSpeed/2);return;//0.5秒延时	
+		case 'X':StrPtr++;CustomFlashTimer=(char)(CurrentMode->CustomFlashSpeed);return;//1秒延时
+		case 'Y':StrPtr++;CustomFlashTimer=(char)(CurrentMode->CustomFlashSpeed*2);return;//2秒延时
+		case 'Z':StrPtr++;CustomFlashTimer=(char)(CurrentMode->CustomFlashSpeed*4);return;//4秒延时	
 		case '1':buf=10;break;
 		case '2':buf=20;break;
 		case '3':buf=30;break;	
