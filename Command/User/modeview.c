@@ -52,7 +52,7 @@ void modeviewhandler(void)
 			if(TargetMode->PowerOffTimer>0)
 				UartPrintf("%d分钟后自动关机",TargetMode->PowerOffTimer);
 			else
-				UARTPuts("\r\n  已禁用");
+				UARTPuts("已禁用");
 			UartPrintf("\r\n  挡位模式 : %s模式",LightModeString[(int)TargetMode->Mode]);
 			//显示电流
 			if(TargetMode->Mode!=LightMode_Ramp&&TargetMode->Mode!=LightMode_Breath)

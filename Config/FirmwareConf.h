@@ -6,7 +6,7 @@
 #define HardwareMinorVer 1  //硬件版本号
 
 #define MajorVersion 1
-#define MinorVersion 0
+#define MinorVersion 1
 #define HotfixVersion 4  //固件版本号
 
 //固件模式配置
