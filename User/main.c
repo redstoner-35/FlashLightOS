@@ -16,6 +16,7 @@
 bool SensorRefreshFlag=false;
 bool EnteredMainApp=false;
 bool IsParameterAdjustMode=false;
+extern int AutoOffTimer; //自动关机定时器
 
 int main(void)
  {
@@ -83,6 +84,7 @@ int main(void)
 	 RunTimeDataLogging();//运行时的记录
 	 LoggerHeader_AutoUpdateHandler();//记录器自动更新头部数据
 	 LEDMgmt_CallBack();//LED管理器
+	 AutoPowerOffTimerHandler();//处理自动关机定时器
 	 SensorRefreshFlag=false;
 	 }
  return 0;

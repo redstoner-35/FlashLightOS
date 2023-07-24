@@ -62,6 +62,7 @@ void SideKeyInit(void)
 	Keyevent.ShortPressCount=0;
 	Keyevent.ShortPressEvent=false;
 	Keyevent.PressAndHoldEvent=false;
+	Keyevent.DoubleClickAndHoldEvent=false;
 	UartPost(Msg_info,"SideKey","Key Process module has been started.");
 	}
 
@@ -93,8 +94,11 @@ void SideKey_Callback(void)
 		IsKeyPressed = false;
 		time=KeyTimer[0]&0x7F;//从计时器取出按键按下时间
 		KeyTimer[0]=0;//复位并关闭定时器0
-		if(Keyevent.LongPressDetected||Keyevent.PressAndHoldEvent)//如果已经检测到长按事件则下面什么都不做
+		if(Keyevent.LongPressDetected||
+		Keyevent.PressAndHoldEvent||
+		Keyevent.DoubleClickAndHoldEvent)//如果已经检测到长按事件则下面什么都不做
 		  {
+			Keyevent.DoubleClickAndHoldEvent=false;
 			Keyevent.PressAndHoldEvent=false;
 			Keyevent.LongPressDetected=false;//清除检测到的表示
 		  return;
@@ -115,18 +119,30 @@ void SideKey_LogicHandler(void)
 	//长按3秒的时间到
 	if(IsKeyPressed&&KeyTimer[0]==0x80+(unsigned char)LongPressTime)
 		{
-		if(Keyevent.ShortPressCount==1)//短按+长按事件
+		if(Keyevent.ShortPressCount==2)//双击+长按
 		  {
-			KeyTimer[1]=0; //关闭定时器
+			KeyTimer[1]=0; //关闭后部检测定时器
+			Keyevent.ShortPressEvent=false;
+			Keyevent.LongPressDetected=false;
+			Keyevent.LongPressEvent=false;//短按和长按事件没发生
+			Keyevent.DoubleClickAndHoldEvent=false;//双击事件发生
+		  Keyevent.PressAndHoldEvent=true;//短按一下再按住的事件没发生
+			Keyevent.ShortPressCount=0;
+			}
+		else if(Keyevent.ShortPressCount==1)//短按+长按事件
+		  {
+			KeyTimer[1]=0; //关闭后部检测定时器
 			Keyevent.ShortPressEvent=false;
 			Keyevent.LongPressDetected=false;
 			Keyevent.LongPressEvent=false;//短按和长按事件没发生
 		  Keyevent.PressAndHoldEvent=true;//短按一下再按住的事件发生
+			Keyevent.DoubleClickAndHoldEvent=false; //双击再按住的事件没发生
 			Keyevent.ShortPressCount=0;
 			}
 		else //长按事件
 		  {
-      Keyevent.PressAndHoldEvent=false;//短按一下再按住的事件发生
+			Keyevent.DoubleClickAndHoldEvent=false;
+      Keyevent.PressAndHoldEvent=false;
 			Keyevent.LongPressEvent=true;//长按事件发生
 	    Keyevent.LongPressDetected=true;//长按检测到了  
 			}
@@ -172,4 +188,9 @@ bool getSideKeyHoldEvent(void)
 bool getSideKeyClickAndHoldEvent(void)
   {
 	return Keyevent.PressAndHoldEvent;
+	}
+//获取侧按按键是否有双击并长按的事件
+bool getSideKeyDoubleClickAndHoldEvent(void)
+  {
+	return Keyevent.DoubleClickAndHoldEvent;
 	}

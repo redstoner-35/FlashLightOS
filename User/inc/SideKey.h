@@ -23,7 +23,8 @@ bool LongPressDetected;
 bool LongPressEvent;
 short ShortPressCount;
 bool ShortPressEvent;
-short PressAndHoldEvent;
+bool PressAndHoldEvent;
+bool DoubleClickAndHoldEvent;
 }KeyEventStrDef;
 
 //函数
@@ -32,6 +33,7 @@ int getSideKeyShortPressCount(bool IsRemoveResult);//获取侧按按键的单击
 bool getSideKeyLongPressEvent(void);//获得侧按按钮长按的事件
 bool getSideKeyHoldEvent(void);//获得侧按按钮一直按住的事件
 bool getSideKeyClickAndHoldEvent(void);//获得侧按按钮短按一下立即长按的事件
+bool getSideKeyDoubleClickAndHoldEvent(void);//获取侧按按键是否有双击并长按的事件
 
 //回调处理
 void SideKey_Callback(void);//中断回调处理

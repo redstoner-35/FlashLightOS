@@ -788,11 +788,6 @@
           <GroupName>UserCommand</GroupName>
           <Files>
             <File>
-              <FileName>cprtxtgen.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Command\User\cprtxtgen.c</FilePath>
-            </File>
-            <File>
               <FileName>ver.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Command\User\ver.c</FilePath>
@@ -886,6 +881,11 @@
               <FileName>fruedit.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Command\User\fruedit.c</FilePath>
+            </File>
+            <File>
+              <FileName>modepofcfg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Command\User\modepofcfg.c</FilePath>
             </File>
           </Files>
         </Group>

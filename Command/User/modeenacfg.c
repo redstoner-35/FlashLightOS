@@ -31,7 +31,7 @@ const char *modeenacfgArgument(int ArgCount)
 		case 2:
 		case 3:return ModeSelectStr[3];
 		case 4:
-		case 5:return "编辑被选中的挡位是否启用";		
+		case 5:return "编辑被选中的挡位是否启用";	
 		}
 	return NULL;
 	} 

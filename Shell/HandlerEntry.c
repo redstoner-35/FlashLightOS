@@ -16,7 +16,7 @@ void CommandHandler(void)
 		case Command_clear:clearHandler();break;//clear
 	  case Command_ver:verHandler();break;//ver
 		case Command_help:HelpHandler();break;//help
-		case Command_cptxtgen:CopyRightTextGenerator();break;//cptextgen
+		case Command_modepofcfg:modepofcfghandler();break;//modepofcfg
 		case Command_termcfg:termcfgHandler();break;//termcfg
 		case Command_reboot:Reboothandler();break;//reboot
 		case Command_imonadj:Imonadjhandler();break;//imonadj

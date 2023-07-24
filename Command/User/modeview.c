@@ -48,6 +48,11 @@ void modeviewhandler(void)
 			UartPrintf("\r\n  挡位是否启用 : %s",TargetMode->IsModeEnabled?"是":"否");
 			UartPrintf("\r\n  挡位是否带记忆功能 : %s",TargetMode->IsModeHasMemory?"是":"否");
 			UartPrintf("\r\n  挡位是否带温控功能 : %s",TargetMode->IsModeAffectedByStepDown?"是":"否");
+			UARTPuts("\r\n  定时关机 : ");
+			if(TargetMode->PowerOffTimer>0)
+				UartPrintf("%d分钟后自动关机",TargetMode->PowerOffTimer);
+			else
+				UARTPuts("\r\n  已禁用");
 			UartPrintf("\r\n  挡位模式 : %s模式",LightModeString[(int)TargetMode->Mode]);
 			//显示电流
 			if(TargetMode->Mode!=LightMode_Ramp&&TargetMode->Mode!=LightMode_Breath)

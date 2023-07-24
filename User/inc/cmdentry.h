@@ -8,7 +8,7 @@ void usrmodhandler(void);
 void cfgmgmthandler(void);
 void clearHandler(void);
 void verHandler(void);
-void CopyRightTextGenerator(void);
+void modepofcfghandler(void);
 void HelpHandler(void);
 void termcfgHandler(void);
 void Reboothandler(void);

@@ -79,6 +79,7 @@ typedef struct
  float MosTransferStep;//摩尔斯代码发送的Step,单位(秒)
  float StrobeFrequency;//爆闪频率
  float CustomFlashSpeed;//自定义闪速度
+ short PowerOffTimer;//定时关机计时器
  bool IsModeEnabled;//挡位是否启用
  bool IsModeAffectedByStepDown;//挡位是否受温控影响
  bool IsModeHasMemory;//该挡位是否记忆(如果该选项为false，则关闭手电筒后挡位会自动回到你指定的第一挡位)
@@ -161,6 +162,10 @@ extern int DeepSleepTimer;//深度睡眠定时器
 extern float FusedMaxCurrent;//熔断的最大电流
 
 //函数
+void ResetPowerOffTimerForPoff(void);//挡位复位时自动重置定时器
+void AutoPowerOffTimerHandler(void);//自动关机计时器的处理
+void DisplayUserWhenTimerOff(void);
+void DisplayUserWhenTimerOn(void);//当用户使能或者除能自动关机定时器时，指示用户定时器的时间
 void DriverLockPOR(void);//初始化上电锁定设置
 void RunTimeErrorReportHandler(SystemErrorCodeDef ErrorCode);//系统运行中出现错误时负责提交日志并关闭输出的模块
 void SideLED_GenerateModeInfoPattern(void);//控制侧按LED生成提示序列的模块

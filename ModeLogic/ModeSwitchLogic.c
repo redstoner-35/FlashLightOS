@@ -20,8 +20,31 @@ const char *ModeGroupName[3]={"regular","double-click","special"};
 
 //变量
 char LEDModeStr[32]; //LED模式的字符串
+int AutoOffTimer=-1; //定时关机延时器
 extern SYSPStateStrDef SysPstatebuf;
+static bool DCPressstatebuf=false;
 
+//挡位自动关机定时器的累减处理
+void AutoPowerOffTimerHandler(void)
+  {
+	if(SysPstatebuf.Pstate!=PState_LEDOn&&SysPstatebuf.Pstate!=PState_LEDOnNonHold)return;//LED未开启不进行计时
+	if(AutoOffTimer>0)AutoOffTimer--;//每0.125秒减一次自动关机计时器
+	}
+//挡位复位时自动重置定时器
+void ResetPowerOffTimerForPoff(void)
+  {
+	ModeConfStr *CurrentMode;
+	if(AutoOffTimer==0)AutoOffTimer=-1;//定时器已经到时间了，关闭定时器
+	if(AutoOffTimer==-1)return;//定时器关闭
+	//定时器	
+	CurrentMode=GetCurrentModeConfig();//获取目前挡位
+	if(CurrentMode==NULL)return;//非法数值
+	if(CurrentMode->PowerOffTimer>0)
+		AutoOffTimer=CurrentMode->PowerOffTimer*480;//换挡的时候定时器重置时间
+	else
+		AutoOffTimer=-1;//否则定时器关闭
+	}
+	
 //写主配置文件的函数
 static void SaveMainConfig(void)
   {
@@ -47,6 +70,7 @@ void RestoreFactoryModeCfg(void)
 	 strncpy(CfgFile.RegularMode[i].MosTransStr,MoresIDCode,32);//传输的字符串
 	 CfgFile.RegularMode[i].IsModeEnabled=true;//挡位启用
 	 CfgFile.RegularMode[i].CustomFlashSpeed=10;
+	 CfgFile.RegularMode[i].PowerOffTimer=0;//自动关机定时器禁用
 	 memset(CfgFile.RegularMode[i].CustomFlashStr,0x00,32);
 	 strncpy(CfgFile.RegularMode[i].ModeName,ModeConst[i],16);//挡位名称
 	 CfgFile.RegularMode[i].IsModeHasMemory=(i<4)?true:false;//高亮档不记忆
@@ -67,6 +91,7 @@ void RestoreFactoryModeCfg(void)
 	strncpy(CfgFile.RegularMode[0].MosTransStr,MoresIDCode,32);//传输的字符串
 	CfgFile.RegularMode[0].IsModeEnabled=true;//挡位启用
 	CfgFile.RegularMode[0].CustomFlashSpeed=10;
+	CfgFile.RegularMode[0].PowerOffTimer=0;//自动关机定时器禁用
 	memset(CfgFile.RegularMode[0].CustomFlashStr,0x00,32);
 	strncpy(CfgFile.RegularMode[0].ModeName,"无极调光",16);//挡位名称
 	CfgFile.RegularMode[0].IsModeHasMemory=true;//记忆
@@ -87,6 +112,7 @@ void RestoreFactoryModeCfg(void)
 	 strncpy(CfgFile.RegularMode[i].MosTransStr,MoresIDCode,32);//传输的字符串
 	 CfgFile.RegularMode[i].IsModeEnabled=false;//挡位禁用
 	 CfgFile.RegularMode[i].CustomFlashSpeed=10;
+	 CfgFile.RegularMode[i].PowerOffTimer=0;//自动关机定时器禁用
 	 memset(CfgFile.RegularMode[i].CustomFlashStr,0x00,32);
 	 strncpy(CfgFile.RegularMode[i].ModeName,"保留挡位",16);//挡位名称
 	 CfgFile.RegularMode[i].IsModeHasMemory=false;//不记忆
@@ -106,6 +132,7 @@ void RestoreFactoryModeCfg(void)
 	strncpy(CfgFile.DoubleClickMode.MosTransStr,MoresIDCode,32);//传输的字符串
 	CfgFile.DoubleClickMode.IsModeEnabled=true;//挡位启用
   CfgFile.DoubleClickMode.CustomFlashSpeed=10;
+	CfgFile.DoubleClickMode.PowerOffTimer=0;//自动关机定时器禁用
 	memset(CfgFile.DoubleClickMode.CustomFlashStr,0x00,32);
 	strncpy(CfgFile.DoubleClickMode.ModeName,"极亮",16);//挡位名称
   CfgFile.DoubleClickMode.IsModeHasMemory=false;//不记忆
@@ -124,6 +151,7 @@ void RestoreFactoryModeCfg(void)
 	strncpy(CfgFile.DoubleClickMode.MosTransStr,MoresIDCode,32);//传输的字符串
 	CfgFile.DoubleClickMode.IsModeEnabled=false;//挡位禁用
 	CfgFile.DoubleClickMode.CustomFlashSpeed=10;
+	CfgFile.DoubleClickMode.PowerOffTimer=0;//自动关机定时器禁用
 	memset(CfgFile.DoubleClickMode.CustomFlashStr,0x00,32);
 	strncpy(CfgFile.DoubleClickMode.ModeName,"保留挡位",16);//挡位名称
 	CfgFile.DoubleClickMode.IsModeHasMemory=false;//不记忆
@@ -145,6 +173,7 @@ void RestoreFactoryModeCfg(void)
 	 CfgFile.SpecialMode[i].IsModeEnabled=true;//挡位启用
 	 strncpy(CfgFile.SpecialMode[i].ModeName,SpecModeConst[i],16);//挡位名称
 	 CfgFile.SpecialMode[i].CustomFlashSpeed=10;
+	 CfgFile.SpecialMode[i].PowerOffTimer=0;//自动关机定时器禁用
 	 memset(CfgFile.SpecialMode[i].CustomFlashStr,0x00,32);
    CfgFile.SpecialMode[i].IsModeHasMemory=false;//不记忆
 	 CfgFile.SpecialMode[i].IsModeAffectedByStepDown=true;//受温控影响
@@ -312,10 +341,37 @@ static void SpecialModeSwitchGear(void)
 void ModeSwitchLogicHandler(void)
   {
 	int keycount;
+	ModeConfStr *CurrentMode;
+  bool DoubleClickHoldDetected;
+	DoubleClickHoldDetected=getSideKeyDoubleClickAndHoldEvent();//获取用户是否使能操作
 	keycount=getSideKeyShortPressCount(false);//获取短按按键次数
 	if(SysPstatebuf.Pstate==PState_Locked||SysPstatebuf.Pstate==PState_Error)return;//处于锁定或者错误状态，此时不处理
-	if(!keycount||keycount>3)return;	//啥也没按或者短按按键次数按了超过三次不处理
+	//用户双击+长按,激活以及禁用定时器
+	if(DCPressstatebuf!=DoubleClickHoldDetected)
+	  {
+		DCPressstatebuf=DoubleClickHoldDetected;//同步按键状态
+	  if(DCPressstatebuf)//用户执行了操作
+	    {
+		  CurrentMode=GetCurrentModeConfig();//获取目前挡位
+		  if(CurrentMode->PowerOffTimer>0)//有时间设置
+		    {
+		    if(AutoOffTimer==-1)
+		      {
+			    DisplayUserWhenTimerOn();
+		      AutoOffTimer=CurrentMode->PowerOffTimer*480;//定时器激活
+			    }
+		    else
+		      {		
+          DisplayUserWhenTimerOff();				 
+		      AutoOffTimer=-1;//定时器禁用
+			    }
+		    }			
+		   }
+		 }
+	//处理换挡逻辑
+  if(!keycount||keycount>3)return;	//啥也没按或者短按按键次数按了超过三次不处理
 	//检测到换挡操作时重置特殊功能的定时器和状态机
+  ResetPowerOffTimerForPoff();//重置定时器
 	ResetBreathStateMachine();//重置呼吸闪状态机
   MorseSenderReset();//重置摩尔斯代码的状态机
 	ResetRampMode();//重置无极调光模块
@@ -406,6 +462,54 @@ void SideLED_GenerateModeInfoPattern(void)
 	strncat(LEDModeStr,"E",sizeof(LEDModeStr)-1);
 	ExtLEDIndex=&LEDModeStr[0];//传指针过去
 	}
+//当用户除能自动关机定时器时提示用户
+void DisplayUserWhenTimerOff(void)
+{
+ //清空内存
+ LED_Reset();//复位LED管理器
+ memset(LEDModeStr,0,sizeof(LEDModeStr));//清空内存
+ strncat(LEDModeStr,"D303010DE",sizeof(LEDModeStr)-1);//黄色闪两次绿色一次表示定时器除能
+ ExtLEDIndex=&LEDModeStr[0];//传指针过去	
+}
+//当用户使能自动关机定时器时，指示用户定时器的时间
+void DisplayUserWhenTimerOn(void)
+ {
+ ModeConfStr *CurrentMode;
+ int time,decval,gapcnt;
+ //获取当前挡位信息
+ CurrentMode=GetCurrentModeConfig();
+ if(CurrentMode==NULL)return;//当前挡位为空
+ //清空内存
+ LED_Reset();//复位LED管理器
+ memset(LEDModeStr,0,sizeof(LEDModeStr));//清空内存
+ strncat(LEDModeStr,"D30301010D",sizeof(LEDModeStr)-1);//填充头部 
+ //生成字符串
+ if(CurrentMode->PowerOffTimer>=60)decval=60;//每次闪烁表示1小时
+ else decval=10;
+ gapcnt=0;
+ time=CurrentMode->PowerOffTimer;//初始化gap计数器
+ do
+  {
+	//附加闪烁次数
+	if(CurrentMode->PowerOffTimer>=60)
+	  strncat(LEDModeStr,"20",sizeof(LEDModeStr)-1);	//大于60秒时使用红色闪烁
+	else
+		strncat(LEDModeStr,"30",sizeof(LEDModeStr)-1);	//否则使用黄色
+	//每2次闪烁之间插入额外停顿方便用户计数
+	if(gapcnt==1)
+	  {
+		gapcnt=0;
+		strncat(LEDModeStr,"0",sizeof(LEDModeStr)-1);
+		}
+	else gapcnt++;
+	//处理完一轮，减去时间
+	time-=decval;
+	}	 
+ while(time>0);//如果时间大于0则继续	 
+ strncat(LEDModeStr,"DE",sizeof(LEDModeStr)-1);//结束闪烁前加多1秒延时
+ ExtLEDIndex=&LEDModeStr[0];//传指针过去	
+ }	
+	
 //当手电筒关闭时，检查当前挡位是否带记忆，如果不带则调回去默认档
 void ModeNoMemoryRollBackHandler(void)
  {

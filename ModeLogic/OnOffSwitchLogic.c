@@ -6,7 +6,9 @@
 #include "logger.h"
 #include "runtimelogger.h"
 
+//内部和外部变量
 SYSPStateStrDef SysPstatebuf;
+extern int AutoOffTimer;
 
 /*  辅助电源引脚的自动define,不允许修改！  */
 #define AUXPWR_EN_IOB STRCAT2(GPIO_P,AUXPWR_EN_IOBank)
@@ -246,12 +248,13 @@ void PStateStateMachine(void)
 			//执行运行过程中的故障检测,以及挡位逻辑
 			FlashTimerInitHandler();                  //定时器配置
 	    RuntimeModeCurrentHandler();              //运行过程中的电流管理
-			//长按3秒关闭LED回到待机状态
-		  if(LongPressOnce)
+			//长按3秒或者定时器已经到时间了,关闭LED回到待机状态
+		  if(LongPressOnce||AutoOffTimer==0)
 			 {
 			 SysPstatebuf.Pstate=PState_Standby;//返回到待机状态
 			 TurnLightOFFLogic();
 			 ModeNoMemoryRollBackHandler();//关闭主灯后检查挡位是否带记忆，不带的就自动复位
+			 ResetPowerOffTimerForPoff();//重置定时器
 		   ResetBreathStateMachine();
 			 ResetRampMode();//重置无极调光模块
 			 ResetCustomFlashControl();//复位自定义闪控制
@@ -268,11 +271,12 @@ void PStateStateMachine(void)
 			//执行运行过程中的故障检测,以及挡位逻辑
 			FlashTimerInitHandler();                   //定时器配置
 	    RuntimeModeCurrentHandler();               //运行过程中的电流管理
-			//当用户放开侧按后,回到战术模式的待机状态
-		  if(!LongPressHold)
+			//当用户放开侧按或者定时器已经到时间后,回到战术模式的待机状态
+		  if(!LongPressHold||AutoOffTimer==0)
 			  {
 				SysPstatebuf.Pstate=PState_NonHoldStandBy;//回到战术模式的待机状态
 			  TurnLightOFFLogic();
+				ResetPowerOffTimerForPoff();//重置定时器
 				ResetRampMode();//重置无极调光模块
 			  ResetBreathStateMachine();
 				ResetCustomFlashControl();//复位自定义闪控制
