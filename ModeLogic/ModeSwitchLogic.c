@@ -21,7 +21,6 @@ const char *ModeGroupName[3]={"regular","double-click","special"};
 //变量
 char LEDModeStr[32]; //LED模式的字符串
 int AutoOffTimer=-1; //定时关机延时器
-extern SYSPStateStrDef SysPstatebuf;
 static bool DCPressstatebuf=false;
 
 //挡位自动关机定时器的累减处理

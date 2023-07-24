@@ -7,7 +7,7 @@
 #include "runtimelogger.h"
 
 //内部和外部变量
-SYSPStateStrDef SysPstatebuf;
+volatile SYSPStateStrDef SysPstatebuf;
 extern int AutoOffTimer;
 
 /*  辅助电源引脚的自动define,不允许修改！  */

@@ -117,9 +117,6 @@ bool ADC_GetResult(ADCOutTypeDef *ADCOut)
 	ADCOut->LEDIf=buf;//计算完毕返回结果
 	//计算SPS温度数值
 	buf=(float)ADCResult[SPS_Temp_Ch]*(3.3/(float)4096);//将AD值转换为电压
-  #ifdef Internal_Driver_Debug
-	UartPost(Msg_info,"IntADC","SPS Temperature FB=%.2fV",buf);
-  #endif
 	if(buf<SPSTMONStdVal)//温度为负数
 	  {
 		buf=SPSTMONStdVal-buf;//计算出电压差
@@ -158,6 +155,9 @@ bool ADC_GetResult(ADCOutTypeDef *ADCOut)
 	  ADCOut->SPSTMONState=SPS_TMON_OK;//温度正常
 		ADCOut->SPSTemp=0;//温度反馈为0度		
 		}		
+	#ifdef Internal_Driver_Debug
+	UartPost(Msg_info,"IntADC","SPS State=%d,Temp=%.2f'C",ADCOut->SPSTMONState,ADCOut->SPSTemp);
+	#endif
 	//计算完毕
 	return true;
 	}

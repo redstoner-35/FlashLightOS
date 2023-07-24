@@ -153,7 +153,7 @@ void LowVoltageIndicate(void);//低电压检测
 
 //外部引用
 extern CurrentModeStr CurMode;//当前模式的结构体 
-extern SYSPStateStrDef SysPstatebuf;//当前系统电源状态的结构体
+extern volatile SYSPStateStrDef SysPstatebuf;//当前系统电源状态的结构体
 extern bool TimerHasStarted; //标志位，GPTM1是否启用
 extern float BreathCurrent;//由呼吸状态机生成的呼吸电流
 extern INADoutSreDef RunTimeBattTelemResult;//电池反馈结果

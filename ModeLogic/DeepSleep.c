@@ -44,8 +44,8 @@ void EnteredLowPowerMode(void)
 	AFIO_GPxConfig(GPIO_PA,GPIO_PIN_4,AFIO_FUN_GPIO);
   AFIO_GPxConfig(GPIO_PA,GPIO_PIN_5,AFIO_FUN_GPIO); //配置为普通GPIO模式
   GPIO_PullResistorConfig(HT_GPIOA,GPIO_PIN_5,GPIO_PR_DISABLE);//关闭内部上拉电阻
-	GPIO_DirectionConfig(GPIO_PA,GPIO_PIN_5,GPIO_DIR_IN);
-	GPIO_DirectionConfig(GPIO_PA,GPIO_PIN_5,GPIO_DIR_IN); //将PA4-5配置为高阻GPIO避免TX和RX往外漏电
+	GPIO_DirectionConfig(HT_GPIOA,GPIO_PIN_4,GPIO_DIR_IN);
+	GPIO_DirectionConfig(HT_GPIOA,GPIO_PIN_5,GPIO_DIR_IN); //将PA4-5配置为高阻GPIO避免TX和RX往外漏电
 	GPIO_DirectionConfig(IIC_SCL_IOG,IIC_SCL_IOP,GPIO_DIR_IN);
 	GPIO_DirectionConfig(IIC_SDA_IOG,IIC_SDA_IOP,GPIO_DIR_IN);//SCL SDA配置为高阻
 	//关闭外设时钟
@@ -68,11 +68,17 @@ void EnteredLowPowerMode(void)
   HT_CKCU->GCCR|=0x07; //令LSI作为系统时钟源
 	while(--retry)if((HT_CKCU->CKST&0x07)==0x07)break; //等待LSI用于系统时钟源
 	if(!retry)return;
-	HT_CKCU->GCCR&=0xFFFFF1FF;//关闭HSI HSE PLL
+	//按顺序关闭PLL，HSE，HSI
+	HT_CKCU->GCCR&=0xFFFFFDFF;//关闭PLL
+	while(HT_CKCU->GCSR&0x02);//等待PLL off		
+	HT_CKCU->GCCR&=0xFFFFFBFF;//关闭HSE
+	while(HT_CKCU->GCSR&0x04);//等待HSE off
+	HT_CKCU->GCCR&=0xFFFFF7FF;//关闭HSI
+	while(HT_CKCU->GCSR&0x08);//等待HSI off
 	//进入休眠状态
 	SysPstatebuf.Pstate=PState_DeepSleep;
 	__wfi(); //进入暂停状态
-	while(SysPstatebuf.Pstate==PState_DeepSleep);
+	while(SysPstatebuf.Pstate==PState_DeepSleep);//等待
 	}
 //退出低功耗模式
 void ExitLowPowerMode(void)
@@ -87,7 +93,7 @@ void ExitLowPowerMode(void)
 	HT_CKCU->GCCR|=0x200;//启用PLL
 	while(!(HT_CKCU->GCSR&0x02));//等待PLL就绪
 	HT_CKCU->GCCR&=0xFFFFFFF8; //令PLL作为系统时钟源	
-	while((HT_CKCU->CKST&0xF00)!=0x100){};//等待48MHz的PLL输出切换为时钟源
+	while((HT_CKCU->CKST&0x100)!=0x100){};//等待48MHz的PLL输出切换为时钟源
 	//打开外设时钟
   CLKConfig.Bit.PB=1;
   CLKConfig.Bit.USART1=1;

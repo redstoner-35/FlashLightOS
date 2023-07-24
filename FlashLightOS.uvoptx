@@ -125,7 +125,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>CMSIS_AGDI</Key>
-          <Name>-X"Any" -UAny -O206 -S0 -C0 -P00 -N00("ARM CoreSight SW-DP") -D00(0BC11477) -L00(0) -TO18 -TC10000000 -TP20 -TDS8007 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -FO7 -FD20000000 -FC1000 -FN2 -FF0HT32F.FLM -FS00 -FL0100000 -FP0($$Device:HT32F52352_33QFN$ARM\Flash\HT32F.FLM) -FF1HT32F_OPT.FLM -FS11FF00000 -FL11000 -FP1($$Device:HT32F52352_33QFN$ARM\Flash\HT32F_OPT.FLM)</Name>
+          <Name>-X"Any" -UAny -O206 -S8 -C0 -P00 -N00("ARM CoreSight SW-DP") -D00(0BC11477) -L00(0) -TO18 -TC10000000 -TP20 -TDS8007 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -FO7 -FD20000000 -FC1000 -FN2 -FF0HT32F.FLM -FS00 -FL0100000 -FP0($$Device:HT32F52352_33QFN$ARM\Flash\HT32F.FLM) -FF1HT32F_OPT.FLM -FS11FF00000 -FL11000 -FP1($$Device:HT32F52352_33QFN$ARM\Flash\HT32F_OPT.FLM)</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -153,7 +153,24 @@
           <Name>-T0</Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
-      <Breakpoint/>
+      <Breakpoint>
+        <Bp>
+          <Number>0</Number>
+          <Type>0</Type>
+          <LineNumber>68</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>79466</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>.\User\main.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\FlashLightOS\User/main.c\68</Expression>
+        </Bp>
+      </Breakpoint>
       <WatchWindow1>
         <Ww>
           <count>0</count>
@@ -164,6 +181,21 @@
           <count>1</count>
           <WinNumber>1</WinNumber>
           <ItemText>StepDownFilterBuf</ItemText>
+        </Ww>
+        <Ww>
+          <count>2</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>DeepSleepTimer,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>3</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>Keyevent,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>4</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>SysPstatebuf.Pstate,0x0A</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>
@@ -1563,7 +1595,7 @@
 
   <Group>
     <GroupName>Config</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>

@@ -155,6 +155,7 @@ void LinearDIM_POR(void)
  SetPWMDuty(0);
  delay_ms(2);		
  SetAUXPWR(true);
+ retry=0;//清零等待标志位
  for(i=0;i<200;i++)//等待辅助电源上电稳定
 		{
 	  delay_ms(2);
@@ -239,14 +240,20 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
  SetPWMDuty(100);//自检过程中我们使用线性调光,因此PWM占空比设置为100%
  delay_ms(1);
  SetAUXPWR(true);
+ retry=0;//清零等待标志位
  for(i=0;i<2000;i++)//等待辅助电源上电稳定
 		{
 	  delay_ms(1);
-		if(!ADC_GetResult(&ADCO))return Error_ADC_Logic;//让ADC获取信息
-		if(ADCO.SPSTMONState==SPS_TMON_OK)retry++;
-		else retry=0;
-		if(retry==10)break;
+		Result[1]=ADC_GetResult(&ADCO);
+		if(!Result[1])
+			return Error_ADC_Logic;//让ADC获取信息
+		if(ADCO.SPSTMONState==SPS_TMON_OK)
+			retry++; //SPS正常运行，结果++
+		else 
+			retry=0; //SPS运行不正常
+		if(retry==5)break;
 		}
+ if(i==2000)return Error_PWM_Logic;//启动超时
  /********************************************************
  系统主电源启动完毕,开始通过片内ADC和INA219初步获取电池电压
  电流和LED以及MOS的温度,确保关键的传感器工作正常且电池没有
@@ -268,22 +275,16 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
 	 return BattOutput->BusVolt>CfgFile.VoltageOverTrip?Error_Input_OVP:Error_Input_UVP;
  /********************************************************
  电流协商开始,此时系统将会逐步增加DAC的输出值使得电流缓慢
- 爬升到0.7A的小电流.系统将会在协商结束后检测LED的If和Vf和
+ 爬升到0.5A的小电流.系统将会在协商结束后检测LED的If和Vf和
  DAC的VID判断是否短路
  ********************************************************/
- VID=30.0;
- retry=0;
+ VID=20.0;
  while(VID<100)
 		 {
 		 if(!AD5693R_SetOutput(VID/(float)1000))return Error_DAC_Logic;
 		 ADC_GetResult(&ADCO);
-		 if(ADCO.LEDIf>=0.7)retry++; //重试
-		 else 
-		   {
-			 retry=0;
-		   VID+=1.0;
-			 }
-		 if(retry==10)break;
+		 if(ADCO.LEDIf>=0.5)break; //电流足够，退出
+		 VID+=1.0; //继续增加VID
 		 }
  SysPstatebuf.CurrentDACVID=VID;
  /********************************************************

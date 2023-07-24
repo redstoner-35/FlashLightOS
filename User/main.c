@@ -34,12 +34,12 @@ int main(void)
  CKCU_PeripClockConfig(CLKConfig,ENABLE);
  delay_init();//初始化systick
  //外设初始化
- #ifndef FlashLightOS_Debug_Mode
- GPIO_DisableDebugPort();//关闭debug口
- #endif
  ConsoleInit();//初始化串行 
  SMBUS_Init();//初始化SMBUS 
+ #ifdef EnableFirmwareSecure
+ GPIO_DisableDebugPort();//关闭debug口
  CheckForFlashLock();//安全功能，检查程序区是否被锁定
+ #endif
  EnableHBTimer();//启用系统心跳定时器
  CheckHBTimerIsEnabled();//对心跳定时器进行测试
  LED_Init();//启动LED管理器 
