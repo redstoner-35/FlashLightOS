@@ -217,11 +217,7 @@ static void WriteNewFRU(const char *reason)
 **************************************************************/
 void FirmwareVersionCheck(void)
  {
- char checksumbuf[4];
  FRUBlockUnion FRU;
- //加载固件信息
- memcpy(checksumbuf,FRUVersion,3);
- checksumbuf[3]=Checksum8(checksumbuf,3)^0xAF; //计算校验和
  //读取	 
  if(ReadFRU(&FRU))
  	 {
@@ -233,11 +229,22 @@ void FirmwareVersionCheck(void)
  if(!CheckFRUInfoCRC(&FRU))
    {
 	 #ifndef FlashLightOS_Debug_Mode
-	 CurrentLEDIndex=3;//红灯常亮表示固件EEPROM损坏
+	 CurrentLEDIndex=3;//红灯常亮表示FRU验证不通过
 	 UartPost(Msg_critical,"FRUChk","FRU information corrupted and not usable.System halted!");
 	 SelfTestErrorHandler();//FRU信息损坏
 	 #else
 	 WriteNewFRU("information corrupted");//重写FRU
+	 #endif
+	 }
+ //检查硬件版本是否匹配
+ else if(memcmp(&FRU.FRUBlock.Data.Data.FRUVersion[1],&FRUVersion[1],2))
+   {
+	 #ifndef FlashLightOS_Debug_Mode
+	 CurrentLEDIndex=3;//红灯常亮表示FRU验证不通过
+	 UartPost(Msg_critical,"FRUChk","This firmware is targeted for Hardware version V%d.%d and will not work on current hardware.system halted!",HardwareMajorVer,HardwareMinorVer);
+	 SelfTestErrorHandler();//FRU信息损坏
+	 #else
+	 WriteNewFRU("Hardware Mismatch");//重写FRU
 	 #endif
 	 }
  //信息匹配，加载数据，显示信息

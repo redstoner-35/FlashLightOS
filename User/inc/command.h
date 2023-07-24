@@ -89,7 +89,7 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		{
 		 {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//7
 		"modepofcfg",
-		"配置挡位的自动关机定时器的延时时间.当定时器被用户激活且倒数到该时间后手电将自动关闭.",
+		"配置挡位的自动关机定时器的延时时间.当定时器被用户激活后,定时器将会从该时间开始倒数,倒数结束后手电将自动关闭.",
 		"-mg\0--mode_group\0-mn\0--mode_number\0-t\0--time\0\n",
 		" <模式组名称.>\0 <模式组名称.>\0 <挡位序号.>\0 <挡位序号.>\0 <时间(分钟)>\0 <时间(分钟)>\0\n",
 		&modepofcfgArgument,
