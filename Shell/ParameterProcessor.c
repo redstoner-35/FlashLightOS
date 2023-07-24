@@ -178,8 +178,12 @@ void DisplayCorrectModeGroup(void)
 //输入:挡位组 挡位编号 输出：无 
 void DisplayWhichModeSelected(ModeGrpSelDef UserSelect,int modenum)
  {
+ char *ModeName="未知";
+ ModeConfStr *SelectedMode=GetSelectedModeConfig(UserSelect,modenum);//获取指定的挡位
+ if(SelectedMode!=NULL)ModeName=SelectedMode->ModeName; //选择名称
  if(UserSelect!=ModeGrp_DoubleClick)UartPrintf("\r\n%s挡位组中的第%d挡位",ModeGrpString[(int)UserSelect],modenum);
  else UARTPuts("\r\n双击特殊功能挡位");
+ UartPrintf("(挡位名称:%s)",ModeName); //显示挡位名称
  }
  
 //检查用户输入的字符串是true,false还是别的东西
