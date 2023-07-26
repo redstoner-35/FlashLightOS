@@ -11,8 +11,7 @@ powered by 35's Embedded Systems Inc. A next generation Flashlight firmware solu
 
 ### 硬件需求
 
-目前此系统针对的是全程降压恒流的硬件平台，对于其他类型驱动暂未做适配。在编写此系统时我使用的是自行研发的DiffTorch
--Extreme v1.0的硬件平台（全程降压恒流+模数结合）。详细的硬件需求如下所示：
+目前此系统针对的是全程降压恒流的硬件平台，对于其他类型驱动(升压/线性恒流和直驱拓扑等)暂未做适配。在编写此系统时我使用的是自行研发的[Xtern Ripper v1.0](https://gitee.com/redstoner-thirty-five/Xtern-Ripper)的硬件平台（全程降压恒流+模数结合）。对于移植到其他硬件平台的详细硬件需求如下所示：
 
 + MCU : HT32F52352 (QFN-32或LQFP-64) 基于CM0+内核 48MHz主频(**也可以移植到同等内核的MCU上面，需要的MCU配置请参考下面的配置**)
 + EEPROM ：至少32KByte容量（工程里面提供了24C256和24C512可选）建议使用FM24C512D。
