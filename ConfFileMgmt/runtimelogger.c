@@ -126,10 +126,10 @@ void RunTimeDataLogging(void)
  //驱动的平均效率计算和填写降档等级
  RunLogEntry.Data.DataSec.ThermalStepDownValue=SysPstatebuf.CurrentThrottleLevel;
  EffCalcBuf=RunLogEntry.Data.DataSec.AverageLEDVf*RunLogEntry.Data.DataSec.AverageLEDIf;//加入输出功率
- EffCalcBuf/=fabsf(RunTimeBattTelemResult.BusPower);//除以输入功率的绝对值得到效率
+ EffCalcBuf/=RunLogEntry.Data.DataSec.AverageBatteryPower;//除以输入功率的平均值得到效率
  EffCalcBuf*=(float)100;//将算出的值*100得到百分比
- if(EffCalcBuf>98)EffCalcBuf=98;
- if(EffCalcBuf<0)EffCalcBuf=0;//根据能量守恒，效率不可能为负或者大于98
+ if(EffCalcBuf>99)EffCalcBuf=99;
+ if(EffCalcBuf<0)EffCalcBuf=0;//根据能量守恒，效率不可能为负或者大于99
  RunLogEntry.Data.DataSec.AverageDriverEfficiency=EffCalcBuf;
  //数据填写完毕，更新CRC32校验和
  RunLogEntry.Data.DataSec.IsRunlogHasContent=true;//运行日志已经有内容了
