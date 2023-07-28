@@ -56,7 +56,7 @@ const ComamandStringStr Commands[TotalCommandCount]=
     {
 	   {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//4
 		"cfgmgmt",
-		 "管理系统中的Main或Backup配置文件(例如保存/加载/校验和恢复出厂设置)并且允许用户从电脑备份和恢复配置文件.",
+		 "管理系统中的配置文件(例如保存/加载/校验和恢复出厂设置)并且允许用户从电脑备份和恢复配置文件.",
 		"-rf\0--restore_factory\0-s\0--save\0-v\0--verify\0-l\0--load\0-b\0--backup\0-rx\0--restore_xmodem\0\n",
 		" \0 \0 <配置名>\0 <配置名>\0 <配置名>\0 <配置名>\0 <配置名>\0 <配置名>\0 <配置名>\0 <配置名>\0 \0 \0\n",
 		&cfgmgmtArgument,
