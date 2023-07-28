@@ -7,7 +7,7 @@
 
 #define MajorVersion 1
 #define MinorVersion 1
-#define HotfixVersion 6  //固件版本号
+#define HotfixVersion 7  //固件版本号
 
 //固件模式配置
 #define Firmware_DIY_Mode //是否启用DIY高级用户模式，在此模式下驱动所有功能可以使用，否则温控调整和日志清除和恢复功能会被禁用。

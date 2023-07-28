@@ -412,8 +412,10 @@ void ModeSwitchLogicHandler(void)
 		default: break;
 		}
 	//操作侧按LED提示当前生成的挡位
-	if(SysPstatebuf.Pstate==PState_LEDOn||SysPstatebuf.Pstate==PState_LEDOnNonHold)return;//手电筒处于开机状态，不需要提示信息。
-	SideLED_GenerateModeInfoPattern();
+	if(SysPstatebuf.Pstate==PState_LEDOn||SysPstatebuf.Pstate==PState_LEDOnNonHold)
+	  SetAUXPWR(true); //换挡的时候,如果LED是启动的，那就需要重新使能辅助电源否则会出现信标模式无光的问题
+	else
+	  SideLED_GenerateModeInfoPattern(); //手电筒处于关机状态，显示挡位数据
 	}
 //手电筒关闭切换挡位时,生成一组跳档后指示当前挡位的序列让侧按LED显示
 void SideLED_GenerateModeInfoPattern(void)
@@ -542,7 +544,7 @@ void ModeNoMemoryRollBackHandler(void)
  //在对应挡位组找了一圈都没有使能的挡位，报错		 
  SysPstatebuf.Pstate=PState_Error;
  SysPstatebuf.ErrorCode=Error_ADC_Logic;
- CollectLoginfo("关闭后执行跳档逻辑",NULL);
+ CollectLoginfo("挡位变换",NULL);
  }
 //从结构体获取当前的挡位
 ModeConfStr *GetCurrentModeConfig(void)

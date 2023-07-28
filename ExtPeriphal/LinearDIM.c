@@ -326,7 +326,7 @@ void RuntimeModeCurrentHandler(void)
 		 RunTimeErrorReportHandler(Error_ADC_Logic);
 		 return;
 	   }	
- if(ADCO.SPSTemp>CfgFile.MOSFETThermalTripTemp)
+ if(ADCO.SPSTMONState==SPS_TMON_OK&&ADCO.SPSTemp>CfgFile.MOSFETThermalTripTemp)
 	   {		 
 		 //MOS温度到达过热跳闸点,这是严重故障,立即写log并停止驱动运行
 	   RunTimeErrorReportHandler(Error_SPS_ThermTrip);
@@ -424,7 +424,15 @@ void RuntimeModeCurrentHandler(void)
 	 return;
 	 }
  /********************************************************
- 运行时挡位处理的第四步,将计算出的电流通过PWM调光和DAC线
+ 运行时挡位处理的第四步,如果目前LED电流为0，为了避免红色LED
+ 鬼火，程序会把LED的主buck相关的电路关闭。
+ ********************************************************/
+ if(Current==0||!SysPstatebuf.ToggledFlash)	 
+	 SetAUXPWR(false);
+ else
+	 SetAUXPWR(true);  	 
+ /********************************************************
+ 运行时挡位处理的第五步,将计算出的电流通过PWM调光和DAC线
  性调光混合的方式把LED调节到目标的电流实现挡位控制（这是对
  于其他挡位来说的）
  ********************************************************/
@@ -484,7 +492,7 @@ void RuntimeModeCurrentHandler(void)
  TimerCanTrigger=true;//允许GPTM1定时器执行特殊功能
  /***********************************************************
  最后一步，系统采样LED的Vf加入数字滤波器中用于判断是否发生短
- 路。
+ 路
  ***********************************************************/
  if(!ADC_GetResult(&ADCO))//令ADC得到温度和电流
      {
