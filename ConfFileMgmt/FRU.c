@@ -41,7 +41,7 @@ float QueryMaximumCurrentLimit(FRUBlockUnion *FRU)
   switch(FRU->FRUBlock.Data.Data.FRUVersion[0]) //显示LED型号
 		{
 		case 0x03:result=50;break;
-		case 0x04:result=18;break;
+		case 0x04:result=22;break;
 		case 0x05:result=14;break;
 		case 0x06:result=30;break;
 		case 0x07:result=14;break;

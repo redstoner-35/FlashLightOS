@@ -78,8 +78,8 @@ void RunTimeDataLogging(void)
 	 AverageBuf[0]=RunLogEntry.Data.DataSec.AverageBatteryCurrent;
 	 AverageBuf[1]=RunLogEntry.Data.DataSec.AverageBatteryPower;
 	 AverageBuf[2]=RunLogEntry.Data.DataSec.AverageBatteryVoltage;
-	 AverageBuf[3]=RunLogEntry.Data.DataSec.AverageLEDTemp==NAN?0:RunLogEntry.Data.DataSec.AverageLEDTemp; 
-	 AverageBuf[4]=RunLogEntry.Data.DataSec.AverageSPSTemp==NAN?0:RunLogEntry.Data.DataSec.AverageSPSTemp; //如果等于NAN则从0重新开始
+	 AverageBuf[3]=RunLogEntry.Data.DataSec.AverageLEDTemp==NAN?0:RunLogEntry.Data.DataSec.AverageLEDTemp; //LED温度测量
+	 AverageBuf[4]=RunLogEntry.Data.DataSec.AverageSPSTemp; //MOS温度
 	 RuntimeAverageCount++;
 	 }
  else	if(RuntimeAverageCount==5)//平均完毕，输出结果后准备下一轮计算
@@ -87,8 +87,8 @@ void RunTimeDataLogging(void)
 	 RunLogEntry.Data.DataSec.AverageBatteryCurrent=AverageBuf[0]/(float)5;
 	 RunLogEntry.Data.DataSec.AverageBatteryPower=AverageBuf[1]/(float)5;
 	 RunLogEntry.Data.DataSec.AverageBatteryVoltage=AverageBuf[2]/(float)5;
-	 RunLogEntry.Data.DataSec.AverageLEDTemp=AverageBuf[3]==NAN?NAN:AverageBuf[3]/(float)5; 
-	 RunLogEntry.Data.DataSec.AverageSPSTemp=AverageBuf[4]==NAN?NAN:AverageBuf[4]/(float)5; //LED和SPS温度，如果等于NAN则表示没数据
+	 RunLogEntry.Data.DataSec.AverageLEDTemp=AverageBuf[3]==NAN?NAN:AverageBuf[3]/(float)5; //LED温度，如果等于NAN则表示没数据
+	 RunLogEntry.Data.DataSec.AverageSPSTemp=AverageBuf[4]/(float)5; //SPS温度
 	 for(i=0;i<5;i++)AverageBuf[i]=0;
 	 RuntimeAverageCount=0;
 	 }
@@ -100,7 +100,7 @@ void RunTimeDataLogging(void)
 	 if(ADCO.NTCState==LED_NTC_OK)AverageBuf[3]+=ADCO.LEDTemp; 
 	 else AverageBuf[3]=NAN;
 	 if(ADCO.SPSTMONState==SPS_TMON_OK)AverageBuf[4]+=ADCO.SPSTemp;
-	 else AverageBuf[4]=NAN;
+	 else AverageBuf[4]+=RunLogEntry.Data.DataSec.AverageSPSTemp;  //如果在本次平均的时候温度数据不可用则使用老数据
 	 RuntimeAverageCount++;
 	 }	 
  //LED电压和电流的平均值数据积分模块

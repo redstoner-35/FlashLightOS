@@ -88,7 +88,7 @@ void fruedithandler(void)
 		  {
 			FRU.FRUBlock.Data.Data.MaxLEDCurrent=buf; //更新电流值条目
 			if(!WriteFRU(&FRU))
-				UartPrintf("\r\n%s的最大电流限制值已被更新为%s.",frueditstr[3],buf);
+				UartPrintf("\r\n%s的最大电流限制值已被更新为%.1fA.",frueditstr[3],buf);
 			else
 				UartPrintf((char *)frueditstr[1],"最大电流限制");
 			}
