@@ -73,8 +73,7 @@ void runlogviewHandler(void)
 			UARTPuts("%sMOS最高运行温度 : 数据不可用");
 		UartPrintf("%s温度降档比例 : %.1f%%",Rlvstr[1],RunLogEntry.Data.DataSec.ThermalStepDownValue);	
 	  UartPrintf("%s平均运行效率 : %.1f%%",Rlvstr[1],RunLogEntry.Data.DataSec.AverageDriverEfficiency);
-	  UartPrintf("%s无极调光亮度百分比 : %.1f%%",Rlvstr[2],RunLogEntry.Data.DataSec.RampModeConf*(float)100);
-		UartPrintf("%s目前无极调光方向 : %s",Rlvstr[2],RunLogEntry.Data.DataSec.RampModeDirection?"从暗到亮":"从亮到暗");
+		UartPrintf("%s峰值运行效率 : %.1f%%",Rlvstr[1],RunLogEntry.Data.DataSec.MaximumEfficiency);
 		UartPrintf("%s是否锁定 : %s",Rlvstr[2],RunLogEntry.Data.DataSec.IsFlashLightLocked?"是":"否");
 		PrintStatuBar("电池输入");
 	  UartPrintf("%s输入低压告警 : %s",Rlvstr[3],RunLogEntry.Data.DataSec.IsLowVoltageAlert?"是":"否");

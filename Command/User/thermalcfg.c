@@ -47,7 +47,7 @@ static void DisplayTempTable(float *Thr,float *Value)
 //显示阈值点更新	
 static void DisplayTableUpdate(float *Thr,float *Value,bool IsThr,UserInputThermalSensorDef Thermal)
   {
-	UartPrintf("\r\n%s传感器所对应温度表的%s参数已经成功更新.",ThermalsensorString[(int)Thermal],IsThr?"阈值":"挡位输出百分比");
+	UartPrintf("\r\n%s传感器所对应温度表的%s参数已经成功更新.",ThermalsensorString[(int)Thermal-1],IsThr?"阈值":"挡位输出百分比");
 	UARTPuts("新的温度表参数如下所示:");
 	DisplayTempTable(Thr,Value);
 	}

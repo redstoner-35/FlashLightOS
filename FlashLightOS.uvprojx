@@ -598,11 +598,6 @@
               <FilePath>.\ConfFileMgmt\AES256.c</FilePath>
             </File>
             <File>
-              <FileName>logger.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\ConfFileMgmt\logger.c</FilePath>
-            </File>
-            <File>
               <FileName>runtimelogger.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\ConfFileMgmt\runtimelogger.c</FilePath>
@@ -611,6 +606,11 @@
               <FileName>selftestlogger.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\ConfFileMgmt\selftestlogger.c</FilePath>
+            </File>
+            <File>
+              <FileName>logger.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\ConfFileMgmt\logger.c</FilePath>
             </File>
             <File>
               <FileName>FRU.c</FileName>

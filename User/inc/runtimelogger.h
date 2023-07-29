@@ -28,6 +28,7 @@ typedef struct
  float AverageBatteryPower;  
  float MaximumBatteryPower;  //平均和最大电池输出功率
  float AverageDriverEfficiency;  //平均驱动运行效率
+ float MaximumEfficiency;//峰值效率
  double TotalBatteryCapDischarged;  //总共电池放电的mAH数
  float RampModeConf; //无极调光模式的目前挡位
  bool RampModeDirection; //无极调光模式的方向

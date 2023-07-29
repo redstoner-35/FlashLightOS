@@ -16,6 +16,7 @@ static char RuntimeAverageCount=0;
 static char LEDRuntimeAverageCount=0;
 bool IsRunTimeLoggingEnabled;
 static float AverageBuf[7]={0};
+static float MaxEfficiencyCalcBuf[5]={0};//效率计算缓存
 RunLogEntryStrDef RunLogEntry;
 
 //外部变量
@@ -61,13 +62,10 @@ void RunTimeDataLogging(void)
  RunLogEntry.Data.DataSec.MaximumBatteryVoltage=fmaxf(RunTimeBattTelemResult.BusVolt,RunLogEntry.Data.DataSec.MaximumBatteryVoltage); //最大和最小电池电压
  RunLogEntry.Data.DataSec.MaximumBatteryCurrent=fmaxf(RunTimeBattTelemResult.BusCurrent,RunLogEntry.Data.DataSec.MaximumBatteryCurrent);
  RunLogEntry.Data.DataSec.MaximumBatteryPower=fmaxf(RunTimeBattTelemResult.BusPower,RunLogEntry.Data.DataSec.MaximumBatteryPower); //最大电池电流和功率
- //实现LED运行时间和库仑计积分的模块
+ //实现LED运行时间和库仑计积分的模块 
+ if(SysPstatebuf.ToggledFlash)RunLogEntry.Data.DataSec.LEDRunTime+=0.125;//如果LED激活，则运行时间每次加1/8秒
  Buf=(double)RunTimeBattTelemResult.BusCurrent*(double)1000;//将A转换为mA方便积分
- if(SysPstatebuf.ToggledFlash)
-   {
-	 RunLogEntry.Data.DataSec.LEDRunTime+=0.125;//如果LED激活，则运行时间每次加1/8秒
-   Buf+=50;//LED点亮，辅助电源激活，加上50mA的驱动本底消耗数值
-	 }
+ Buf+=SysPstatebuf.ToggledFlash?50:17;//加上17mA(驱动处于灭灯状态)50mA(驱动处于开灯状态)的驱动本底消耗数值
  Buf*=0.125;//将mA转换为mAS(每秒的毫安数，这里乘以0.125是因为每秒钟会积分8次)
  Buf/=(double)(60*60);//将mAS转换为mAH累加到缓冲区内
  UsedCapacity+=(float)Buf; //已用容量加上本次的结果
@@ -131,6 +129,12 @@ void RunTimeDataLogging(void)
  if(EffCalcBuf>99)EffCalcBuf=99;
  if(EffCalcBuf<0)EffCalcBuf=0;//根据能量守恒，效率不可能为负或者大于99
  RunLogEntry.Data.DataSec.AverageDriverEfficiency=EffCalcBuf;
+ //驱动的峰值效率计算 
+ for(i=4;i>0;i--)MaxEfficiencyCalcBuf[i]=MaxEfficiencyCalcBuf[i-1];//搬运数据
+ MaxEfficiencyCalcBuf[0]=RunLogEntry.Data.DataSec.AverageDriverEfficiency;//将刚刚算出的平均效率加入到计算区域内
+ EffCalcBuf=-10; //将效率值设置为负数来方便找到最高的效率点
+ for(i=0;i<5;i++)EffCalcBuf=fmaxf(MaxEfficiencyCalcBuf[i],EffCalcBuf);//取一段时间内的最大值
+ RunLogEntry.Data.DataSec.MaximumEfficiency=EffCalcBuf;//峰值效率
  //数据填写完毕，更新CRC32校验和
  RunLogEntry.Data.DataSec.IsRunlogHasContent=true;//运行日志已经有内容了
  RunLogEntry.CurrentDataCRC=CalcRunLogCRC32(&RunLogEntry.Data);
@@ -264,6 +268,7 @@ void LogDataSectionInit(RunLogDataUnionDef *DIN)
 	DIN->DataSec.AverageBatteryPower=0;
 	DIN->DataSec.AverageBatteryVoltage=0; 
 	DIN->DataSec.AverageDriverEfficiency=90;
+	DIN->DataSec.MaximumEfficiency=10;
 	DIN->DataSec.AverageLEDIf=0;
   DIN->DataSec.AverageLEDTemp=25;
   DIN->DataSec.AverageLEDVf=0;
