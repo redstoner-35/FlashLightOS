@@ -17,7 +17,7 @@ extern bool IsSelftestLoggerReady;
 void SMBUS_Init(void)
   {
 	 unsigned char i,slavecount;
-	 UartPost(Msg_info,"SMBUSDrv","Start to Configure SMBUS Controller...");
+	 UartPost(Msg_info,"SMBUSDrv","Start to Configure SMBUS Controller with 480Kbps Speed...");
 	 //配置GPIO(SCL)
    AFIO_GPxConfig(IIC_SCL_IOB,IIC_SCL_IOP, AFIO_FUN_GPIO);//I2C SCL(用来做时钟)
    GPIO_DirectionConfig(IIC_SCL_IOG,IIC_SCL_IOP,GPIO_DIR_OUT);//配置为输出
@@ -31,7 +31,6 @@ void SMBUS_Init(void)
 	 //配置完毕，启用logger然后开始扫描设备
 	 IsSelftestLoggerReady=true;
 	 delay_ms(10);
-	 UartPost(Msg_info,"SMBUSDrv","SMBUS Controller is ready with %dKbps speed.",480);
 	 //扫描设备
 	 UartPost(Msg_info,"SMBUSDrv","--- Probing all accessible SMBUS slave devices ---\r\n");
 	 slavecount=0;

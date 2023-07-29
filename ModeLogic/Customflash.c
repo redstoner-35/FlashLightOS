@@ -5,6 +5,7 @@
 //字符串释义如下:
 1-9分别对应挡位的10-90%电流
 'A'对应100%电流。（这些字符串会让灯珠点亮并按照指定电流工作）
+'B'表示随机决定是否继续执行后面的指令
 '-'表示让灯珠熄灭1个周期
 'R'表示让灯珠以随机的亮度点亮
 'WXYZ'分别延时0.5-1秒-2秒,4秒
@@ -42,7 +43,7 @@ int CheckForCustomFlashStr(char *Str)
 	if(Str==NULL)return 0;
 	for(i=0;i<32;i++)
 		{
-		if(Str[i]=='U')result=true;
+		if(Str[i]=='U'||Str[i]=='B')result=true;
 		else if(Str[i]=='R'||Str[i]=='T')result=true;
     else if(Str[i]=='A'||Str[i]=='-')result=true;
 		else if(Str[i]>='W'&&Str[i]<='Z')result=true;
@@ -76,6 +77,13 @@ void CustomFlashHandler(void)
   //解析字符
 	switch(CurrentMode->CustomFlashStr[StrPtr]) 
 	  {
+		case 'B': //随机分支功能
+		if((rand()%99+1)<50) //1-50,直接跳回序列开头
+		    {
+				StrPtr=0; 
+				return;//标志位为0，执行到该指令后直接结束本次循环从头开始
+				}
+		else StrPtr++;//其他值，跳过本条指令执行后续内容
 		case 'T': //类似T触发的功能
 			if(!IsEndToggle)
 			  {

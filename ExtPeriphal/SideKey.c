@@ -125,8 +125,8 @@ void SideKey_LogicHandler(void)
 			Keyevent.ShortPressEvent=false;
 			Keyevent.LongPressDetected=false;
 			Keyevent.LongPressEvent=false;//短按和长按事件没发生
-			Keyevent.DoubleClickAndHoldEvent=false;//双击事件发生
-		  Keyevent.PressAndHoldEvent=true;//短按一下再按住的事件没发生
+			Keyevent.DoubleClickAndHoldEvent=true;//双击+长按事件发生
+		  Keyevent.PressAndHoldEvent=false;//短按一下再按住的事件没发生
 			Keyevent.ShortPressCount=0;
 			}
 		else if(Keyevent.ShortPressCount==1)//短按+长按事件

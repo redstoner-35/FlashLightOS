@@ -58,7 +58,7 @@ void customflashcfgHandler(void)
 			UARTPuts("\r\n错误:自定义闪烁序列的字符串内容不得超过31字符且应至少包含1个字符.\r\n");
 		else if(strresult!=-1)//字符串包含非法内容
 		  {
-			UARTPuts("\r\n错误:自定义闪烁序列的发送的字符串内容中仅能包含数字[0-9],'-'以及大写字母'ATRU'和'WXYZ'.");
+			UARTPuts("\r\n错误:自定义闪烁序列的发送的字符串内容中仅能包含数字[0-9],'-'以及大写字母'ABTRU'和'WXYZ'.");
 		  UartPrintf("\r\n您输入的字符串'%s'在第%d个字符的位置存在非法内容,请修正后再试.\r\n",ParamPtr,strresult+1);
 			UARTPutc(' ',strresult+15);
 			UARTPuts("^\r\n");
@@ -90,7 +90,7 @@ void customflashcfgHandler(void)
 		  {
 			TargetMode->CustomFlashSpeed=buf;
 			DisplayWhichModeSelected(UserSelect,modenum);
-			UartPrintf("的自定义闪的最高闪烁频率已被设置为%.1fHz.\r\n",buf);
+			UartPrintf("的自定义闪的运行频率已被设置为%.1fHz.\r\n",buf);
 			if(TargetMode->Mode!=LightMode_CustomFlash)
 			  UartPrintf((char *)ModeSelectStr[5],"自定义闪烁");
 			}
