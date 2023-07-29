@@ -176,9 +176,7 @@ void LinearDIM_POR(void)
 	 SetAUXPWR(false);
 	 SelfTestErrorHandler();  
 	 }
- UartPost(Msg_info,"LineDIM","Smart Power Stage initialization completed.");
- if(!ADC_GetResult(&ADCO))OnChipADC_FaultHandler();//让ADC获取信息
- UartPost(Msg_info,"LineDIM","Current SPS Temperature is %.2f'C.",ADCO.SPSTemp);
+ UartPost(Msg_info,"LineDIM","SPS Temperature report is %.1f'C and init completed.",ADCO.SPSTemp);
  /**********************************************************************
  自检成功完成,此时我们可以让辅助电源下电了。然后我们将DAC输出重置为0V并且
  让PWM模块输出0%占空比使得不会有意外的电压信号进入主Buck的控制脚使得buck

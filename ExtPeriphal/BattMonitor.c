@@ -38,6 +38,7 @@ void LowVoltageIndicate(void)
 void RunTimeBatteryTelemetry(void)
  {
  float BatteryMidLevel;
+ bool IsNeedToUpdateCapacity;
  //令INA219获取电池(输入电源)信息
  if(SysPstatebuf.Pstate!=PState_LEDOn&&SysPstatebuf.Pstate!=PState_LEDOnNonHold)return;//LED没开启
  RunTimeBattTelemResult.TargetSensorADDR=INA219ADDR; //指定地址
@@ -85,15 +86,24 @@ void RunTimeBatteryTelemetry(void)
  if(RunTimeBattTelemResult.BusVolt<CfgFile.VoltageAlert)
 		RunLogEntry.Data.DataSec.IsLowVoltageAlert=true;
  #endif
- if(RunTimeBattTelemResult.BusVolt<CfgFile.VoltageTrip)//电池电量过低，关机保护的同时执行检测逻辑,写ROM	
+ if(RunTimeBattTelemResult.BusVolt<CfgFile.VoltageTrip)//电池电量过低，关机保护的同时根据需要更新电池容量	
      {
-		 if(RunLogEntry.Data.DataSec.BattUsage.IsLearningEnabled&&UsedCapacity>2000) //已用容量大于2000且使能自学习,完成校准
+		 //根据需要更新电池容量
+		 if(!IsRunTimeLoggingEnabled)IsNeedToUpdateCapacity=false; //logger未启动
+		 else if(RunLogEntry.Data.DataSec.BattUsage.IsLearningEnabled&&UsedCapacity>1500)IsNeedToUpdateCapacity=true; //已用容量大于1500且使能自学习,完成校准
+		 else if(!RunLogEntry.Data.DataSec.BattUsage.IsCalibrationDone)IsNeedToUpdateCapacity=false;//校准没有完成不主动写容量
+		 else if(UsedCapacity<1500)IsNeedToUpdateCapacity=false; //测量出来的容量小于1500，不更新
+		 else if(UsedCapacity<RunLogEntry.Data.DataSec.BattUsage.DesignedCapacity*0.85)IsNeedToUpdateCapacity=true;
+		 else if(UsedCapacity>RunLogEntry.Data.DataSec.BattUsage.DesignedCapacity*1.15)IsNeedToUpdateCapacity=true; //容量数值偏差过大，自动更新容量数据
+		 else IsNeedToUpdateCapacity=false; //不需要更新
+		 //如果需要更新则开始更新容量
+     if(IsNeedToUpdateCapacity)
 		   {
 			 RunLogEntry.Data.DataSec.BattUsage.IsLearningEnabled=false;
-			 RunLogEntry.Data.DataSec.BattUsage.DesignedCapacity=UsedCapacity;
-			 RunLogEntry.Data.DataSec.BattUsage.IsCalibrationDone=true;//自检完毕
-			 RunLogEntry.CurrentDataCRC=CalcRunLogCRC32(&RunLogEntry.Data);//重新计算CRC-32
-			 WriteRuntimeLogToROM();//尝试写ROM
+       RunLogEntry.Data.DataSec.BattUsage.DesignedCapacity=UsedCapacity;
+       RunLogEntry.Data.DataSec.BattUsage.IsCalibrationDone=true;//自检完毕
+       RunLogEntry.CurrentDataCRC=CalcRunLogCRC32(&RunLogEntry.Data);//重新计算CRC-32
+       WriteRuntimeLogToROM();//尝试写ROM
 			 }
 		 //关机
 		 #ifndef FlashLightOS_Debug_Mode

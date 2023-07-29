@@ -336,7 +336,6 @@ void PORConfHandler(void)
  else 
    {
 	 LoadDefaultConf();
-	 UartPost(msg_error,EEPModName,"No usable Conig in EEPROM.");
 	 UartPost(Msg_info,EEPModName,"driver will use factory default and attempt to fix broken config.");
 	 UartPost(Msg_info,EEPModName,"Programming main config file.");	 
 	 DisplayCheckResult(WriteConfigurationToROM(Config_Main),true);

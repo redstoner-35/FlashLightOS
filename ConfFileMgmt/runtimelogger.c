@@ -44,8 +44,11 @@ void RunTimeDataLogging(void)
 		return;
 	  }	
  //开始处理最大值最小值类的采样
- RunLogEntry.Data.DataSec.MaximumLEDIf=fmaxf(ADCO.LEDIf,RunLogEntry.Data.DataSec.MaximumLEDIf);
- RunLogEntry.Data.DataSec.MaximumLEDVf=fmaxf(ADCO.LEDVf,RunLogEntry.Data.DataSec.MaximumLEDVf); //LED Vf If
+ if(SysPstatebuf.ToggledFlash) //仅在LED正常运行得到时候采样数据
+    {
+		RunLogEntry.Data.DataSec.MaximumLEDIf=fmaxf(ADCO.LEDIf,RunLogEntry.Data.DataSec.MaximumLEDIf);
+    RunLogEntry.Data.DataSec.MaximumLEDVf=fmaxf(ADCO.LEDVf,RunLogEntry.Data.DataSec.MaximumLEDVf); //LED Vf If
+		}
  if(ADCO.NTCState==LED_NTC_OK) //LED温度
     {
     if(RunLogEntry.Data.DataSec.MaximumLEDTemp==NAN)RunLogEntry.Data.DataSec.MaximumLEDTemp=-127;
