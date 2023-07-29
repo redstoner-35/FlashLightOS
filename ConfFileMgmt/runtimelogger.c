@@ -52,12 +52,8 @@ void RunTimeDataLogging(void)
 	  RunLogEntry.Data.DataSec.MaximumLEDTemp=fmaxf(ADCO.LEDTemp,RunLogEntry.Data.DataSec.MaximumLEDTemp);//NTC正常，正常获取温度
 		}
  else RunLogEntry.Data.DataSec.MaximumLEDTemp=NAN;//温度为非法数值
- if(ADCO.SPSTMONState==SPS_TMON_OK)//驱动MOSFET(SPS)的温度
-	  {
-    if(RunLogEntry.Data.DataSec.MaximumSPSTemp==NAN)RunLogEntry.Data.DataSec.MaximumSPSTemp=-127;
-	  RunLogEntry.Data.DataSec.MaximumSPSTemp=fmaxf(ADCO.SPSTemp,RunLogEntry.Data.DataSec.MaximumSPSTemp);//NTC正常，正常获取温度
-		}
- else RunLogEntry.Data.DataSec.MaximumSPSTemp=NAN;//温度为非法值
+ if(SysPstatebuf.ToggledFlash&&ADCO.SPSTMONState==SPS_TMON_OK) //LED开启且SPS温度反馈OK的情况下获取温度
+	  RunLogEntry.Data.DataSec.MaximumSPSTemp=fmaxf(ADCO.SPSTemp,RunLogEntry.Data.DataSec.MaximumSPSTemp);//驱动MOSFET(SPS)的温度
  RunLogEntry.Data.DataSec.MinimumBatteryVoltage=fminf(RunTimeBattTelemResult.BusVolt,RunLogEntry.Data.DataSec.MinimumBatteryVoltage);
  RunLogEntry.Data.DataSec.MaximumBatteryVoltage=fmaxf(RunTimeBattTelemResult.BusVolt,RunLogEntry.Data.DataSec.MaximumBatteryVoltage); //最大和最小电池电压
  RunLogEntry.Data.DataSec.MaximumBatteryCurrent=fmaxf(RunTimeBattTelemResult.BusCurrent,RunLogEntry.Data.DataSec.MaximumBatteryCurrent);
