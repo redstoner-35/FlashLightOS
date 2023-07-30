@@ -137,7 +137,8 @@ void fruedithandler(void)
 			UARTPuts((char *)frueditstr[2]);
  		else //启用写保护
 		  {
-			if(!M24C512_LockSecuSct())
+			M24C512_LockSecuSct();//上锁
+			if(M24C512_QuerySecuSetLockStat()==LockState_Locked)
 			  UartPrintf("%s已被永久激活.",frueditstr[4]);
 			else
 				UartPrintf("%s激活失败.",frueditstr[4]); 

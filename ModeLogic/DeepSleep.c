@@ -126,5 +126,6 @@ void ExitLowPowerMode(void)
 		}
 	//启动完毕，检查是否进入调参模式，否则回到待机模式
 	if(IsHostConnectedViaUSB())IsParameterAdjustMode=true;
-  SysPstatebuf.Pstate=PState_Standby;
+  if(SysPstatebuf.ErrorCode==Error_None)SysPstatebuf.Pstate=PState_Standby;
+	else SysPstatebuf.Pstate=PState_Error; //如果有没消除的错误则跳回Error状态
 	}

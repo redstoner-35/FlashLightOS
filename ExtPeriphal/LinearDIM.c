@@ -176,7 +176,6 @@ void LinearDIM_POR(void)
 	 SetAUXPWR(false);
 	 SelfTestErrorHandler();  
 	 }
- UartPost(Msg_info,"LineDIM","SPS Temperature report is %.1f'C and init completed.",ADCO.SPSTemp);
  /**********************************************************************
  自检成功完成,此时我们可以让辅助电源下电了。然后我们将DAC输出重置为0V并且
  让PWM模块输出0%占空比使得不会有意外的电压信号进入主Buck的控制脚使得buck
@@ -187,6 +186,7 @@ void LinearDIM_POR(void)
  AD5693R_SetOutput(0);
  SetPWMDuty(0);			 
  for(i=0;i<10;i++)StepDownFilterBuf[i]=100;//填上100的初始值
+ UartPost(Msg_info,"LineDIM","Linear dimming module initialization done.");
 }
 //从开灯状态切换到关灯状态的逻辑
 void TurnLightOFFLogic(void)

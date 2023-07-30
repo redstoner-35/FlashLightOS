@@ -54,7 +54,7 @@ void PasswordVerifyHandler(void)
 	 if(TargetAccount==VerifyAccount_Admin)//验证管理员密码
 	   {	
 		 //进行解密
-		 IsUsingOtherKeySet=false;//处理密文的时候关闭���ص���ͨKey
+		 IsUsingOtherKeySet=false;//处理密文的时候使用第一组key
      memcpy(PasswordBuf,CfgFile.AdminAccountPassword,16);
      AES_EncryptDecryptData(PasswordBuf,0); //将密文复制过来，然后解密	
      //验证密码			 
@@ -63,12 +63,12 @@ void PasswordVerifyHandler(void)
 		 else Verifystat=ACC_Verify_Error;//管理员密码错误
 		 //验证完毕销毁密文
 		 memset(PasswordBuf,0,16);
-		 IsUsingOtherKeySet=true;//重新打开���ص���ͨKey
+		 IsUsingOtherKeySet=true;//重新使用第二组key
 		 }
 	 else if(TargetAccount==VerifyAccount_Root)//验证root用户密码
 	   {
 		 //进行解密
-		 IsUsingOtherKeySet=false;//处理密文的时候关闭���ص���ͨKey
+		 IsUsingOtherKeySet=false;//处理密文的时候使用第一组key
      memcpy(PasswordBuf,CfgFile.RootAccountPassword,16);
      AES_EncryptDecryptData(PasswordBuf,0); //将密文复制过来，然后解密	
 		 //验证密码		
@@ -77,7 +77,7 @@ void PasswordVerifyHandler(void)
 		 else Verifystat=ACC_Verify_Error;//Root密码错误
 		 //验证完毕销毁密文
 		 memset(PasswordBuf,0,16);
-		 IsUsingOtherKeySet=true;//重新打开���ص���ͨKey
+		 IsUsingOtherKeySet=true;//重新使用第二组key
 		 }
 	 else Verifystat=ACC_Verify_Error;//其余情况，错误
 	 ClearRecvBuffer();//清除接收缓冲	 

@@ -225,8 +225,8 @@ void PStateStateMachine(void)
 				case Error_DAC_Logic: CurrentLEDIndex=20;break; //DAC异常
 				case Error_ADC_Logic: CurrentLEDIndex=13;break; //ADC异常
 				}				
-			//在不是模式逻辑错误的情况下长按3秒,重置错误并退回到待机模式
-			if(SysPstatebuf.ErrorCode!=Error_Mode_Logic&&LongPressOnce)
+			//在不是模式逻辑错误的情况下长按3秒或者到达休眠状态,重置错误并退回到待机模式
+			if((LongPressOnce||DeepSleepTimer==0)&&SysPstatebuf.ErrorCode!=Error_Mode_Logic)
 			  {
 				CurrentLEDIndex=0;
 				LED_Reset();//重置侧按LED闪烁控制器为熄灭状态
@@ -234,11 +234,20 @@ void PStateStateMachine(void)
 			  ResetBreathStateMachine();
 				ResetCustomFlashControl();//复位自定义闪控制
 				MorseSenderReset();//复位所有的特殊功能状态机
-				SysPstatebuf.Pstate=PState_Standby;
-				SysPstatebuf.ErrorCode=Error_None; //清除错误码并回到待机状态
+				if(LongPressOnce)
+				  {
+					SysPstatebuf.Pstate=PState_Standby;
+					SysPstatebuf.ErrorCode=Error_None; //手动清除错误码才回到待机状态
+					}
+				else
+					SysPstatebuf.Pstate=PState_DeepSleep;//进入深度睡眠
 				RunLogEntry.Data.DataSec.IsLowVoltageAlert=false;//清除低电压警报
 				ModeNoMemoryRollBackHandler();//关闭主灯后检查挡位是否带记忆，不带的就自动复位
+				WriteRuntimeLogToROM();//尝试写ROM
 				}
+			//执行休眠定时器的判断
+			else 
+				DeepSleepTimerCallBack();
 			break;
 			}
 		/*******************************************************************************************

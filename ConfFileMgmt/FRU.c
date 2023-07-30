@@ -25,7 +25,7 @@ void SetLEDVfMinMax(FRUBlockUnion *FRU)
 		case 0x07:
 		case 0x03:LEDVfMin=1.95;LEDVfMax=4.2;break; //通用3V LED、蓝色SBT70
 		case 0x04:LEDVfMin=1.3;LEDVfMax=3.2;;break;//红色SBT90
-		case 0x05:LEDVfMin=2.0;LEDVfMax=5.5;break; //绿色SBT70
+		case 0x05:LEDVfMin=1.85;LEDVfMax=4.9;break; //绿色SBT70
 		case 0x06:LEDVfMin=4.5;LEDVfMax=6.8;break; //6V LED
 	  //其他数值则使用默认值
 		default:LEDVfMin=1.0;LEDVfMax=6.8;

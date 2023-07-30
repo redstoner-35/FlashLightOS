@@ -22,6 +22,7 @@ void login_ctrlC_handler(void)
   {
 	TargetAccount=VerifyAccount_None;
 	Verifystat=ACC_No_Login;
+  CurCmdField=TextField;//强制恢复为文本，重新显示
 	}
 //登录操作
 void LoginHandler(void)	
