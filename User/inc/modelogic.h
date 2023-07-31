@@ -150,6 +150,8 @@ void CustomFlashHandler(void);//自定义闪处理模块
 int CheckForCustomFlashStr(char *Str);//自定义闪检测字符串是否合法
 void LEDShortCounter(void);//短路检测积分函数 
 void LowVoltageIndicate(void);//低电压检测
+void DisplayBattVoltage(void);//显示电池电压
+void DisplayBatteryCapacity(void);//库仑计开启时显示百分比（精确到1%）
 
 //外部引用
 extern CurrentModeStr CurMode;//当前模式的结构体 
@@ -162,6 +164,7 @@ extern int DeepSleepTimer;//深度睡眠定时器
 extern float FusedMaxCurrent;//熔断的最大电流
 
 //函数
+void DisplayBatteryValueHandler(void);//电池电量的显示
 void ResetPowerOffTimerForPoff(void);//挡位复位时自动重置定时器
 void AutoPowerOffTimerHandler(void);//自动关机计时器的处理
 void DisplayUserWhenTimerOff(void);

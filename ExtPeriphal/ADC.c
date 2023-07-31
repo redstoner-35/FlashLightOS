@@ -205,8 +205,7 @@ void InternalADC_Init(void)
 	   if(!ADC_GetResult(&ADCO))OnChipADC_FaultHandler();//出现异常
 	 //开始显示
 	 UartPost(Msg_info,"IntADC","-------- System Monitor ADC Result --------");
-   UartPost(Msg_info,"IntADC","Current LED Vf : %.2fV",ADCO.LEDVf);
-	 UartPost(Msg_info,"IntADC","Current LED If : %.2fA",ADCO.LEDIf);
+   UartPost(Msg_info,"IntADC","LED Vf Pin Volt : %.2fV",ADCO.LEDVf);
 	 UartPost(Msg_info,"IntADC","LED BasePlate NTC Status : %s",NTCStateString[ADCO.NTCState]);
 	 if(ADCO.NTCState==LED_NTC_OK)
 		 UartPost(Msg_info,"IntADC","LED BasePlate Temperature : %.1f'C",ADCO.LEDTemp);

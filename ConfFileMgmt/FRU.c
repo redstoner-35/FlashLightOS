@@ -41,11 +41,11 @@ float QueryMaximumCurrentLimit(FRUBlockUnion *FRU)
   switch(FRU->FRUBlock.Data.Data.FRUVersion[0]) //显示LED型号
 		{
 		case 0x03:result=50;break;
-		case 0x04:result=22;break;
+		case 0x04:result=23.5;break;
 		case 0x05:result=14;break;
 		case 0x06:result=30;break;
 		case 0x07:result=14;break;
-		case 0x08:result=32;break;
+		case 0x08:result=33;break;
 		//其他数值则使用默认值
 		default:result=8;
 		}
@@ -241,7 +241,7 @@ void FirmwareVersionCheck(void)
    {
 	 #ifndef FlashLightOS_Debug_Mode
 	 CurrentLEDIndex=3;//红灯常亮表示FRU验证不通过
-	 UartPost(Msg_critical,"FRUChk","This firmware is targeted for Hardware version V%d.%d and will not work on current hardware.system halted!",HardwareMajorVer,HardwareMinorVer);
+	 UartPost(Msg_critical,"FRUChk","This firmware is targeted for Hardware version V%d.%d and not for current hardware.system halted!",HardwareMajorVer,HardwareMinorVer);
 	 SelfTestErrorHandler();//FRU信息损坏
 	 #else
 	 WriteNewFRU("Hardware Mismatch");//重写FRU

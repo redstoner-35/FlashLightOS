@@ -4,6 +4,7 @@
 #include "SideKey.h"
 #include "LEDMgmt.h"
 #include "logger.h"
+#include "runtimelogger.h"
 #include <string.h>
 
 CurrentModeStr CurMode;//当前模式的结构体
@@ -19,10 +20,37 @@ const char *SpecModeConst[4]={"爆闪","SOS","信标","识别码发送"};
 const char *ModeGroupName[3]={"regular","double-click","special"};
 
 //变量
-char LEDModeStr[32]; //LED模式的字符串
+char LEDModeStr[64]; //LED模式的字符串
 int AutoOffTimer=-1; //定时关机延时器
 static bool DCPressstatebuf=false;
+static bool DisplayBattBuf=false;
 
+
+//电池电量的显示
+void DisplayBatteryValueHandler(void)
+  {
+	bool result,IsExecute;
+  ModeConfStr *CurrentMode;
+	//判断是否可以执行检测
+	CurrentMode=GetCurrentModeConfig();//获取当前挡位配置
+	if(CurrentMode==NULL)return;//当前挡位为空
+	if(SysPstatebuf.Pstate==PState_Standby||SysPstatebuf.Pstate==PState_NonHoldStandBy)IsExecute=true;//手电筒处于待机状态，判断显示
+	else if(SysPstatebuf.Pstate==PState_LEDOnNonHold)IsExecute=false; //战术模式，不启用判断逻辑
+	else if(CurrentMode->Mode!=LightMode_Ramp)IsExecute=true; //当前挡位模式不是无极调光，可以执行
+  else IsExecute=false;		
+	//开始显示
+	if(!IsExecute)return;//不执行判断
+	result=getSideKeyClickAndHoldEvent();//获取单击+长按事件
+	if(DisplayBattBuf!=result)
+	  {
+		DisplayBattBuf=result;//同步结果
+	  if(!DisplayBattBuf)return;//用户松开按键结束显示
+		if(!RunLogEntry.Data.DataSec.BattUsage.IsCalibrationDone)
+			DisplayBattVoltage(); //库仑计未完成校准，显示电池电压
+		else
+			DisplayBatteryCapacity();//显示电池容量
+		}
+	}
 //挡位自动关机定时器的累减处理
 void AutoPowerOffTimerHandler(void)
   {
@@ -177,7 +205,7 @@ void RestoreFactoryModeCfg(void)
    CfgFile.SpecialMode[i].IsModeHasMemory=false;//不记忆
 	 CfgFile.SpecialMode[i].IsModeAffectedByStepDown=true;//受温控影响
 	 CfgFile.SpecialMode[i].LEDCurrentLow=0;//呼吸模式低电流为0A
-	 CfgFile.SpecialMode[i].LEDCurrentHigh=(FusedMaxCurrent*90)/(float)100;;//编程电流(最大的90%)
+	 CfgFile.SpecialMode[i].LEDCurrentHigh=i==0?FusedMaxCurrent:FusedMaxCurrent*0.9;//编程电流(除了爆闪100%，其他90%)
    CfgFile.SpecialMode[i].Mode=ModeCfgConst[i];//配置挡位
 	 CfgFile.SpecialMode[i].MosTransferStep=0.15;//摩尔斯码发送的step为0.15秒1阶
    CfgFile.SpecialMode[i].StrobeFrequency=16;//默认爆闪频率为16Hz		 
@@ -485,8 +513,8 @@ void DisplayUserWhenTimerOn(void)
  memset(LEDModeStr,0,sizeof(LEDModeStr));//清空内存
  strncat(LEDModeStr,"D30301010D",sizeof(LEDModeStr)-1);//填充头部 
  //生成字符串
- if(CurrentMode->PowerOffTimer>=60)decval=60;//每次闪烁表示1小时
- else decval=10;
+ if(CurrentMode->PowerOffTimer>=60)decval=30;//每次闪烁表示30分钟
+ else decval=5; //否则每次闪烁表示5分钟
  gapcnt=0;
  time=CurrentMode->PowerOffTimer;//初始化gap计数器
  do

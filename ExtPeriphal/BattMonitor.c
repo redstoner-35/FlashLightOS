@@ -7,13 +7,155 @@
 #include "LEDMgmt.h"
 #include "modelogic.h"
 #include "runtimelogger.h"
+#include <string.h>
 
 //静态变量声明
 INADoutSreDef RunTimeBattTelemResult;
 float UsedCapacity=0;
 static char LVFlashTimer=0;
+extern char LEDModeStr[64]; //LED模式的字符串
 
- //低电压警告(每6秒闪2次)
+//当库仑计关闭时显示电池电压
+void DisplayBattVoltage(void)
+{
+ int flashCount,gapcnt;
+ INADoutSreDef INADO;
+ LED_Reset();//复位LED管理器
+ memset(LEDModeStr,0,sizeof(LEDModeStr));//清空内存
+ //获取电压
+ INADO.TargetSensorADDR=INA219ADDR; //指定地址
+ if(SysPstatebuf.Pstate==PState_LEDOn||SysPstatebuf.Pstate==PState_LEDOnNonHold) //LED开启，直接读取
+   {
+	 if(!INA219_GetBusInformation(&INADO))//获取电池电压
+     {
+		 //INA219转换失败,这是严重故障,立即写log并停止驱动运行
+		 RunTimeErrorReportHandler(Error_ADC_Logic);
+		 return;
+	   }
+	 strncat(LEDModeStr,"D",sizeof(LEDModeStr)-1); //点亮模式需要额外的延时
+	 }
+ else //停机状态，打开219，获取电池电压后再关闭
+   {	   
+	 if(!INA219_SetConvMode(INA219_Cont_Both,INA219ADDR)) //启用INA219
+			{
+			SysPstatebuf.Pstate=PState_Error;
+			SysPstatebuf.ErrorCode=Error_ADC_Logic;
+			return;
+			}
+	 delay_ms(10);
+	 if(!INA219_GetBusInformation(&INADO))//获取电池电压
+			{
+			SysPstatebuf.Pstate=PState_Error;
+			SysPstatebuf.ErrorCode=Error_ADC_Logic;
+			return;
+			}
+	 if(!INA219_SetConvMode(INA219_PowerDown,INA219ADDR))//关闭INA219
+			{
+			SysPstatebuf.Pstate=PState_Error;
+			SysPstatebuf.ErrorCode=Error_ADC_Logic;
+			return;
+			}
+	  }
+ //显示电池电压	 
+ strncat(LEDModeStr,"12030D",sizeof(LEDModeStr)-1);  //红切换到绿色，熄灭然后马上黄色闪一下，延迟1秒
+ if(INADO.BusVolt>=10) //大于等于10V，附加红色闪
+   strncat(LEDModeStr,"20D",sizeof(LEDModeStr)-1);
+ flashCount=(int)(INADO.BusVolt)%10;//取个位数
+ gapcnt=0;
+ while(flashCount>0)
+   {
+	 //附加闪烁次数
+	 strncat(LEDModeStr,"30",sizeof(LEDModeStr)-1);	//使用黄色代表电压个位数
+	 //每2次闪烁之间插入额外停顿方便用户计数
+	 if(gapcnt==1)
+	    {
+		  gapcnt=0;
+		  strncat(LEDModeStr,"0",sizeof(LEDModeStr)-1);
+		  }
+	 else gapcnt++;
+	 //处理完一轮，减去闪烁次数
+	 flashCount--;
+	 }
+ strncat(LEDModeStr,"D",sizeof(LEDModeStr)-1);
+ flashCount=(int)(INADO.BusVolt*(float)10)%10;//取小数点后1位
+ gapcnt=0;
+ while(flashCount>0)
+   {
+	 //附加闪烁次数
+	 strncat(LEDModeStr,"10",sizeof(LEDModeStr)-1);	//使用绿色代表电压小数点后一位
+	 //每2次闪烁之间插入额外停顿方便用户计数
+	 if(gapcnt==1)
+	    {
+		  gapcnt=0;
+		  strncat(LEDModeStr,"0",sizeof(LEDModeStr)-1);
+		  }
+	 else gapcnt++;
+	 //处理完一轮，减去闪烁次数
+	 flashCount--;
+	 }
+ if(SysPstatebuf.Pstate==PState_LEDOn||SysPstatebuf.Pstate==PState_LEDOnNonHold) //如果手电筒点亮状态则延迟一下再恢复正常显示
+	 strncat(LEDModeStr,"D",sizeof(LEDModeStr)-1);
+ strncat(LEDModeStr,"E",sizeof(LEDModeStr)-1);//结束闪烁
+ ExtLEDIndex=&LEDModeStr[0];//传指针过去	
+}
+//库仑计开启时显示百分比（精确到1%）
+void DisplayBatteryCapacity(void)
+{
+ float BatteryMidLevel;
+ int flashCount,gapcnt;
+ //计算剩余电量
+ BatteryMidLevel=UsedCapacity/RunLogEntry.Data.DataSec.BattUsage.DesignedCapacity;//求已用容量和实际容量的百分比
+ if(BatteryMidLevel>1.00)BatteryMidLevel=100;
+ if(BatteryMidLevel<0)BatteryMidLevel=0;  //数值限幅
+ BatteryMidLevel*=(float)100;//转百分比
+ BatteryMidLevel=100-BatteryMidLevel; //转剩余电量百分比
+ //启动显示
+ LED_Reset();//复位LED管理器
+ memset(LEDModeStr,0,sizeof(LEDModeStr));//清空内存
+ if(SysPstatebuf.Pstate==PState_LEDOn||SysPstatebuf.Pstate==PState_LEDOnNonHold) //如果手电筒点亮状态则延迟一下再恢复正常显示
+	 strncat(LEDModeStr,"D",sizeof(LEDModeStr)-1);
+ strncat(LEDModeStr,"23010D",sizeof(LEDModeStr)-1);  //红切换到橙色，熄灭然后马上绿色闪一下，延迟1秒
+ if(BatteryMidLevel>=100)
+	 strncat(LEDModeStr,"20D",sizeof(LEDModeStr)-1);	//使用红色代表电压百位数
+ flashCount=((int)(BatteryMidLevel)%100)/10;//显示十位
+ gapcnt=0;
+ while(flashCount>0)
+   {
+	 //附加闪烁次数
+	 strncat(LEDModeStr,"30",sizeof(LEDModeStr)-1);	//使用黄色代表点亮个位数
+	 //每2次闪烁之间插入额外停顿方便用户计数
+	 if(gapcnt==1)
+	    {
+		  gapcnt=0;
+		  strncat(LEDModeStr,"0",sizeof(LEDModeStr)-1);
+		  }
+	 else gapcnt++;
+	 //处理完一轮，减去闪烁次数
+	 flashCount--;
+	 }
+ strncat(LEDModeStr,"D",sizeof(LEDModeStr)-1);
+ flashCount=((int)(BatteryMidLevel)%100)%10;//显示个位
+ gapcnt=0;
+ while(flashCount>0)
+   {
+	 //附加闪烁次数
+	 strncat(LEDModeStr,"10",sizeof(LEDModeStr)-1);	//使用绿色代表点亮个位数
+	 //每2次闪烁之间插入额外停顿方便用户计数
+	 if(gapcnt==1)
+	    {
+		  gapcnt=0;
+		  strncat(LEDModeStr,"0",sizeof(LEDModeStr)-1);
+		  }
+	 else gapcnt++;
+	 //处理完一轮，减去闪烁次数
+	 flashCount--;
+	 }
+ if(SysPstatebuf.Pstate==PState_LEDOn||SysPstatebuf.Pstate==PState_LEDOnNonHold) //如果手电筒点亮状态则延迟一下再恢复正常显示
+	 strncat(LEDModeStr,"D",sizeof(LEDModeStr)-1);
+ strncat(LEDModeStr,"E",sizeof(LEDModeStr)-1);//结束闪烁
+ ExtLEDIndex=&LEDModeStr[0];//传指针过去	
+}
+//低电压警告(每6秒闪2次)
 void LowVoltageIndicate(void)
 {
  ModeConfStr *CurrentMode;

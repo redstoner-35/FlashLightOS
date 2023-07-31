@@ -74,6 +74,7 @@ int main(void)
    if(SysPstatebuf.Pstate!=PState_LEDOn&&SysPstatebuf.Pstate!=PState_LEDOnNonHold)
 		  ShellProcUtilHandler();	 
 	 //处理手电筒自身的运行逻辑
+	 DisplayBatteryValueHandler();//处理显示电池电量操作的事务
 	 SideKey_LogicHandler();//处理侧按按键事务
 	 ModeSwitchLogicHandler();//按侧按按键换挡的事务
 	 PStateStateMachine();//处理电源状态切换的状态机 
