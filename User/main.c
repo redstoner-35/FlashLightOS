@@ -54,8 +54,9 @@ int main(void)
  if(!IsParameterAdjustMode)LinearDIM_POR();//DAC校准(仅在正常运行模式下启动)
  LoggerHeader_POR();//事件日志记录器初始化
  RunLogModule_POR();//运行日志模块POR
- DriverLockPOR();//初始化上电锁定状态
+ DriverLockPOR();//初始化上电锁定状态 
  ConsoleReconfigure();//自检完毕后输出配置信息
+ getSideKeyShortPressCount(true); //在进入主APP前清除按键信息
  EnteredMainApp=true;//标记已进入主APP,不在定时器中断内处理LED控制器
  //主循环
  while(1)

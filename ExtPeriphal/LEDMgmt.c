@@ -13,7 +13,7 @@ E=强制结束当前pattern
 const char *LEDPattern[LEDPatternSize]=
  {
    "00",//LED熄灭 0
-   "1133220002010E",//红黄绿分别亮一次然后绿色闪两次结束 1
+   "1133220002010DE",//红黄绿分别亮一次然后绿色闪两次结束 1
 	 "111",//绿灯常亮 2
 	 "222",//红灯常亮 3 
 	 "202020DD2020DDD",//快速闪烁三次，暂停两秒，快速闪烁两次 #INA219初始化异常 4
@@ -48,7 +48,7 @@ const char *LEDPattern[LEDPatternSize]=
 //变量
 static int ConstReadPtr;
 static int LastLEDIndex;
-int CurrentLEDIndex;
+volatile int CurrentLEDIndex;
 static char LEDThermalBlinkTimer=20;//用于在温控介入时闪侧按指示灯
 char *ExtLEDIndex = NULL; //用于传入的外部序列
 static char *LastExtLEDIdx = NULL;
@@ -95,8 +95,7 @@ void LED_Init(void)
 	 LastLEDIndex=0;
 	 CurrentLEDIndex=8;//自检序列运行中
 	 for(i=0;i<LEDPatternSize;i++)if(LEDPattern[i]==NULL)break;
-	 UartPost(Msg_info,"LEDMgt","Target LED Pattern Size:%d / %d",i+1,LEDPatternSize); 	
-	 UartPost(Msg_info,"LEDMgt","LED Controller Has been started.");
+	 UartPost(Msg_info,"LEDMgt","LED Controller Has been started with %d Pattern Size.",i+1);
 	}
 //在系统内控制LED的回调函数
 void LEDMgmt_CallBack(void)
