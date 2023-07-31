@@ -6,6 +6,7 @@
 #include "console.h"
 #include "LEDMgmt.h"
 #include "Xmodem.h"
+#include "FRU.h"
 
 ConfUnionDef CfgFileUnion;
 const char ZeroConstBuf[32]={0};
@@ -98,7 +99,9 @@ int CheckConfigurationInROM(cfgfiletype cfgtyp,unsigned int *CRCResultO)
  int CfgsizePage,i,CRCDcount;
  int CfgFilebase,j,CRCResultindex;
  char BUF[16];
+ char FRUHwResult;
  char CRCResultptr[4];
+ FRUBlockUnion FRU;
  unsigned int ROMCRCResult,DATACRCResult;
  CKCU_PeripClockConfig_TypeDef CLKConfig={{0}};
  //计算出文件大小，然后算出flash base
@@ -112,7 +115,12 @@ int CheckConfigurationInROM(cfgfiletype cfgtyp,unsigned int *CRCResultO)
  CRC_DeInit(HT_CRC);//清除配置
  HT_CRC->SDR = 0x0;//CRC-32 poly: 0x04C11DB7  
  HT_CRC->CR = CRC_32_POLY | CRC_BIT_RVS_WR | CRC_BIT_RVS_SUM | CRC_BYTE_RVS_SUM | CRC_CMPL_SUM;
+ //读取FRU并计算数值
+ if(ReadFRU(&FRU))return 1; //读取FRU失败
+ FRUHwResult=0x35;
+ for(i=0;i<3;i++)FRUHwResult^=FRU.FRUBlock.Data.Data.FRUVersion[i];
  //开始校验
+ if(ReadFRU(&FRU))return 1; //读取FRU失败
  i=0;
  CRCResultindex=0;
  while(i<CfgsizePage)
@@ -125,7 +133,7 @@ int CheckConfigurationInROM(cfgfiletype cfgtyp,unsigned int *CRCResultO)
 	 if(CRCDcount>16)CRCDcount=16;//大于16的值限制为16
 	 if(CRCDcount<0)CRCDcount=0;//小于0的值限制为0
 	 if(CRCDcount>0)for(j=0;j<CRCDcount;j++)
-		 wb(&HT_CRC->DR,BUF[j]);//将数据丢入寄存器内
+		 wb(&HT_CRC->DR,BUF[j]^FRUHwResult);//将数据和FRU信息XOR后丢入寄存器内
 	 //如果当前剩下的字节小于16字节，则说明配置文件已经读完了需要读取CRC数据
 	 if(CRCDcount<16)while(CRCDcount<16&&CRCResultindex<4)
 	   {
@@ -189,6 +197,8 @@ int WriteConfigurationToROM(cfgfiletype cfgtyp)
  char BUF[16];
  char *StrPtr;
  char CRCResult[4];
+ char FRUHwResult;
+ FRUBlockUnion FRU;
  unsigned int DATACRCResult;
  CKCU_PeripClockConfig_TypeDef CLKConfig={{0}};
  //计算出文件大小，然后算出flash base
@@ -202,6 +212,10 @@ int WriteConfigurationToROM(cfgfiletype cfgtyp)
  CRC_DeInit(HT_CRC);//清除配置
  HT_CRC->SDR = 0x0;//CRC-32 poly: 0x04C11DB7  
  HT_CRC->CR = CRC_32_POLY | CRC_BIT_RVS_WR | CRC_BIT_RVS_SUM | CRC_BYTE_RVS_SUM | CRC_CMPL_SUM;
+ //读取FRU并计算数值
+ if(ReadFRU(&FRU))return 1; //读取FRU失败
+ FRUHwResult=0x35;
+ for(i=0;i<3;i++)FRUHwResult^=FRU.FRUBlock.Data.Data.FRUVersion[i];
  //开始写数据
  i=0;
  k=0;
@@ -217,7 +231,7 @@ int WriteConfigurationToROM(cfgfiletype cfgtyp)
 		 memset(BUF,0,sizeof(BUF));//清零缓存
 		 StrPtr=&CfgFileUnion.StrBUF[i*16];
 		 memcpy(BUF,StrPtr,CRCDcount);
-	   for(j=0;j<CRCDcount;j++)wb(&HT_CRC->DR,BUF[j]);//将数据丢入寄存器内 
+	   for(j=0;j<CRCDcount;j++)wb(&HT_CRC->DR,BUF[j]^FRUHwResult);//将数据和FRU信息XOR后丢入寄存器内
 		 }
 	 //如果当前剩下的字节小于16字节，则说明配置文件已经写完了需要读取CRC数据
 	 if(CRCDcount<16)while(CRCDcount<16&&CRCResultindex<4)
@@ -283,7 +297,7 @@ void DisplayCheckResult(int Result,bool IsProgram)
 		    CurrentLEDIndex=6;
 		    SelfTestErrorHandler();
 		 case 2:
-			  UartPost(Msg_critical,EEPModName,"AES-256 Decrypt routine execution error.");
+			  UartPost(Msg_critical,EEPModName,"AES-256 Decrypt routine error.");
 		    CurrentLEDIndex=7;
 		    SelfTestErrorHandler();
 	   case 3:
@@ -336,12 +350,12 @@ void PORConfHandler(void)
  else 
    {
 	 LoadDefaultConf();
-	 UartPost(Msg_info,EEPModName,"driver will use factory default and attempt to fix broken config.");
-	 UartPost(Msg_info,EEPModName,"Programming main config file.");	 
+	 UartPost(Msg_critical,EEPModName,"No usable config found,reverbing to default.");
+	 UartPost(Msg_info,EEPModName,"Restoring main config file.");	 
 	 DisplayCheckResult(WriteConfigurationToROM(Config_Main),true);
-	 UartPost(Msg_info,EEPModName,"Programming backup config file."); 
+	 UartPost(Msg_info,EEPModName,"Restoring backup config file."); 
 	 DisplayCheckResult(WriteConfigurationToROM(Config_Backup),true);
-	 UartPost(Msg_info,EEPModName,"Programming completed,driver will restart automatically."); 
+	 UartPost(Msg_info,EEPModName,"Restore completed,system will restart automatically."); 
 	 delay_Second(2);		
    NVIC_SystemReset();//硬重启
 	 }

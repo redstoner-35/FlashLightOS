@@ -16,7 +16,7 @@ char GetLEDTypeFromUserInput(char *Param)
 	if(Param==NULL)return 0; //传入指针为空
   InputLen=strlen(Param);
   for(i=0;i<6;i++)//找到匹配的字符串
-  if(InputLen==strlen(ThermalsensorString[i])&&!strcmp(ThermalsensorString[i],Param))
+  if(InputLen==strlen(LEDStr[i])&&!strcmp(LEDStr[i],Param))
 	 return i+0x03; //将序列数值加3得到FRU内的LEDCode
 	//啥也没找到返回0
 	return 0;

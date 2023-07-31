@@ -50,6 +50,7 @@ void ConsoleReconfigure(void)
 	USART_Init(HT_USART1,&USART1InitStr);
 	//进行LED自检
 	CurrentLEDIndex=1;//红绿交替闪一下
+  while(CurrentLEDIndex==1);//循环等待直到自检序列结束
 	}
 //初始化console
 void ConsoleInit(void)

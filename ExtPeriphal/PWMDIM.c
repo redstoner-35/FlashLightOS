@@ -85,5 +85,4 @@ void PWMTimerInit(void)
  //启动定时器TBU和比较通道1的输出功能
  TM_Cmd(HT_MCTM0, ENABLE); 
  MCTM_CHMOECmd(HT_MCTM0, ENABLE);
- UartPost(Msg_info,"MoonPWMDIM","PWM Generator TIM has been started.");
  }

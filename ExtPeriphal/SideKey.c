@@ -78,6 +78,7 @@ void SideKey_Callback(void)
 	if(CfgFile.DeepSleepTimeOut>0)DeepSleepTimer=CfgFile.DeepSleepTimeOut;
   else DeepSleepTimer=-1;//复位定时器
 	//给内部处理变量赋值
+	delay_ms(12); //软件消抖
 	#ifdef SideKeyPolar_positive	
 	if(GPIO_ReadInBit(ExtKey_IOG,ExtKey_IOP))
 	#else	
@@ -101,9 +102,8 @@ void SideKey_Callback(void)
 			Keyevent.DoubleClickAndHoldEvent=false;
 			Keyevent.PressAndHoldEvent=false;
 			Keyevent.LongPressDetected=false;//清除检测到的表示
-		  return;
 	    }
-		if(time<(unsigned char)LongPressTime)//短按事件发生      
+		else if(time<(unsigned char)LongPressTime)//短按事件发生      
 			{
 		  if(Keyevent.ShortPressCount<10)Keyevent.ShortPressCount++;//累加有效的短按次数
 		  KeyTimer[1]=0x80;//启动短按完毕等待统计的计时器
