@@ -195,7 +195,7 @@ void ForceWriteRuntimelog(void)
   RunLogEntry.Data.DataSec.LogIncrementCode=SelfIncCode;//将计算好的自增码写进去
 	//尝试编程
   if(SaveRunLogDataToROM(&RunLogEntry.Data,RunLogEntry.ProgrammedEntry))
-    RunLogEntry.ProgrammedEntry++;//编程成功，指向下一个entry  		
+    RunLogEntry.ProgrammedEntry=(RunLogEntry.ProgrammedEntry+1)%RunTimeLoggerDepth;//编程成功，指向下一个entry，如果达到额定的entry数目则翻转回来  		
 	else 
 		RunLogEntry.Data.DataSec.LogIncrementCode=OldCode;//编程失败，entry数不增加的同时，还原更改了的自增码
 	}
@@ -223,36 +223,44 @@ int FindLatestEntryViaIncCode(signed char *CodeIN)
   {
 	int i;
   //判断数组的第0个元素是正还是负还是0
-	if(CodeIN[i]>0)for(i=0;i<RunTimeLoggerDepth-1;i++)//大于0
-		{
-	  /*
-	             i i+1
-		[1 2 3 4 5 6 0 0 0 0 0 ]这种情况.
-		6是最新的，后面啥也没有了返回结果	
-	  */
-		if(CodeIN[i+1]==0)return i;
-	  /*
-	             i i+1
-		[1 2 3 4 5 6 -5 -4 -3 -2 -1]这种情况.
-		6是最新的，后面是旧数据，返回结果	
-	  */		
-		if(CodeIN[i+1]<0)return i;
+	if(CodeIN[0]>0)
+	  {
+		for(i=0;i<RunTimeLoggerDepth-1;i++)//大于0
+			{
+			/*
+								i i+1
+			[1 2 3 4 5 6 0 0 0 0 0 ]这种情况.
+			6是最新的，后面啥也没有了返回结果	
+			*/
+			if(CodeIN[i+1]==0)return i;
+			/*
+								i i+1
+			[1 2 3 4 5 6 -5 -4 -3 -2 -1]这种情况.
+			6是最新的，后面是旧数据，返回结果	
+			*/		
+			if(CodeIN[i+1]<0)return i;
+			}
+		return RunTimeLoggerDepth-1;//找到序列末尾，返回序列末尾的值
 		}
-	else if(CodeIN[i]<0)for(i=0;i<RunTimeLoggerDepth-1;i++)//小于0
-		{
-	  /*
+	else if(CodeIN[0]<0)
+	  {
+		for(i=0;i<RunTimeLoggerDepth-1;i++)//小于0
+			{
+			/*
 	                i  i+1
-		[-10 -9 -8 -7 -6 6 7 8 9 10]这种情况.
-		-6是最新的，后面的是旧数据，返回结果	
-	  */
-		if(CodeIN[i+1]>0)return i;
-	  /*
-	                i  i+1
-		[-10 -9 -8 -7 -6 0 0 0 0 0]这种情况.
-		6是最新的，后面啥也没有了,返回结果
-	  */		
-		if(CodeIN[i+1]==0)return i;
-		}	
+			[-10 -9 -8 -7 -6 6 7 8 9 10]这种情况.
+			-6是最新的，后面的是旧数据，返回结果	
+			*/
+			if(CodeIN[i+1]>0)return i;
+			/*
+										i  i+1
+			[-10 -9 -8 -7 -6 0 0 0 0 0]这种情况.
+			6是最新的，后面啥也没有了,返回结果
+			*/		
+			if(CodeIN[i+1]==0)return i;
+			}	
+		return RunTimeLoggerDepth-1;//找到序列末尾，返回序列末尾的值
+		}
 	return 0;//等于0，直接从这里开始
 	}
 /*******************************************
@@ -418,7 +426,7 @@ void RunLogModule_POR(void)
 	 SelfIncBuf[i]=Data.DataSec.LogIncrementCode;
 	 }
  //遍历完毕，查询自增码获得最新的log entry并计算CRC32
- UartPost(Msg_info,"RTLogger","Integritycheck completed,find %d broken runtime error log entry in ROM.",errorlog);
+ UartPost(Msg_info,"RTLogger","Integritycheck completed,find %d broken runtime log entry in ROM.",errorlog);
  i=FindLatestEntryViaIncCode(SelfIncBuf);
  if(!LoadRunLogDataFromROM(&RunLogEntry.Data,i))//从ROM内读取选择的Entry作为目前数据的内容
     {
@@ -429,7 +437,7 @@ void RunLogModule_POR(void)
  for(j=0;j<RunTimeLoggerDepth;j++)if(SelfIncBuf[j])IsLogEmpty=false; //检查entry是不是已经空了
  if(IsLogEmpty)RunLogEntry.ProgrammedEntry=0;//如果目前事件日志一组记录都没有，则从0开始记录
  else RunLogEntry.ProgrammedEntry=(i+1)%RunTimeLoggerDepth;//目前entry已经有数据了，从下一条entry开始
- UartPost(Msg_info,"RTLogger","Run-Time logger will start to log information at entry #%d.",RunLogEntry.ProgrammedEntry);
+ UartPost(Msg_info,"RTLogger","Last Entry is #%d,Logger will start to log at entry #%d.",i,RunLogEntry.ProgrammedEntry);
  RunLogEntry.LastDataCRC=CalcRunLogCRC32(&RunLogEntry.Data);
  RunLogEntry.Data.DataSec.IsLowVoltageAlert=false;//已经重启了需要重置低压警告不然用户会发现换了电池还是低压警告.
  RunLogEntry.CurrentDataCRC=CalcRunLogCRC32(&RunLogEntry.Data);//计算CRC-32

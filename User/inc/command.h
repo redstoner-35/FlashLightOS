@@ -122,9 +122,15 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		{
 		 {Log_Perm_Root,Log_Perm_End},//10
 		"imonadj",
+		#ifndef FlashLightOS_Debug_Mode
+    "此命令已被移除",
+		"\0\n",
+    "\0\n",
+    #else		 
 		"允许厂家配置驱动输出电流测量模块的矫正参数",
 		"-v\0--view\0-g\0--gain\0-thr\0--threshold\0-n\0--node\0\n",
 		" \0 \0 <增益(0.5-1.5)>\0 <增益(0.5-1.5)>\0 <阈值电流(A)>\0 <阈值电流(A)>\0 <节点编号>\0 <节点编号>\0\n",
+		#endif
 		&imonadjArgument,
 		Command_imonadj,
 		NULL,
@@ -225,9 +231,9 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		{
 		 {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//19
      "strobecfg",
-		 "在挡位配置为爆闪模式时,允许用户编辑指定挡位的爆闪频率",
-     "-mg\0--mode_group\0-mn\0--mode_number\0-sf\0--strobe_freq\0\n",
-		 " <模式组名称.>\0 <模式组名称.>\0 <挡位序号.>\0 <挡位序号.>\0 <爆闪频率(Hz)>\0 <爆闪频率(Hz)>\0\n",
+		 "在挡位配置为爆闪和随机爆闪模式时,允许用户编辑指定挡位的爆闪参数",
+     "-mg\0--mode_group\0-mn\0--mode_number\0-sf\0--strobe_freq\0-minf\0--min_freq\0\0-maxf\0--max_freq\0\n",
+		 " <模式组名称.>\0 <模式组名称.>\0 <挡位序号.>\0 <挡位序号.>\0 <频率(Hz)>\0 <频率(Hz)>\0 <频率(Hz)>\0 <频率(Hz)>\0 <频率(Hz)>\0 <频率(Hz)>\0\n",
 		 &strobecfgArgument,
 		 Command_strobecfg,
 		 NULL,
@@ -247,7 +253,7 @@ const ComamandStringStr Commands[TotalCommandCount]=
 	  {
 		 {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//21
      "breathecfg",
-		 "在挡位配置为呼吸(或称为信标)模式时，用户可对信标模式的时间参数进行编辑.对于详细的时序参数可以参考下图:\r\n\r\n        /--------\\\r\n-------/          \\-----------------------....\r\n      | |Tholdup | |      Tholddn        |\r\n    Trampup     Trampdn\r\n",
+		 "在挡位配置为呼吸(或称为信标)模式时，用户可对信标模式的时间参数(详细描述请阅读文档)进行编辑.",
      "-mg\0--mode_group\0-mn\0--mode_number\0-trup\0--time_rampup\0\0-trdn\0--time_rampdown\0-thup\0--time_hold_up\0-thdn\0--time_hold_down\0\n",
 		 " <模式组名称.>\0 <模式组名称.>\0 <挡位序号.>\0 <挡位序号.>\0 <爬升时间(秒)>\0 <爬升时间(秒)>\0 <下滑时间(秒)>\0 <下滑时间(秒)>\0 <最大亮度保持时间(秒)>\0 <最大亮度保持时间(秒)>\0 <最小亮度保持时间(秒)>\0 <最小亮度保持时间(秒)>\0\n",
 		 &breathecfgArgument,

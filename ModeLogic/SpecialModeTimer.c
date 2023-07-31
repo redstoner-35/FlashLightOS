@@ -27,6 +27,7 @@ void FlashTimerCallbackRoutine(void)
 	 case LightMode_CustomFlash:CustomFlashHandler();break;//自定义闪模式，交给对应的函数去处理
 	 case LightMode_Ramp:RampModeHandler();break;//无极调光模式下跳转到相应的函数去处理
 	 case LightMode_Breath:BreatheStateMachine();break;//呼吸模式下，处理对应的状态机操作
+	 case LightMode_RandomFlash:RandomFlashHandler();//执行handler，然后跳转到下面的翻转输出
 	 case LightMode_Flash:SysPstatebuf.ToggledFlash=SysPstatebuf.ToggledFlash?false:true;break;//翻转输出形成爆闪
 	 case LightMode_SOS:
 	 case LightMode_MosTrans:MorseSenderStateMachine();break;//SOS和摩尔斯发送，跳到对应的handler
@@ -37,6 +38,7 @@ void FlashTimerCallbackRoutine(void)
  else if(TimerMode==LightMode_SOS)IsProcessLVAlert=false;
  else if(TimerMode==LightMode_CustomFlash)IsProcessLVAlert=false;
  else if(TimerMode==LightMode_Flash)IsProcessLVAlert=false;
+ else if(TimerMode==LightMode_RandomFlash)IsProcessLVAlert=false;
  else IsProcessLVAlert=true; //除了无极调光和呼吸档会显示以外其他都不显示
  if(RunLogEntry.Data.DataSec.IsLowVoltageAlert&&IsProcessLVAlert)
    {
@@ -88,6 +90,7 @@ void FlashTimerInitHandler(void)
 	 case LightMode_Ramp:Freq=BreathTIMFreq;break;
 	 case LightMode_Breath:Freq=BreathTIMFreq;break;//呼吸和无极调光模式下，定时器生成的中断频率配置为指定值
 	 case LightMode_Flash:Freq=(float)2*CurrentMode->StrobeFrequency;break;//按照爆闪频率的2倍去配置
+	 case LightMode_RandomFlash:Freq=(float)2*CurrentMode->RandStrobeMaxFreq;break;//按照最高频率的2倍去配置
 	 case LightMode_SOS:
 	 case LightMode_MosTrans:Freq=(float)1/CurrentMode->MosTransferStep;break;//SOS和摩尔斯发送按照指定的每阶频率，求倒数
 	 default:TimerHasStarted=true; return;
@@ -98,7 +101,7 @@ void FlashTimerInitHandler(void)
  //开始设置
  TM_Cmd(HT_GPTM1, DISABLE);//短时间关闭一下定时器
  TimeBaseInit.Prescaler = 4799;                      // 48MHz->10KHz
- TimeBaseInit.CounterReload = (10000/(int)Freq)-1;                  // 10KHz->指定频率
+ TimeBaseInit.CounterReload = (int)(10000/Freq)-1;                  // 10KHz->指定频率
  TimeBaseInit.RepetitionCounter = 0;
  TimeBaseInit.CounterMode = TM_CNT_MODE_UP;
  TimeBaseInit.PSCReloadTime = TM_PSC_RLD_IMMEDIATE;

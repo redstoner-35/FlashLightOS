@@ -106,6 +106,8 @@ void RestoreFactoryModeCfg(void)
 	 CfgFile.RegularMode[i].LEDCurrentHigh=(i==0)?0.5:((FusedMaxCurrent*regModeCurrent[i-1])/(float)100);//编程电流(百分比)
 	 CfgFile.RegularMode[i].Mode=LightMode_On;//正常挡位全是常亮档
 	 CfgFile.RegularMode[i].StrobeFrequency=10;//默认爆闪频率为10Hz
+	 CfgFile.RegularMode[i].RandStrobeMaxFreq=16;
+	 CfgFile.RegularMode[i].RandStrobeMinFreq=5;		//随机爆闪频率 
 	 CfgFile.RegularMode[i].MosTransferStep=0.5;//摩尔斯码发送的step为0.5秒1阶		 
 	 CfgFile.RegularMode[i].RampModeSpeed=2.5; //无极调光模式下电流上升下降的速度(2.5秒1循环)
 	 CfgFile.RegularMode[i].MaxCurrentHoldTime=1;
@@ -130,6 +132,8 @@ void RestoreFactoryModeCfg(void)
 	CfgFile.RegularMode[0].MosTransferStep=0.5;//摩尔斯码发送的step为0.5秒1阶		 
 	CfgFile.RegularMode[0].RampModeSpeed=2.5; //无极调光模式下电流上升下降的速度(多少秒1循环)
 	CfgFile.RegularMode[0].MaxCurrentHoldTime=1;
+	CfgFile.RegularMode[0].RandStrobeMaxFreq=16;
+	CfgFile.RegularMode[0].RandStrobeMinFreq=5;		//随机爆闪频率 
 	CfgFile.RegularMode[0].MinCurrentHoldTime=10;
 	CfgFile.RegularMode[0].CurrentRampDownTime=2;
 	CfgFile.RegularMode[0].CurrentRampUpTime=2;  //信标模块，电流用2秒到最大电流，保持1秒，然后2秒到最小电流，保持10秒后循环 
@@ -149,6 +153,8 @@ void RestoreFactoryModeCfg(void)
    CfgFile.RegularMode[i].Mode=LightMode_On;//正常挡位全是常亮档
 	 CfgFile.RegularMode[i].StrobeFrequency=10;//默认爆闪频率为10Hz
 	 CfgFile.RegularMode[i].MosTransferStep=0.1;//摩尔斯码发送的step为0.1秒1阶	 
+	 CfgFile.RegularMode[i].RandStrobeMaxFreq=16;
+	 CfgFile.RegularMode[i].RandStrobeMinFreq=5;		//随机爆闪频率 
 	 CfgFile.RegularMode[i].MaxCurrentHoldTime=1;
 	 CfgFile.RegularMode[i].MinCurrentHoldTime=10;
 	 CfgFile.RegularMode[i].CurrentRampDownTime=2;
@@ -168,6 +174,8 @@ void RestoreFactoryModeCfg(void)
 	CfgFile.DoubleClickMode.StrobeFrequency=10;//默认爆闪频率为10Hz
 	CfgFile.DoubleClickMode.LEDCurrentHigh=FusedMaxCurrent;//编程电流(配置为驱动允许的最大电流)
   CfgFile.DoubleClickMode.Mode=LightMode_On;//双击极亮也是常亮档
+	CfgFile.DoubleClickMode.RandStrobeMaxFreq=16;
+	CfgFile.DoubleClickMode.RandStrobeMinFreq=5;		//随机爆闪频率 
 	CfgFile.DoubleClickMode.MosTransferStep=0.1;//摩尔斯码发送的step为0.1秒1阶		 
 	CfgFile.DoubleClickMode.MaxCurrentHoldTime=1;
 	CfgFile.DoubleClickMode.MinCurrentHoldTime=10;
@@ -186,6 +194,8 @@ void RestoreFactoryModeCfg(void)
 	CfgFile.DoubleClickMode.LEDCurrentLow=0;//呼吸模式低电流为0
 	CfgFile.DoubleClickMode.LEDCurrentHigh=10;//编程电流
   CfgFile.DoubleClickMode.Mode=LightMode_On;//常亮
+  CfgFile.DoubleClickMode.RandStrobeMaxFreq=16;
+	CfgFile.DoubleClickMode.RandStrobeMinFreq=5;		//随机爆闪频率 
 	CfgFile.DoubleClickMode.StrobeFrequency=10;//默认爆闪频率为10Hz
   CfgFile.DoubleClickMode.MosTransferStep=0.1;//摩尔斯码发送的step为0.1秒1阶	 
 	CfgFile.DoubleClickMode.MaxCurrentHoldTime=1;
@@ -203,6 +213,8 @@ void RestoreFactoryModeCfg(void)
 	 CfgFile.SpecialMode[i].PowerOffTimer=0;//自动关机定时器禁用
 	 memset(CfgFile.SpecialMode[i].CustomFlashStr,0x00,32);
    CfgFile.SpecialMode[i].IsModeHasMemory=false;//不记忆
+	 CfgFile.SpecialMode[i].RandStrobeMaxFreq=16;
+	 CfgFile.SpecialMode[i].RandStrobeMinFreq=5;		//随机爆闪频率 
 	 CfgFile.SpecialMode[i].IsModeAffectedByStepDown=true;//受温控影响
 	 CfgFile.SpecialMode[i].LEDCurrentLow=0;//呼吸模式低电流为0A
 	 CfgFile.SpecialMode[i].LEDCurrentHigh=i==0?FusedMaxCurrent:FusedMaxCurrent*0.9;//编程电流(除了爆闪100%，其他90%)

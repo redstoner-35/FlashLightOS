@@ -24,13 +24,11 @@ const char *imonadjArgument(int ArgCount)
 //命令处理
 void Imonadjhandler(void)
  {
- 
+ #ifdef FlashLightOS_Debug_Mode
  int i;
  ADCOutTypeDef ADCO;
- #ifdef FlashLightOS_Debug_Mode
  char *ParamPtr;
  float buf,oldvalue;
- #endif
  char paramok;
  bool CommandParamOK=false;
  //--v参数
@@ -55,7 +53,6 @@ void Imonadjhandler(void)
 		}	 
 	 CommandParamOK=true;
 	 }
- #ifdef FlashLightOS_Debug_Mode
  //检查传入设置节点参数的同时是否传入了节点数值
  IsParameterExist("2345",10,&paramok);
  if(paramok&&IsParameterExist("67",10,NULL)==NULL)
@@ -108,17 +105,12 @@ void Imonadjhandler(void)
 			 CommandParamOK=true;
 			 }			 
 		 }
-	 }
- #else
- IsParameterExist("2345",10,&paramok);
- if(paramok)
-    {
-	  CommandParamOK=true;
-	  UARTPuts("\r\n编辑电流探头参数的功能已被正式版固件禁用.");
-		}
- #endif
+	 } 
  //非法的参数
  if(!CommandParamOK)UartPrintCommandNoParam(10);//显示啥也没找到的信息 
+ #else
+ UARTPuts("\r\n编辑电流探头参数的功能已被正式版固件禁用.");
+ #endif
  //命令完毕的回调处理	 
  ClearRecvBuffer();//清除接收缓冲
  CmdHandle=Command_None;//命令执行完毕			

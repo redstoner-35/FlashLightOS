@@ -6,6 +6,7 @@
 
 //外部变量
 extern const char *ModeSelectStr[];
+static const char *ModeInfoStr="\r\n  挡位";
 
 //参数帮助entry
 const char *modeviewArgument(int ArgCount)
@@ -19,7 +20,6 @@ const char *modeviewArgument(int ArgCount)
 		}
 	return NULL;
 	} 
-
 //命令主函数	
 void modeviewhandler(void)
   {
@@ -44,30 +44,33 @@ void modeviewhandler(void)
 			UARTPuts(" 挡位信息查看器(详细视图) ");
 			UARTPutc('-',8);
 			UARTPuts("\r\n");
-			UartPrintf("\r\n  挡位名称 : %s",TargetMode->ModeName);
-			UartPrintf("\r\n  挡位是否启用 : %s",TargetMode->IsModeEnabled?"是":"否");
-			UartPrintf("\r\n  挡位是否带记忆功能 : %s",TargetMode->IsModeHasMemory?"是":"否");
-			UartPrintf("\r\n  挡位是否带温控功能 : %s",TargetMode->IsModeAffectedByStepDown?"是":"否");
+			UartPrintf("%s名称 : %s",(char *)ModeInfoStr,TargetMode->ModeName);
+			UartPrintf("%s是否启用 : %s",(char *)ModeInfoStr,TargetMode->IsModeEnabled?"是":"否");
+			UartPrintf("%s是否带记忆功能 : %s",(char *)ModeInfoStr,TargetMode->IsModeHasMemory?"是":"否");
+			UartPrintf("%s是否带温控功能 : %s",(char *)ModeInfoStr,TargetMode->IsModeAffectedByStepDown?"是":"否");
 			UARTPuts("\r\n  定时关机 : ");
 			if(TargetMode->PowerOffTimer>0)
 				UartPrintf("%d分钟后自动关机",TargetMode->PowerOffTimer);
 			else
 				UARTPuts("已禁用");
-			UartPrintf("\r\n  挡位模式 : %s模式",LightModeString[(int)TargetMode->Mode]);
+			UartPrintf("%s模式 : %s模式",(char *)ModeInfoStr,LightModeString[(int)TargetMode->Mode]);
 			//显示电流
 			if(TargetMode->Mode!=LightMode_Ramp&&TargetMode->Mode!=LightMode_Breath)
-				UartPrintf("\r\n  挡位额定LED电流 : %.2fA",TargetMode->LEDCurrentHigh);
+				UartPrintf("%s额定LED电流 : %.2fA",(char *)ModeInfoStr,TargetMode->LEDCurrentHigh);
 			else
 			  {
-				UartPrintf("\r\n  挡位天花板电流(最高电流) : %.2fA",TargetMode->LEDCurrentHigh);
-				UartPrintf("\r\n  挡位地板电流(最低电流) : %.2fA",TargetMode->LEDCurrentLow);
+				UartPrintf("%s天花板电流(最高电流) : %.2fA",(char *)ModeInfoStr,TargetMode->LEDCurrentHigh);
+				UartPrintf("%s地板电流(最低电流) : %.2fA",(char *)ModeInfoStr,TargetMode->LEDCurrentLow);
 				}
 			//显示其他参数
 			switch(TargetMode->Mode)
 			  {
 				case LightMode_On:break;//常亮
+				case LightMode_RandomFlash:
+					UartPrintf("\r\n  随机爆闪上/下限频率 : %.1fHz/%.1fHz",TargetMode->RandStrobeMinFreq,TargetMode->RandStrobeMaxFreq);
+				   break;
 				case LightMode_Flash://爆闪
-					 UartPrintf("\r\n  挡位爆闪频率 : %.1fHz",TargetMode->StrobeFrequency);
+					 UartPrintf("%s爆闪频率 : %.1fHz",TargetMode->StrobeFrequency);
 				   break;
 			  case LightMode_MosTrans://摩尔斯代码发送
 					 UartPrintf("\r\n  自定义发送内容 : '%s'",TargetMode->MosTransStr);
@@ -85,7 +88,7 @@ void modeviewhandler(void)
 				   break;
  				case LightMode_CustomFlash: //自定义闪模式
 				   UartPrintf("\r\n  自定义闪控制字符串 : '%s'",TargetMode->CustomFlashStr);
-				   UartPrintf("\r\n  最高频闪频率 : %.1fHz",TargetMode->CustomFlashSpeed);
+				   UartPrintf("\r\n  序列运行频率 : %.1fHz",TargetMode->CustomFlashSpeed);
 				//其余的啥也不做
 				default : break;
 				}

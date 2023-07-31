@@ -15,6 +15,7 @@ typedef enum
  {
  LightMode_On,//常亮
  LightMode_Flash,//爆闪
+ LightMode_RandomFlash,//随机爆闪
  LightMode_SOS,//SOS
  LightMode_MosTrans,//摩尔斯代码发送
  LightMode_Breath,//呼吸模式(参数调整正确时为信标模式)
@@ -78,6 +79,8 @@ typedef struct
  float RampModeSpeed; //无极调光模式时电流上升下降的速度，单位(s) 
  float MosTransferStep;//摩尔斯代码发送的Step,单位(秒)
  float StrobeFrequency;//爆闪频率
+ float RandStrobeMaxFreq;
+ float RandStrobeMinFreq; //随机爆闪的上限和下限
  float CustomFlashSpeed;//自定义闪速度
  short PowerOffTimer;//定时关机计时器
  bool IsModeEnabled;//挡位是否启用
@@ -152,6 +155,7 @@ void LEDShortCounter(void);//短路检测积分函数
 void LowVoltageIndicate(void);//低电压检测
 void DisplayBattVoltage(void);//显示电池电压
 void DisplayBatteryCapacity(void);//库仑计开启时显示百分比（精确到1%）
+void RandomFlashHandler(void);//随机变频闪的handler
 
 //外部引用
 extern CurrentModeStr CurMode;//当前模式的结构体 

@@ -242,7 +242,7 @@ void UartPost(Postmessagelevel msglvl,const char *Modules,char *Format,...); //�
 
 //外部参考变量(供其他函数使用)
 extern const char *ThermalsensorString[2];//温度传感字符串
-extern const char *LightModeString[7];//模式字符串
+extern const char *LightModeString[8];//模式字符串
 extern const char *ModeGrpString[3];//模式组字符串
 extern char RXRingBuffer[CmdBufLen];//RX 环形FIFO
 extern short QueueRearPTR;

@@ -932,6 +932,11 @@
               <FileType>1</FileType>
               <FilePath>.\ModeLogic\Customflash.c</FilePath>
             </File>
+            <File>
+              <FileName>RandomFlash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\ModeLogic\RandomFlash.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

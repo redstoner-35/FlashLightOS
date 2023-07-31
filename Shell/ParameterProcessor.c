@@ -105,15 +105,16 @@ void DisplayCorrectSensor(void)
 
 //检查用户选择了哪个挡位模式
 //输入：字符串  输出:枚举方式分别表示用户输入了什么
-const char *LightModeString[7]={"常亮","爆闪","SOS","摩尔斯发送","呼吸","无极调光","自定义闪"};
-static const char *ModeUsageString[7]=
+ const char *LightModeString[8]={"常亮","爆闪","随机爆闪","SOS","摩尔斯发送","呼吸","无极调光","自定义闪"};
+static const char *ModeUsageString[8]=
  {
  "一直保持点亮",
  "按照用户设置的爆闪频率闪烁",
+ "随机频率爆闪",
  "按照用户指定的速度发送SOS求救光学信号(... --- ...)",
  "通过摩尔斯电码以光学方式发送用户设置的自定义字符串",
  "用户指定的参数平滑的增高亮度,等待一会后然后亮度平滑的下跌,再度等待并以此反复循环,模拟呼吸效果。",
- "保持点亮,用户可自由设定亮度."
+ "保持点亮,用户可自由设定亮度.",
  "依据用户指定的字符串所指定的闪烁模式闪烁"	 
  };
 
@@ -123,16 +124,17 @@ LightModeDef CheckUserInputForLightmode(char *Param)
  int InputLen;
  if(Param==NULL)return LightMode_None;
  InputLen=strlen(Param);
- for(i=0;i<7;i++)//找到匹配的字符串
+ for(i=0;i<8;i++)//找到匹配的字符串
 	 if(InputLen==strlen(LightModeString[i])&&!strcmp(LightModeString[i],Param))switch(i)
 	  {
 		 case 0:return LightMode_On;
 		 case 1:return LightMode_Flash;
-		 case 2:return LightMode_SOS;
-		 case 3:return LightMode_MosTrans;
-		 case 4:return LightMode_Breath;
-		 case 5:return LightMode_Ramp;
-		 case 6:return LightMode_CustomFlash;
+		 case 2:return LightMode_RandomFlash;
+		 case 3:return LightMode_SOS;
+		 case 4:return LightMode_MosTrans;
+		 case 5:return LightMode_Breath;
+		 case 6:return LightMode_Ramp;
+		 case 7:return LightMode_CustomFlash;
 		}
  return LightMode_None;
  }
@@ -143,7 +145,7 @@ void DisplayCorrectMode(void)
  {
  int i;
  UARTPuts("\r\n有效的挡位模式参数如下:");
- for(i=0;i<7;i++)UartPrintf("\r\n%s : 手电筒的主LED将%s",LightModeString[i],ModeUsageString[i]);
+ for(i=0;i<8;i++)UartPrintf("\r\n%s : 手电筒的主LED将%s",LightModeString[i],ModeUsageString[i]);
  }	 
 //检查用户选择了哪个挡位组
 //输入：字符串  输出:枚举方式分别表示用户输入了什么
