@@ -6,6 +6,7 @@
 #include "LEDMgmt.h"
 #include "AD5693R.h"
 #include "PWMDIM.h"
+#include "runtimelogger.h"
 #include "ADC.h"
 
 extern bool IsParameterAdjustMode;
@@ -126,6 +127,7 @@ void ExitLowPowerMode(void)
 		}
 	//启动完毕，检查是否进入调参模式，否则回到待机模式
 	if(IsHostConnectedViaUSB())IsParameterAdjustMode=true;
-  if(SysPstatebuf.ErrorCode==Error_None)SysPstatebuf.Pstate=PState_Standby;
+	if(RunLogEntry.Data.DataSec.IsFlashLightLocked)SysPstatebuf.Pstate=PState_Locked;//如果睡眠前手电筒被上锁则恢复到锁定模式
+	else if(SysPstatebuf.ErrorCode==Error_None)SysPstatebuf.Pstate=PState_Standby;
 	else SysPstatebuf.Pstate=PState_Error; //如果有没消除的错误则跳回Error状态
 	}

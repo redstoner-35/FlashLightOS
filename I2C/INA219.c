@@ -141,6 +141,8 @@ bool INA219_SetConvMode(INA219ModeDef ConvMode,char SensorADDR)
  return true;	 
  }
 //INA219初始化
+const char *Change219PstateErrStr="Failed to change P-states of SMBUS Power Gauge to %s"; 
+ 
 void INA219_POR(void)
  {
  INAinitStrdef PORINACfg;
@@ -167,7 +169,7 @@ void INA219_POR(void)
 	}
  if(!INA219_SetConvMode(INA219_Cont_Both,INA219ADDR))
   {
-	UartPost(Msg_critical,"INA21x","Failed to change P-states of SMBUS Power Gauge to active.");
+	UartPost(Msg_critical,"INA21x",(char *)Change219PstateErrStr,"active");
 	CurrentLEDIndex=5;//指示219初次测量异常
 	#ifndef FlashLightOS_Debug_Mode
 	SelfTestErrorHandler();
@@ -187,7 +189,7 @@ void INA219_POR(void)
 	}
  if(!INA219_SetConvMode(INA219_PowerDown,INA219ADDR))
   {
-	UartPost(Msg_critical,"INA21x","Failed to change P-states of SMBUS Power Gauge to inactive.");
+	UartPost(Msg_critical,"INA21x",(char *)Change219PstateErrStr,"inactive");
 	CurrentLEDIndex=5;//指示219初次测量异常
 	#ifndef FlashLightOS_Debug_Mode
 	SelfTestErrorHandler();

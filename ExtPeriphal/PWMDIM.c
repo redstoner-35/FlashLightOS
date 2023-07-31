@@ -47,7 +47,7 @@ void PWMTimerInit(void)
  //通过PWM引脚检测主机的连接
  if(IsHostConnectedViaUSB())
    {
-	 UartPost(Msg_info,"HostIf","Host computer is connected via USB-TypeC port,Driver will enter tuning mode."); 
+	 UartPost(Msg_info,"HostIf","Host computer connected,Driver will enter USB-Tuning mode."); 
 	 IsParameterAdjustMode=true;
 	 return;
 	 } 

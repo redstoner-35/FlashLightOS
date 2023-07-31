@@ -13,6 +13,7 @@
 
 //随机数值
 static int psc=1024;
+static char RandomCount=0;
 
 void RandomFlashHandler(void)
  {
@@ -22,18 +23,30 @@ void RandomFlashHandler(void)
  //获取挡位配置
  CurrentMode=GetCurrentModeConfig();//获取目前挡位信息
  if(CurrentMode==NULL)return; //字符串为NULL
+ maxreload=(int)(10000/CurrentMode->RandStrobeMaxFreq); //计算最高允许频率
+ minreload=(int)(10000/CurrentMode->RandStrobeMinFreq); 
+ //获取最大频率然后开始延时
+ if(RandomCount>0) //随机闪烁次数
+   {
+	 RandomCount--;
+	 if(psc>maxreload)//当前频率比较慢，可以让频率逐渐变快
+	   {
+		 psc-=(psc>(maxreload+40))?40:1; //减去定时器ARR值
+		 HT_GPTM1->CRR=(psc/2)-1;//写GPTM计时器
+		 }
+	 return;
+	 }
  //设置随机数种子
  buf=(unsigned int)(HT_MCTM0->CNTR^HT_GPTM0->CNTR);//读取系统心跳和PWM定时器的计数器值
- buf^=(unsigned int)psc;
+ buf^=(unsigned int)psc; //加上PSC值
  srand(buf^RunLogEntry.CurrentDataCRC);//将算出来的值和运行日志当前的CRC32异或作为随机种子
  //生成定时器重载值
- maxreload=(int)(10000/CurrentMode->RandStrobeMaxFreq);
- minreload=(int)(10000/CurrentMode->RandStrobeMinFreq); 
  do
    {
 	 psc=(rand()%(minreload-maxreload))+maxreload;//生成随机数
+	 RandomCount=(rand()%17); //随机决定执行次数
 	 }
  while(psc<=0); //反复生成一个大于0的随机数
- //写入到GPTM1的寄存器里面
+ //写GPTM寄存器
  HT_GPTM1->CRR=(psc/2)-1;//生成的频率需要/2才是真实值
  }
