@@ -109,10 +109,24 @@ void RunTimeDataLogging(void)
 	 }
  else if(LEDRuntimeAverageCount==5)//平均完毕
    {
+	 //填写平均的LEDVf If
 	 RunLogEntry.Data.DataSec.AverageLEDVf=AverageBuf[5]/(float)5;
    RunLogEntry.Data.DataSec.AverageLEDIf=AverageBuf[6]/(float)5;
 	 for(i=5;i<7;i++)AverageBuf[i]=0;
 	 LEDRuntimeAverageCount=0;
+	 //驱动的平均效率计算
+	 EffCalcBuf=RunLogEntry.Data.DataSec.AverageLEDVf*RunLogEntry.Data.DataSec.AverageLEDIf;//加入输出功率
+   EffCalcBuf/=RunLogEntry.Data.DataSec.AverageBatteryPower;//除以输入功率的平均值得到效率
+   EffCalcBuf*=(float)100;//将算出的值*100得到百分比
+   if(EffCalcBuf>99)EffCalcBuf=99;
+	 if(EffCalcBuf<5)EffCalcBuf=5;//算出的效率值进行限幅确保大于5且小于99
+   RunLogEntry.Data.DataSec.AverageDriverEfficiency=EffCalcBuf;
+   //驱动的峰值效率计算 
+   for(i=4;i>0;i--)MaxEfficiencyCalcBuf[i]=MaxEfficiencyCalcBuf[i-1];//搬运数据
+   MaxEfficiencyCalcBuf[0]=RunLogEntry.Data.DataSec.AverageDriverEfficiency;//将刚刚算出的平均效率加入到计算区域内
+   EffCalcBuf=-10; //将效率值设置为负数来方便找到最高的效率点
+   for(i=0;i<5;i++)EffCalcBuf=fmaxf(MaxEfficiencyCalcBuf[i],EffCalcBuf);//取一段时间内的最大值
+   RunLogEntry.Data.DataSec.MaximumEfficiency=EffCalcBuf;//峰值效率
 	 }
  else if(SysPstatebuf.ToggledFlash)//LED运行时累加电压和电流数据进去
    {
@@ -120,20 +134,8 @@ void RunTimeDataLogging(void)
 	 AverageBuf[6]+=ADCO.LEDIf;
 	 LEDRuntimeAverageCount++; 
 	 }
- //驱动的平均效率计算和填写降档等级
+ //填写降档等级
  RunLogEntry.Data.DataSec.ThermalStepDownValue=SysPstatebuf.CurrentThrottleLevel;
- EffCalcBuf=RunLogEntry.Data.DataSec.AverageLEDVf*RunLogEntry.Data.DataSec.AverageLEDIf;//加入输出功率
- EffCalcBuf/=RunLogEntry.Data.DataSec.AverageBatteryPower;//除以输入功率的平均值得到效率
- EffCalcBuf*=(float)100;//将算出的值*100得到百分比
- if(EffCalcBuf>99)EffCalcBuf=99;
- if(EffCalcBuf<0)EffCalcBuf=0;//根据能量守恒，效率不可能为负或者大于99
- RunLogEntry.Data.DataSec.AverageDriverEfficiency=EffCalcBuf;
- //驱动的峰值效率计算 
- for(i=4;i>0;i--)MaxEfficiencyCalcBuf[i]=MaxEfficiencyCalcBuf[i-1];//搬运数据
- MaxEfficiencyCalcBuf[0]=RunLogEntry.Data.DataSec.AverageDriverEfficiency;//将刚刚算出的平均效率加入到计算区域内
- EffCalcBuf=-10; //将效率值设置为负数来方便找到最高的效率点
- for(i=0;i<5;i++)EffCalcBuf=fmaxf(MaxEfficiencyCalcBuf[i],EffCalcBuf);//取一段时间内的最大值
- RunLogEntry.Data.DataSec.MaximumEfficiency=EffCalcBuf;//峰值效率
  //数据填写完毕，更新CRC32校验和
  RunLogEntry.Data.DataSec.IsRunlogHasContent=true;//运行日志已经有内容了
  RunLogEntry.CurrentDataCRC=CalcRunLogCRC32(&RunLogEntry.Data);

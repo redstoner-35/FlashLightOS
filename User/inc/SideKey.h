@@ -5,7 +5,7 @@
 #include <stdbool.h>
 
 //按键检测延时(每个单位=0.125秒)
-#define LongPressTime 6 //长按按键检测延时(按下时间超过这个数值则判定为长按)
+#define LongPressTime 5 //长按按键检测延时(按下时间超过这个数值则判定为长按)
 #define ContShortPressWindow 3 //连续多次按下时侧按的检测释抑时间(在该时间以内按下的短按才算入短按次数内)
 
 /*负责处理外部中断的自动Define，不允许修改！*/
@@ -25,6 +25,7 @@ short ShortPressCount;
 bool ShortPressEvent;
 bool PressAndHoldEvent;
 bool DoubleClickAndHoldEvent;
+bool TripleClickAndHold;
 }KeyEventStrDef;
 
 //函数
@@ -34,6 +35,7 @@ bool getSideKeyLongPressEvent(void);//获得侧按按钮长按的事件
 bool getSideKeyHoldEvent(void);//获得侧按按钮一直按住的事件
 bool getSideKeyClickAndHoldEvent(void);//获得侧按按钮短按一下立即长按的事件
 bool getSideKeyDoubleClickAndHoldEvent(void);//获取侧按按键是否有双击并长按的事件
+bool getSideKeyTripleClickAndHoldEvent(void);//获取侧按按键是否有三击并长按的事件
 
 //回调处理
 void SideKey_Callback(void);//中断回调处理

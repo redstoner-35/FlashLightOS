@@ -13,12 +13,10 @@
 INADoutSreDef RunTimeBattTelemResult;
 float UsedCapacity=0;
 static char LVFlashTimer=0;
-extern char LEDModeStr[64]; //LED模式的字符串
 
 //当库仑计关闭时显示电池电压
 void DisplayBattVoltage(void)
 {
- int flashCount,gapcnt;
  INADoutSreDef INADO;
  LED_Reset();//复位LED管理器
  memset(LEDModeStr,0,sizeof(LEDModeStr));//清空内存
@@ -60,39 +58,9 @@ void DisplayBattVoltage(void)
  strncat(LEDModeStr,"12030D",sizeof(LEDModeStr)-1);  //红切换到绿色，熄灭然后马上黄色闪一下，延迟1秒
  if(INADO.BusVolt>=10) //大于等于10V，附加红色闪
    strncat(LEDModeStr,"20D",sizeof(LEDModeStr)-1);
- flashCount=(int)(INADO.BusVolt)%10;//取个位数
- gapcnt=0;
- while(flashCount>0)
-   {
-	 //附加闪烁次数
-	 strncat(LEDModeStr,"30",sizeof(LEDModeStr)-1);	//使用黄色代表电压个位数
-	 //每2次闪烁之间插入额外停顿方便用户计数
-	 if(gapcnt==1)
-	    {
-		  gapcnt=0;
-		  strncat(LEDModeStr,"0",sizeof(LEDModeStr)-1);
-		  }
-	 else gapcnt++;
-	 //处理完一轮，减去闪烁次数
-	 flashCount--;
-	 }
+ LED_AddStrobe((int)(INADO.BusVolt)%10,"30"); //使用黄色显示个位数
  strncat(LEDModeStr,"D",sizeof(LEDModeStr)-1);
- flashCount=(int)(INADO.BusVolt*(float)10)%10;//取小数点后1位
- gapcnt=0;
- while(flashCount>0)
-   {
-	 //附加闪烁次数
-	 strncat(LEDModeStr,"10",sizeof(LEDModeStr)-1);	//使用绿色代表电压小数点后一位
-	 //每2次闪烁之间插入额外停顿方便用户计数
-	 if(gapcnt==1)
-	    {
-		  gapcnt=0;
-		  strncat(LEDModeStr,"0",sizeof(LEDModeStr)-1);
-		  }
-	 else gapcnt++;
-	 //处理完一轮，减去闪烁次数
-	 flashCount--;
-	 }
+ LED_AddStrobe((int)(INADO.BusVolt*(float)10)%10,"10");//绿色显示小数点后1位
  if(SysPstatebuf.Pstate==PState_LEDOn||SysPstatebuf.Pstate==PState_LEDOnNonHold) //如果手电筒点亮状态则延迟一下再恢复正常显示
 	 strncat(LEDModeStr,"D",sizeof(LEDModeStr)-1);
  strncat(LEDModeStr,"E",sizeof(LEDModeStr)-1);//结束闪烁
@@ -102,7 +70,6 @@ void DisplayBattVoltage(void)
 void DisplayBatteryCapacity(void)
 {
  float BatteryMidLevel;
- int flashCount,gapcnt;
  //计算剩余电量
  BatteryMidLevel=UsedCapacity/RunLogEntry.Data.DataSec.BattUsage.DesignedCapacity;//求已用容量和实际容量的百分比
  if(BatteryMidLevel>1.00)BatteryMidLevel=100;
@@ -114,42 +81,12 @@ void DisplayBatteryCapacity(void)
  memset(LEDModeStr,0,sizeof(LEDModeStr));//清空内存
  if(SysPstatebuf.Pstate==PState_LEDOn||SysPstatebuf.Pstate==PState_LEDOnNonHold) //如果手电筒点亮状态则延迟一下再恢复正常显示
 	 strncat(LEDModeStr,"D",sizeof(LEDModeStr)-1);
- strncat(LEDModeStr,"23010D",sizeof(LEDModeStr)-1);  //红切换到橙色，熄灭然后马上绿色闪一下，延迟1秒
+ strncat(LEDModeStr,"23010D",sizeof(LEDModeStr)-1);  //红切换到黄色，熄灭然后马上绿色闪一下，延迟1秒
  if(BatteryMidLevel>=100)
 	 strncat(LEDModeStr,"20D",sizeof(LEDModeStr)-1);	//使用红色代表电压百位数
- flashCount=((int)(BatteryMidLevel)%100)/10;//显示十位
- gapcnt=0;
- while(flashCount>0)
-   {
-	 //附加闪烁次数
-	 strncat(LEDModeStr,"30",sizeof(LEDModeStr)-1);	//使用黄色代表点亮个位数
-	 //每2次闪烁之间插入额外停顿方便用户计数
-	 if(gapcnt==1)
-	    {
-		  gapcnt=0;
-		  strncat(LEDModeStr,"0",sizeof(LEDModeStr)-1);
-		  }
-	 else gapcnt++;
-	 //处理完一轮，减去闪烁次数
-	 flashCount--;
-	 }
+ LED_AddStrobe(((int)(BatteryMidLevel)%100)/10,"30");//使用黄色代表十位数
  strncat(LEDModeStr,"D",sizeof(LEDModeStr)-1);
- flashCount=((int)(BatteryMidLevel)%100)%10;//显示个位
- gapcnt=0;
- while(flashCount>0)
-   {
-	 //附加闪烁次数
-	 strncat(LEDModeStr,"10",sizeof(LEDModeStr)-1);	//使用绿色代表点亮个位数
-	 //每2次闪烁之间插入额外停顿方便用户计数
-	 if(gapcnt==1)
-	    {
-		  gapcnt=0;
-		  strncat(LEDModeStr,"0",sizeof(LEDModeStr)-1);
-		  }
-	 else gapcnt++;
-	 //处理完一轮，减去闪烁次数
-	 flashCount--;
-	 }
+ LED_AddStrobe(((int)(BatteryMidLevel)%100)%10,"10");//使用绿色代表点亮个位数
  if(SysPstatebuf.Pstate==PState_LEDOn||SysPstatebuf.Pstate==PState_LEDOnNonHold) //如果手电筒点亮状态则延迟一下再恢复正常显示
 	 strncat(LEDModeStr,"D",sizeof(LEDModeStr)-1);
  strncat(LEDModeStr,"E",sizeof(LEDModeStr)-1);//结束闪烁

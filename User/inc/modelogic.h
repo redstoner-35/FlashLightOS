@@ -134,6 +134,7 @@ typedef struct
 
 //外部函数
 SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput);//开灯自检操作
+void DisplayLEDTemp(void);//通过侧按LED显示基板温度
 void TurnLightOFFLogic(void);//关灯操作
 void RuntimeModeCurrentHandler(void);//运行过程中的挡位电流计算
 void DisableFlashTimer(void);//禁用闪烁定时器 

@@ -2,6 +2,7 @@
 #include "console.h"
 #include "modelogic.h"
 #include "LEDMgmt.h"
+#include <string.h>
 
 /*LED闪烁的pattern(每阶段0.25秒)
 0=熄灭，
@@ -46,6 +47,7 @@ const char *LEDPattern[LEDPatternSize]=
 	 NULL//结束符
  };
 //变量
+char LEDModeStr[64]; //LED模式的字符串
 static int ConstReadPtr;
 static int LastLEDIndex;
 volatile int CurrentLEDIndex;
@@ -54,7 +56,29 @@ char *ExtLEDIndex = NULL; //用于传入的外部序列
 static char *LastExtLEDIdx = NULL;
 static char LEDDelayTimer=0; //侧按LED等待
 
- //复位LED管理器从0开始读取
+//往自定义LED缓存里面加上闪烁字符
+void LED_AddStrobe(int count,const char *ColorStr) 
+  {
+	int gapcnt;
+	if(count<=0)return; //输入的次数非法
+	//开始显示
+	gapcnt=0;
+  while(count>0)
+   {
+	 //附加闪烁次数
+	 strncat(LEDModeStr,ColorStr,sizeof(LEDModeStr)-1);	//使用黄色代表电压个位数
+	 //每2次闪烁之间插入额外停顿方便用户计数
+	 if(gapcnt==1)
+	    {
+		  gapcnt=0;
+		  strncat(LEDModeStr,"0",sizeof(LEDModeStr)-1);
+		  }
+	 else gapcnt++;
+	 //处理完一轮，减去闪烁次数
+	 count--;
+	 }
+	}
+//复位LED管理器从0开始读取
 void LED_Reset(void)
   {
 	LEDThermalBlinkTimer=20; //复位定时器

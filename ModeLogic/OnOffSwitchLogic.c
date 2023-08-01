@@ -9,6 +9,7 @@
 //内部和外部变量
 volatile SYSPStateStrDef SysPstatebuf;
 extern int AutoOffTimer;
+const char *ErrorStrDuringPost="上电自检期间";
 
 /*  辅助电源引脚的自动define,不允许修改！  */
 #define AUXPWR_EN_IOB STRCAT2(GPIO_P,AUXPWR_EN_IOBank)
@@ -49,7 +50,7 @@ void DriverLockPOR(void)
 	if(CfgFile.IsDriverLockedAfterPOR)IsLightNeedtolock=true; 
 	else IsLightNeedtolock=RunLogEntry.Data.DataSec.IsFlashLightLocked; 
 	SysPstatebuf.Pstate=IsLightNeedtolock?PState_Locked:PState_Standby;//根据配置文件配置为locked或者状态
-	UartPost(Msg_info,"PORLock","Flash light will be set to %s state after POR selftest is done.",IsLightNeedtolock?"locked":"unlocked");
+	UartPost(Msg_info,"PORLock","Flash light will be set to %s state after selftest is done.",IsLightNeedtolock?"locked":"unlocked");
 	//将变更后的手电锁定状态写入到ROM
 	if(!IsRunTimeLoggingEnabled)return;
 	if(IsRunTimeLoggingEnabled)CalcLastLogCRCBeforePO();//填写数据前更新运行log的CRC32
@@ -83,13 +84,14 @@ void RunTimeErrorReportHandler(SystemErrorCodeDef ErrorCode)
 */
 void PStateStateMachine(void)
   {
-	bool LongPressOnce,LongPressHold;
+	bool LongPressOnce,LongPressHold,DoubleClickHold;
 	int ShortPress;
 	INADoutSreDef BattO;
   //获取侧按按钮的操作(按下并按住，短按，长按等等)
 	LongPressHold=getSideKeyHoldEvent(); 
 	LongPressOnce=getSideKeyLongPressEvent(); 
 	ShortPress=getSideKeyShortPressCount(true); 
+	DoubleClickHold=getSideKeyDoubleClickAndHoldEvent();
 	//电源状态的状态机
 	switch(SysPstatebuf.Pstate)
 	  {
@@ -105,8 +107,8 @@ void PStateStateMachine(void)
 				CurrentLEDIndex=25;
 				SysPstatebuf.Pstate=PState_Standby; 
 				}
-			//其余情况，手电红色灯闪烁三次表示已锁定
-			else if(ShortPress||LongPressOnce)
+			//其余任何按键情况，手电红色灯闪烁三次表示已锁定
+			else if(ShortPress||LongPressOnce||DoubleClickHold||LongPressHold||getSideKeyTripleClickAndHoldEvent())
 				CurrentLEDIndex=27;
 			//时间到，深度睡眠
 			else if(DeepSleepTimer==0)
@@ -136,7 +138,7 @@ void PStateStateMachine(void)
 			  if(SysPstatebuf.ErrorCode==Error_None)SysPstatebuf.Pstate=PState_LEDOn;
 				else //如果自检成功则跳转到开灯状态，否则跳转到错误状态并写入日志。
 				  {	
-				  if(SysPstatebuf.ErrorCode!=Error_Input_UVP)CollectLoginfo("在上电自检期间",&BattO);
+				  if(SysPstatebuf.ErrorCode!=Error_Input_UVP)CollectLoginfo(ErrorStrDuringPost,&BattO);
 					SysPstatebuf.Pstate=PState_Error; 
 					TurnLightOFFLogic();
 					ResetRampMode();//重置无极调光模块
@@ -179,7 +181,7 @@ void PStateStateMachine(void)
 			  if(SysPstatebuf.ErrorCode==Error_None)SysPstatebuf.Pstate=PState_LEDOnNonHold;
 				else //如果自检成功则跳转到开灯状态，否则跳转到错误状态并写入日志。
 				  {		
-					if(SysPstatebuf.ErrorCode!=Error_Input_UVP)CollectLoginfo("在上电自检期间",&BattO);
+					if(SysPstatebuf.ErrorCode!=Error_Input_UVP)CollectLoginfo(ErrorStrDuringPost,&BattO);
 					SysPstatebuf.Pstate=PState_Error; 
 					TurnLightOFFLogic();
 		      ResetBreathStateMachine();

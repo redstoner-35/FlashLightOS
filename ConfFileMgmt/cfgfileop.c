@@ -10,7 +10,17 @@
 
 ConfUnionDef CfgFileUnion;
 const char ZeroConstBuf[32]={0};
+
+//字符串
 const char *EEPModName="CfgEEP";
+static const char *CheckingFileInt="Checking %s configuration file integrity...";
+static const char *LoadFileInfo="Loading %s configuration file into RAM..";
+static const char *ConfigHasBeenLoaded="%s configuration has been loaded,file CRC-32 value:0x%8X.";
+static const char *ConfigHasRestored="%s config file has been re-writed with %s config.";
+static const char *FixingConfigFile="fixing corrupted %s config file...";
+static const char *RestoreCfg="Restoring %s config file...";
+
+//外部变量
 extern int DeepSleepTimer;  //外部休眠定时器
 
 /*
@@ -29,7 +39,7 @@ const float IMONGainSettings[SPSCompensateTableSize*2]=
 */
 const float DefaultThermalThrCurve[10]=
 {
-50,55,65,75,82,  //温度阈值
+50,55,65,75,80,  //温度阈值
 100,95,85,50,10  //百分比
 };
 /*
@@ -55,6 +65,7 @@ const char AdminPassword[16]=
 void LoadDefaultConf(void)
  {
  int i;
+ float SPSStepRatio;
  //系统基本设置
  CfgFile.USART_Baud=115200;
  CfgFile.EnableRunTimeLogging=true;
@@ -76,22 +87,24 @@ void LoadDefaultConf(void)
 	 CfgFile.LEDIMONCalGain[i]=IMONGainSettings[i+SPSCompensateTableSize];
 	 }
  //恢复温控设置
- CfgFile.LEDThermalStepWeight=50;//LED的降档设置权重为50%
+ CfgFile.LEDThermalStepWeight=65;//LED的降档设置权重为65%
  CfgFile.LEDThermalTripTemp=90;
  CfgFile.MOSFETThermalTripTemp=110; //LED热跳闸为110度，LED 90度
  for(i=0;i<5;i++)
 	 {
 	 CfgFile.LEDThermalStepThr[i]=DefaultThermalThrCurve[i];
-	 CfgFile.SPSThermalStepThr[i]=DefaultThermalThrCurve[i]; //温度阈值
+	 CfgFile.SPSThermalStepThr[i]=DefaultThermalThrCurve[i]+16.5; //温度阈值
 	 CfgFile.LEDThermalStepRatio[i]=DefaultThermalThrCurve[i+5];
-	 CfgFile.SPSThermalStepRatio[i]=DefaultThermalThrCurve[i+5]; //温度曲线
+	 SPSStepRatio=DefaultThermalThrCurve[i+5]+1.5;
+	 if(SPSStepRatio>100)SPSStepRatio=100;//SPS降档减缓5%
+	 CfgFile.SPSThermalStepRatio[i]=SPSStepRatio; //温度曲线
 	 }
  //恢复电池设置
  CfgFile.VoltageFull=4.0*BatteryCellCount;
  CfgFile.VoltageAlert=3.0*BatteryCellCount;
  CfgFile.VoltageTrip=2.8*BatteryCellCount;
  CfgFile.VoltageOverTrip=14.5;//过压保护值14.5V
- CfgFile.OverCurrentTrip=16;// 16A的电池端过流保护值
+ CfgFile.OverCurrentTrip=13;// 13A的电池端过流保护值
  } 
 //检查ROM中的数据是否损坏
 int CheckConfigurationInROM(cfgfiletype cfgtyp,unsigned int *CRCResultO)
@@ -312,48 +325,48 @@ void PORConfHandler(void)
  #ifndef FlashLightOS_Debug_Mode
  unsigned int MainCRC,BackupCRC;
  int checkresult,backupcheckresult;
- UartPost(Msg_info,EEPModName,"Checking main configuration file integrity...");
+ UartPost(Msg_info,EEPModName,(char *)CheckingFileInt,"main");
  checkresult=CheckConfigurationInROM(Config_Main,&MainCRC);
  DisplayCheckResult(checkresult,false);
- UartPost(Msg_info,EEPModName,"Checking backup configuration file integrity...");
+ UartPost(Msg_info,EEPModName,(char *)CheckingFileInt,"backup");
  backupcheckresult=CheckConfigurationInROM(Config_Backup,&BackupCRC);
  DisplayCheckResult(backupcheckresult,false);
  //主文件OK
  if(!checkresult)
    {
-	 UartPost(Msg_info,EEPModName,"Loading main configuration file into RAM..");
+	 UartPost(Msg_info,EEPModName,(char *)LoadFileInfo,"main");
 	 ReadConfigurationFromROM(Config_Main);
-	 UartPost(Msg_info,EEPModName,"Main configuration has been loaded,file CRC-32 value:0x%8X.",MainCRC);		 
+	 UartPost(Msg_info,EEPModName,(char *)ConfigHasBeenLoaded,"Main",MainCRC);		 
 	 //更新备份文件
 	 if(backupcheckresult)
 	   {
-		 UartPost(Msg_info,EEPModName,"fixing corrupted backup config file...");
+		 UartPost(Msg_info,EEPModName,(char *)FixingConfigFile,"backup");
 		 WriteConfigurationToROM(Config_Backup);
-		 UartPost(Msg_info,EEPModName,"Backup config file has been re-writed with main config.");
+		 UartPost(Msg_info,EEPModName,(char *)ConfigHasRestored,"Backup","main");
 		 }
 	 }
  //主文件不OK，检查备份文件是否OK
  else if(!backupcheckresult)
    {
-	 UartPost(Msg_info,EEPModName,"Load Backup Conf file to RAM..");
+	 UartPost(Msg_info,EEPModName,(char *)LoadFileInfo,"backup");
 	 ReadConfigurationFromROM(Config_Backup);
-	 UartPost(Msg_info,EEPModName,"Backup configuration has been loaded,file CRC-32 value:0x%8X",BackupCRC);	
-	 //更新备份文件
+	 UartPost(Msg_info,EEPModName,(char *)ConfigHasBeenLoaded,"Backup",BackupCRC);	
+	 //更新主文件
 	 if(checkresult)
 	   {
-		 UartPost(Msg_info,EEPModName,"fixing corrupted main config file...");
+		 UartPost(Msg_info,EEPModName,(char *)FixingConfigFile,"main");
 		 WriteConfigurationToROM(Config_Main);
-		 UartPost(Msg_info,EEPModName,"Main config file has been re-writed with backup config.");
+		 UartPost(Msg_info,EEPModName,(char *)ConfigHasRestored,"Main","backup");
 		 }
 	 }
  //全坏了
  else 
    {
 	 LoadDefaultConf();
-	 UartPost(Msg_critical,EEPModName,"No usable config found,reverbing to default.");
-	 UartPost(Msg_info,EEPModName,"Restoring main config file.");	 
+	 UartPost(Msg_critical,EEPModName,"No usable config found,driver will restore to default settings.");
+	 UartPost(Msg_info,EEPModName,(char *)RestoreCfg,"Main");	 
 	 DisplayCheckResult(WriteConfigurationToROM(Config_Main),true);
-	 UartPost(Msg_info,EEPModName,"Restoring backup config file."); 
+	 UartPost(Msg_info,EEPModName,(char *)RestoreCfg,"Backup"); 
 	 DisplayCheckResult(WriteConfigurationToROM(Config_Backup),true);
 	 UartPost(Msg_info,EEPModName,"Restore completed,system will restart automatically."); 
 	 delay_Second(2);		
@@ -367,5 +380,5 @@ void PORConfHandler(void)
  if(CfgFile.DeepSleepTimeOut>0)DeepSleepTimer=CfgFile.DeepSleepTimeOut;
  else DeepSleepTimer=-1;
  if(CfgFile.IdleTimeout==0)
-	 UartPost(Msg_warning,EEPModName,"Admin account time out has been disabled\r\nand might cause security issue.");
+	 UartPost(Msg_warning,EEPModName,"No Admin account time out can cause major security issue.");
  }

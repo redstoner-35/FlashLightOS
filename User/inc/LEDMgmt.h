@@ -16,9 +16,11 @@
 void LED_Init(void);
 void LEDMgmt_CallBack(void);
 void LED_Reset(void);
+void LED_AddStrobe(int count,const char *ColorStr);//在自定义闪缓存加上strobe
 
 //外部变量
 extern volatile int CurrentLEDIndex;//给外部函数设置LED状态
 extern char *ExtLEDIndex; //用于传入的外部序列
+extern char LEDModeStr[64]; //LED模式的字符串
 
 #endif

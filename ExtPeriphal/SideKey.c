@@ -63,6 +63,7 @@ void SideKeyInit(void)
 	Keyevent.ShortPressEvent=false;
 	Keyevent.PressAndHoldEvent=false;
 	Keyevent.DoubleClickAndHoldEvent=false;
+	Keyevent.TripleClickAndHold=false;
 	UartPost(Msg_info,"SideKey","Key Process module has been started.");
 	}
 
@@ -97,8 +98,10 @@ void SideKey_Callback(void)
 		KeyTimer[0]=0;//复位并关闭定时器0
 		if(Keyevent.LongPressDetected||
 		Keyevent.PressAndHoldEvent||
+		Keyevent.TripleClickAndHold||
 		Keyevent.DoubleClickAndHoldEvent)//如果已经检测到长按事件则下面什么都不做
 		  {
+			Keyevent.TripleClickAndHold=false;
 			Keyevent.DoubleClickAndHoldEvent=false;
 			Keyevent.PressAndHoldEvent=false;
 			Keyevent.LongPressDetected=false;//清除检测到的表示
@@ -109,8 +112,22 @@ void SideKey_Callback(void)
 		  KeyTimer[1]=0x80;//启动短按完毕等待统计的计时器
 		  }			
 		}
-	}	
-
+	}
+//在单击双击三击+长按触发的时候清除单击事件的记录
+static void ClickAndHoldEventHandler(int PressCount)
+  {
+	KeyTimer[1]=0; //关闭后部检测定时器
+	Keyevent.ShortPressEvent=false;
+	Keyevent.ShortPressCount=0; //短按次数为0
+	Keyevent.LongPressDetected=false;
+	Keyevent.LongPressEvent=false;//短按和长按事件没发生
+	//单击+长按
+	Keyevent.PressAndHoldEvent=(PressCount==1)?true:false;
+	//双击+长按
+	Keyevent.DoubleClickAndHoldEvent=(PressCount==2)?true:false;
+  //三击+长按
+	Keyevent.TripleClickAndHold=(PressCount==3)?true:false;
+	}
 //侧按键逻辑处理函数
 void SideKey_LogicHandler(void)
   {		
@@ -119,30 +136,14 @@ void SideKey_LogicHandler(void)
 	//长按3秒的时间到
 	if(IsKeyPressed&&KeyTimer[0]==0x80+(unsigned char)LongPressTime)
 		{
-		if(Keyevent.ShortPressCount==2)//双击+长按
-		  {
-			KeyTimer[1]=0; //关闭后部检测定时器
-			Keyevent.ShortPressEvent=false;
-			Keyevent.LongPressDetected=false;
-			Keyevent.LongPressEvent=false;//短按和长按事件没发生
-			Keyevent.DoubleClickAndHoldEvent=true;//双击+长按事件发生
-		  Keyevent.PressAndHoldEvent=false;//短按一下再按住的事件没发生
-			Keyevent.ShortPressCount=0;
-			}
-		else if(Keyevent.ShortPressCount==1)//短按+长按事件
-		  {
-			KeyTimer[1]=0; //关闭后部检测定时器
-			Keyevent.ShortPressEvent=false;
-			Keyevent.LongPressDetected=false;
-			Keyevent.LongPressEvent=false;//短按和长按事件没发生
-		  Keyevent.PressAndHoldEvent=true;//短按一下再按住的事件发生
-			Keyevent.DoubleClickAndHoldEvent=false; //双击再按住的事件没发生
-			Keyevent.ShortPressCount=0;
-			}
+    //处理多击+长按事件
+    if(Keyevent.ShortPressCount>0)ClickAndHoldEventHandler(Keyevent.ShortPressCount);
 		else //长按事件
 		  {
+			Keyevent.ShortPressCount=0;
 			Keyevent.DoubleClickAndHoldEvent=false;
       Keyevent.PressAndHoldEvent=false;
+			Keyevent.TripleClickAndHold=false; //只是长按没有发生事件
 			Keyevent.LongPressEvent=true;//长按事件发生
 	    Keyevent.LongPressDetected=true;//长按检测到了  
 			}
@@ -193,4 +194,9 @@ bool getSideKeyClickAndHoldEvent(void)
 bool getSideKeyDoubleClickAndHoldEvent(void)
   {
 	return Keyevent.DoubleClickAndHoldEvent;
+	}
+//获取侧按按键是否有三击并长按的事件
+bool getSideKeyTripleClickAndHoldEvent(void)
+  {
+	return Keyevent.TripleClickAndHold;
 	}

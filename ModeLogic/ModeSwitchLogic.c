@@ -18,34 +18,35 @@ const float regModeCurrent[4]={5,15,30,60};  //常规挡位电流百分比(100%�
 const LightModeDef ModeCfgConst[4]={LightMode_Flash,LightMode_SOS,LightMode_Breath,LightMode_MosTrans};
 const char *SpecModeConst[4]={"爆闪","SOS","信标","识别码发送"};
 const char *ModeGroupName[3]={"regular","double-click","special"};
+const char *ModeHasBeenOvrd="Default mode has been over-written to ";
 
 //变量
-char LEDModeStr[64]; //LED模式的字符串
 int AutoOffTimer=-1; //定时关机延时器
 static bool DCPressstatebuf=false;
 static bool DisplayBattBuf=false;
 
-
-//电池电量的显示
+//电池电量和温度的显示
 void DisplayBatteryValueHandler(void)
   {
 	bool result,IsExecute;
   ModeConfStr *CurrentMode;
 	//判断是否可以执行检测
 	CurrentMode=GetCurrentModeConfig();//获取当前挡位配置
-	if(CurrentMode==NULL)return;//当前挡位为空
+	if(CurrentMode==NULL||SysPstatebuf.Pstate==PState_Locked)return;//当前挡位为空或者处于锁定状态，不执行
 	if(SysPstatebuf.Pstate==PState_Standby||SysPstatebuf.Pstate==PState_NonHoldStandBy)IsExecute=true;//手电筒处于待机状态，判断显示
-	else if(SysPstatebuf.Pstate==PState_LEDOnNonHold)IsExecute=false; //战术模式，不启用判断逻辑
+	else if(SysPstatebuf.Pstate==PState_LEDOnNonHold||SysPstatebuf.Pstate==PState_Error)IsExecute=false; //战术模式或者遇到错误，不启用判断逻辑
 	else if(CurrentMode->Mode!=LightMode_Ramp)IsExecute=true; //当前挡位模式不是无极调光，可以执行
   else IsExecute=false;		
 	//开始显示
 	if(!IsExecute)return;//不执行判断
-	result=getSideKeyClickAndHoldEvent();//获取单击+长按事件
-	if(DisplayBattBuf!=result)
+	IsExecute=getSideKeyTripleClickAndHoldEvent();
+	result=getSideKeyClickAndHoldEvent();//获取单击或三击+长按事件
+	if(DisplayBattBuf!=(result||IsExecute))
 	  {
-		DisplayBattBuf=result;//同步结果
+		DisplayBattBuf=(result||IsExecute)?true:false;//同步结果
 	  if(!DisplayBattBuf)return;//用户松开按键结束显示
-		if(!RunLogEntry.Data.DataSec.BattUsage.IsCalibrationDone)
+		if(IsExecute)DisplayLEDTemp(); //显示温度
+	  else if(!RunLogEntry.Data.DataSec.BattUsage.IsCalibrationDone)
 			DisplayBattVoltage(); //库仑计未完成校准，显示电池电压
 		else
 			DisplayBatteryCapacity();//显示电池容量
@@ -277,7 +278,7 @@ void ModeSwitchInit(void)
 		//搜索每个挡位
 		for(i=0;i<4;i++)if(CfgFile.SpecialMode[i].IsModeEnabled)
        {
-			 UartPost(Msg_info,"ModeSel","Default mode has been over-written to special mode NO.%d(name:%s)",i+1,CfgFile.SpecialMode[i].ModeName);
+			 UartPost(Msg_info,"ModeSel","%sto special mode NO.%d(name:%s)",ModeHasBeenOvrd,i+1,CfgFile.SpecialMode[i].ModeName);
 			 CfgFile.BootupModeNum=i;	 
 			 SaveMainConfig();//保存修改好的配置文件
 			 return;
@@ -288,7 +289,7 @@ void ModeSwitchInit(void)
 	  {
 		if(CfgFile.DoubleClickMode.IsModeEnabled)
 		  {
-			UartPost(Msg_info,"ModeSel","Default mode has been over-written to double-click mode(name:%s)",CfgFile.DoubleClickMode.ModeName);
+			UartPost(Msg_info,"ModeSel","double-click mode(name:%s)",CfgFile.DoubleClickMode.ModeName);
 			CfgFile.BootupModeNum=0;
 			SaveMainConfig();//保存修改好的配置文件
 			return;
@@ -300,13 +301,13 @@ void ModeSwitchInit(void)
 		//搜索每个挡位
 		for(i=0;i<4;i++)if(CfgFile.RegularMode[i].IsModeEnabled)
        {
-			 UartPost(Msg_info,"ModeSel","Default mode has been over-written to regular mode NO.%d(name:%s)",i+1,CfgFile.SpecialMode[i].ModeName);
+			 UartPost(Msg_info,"ModeSel","%sregular mode NO.%d(name:%s)",ModeHasBeenOvrd,i+1,CfgFile.SpecialMode[i].ModeName);
 			 CfgFile.BootupModeNum=i;
 			 SaveMainConfig();
 			 return;
 			 }			
     //找完了都没有
-	  UartPost(msg_error,"ModeSel","Seems Mode Setting is corrupted,driver will restore to factory default settings.");
+	  UartPost(msg_error,"ModeSel","Mode Setting is corrupted and driver will restoring it to default.");
 		RestoreFactoryModeCfg();
 		CurMode.ModeGrpSel=ModeGrp_Regular;
 		CurMode.SpecialGrpMode=0;
@@ -382,9 +383,10 @@ void ModeSwitchLogicHandler(void)
 	int keycount;
 	ModeConfStr *CurrentMode;
   bool DoubleClickHoldDetected;
-	DoubleClickHoldDetected=getSideKeyDoubleClickAndHoldEvent();//获取用户是否使能操作
-	keycount=getSideKeyShortPressCount(false);//获取短按按键次数
 	if(SysPstatebuf.Pstate==PState_Locked||SysPstatebuf.Pstate==PState_Error)return;//处于锁定或者错误状态，此时不处理
+	//获取按键次数
+  DoubleClickHoldDetected=getSideKeyDoubleClickAndHoldEvent();//获取用户是否使能操作
+	keycount=getSideKeyShortPressCount(false);//获取短按按键次数
 	//用户双击+长按,激活以及禁用定时器
 	if(DCPressstatebuf!=DoubleClickHoldDetected)
 	  {
@@ -460,7 +462,7 @@ void ModeSwitchLogicHandler(void)
 //手电筒关闭切换挡位时,生成一组跳档后指示当前挡位的序列让侧按LED显示
 void SideLED_GenerateModeInfoPattern(void)
   {
-	int flashCount,i,j;
+	int flashCount;
 	LED_Reset();//复位LED管理器
   memset(LEDModeStr,0,sizeof(LEDModeStr));//清空内存
   switch(CurMode.ModeGrpSel) 	
@@ -468,19 +470,9 @@ void SideLED_GenerateModeInfoPattern(void)
 		case ModeGrp_Regular:flashCount=1;break;//常规挡位
 		case ModeGrp_DoubleClick:flashCount=2;break;//双击挡位
 		case ModeGrp_Special:flashCount=3;break;//三击挡位
-		default: break;
+		default: return;
 		}
-  j=0;		
-  for(i=0;i<flashCount;i++)
-		{
-		strncat(LEDModeStr,"10",sizeof(LEDModeStr)-1);
- 	  if(j==1)//追加内容，每2次多一点停顿
-		  {
-			j=0;
-			strncat(LEDModeStr,"0",sizeof(LEDModeStr)-1);
-			}
-		else j++;
-		}		
+  LED_AddStrobe(flashCount,"10");
 	strncat(LEDModeStr,"00000",sizeof(LEDModeStr)-1);	
   switch(CurMode.ModeGrpSel) 	
 	  {
@@ -489,17 +481,7 @@ void SideLED_GenerateModeInfoPattern(void)
 		case ModeGrp_Special:flashCount=CurMode.SpecialGrpMode+1;break;//三击挡位
 		default: break;
 		}		
-	j=0;
-	if(flashCount)for(i=0;i<flashCount;i++)//根据目前选择的挡位组，选择闪烁的数量
-		{
-		strncat(LEDModeStr,"30",sizeof(LEDModeStr)-1);	
-		if(j==1)//追加内容，每2次多一点停顿
-		  {
-			j=0;
-			strncat(LEDModeStr,"0",sizeof(LEDModeStr)-1);
-			}
-		else j++;
-		}			
+	LED_AddStrobe(flashCount,"30");
 	strncat(LEDModeStr,"E",sizeof(LEDModeStr)-1);
 	ExtLEDIndex=&LEDModeStr[0];//传指针过去
 	}

@@ -18,7 +18,7 @@ const char *modepofcfgArgument(int ArgCount)
 		case 2:
 		case 3:return ModeSelectStr[3];
 		case 4:
-		case 5:return "设置挡位的自动关机计时器时间(单位分钟),如果输入0则该挡位的自动关机功能禁用";	
+		case 5:return "设置挡位的自动关机计时器时间(单位分钟),若输入0则该挡位的自动关机功能禁用.";	
 	  }
 	return NULL;
 	}

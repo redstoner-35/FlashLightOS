@@ -732,6 +732,11 @@
               <FileType>1</FileType>
               <FilePath>.\ExtPeriphal\FlashProt.c</FilePath>
             </File>
+            <File>
+              <FileName>TempMonitor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\ExtPeriphal\TempMonitor.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
