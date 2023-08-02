@@ -13,6 +13,7 @@ const char *Rlvstr[]=
 "数据不可用",//4
 "%.2f'C",//5
 "\r\n  %s告警次数 : %d 次",//6
+"\r\n  运行日志" //7
 };
 
 void DisplayLampTime(double time)
@@ -47,14 +48,17 @@ void runlogviewHandler(void)
 		UARTPutc('-',11);
 		UARTPuts(" 系统运行日志查看器(详细视图) ");
 		UARTPutc('-',11);
-		UartPrintf("\r\n%s运行日志CRC-32 : 0x%08X\r\n",Rlvstr[2],CalcRunLogCRC32(&RunLogEntry.Data));	
+		UartPrintf("\r\n%sCRC-32 : 0x%08X",Rlvstr[7],CalcRunLogCRC32(&RunLogEntry.Data));	
+		UartPrintf("%s总记录次数 : %d次",Rlvstr[7],RunLogEntry.Data.DataSec.TotalLogCount);	
+		UartPrintf("%s序列号 : #%d\r\n",Rlvstr[7],RunLogEntry.Data.DataSec.LogIncrementCode);	
+		
 		PrintStatuBar("系统主LED");
 		UartPrintf("%s平均电流 : %.2fA",Rlvstr[0],RunLogEntry.Data.DataSec.AverageLEDIf);
 		UartPrintf("%s最大电流 : %.2fA",Rlvstr[0],RunLogEntry.Data.DataSec.MaximumLEDIf);	
 		UartPrintf("%s平均压降 : %.2fV",Rlvstr[0],RunLogEntry.Data.DataSec.AverageLEDVf);
-		UartPrintf("%s最大压降 : %.2fV",Rlvstr[0],RunLogEntry.Data.DataSec.AverageLEDVf);	
+		UartPrintf("%s最大压降 : %.2fV",Rlvstr[0],RunLogEntry.Data.DataSec.MaximumLEDVf);	
 		UartPrintf("%s平均功率 : %.2fW",Rlvstr[0],RunLogEntry.Data.DataSec.AverageLEDIf*RunLogEntry.Data.DataSec.AverageLEDVf);
-		UartPrintf("%s最大功率 : %.2fW",Rlvstr[0],RunLogEntry.Data.DataSec.MaximumLEDIf*RunLogEntry.Data.DataSec.AverageLEDVf);		
+		UartPrintf("%s最大功率 : %.2fW",Rlvstr[0],RunLogEntry.Data.DataSec.MaximumLEDIf*RunLogEntry.Data.DataSec.MaximumLEDVf);		
 		UartPrintf("%s平均运行温度 : ",Rlvstr[0]);	
 		if(RunLogEntry.Data.DataSec.AverageLEDTemp!=NAN)
 		  UartPrintf((char *)Rlvstr[5],RunLogEntry.Data.DataSec.AverageLEDTemp);
@@ -72,7 +76,7 @@ void runlogviewHandler(void)
 		  UartPrintf((char *)Rlvstr[5],RunLogEntry.Data.DataSec.AverageSPSTemp);
 		else
 			UARTPuts((char *)Rlvstr[4]);
-	  UartPrintf("%sMOS平均运行温度 : ",Rlvstr[1]);
+	  UartPrintf("%sMOS最高运行温度 : ",Rlvstr[1]);
 		if(RunLogEntry.Data.DataSec.MaximumSPSTemp!=NAN)
 		  UartPrintf((char *)Rlvstr[5],RunLogEntry.Data.DataSec.MaximumSPSTemp);				
 	  else

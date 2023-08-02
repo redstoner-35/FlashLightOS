@@ -2,6 +2,9 @@
 #include "console.h"
 #include <string.h>
 
+//字符串
+static const char *InputTooLong="错误:系统的%s应在3-19字符长度的范围内且仅能包含ASCII字符.";
+
 //enum
 typedef enum
 {
@@ -68,7 +71,7 @@ void usrmodhandler(void)
 	  else namelen=0;
 		//检查名称是否合法
 		if(NamePtr==NULL)UARTPuts("\r\n错误:系统的主机名不得为空!");	 
-		else if(namelen<3||namelen>19)UARTPuts("\r\n错误:系统的主机名应在3-19字符长度的范围内且仅能包含ASCII字符。");	 
+		else if(namelen<3||namelen>19)UartPrintf((char *)InputTooLong,"主机名");	 
 		else //执行更新名字的操作	
 			{
 			strncpy(CfgFile.HostName,NamePtr,20);
@@ -92,11 +95,11 @@ void usrmodhandler(void)
 	  else namelen=0;
 		if(AccountState==Log_Perm_Root)UARTPuts("\r\n错误:超级用户的名称不允许被更改!");
 		else if(NamePtr==NULL)UARTPuts("\r\n错误:管理员用户的名称不得为空!");	 
-    else if(namelen<3||namelen>19)UARTPuts("\r\n错误:管理员用户的名称应在3-19字符长度的范围内且仅能包含ASCII字符。");	 
+		else if(namelen<3||namelen>19)UartPrintf((char *)InputTooLong,"管理员用户的名称");	 
 		else //执行更新名字的操作
 		  {
 			strncpy(CfgFile.AdminAccountname,NamePtr,20);
-			UartPrintf("\r\n管理员用户的用户名已更新为:%s.",CfgFile.AdminAccountname);	 
+			UartPrintf("\r\n管理员的用户名已更新为:%s.",CfgFile.AdminAccountname);	 
 			}
 		//判断需不需要设置密码，不需要的话本次命令就已经完成了
 		IsParameterExist("01",3,&ParamExist);

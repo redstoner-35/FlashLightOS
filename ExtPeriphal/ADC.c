@@ -84,12 +84,12 @@ bool ADC_GetResult(ADCOutTypeDef *ADCOut)
 	//转换完毕，求平均
   for(i=0;i<4;i++)ADCResult[i]/=avgcount;
 	//计算LEDVf
-	buf=(float)ADCResult[LED_Vf_ADC_Ch]*(3.3/(float)4096);//将AD值转换为电压
+	buf=(float)ADCResult[LED_Vf_ADC_Ch]*(ADC_AVRef/(float)4096);//将AD值转换为电压
 	buf*=(float)3;//乘以分压比得到最终Vf
 	ADCOut->LEDVf=buf;
   //计算温度
-	buf=(float)ADCResult[NTC_ADC_Ch]*(3.3/(float)4096);//将AD值转换为电压
-	Rt=((float)NTCUpperResValueK*buf)/(3.3-buf);//得到NTC的电阻
+	buf=(float)ADCResult[NTC_ADC_Ch]*(ADC_AVRef/(float)4096);//将AD值转换为电压
+	Rt=((float)NTCUpperResValueK*buf)/(ADC_AVRef-buf);//得到NTC的电阻
 	buf=1/((1/(273.15+(float)NTCT0))+log(Rt/(float)NTCUpperResValueK)/(float)NTCB);//计算出温度
 	buf-=273.15;//减去开氏温标常数变为摄氏度
 	buf+=(float)NTCTRIM;//加上修正值	
@@ -104,7 +104,7 @@ bool ADC_GetResult(ADCOutTypeDef *ADCOut)
 		ADCOut->LEDTemp=buf;
 		}
 	//计算LED输出电流
-	buf=(float)ADCResult[LED_If_Ch]*(3.3/(float)4096);//将AD值转换为电压
+	buf=(float)ADCResult[LED_If_Ch]*(ADC_AVRef/(float)4096);//将AD值转换为电压
 	buf=(buf*(float)1000)/(float)SPSIMONDiffOpGain;//将算出的电压转为mV单位，然后除以INA199放大器的增益值得到原始的电压
 	buf/=(float)SPSIMONShunt;//欧姆定律，I=U/R计算出SPS往外怼出来的电流（单位mA）
 	buf/=((float)SPSIMONScale/(float)1000);//将算出来的电流除以SPS的电流反馈系数（换算为mA/A）得到实际的电流值
@@ -116,7 +116,7 @@ bool ADC_GetResult(ADCOutTypeDef *ADCOut)
   #endif
 	ADCOut->LEDIf=buf;//计算完毕返回结果
 	//计算SPS温度数值
-	buf=(float)ADCResult[SPS_Temp_Ch]*(3.3/(float)4096);//将AD值转换为电压
+	buf=(float)ADCResult[SPS_Temp_Ch]*(ADC_AVRef/(float)4096);//将AD值转换为电压
 	if(buf<SPSTMONStdVal)//温度为负数
 	  {
 		buf=SPSTMONStdVal-buf;//计算出电压差

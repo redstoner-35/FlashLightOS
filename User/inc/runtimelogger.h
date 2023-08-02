@@ -7,6 +7,7 @@
 typedef struct
  {
  signed char LogIncrementCode;//日志的递增码
+ unsigned int TotalLogCount;//总日志条数
  bool IsRunlogHasContent; //运行日志是否有内容
  BatteryCapacityGaugeStrDef BattUsage;//库仑计设置
  char LogKey[4];  //用于检查log输入的key

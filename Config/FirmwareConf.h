@@ -7,7 +7,7 @@
 
 #define MajorVersion 1
 #define MinorVersion 3
-#define HotfixVersion 2  //固件版本号
+#define HotfixVersion 3  //固件版本号
 
 //固件模式配置
 #define Firmware_DIY_Mode //是否启用DIY高级用户模式，在此模式下驱动所有功能可以使用，否则温控调整和日志清除和恢复功能会被禁用。
@@ -56,5 +56,8 @@
 #define NTCTRIM 0.5 //温度修正值，单位℃
 #define NTCB 3450 //NTC热敏电阻的B值
 #define NTCT0 25 //NTC电阻的标定温度，一般是25℃
+
+//ADC模拟电压参考电压
+#define ADC_AVRef 3.2795 //实际的ADC电压参考值
 
 #endif

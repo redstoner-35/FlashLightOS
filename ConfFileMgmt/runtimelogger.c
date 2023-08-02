@@ -196,6 +196,7 @@ void ForceWriteRuntimelog(void)
 	if(SelfIncCode<(-RunTimeLoggerDepth))SelfIncCode=1;
 	if(SelfIncCode>RunTimeLoggerDepth)SelfIncCode=-1;//如果自增码到达上限则翻转到另一个极性
   RunLogEntry.Data.DataSec.LogIncrementCode=SelfIncCode;//将计算好的自增码写进去
+	RunLogEntry.Data.DataSec.TotalLogCount++; //日志写入计数器+1
 	//尝试编程
   if(SaveRunLogDataToROM(&RunLogEntry.Data,RunLogEntry.ProgrammedEntry))
 	  {
@@ -307,6 +308,7 @@ void LogDataSectionInit(RunLogDataUnionDef *DIN)
 	DIN->DataSec.OCPFaultCount=0;
 	DIN->DataSec.OtherFaultCount=0;
 	DIN->DataSec.LEDOpenShortCount=0;
+	DIN->DataSec.TotalLogCount=0;
 	DIN->DataSec.MaximumThermalStepDown=0;
 	DIN->DataSec.RampModeDirection=false;
 	DIN->DataSec.IsFlashLightLocked=false;
@@ -410,6 +412,7 @@ void RunLogModule_POR(void)
 	 RunLogEntry.Data.DataSec.BattUsage.IsLearningEnabled=false;
 	 RunLogEntry.Data.DataSec.IsFlashLightLocked=false;
 	 RunLogEntry.Data.DataSec.RampModeConf=0; 
+	 RunLogEntry.Data.DataSec.TotalLogCount=0;
 	 RunLogEntry.Data.DataSec.IsLowVoltageAlert=false;
 	 RunLogEntry.Data.DataSec.RampModeDirection=false;//默认从0%开始，向上
 	 return;	 

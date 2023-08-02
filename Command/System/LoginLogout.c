@@ -10,11 +10,11 @@ extern int IdleTimer;
 void DisplayLoginDelayTime(void)
   {
 	if(LogErrTimer>28800)
-	    UartPrintf("%d时%d分%d秒。",LogErrTimer/28800,(LogErrTimer%28800)/480,((LogErrTimer%28800)%480)/8);
+	    UartPrintf("%d时%d分%d秒.",LogErrTimer/28800,(LogErrTimer%28800)/480,((LogErrTimer%28800)%480)/8);
 	else if(LogErrTimer>480)
-	   UartPrintf("%d分%d秒。",LogErrTimer/480,(LogErrTimer%480)/8);
+	   UartPrintf("%d分%d秒.",LogErrTimer/480,(LogErrTimer%480)/8);
 	else	
-	   UartPrintf("%d秒。",LogErrTimer/8);
+	   UartPrintf("%d秒.",LogErrTimer/8);
 	}
 
 //强制终止处理
@@ -40,8 +40,8 @@ void LoginHandler(void)
 				}
 			else if(AccountState!=Log_Perm_Guest)//已登录
 			  {
-				UartPrintf("\r\n你已经以%s身份登录到系统！",AccountState==Log_Perm_Admin?"管理员":"超级用户");
-				UARTPuts("\r\n如果您想切换用户，请退出并重新登录。");
+				UartPrintf("\r\n你已经以%s身份登录到系统!",AccountState==Log_Perm_Admin?"管理员":"超级用户");
+				UARTPuts("\r\n如果您想切换用户,请退出并重新登录.");
 				TargetAccount=VerifyAccount_None;
 			  CmdHandle=Command_None;//命令执行完毕
 			  Verifystat=ACC_No_Login;//复位状态
@@ -67,7 +67,7 @@ void LoginHandler(void)
 				UARTPuts("超级用户");
 				AccountState=Log_Perm_Root;							
 				}
-			UARTPuts("的身份登录。");
+			UARTPuts("的身份登录.");
 	    if(CfgFile.IdleTimeout>0)IdleTimer=CfgFile.IdleTimeout;//重置登录超时计时器
 			TargetAccount=VerifyAccount_None;
 			CmdHandle=Command_None;//命令执行完毕
@@ -75,7 +75,7 @@ void LoginHandler(void)
 			}
 		else if(Verifystat==ACC_Verify_Error)
 		  {
-			UARTPuts("\r\n您提供的凭据无效，登录失败。");
+			UARTPuts("\r\n您提供的凭据无效,登录失败.");
 			LogErrTimer=PunishSec;
 			PunishSec*=2;
 			UARTPuts("\r\n为了保证安全，在重新尝试登录前您需等待");
@@ -90,6 +90,6 @@ void LoginHandler(void)
 void LogoutHandler(void)
   {
 		AccountState=Log_Perm_Guest;
-		UARTPuts("\r\n登出完毕。");
+		UARTPuts("\r\n登出完毕.");
 		CmdHandle=Command_None;//命令执行完毕
 	}
