@@ -72,7 +72,8 @@ int main(void)
 		 }
 	 //处理shell事务(为了保证性能,在手电筒运行时会直接跳过所有的shell事务)	 
    if(SysPstatebuf.Pstate!=PState_LEDOn&&SysPstatebuf.Pstate!=PState_LEDOnNonHold)
-		  ShellProcUtilHandler();	 
+		  ShellProcUtilHandler();
+   #ifndef FlashLightOS_Debug_Mode	 
 	 //处理手电筒自身的运行逻辑
 	 DisplayBatteryValueHandler();//处理显示电池电量操作的事务
 	 SideKey_LogicHandler();//处理侧按按键事务
@@ -88,6 +89,7 @@ int main(void)
 	 LEDMgmt_CallBack();//LED管理器
 	 AutoPowerOffTimerHandler();//处理自动关机定时器
 	 SensorRefreshFlag=false;
+	 #endif
 	 }
  return 0;
  }

@@ -45,7 +45,11 @@ void verHandler(void)
 		 UARTPuts("\r\n");
 		 UARTPuts((char *)FlashLightOSIcon[i]);
 		 }
+	#ifndef FlashLightOS_Debug_Mode
 	UartPrintf("\r\n\r\nPowered by FlashLight OS version-%d.%d.%d,终端波特率:%dbps",MajorVersion,MinorVersion,HotfixVersion,CfgFile.USART_Baud);
+	#else
+	UartPrintf("\r\n\r\nPowered by FlashLight OS version(debug)-%d.%d.%d,终端波特率:%dbps",MajorVersion,MinorVersion,HotfixVersion,CfgFile.USART_Baud);	 
+	#endif
   #ifndef EnableSecureStor
   if(!M24C512_PageRead(FRU.FRUBUF,SelftestLogEnd,sizeof(FRUBlockUnion))&&CheckFRUInfoCRC(&FRU))
   #else

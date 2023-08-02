@@ -322,7 +322,6 @@ void DisplayCheckResult(int Result,bool IsProgram)
 //自检校验handler
 void PORConfHandler(void)
  {
- #ifndef FlashLightOS_Debug_Mode
  unsigned int MainCRC,BackupCRC;
  int checkresult,backupcheckresult;
  UartPost(Msg_info,EEPModName,(char *)CheckingFileInt,"main");
@@ -372,10 +371,6 @@ void PORConfHandler(void)
 	 delay_Second(2);		
    NVIC_SystemReset();//硬重启
 	 }
- #else
-   UartPost(Msg_warning,EEPModName,"Firmware Debug Mode Enabled,Using Factory settings.");
-   LoadDefaultConf();  
- #endif
  //显示警告和重新初始化休眠定时器
  if(CfgFile.DeepSleepTimeOut>0)DeepSleepTimer=CfgFile.DeepSleepTimeOut;
  else DeepSleepTimer=-1;
