@@ -289,7 +289,7 @@ void ModeSwitchInit(void)
 	  {
 		if(CfgFile.DoubleClickMode.IsModeEnabled)
 		  {
-			UartPost(Msg_info,"ModeSel","double-click mode(name:%s)",CfgFile.DoubleClickMode.ModeName);
+			UartPost(Msg_info,"ModeSel","%sto double-click mode(name:%s)",ModeHasBeenOvrd,CfgFile.DoubleClickMode.ModeName);
 			CfgFile.BootupModeNum=0;
 			SaveMainConfig();//保存修改好的配置文件
 			return;
@@ -307,7 +307,7 @@ void ModeSwitchInit(void)
 			 return;
 			 }			
     //找完了都没有
-	  UartPost(msg_error,"ModeSel","Mode Setting is corrupted and driver will restoring it to default.");
+	  UartPost(msg_error,"ModeSel","Illegal Mode Settings,reverb to default.");
 		RestoreFactoryModeCfg();
 		CurMode.ModeGrpSel=ModeGrp_Regular;
 		CurMode.SpecialGrpMode=0;

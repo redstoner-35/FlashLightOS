@@ -133,7 +133,6 @@ void logviewhandler(void)
 		 if(errorcount<=0)errorcount=MaximumLoggerDepth-1; //计算最新的日志所在的位置
 		 //显示
 		 UartPrintf((char *)LogVIewAlertStr[6],"详细");
-		 UartPrintf("%s日志是否最新 : %s",LogVIewAlertStr[4],LogVIewAlertStr[errorcount==i?7:8]);
 		 UartPrintf("%s日志CRC32数值 : 0x%08X",LogVIewAlertStr[4],calculateLogEntryCRC32(&LogData));
 		 UartPrintf("%s错误类型 : %s",LogVIewAlertStr[4],ErrorString);
 		 UartPrintf("%s错误发生时的位置 : %s",LogVIewAlertStr[4],LogData.LoggerDateSection.ErrorStageText);

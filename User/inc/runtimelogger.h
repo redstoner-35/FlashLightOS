@@ -34,6 +34,13 @@ typedef struct
  bool RampModeDirection; //无极调光模式的方向
  bool IsFlashLightLocked; //手电筒是否锁定
  bool IsLowVoltageAlert; //是否低电压报警
+ unsigned short LowVoltageShutDownCount;//低电压关机次数统计
+ unsigned short DriverThermalFaultCount;//驱动因为严重过热关机的次数统计
+ unsigned short LEDThermalFaultCount;//驱动因为严重过热关机的次数统计
+ unsigned short OCPFaultCount;//电池和LED过流保护的次数统计
+ unsigned short OtherFaultCount;//其他硬件错误的次数统计
+ unsigned short LEDOpenShortCount;//LED开短路保护
+ float MaximumThermalStepDown;//历史记录的最大温度降档数值
  }RunLogDataStrDef;
 
 typedef union

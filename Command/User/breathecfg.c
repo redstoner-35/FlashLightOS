@@ -18,13 +18,13 @@ const char *breathecfgArgument(int ArgCount)
 		case 2:
 		case 3:return ModeSelectStr[3];
 		case 4:
-		case 5:return "配置指定挡位信标模式的电流爬升时间Trampup(电流从地板爬升到天花板所用的总时间,单位秒)";	
+		case 5:return "配置指定挡位的电流爬升时间Trampup(电流从地板爬升到天花板所用的总时间,单位秒)";	
 		case 6:
-		case 7:return "配置指定挡位信标模式的电流下滑时间Trampdn(电流从天花板下滑到地板所用的总时间,单位秒)";		
+		case 7:return "配置指定挡位的电流下滑时间Trampdn(电流从天花板下滑到地板所用的总时间,单位秒)";		
 		case 8:
-		case 9:return "配置指定挡位信标模式的天花板电流保持时间Tholdup(电流爬升到天花板后,在下滑到地板前的等待时间,单位秒)";	
+		case 9:return "配置指定挡位的天花板电流保持时间Tholdup(电流爬升到天花板后,在下滑到地板前的等待时间,单位秒)";	
 		case 10:
-		case 11:return "配置指定挡位信标模式的地板电流保持时间Tholddn(电流下滑到地板后,在重新爬升前的等待时间,单位秒)";
+		case 11:return "配置指定挡位的地板电流保持时间Tholddn(电流下滑到地板后,在重新爬升前的等待时间,单位秒)";
 	  }
 	return NULL;
 	}

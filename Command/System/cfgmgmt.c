@@ -3,6 +3,10 @@
 #include "Xmodem.h"
 #include <string.h>
 
+//字符串
+static const char *PleaseEnterStr="请在下方输入 '我知道我在干什么' 然后回车以继续.";
+static const char *EnterInputSnippet="\r\n\r\n?";
+
 //enum
 typedef enum
 {
@@ -69,8 +73,7 @@ UartPrintf("\r\n文件完整性 : %s",(checkresult?"损坏":"正常"));
 static void SaveFileDisplay(const char *name)
 {
 UartPrintf("\r\n似乎%s配置文件和当前的配置文件包含相同的配置。如果您需要强制覆",name);
-UartPrintf("\r\n盖%s配置文件，请在下方输入 '我知道我在干什么' 然后回车以继续.",name);
-UARTPuts("\r\n\r\n?");
+UartPrintf("\r\n盖%s配置文件,%s%s",name,PleaseEnterStr,EnterInputSnippet);
 ClearRecvBuffer();//清除接收缓冲
 YConfirmstr="我知道我在干什么";
 YConfirmState=YConfirm_WaitInput;
@@ -79,8 +82,7 @@ YConfirmState=YConfirm_WaitInput;
 static void ReadFileDisplay(const char *name)
 {
 UartPrintf("\r\n警告:你确定要将当前配置覆盖为%s配置吗?此操作将会摧毁当前配置且无法",name);
-UARTPuts("\r\n撤销!如果你希望继续，请在下方输入 '我知道我在干什么' 然后回车以继续.");
-UARTPuts("\r\n\r\n?");
+UartPrintf("\r\n撤销!如果你希望继续,%s%s",PleaseEnterStr,EnterInputSnippet);
 ClearRecvBuffer();//清除接收缓冲
 YConfirmstr="我知道我在干什么";
 YConfirmState=YConfirm_WaitInput;
@@ -171,12 +173,7 @@ void cfgmgmthandler(void)
     else if(ParamExist)//恢复工厂设置
 		   {
 		   CfgmgmtState=CfgMgmtRequstRestoreFactory;
-			 YConfirmstr="我知道我在干什么";
-			 YConfirmState=YConfirm_WaitInput;
-			 UARTPuts("\r\n警告:你确定要将当前配置覆盖为出厂设置吗?此操作将会摧毁当前配置且无法");
-			 UARTPuts("\r\n撤销!如果你希望继续，请在下方输入 '我知道我在干什么' 然后回车以继续.");
-			 UARTPuts("\r\n\r\n?");
-			 ClearRecvBuffer();//清除接收缓冲
+			 ReadFileDisplay("出厂默认值");
 			 }
 		else if(IsParameterExist("23",4,&ParamExist)!=NULL)//处理保存函数
 		   {

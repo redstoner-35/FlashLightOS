@@ -14,6 +14,15 @@ INADoutSreDef RunTimeBattTelemResult;
 float UsedCapacity=0;
 static char LVFlashTimer=0;
 
+//低压告警标记
+void WriteRunLogWithLVAlert(void)
+ {
+ if(RunLogEntry.Data.DataSec.LowVoltageShutDownCount<32766)
+		RunLogEntry.Data.DataSec.LowVoltageShutDownCount++; //低电压告警次数+1
+ RunLogEntry.CurrentDataCRC=CalcRunLogCRC32(&RunLogEntry.Data);//重新计算CRC-32  
+ WriteRuntimeLogToROM();//尝试写ROM
+ }
+
 //当库仑计关闭时显示电池电压
 void DisplayBattVoltage(void)
 {
@@ -181,9 +190,11 @@ void RunTimeBatteryTelemetry(void)
 			 RunLogEntry.Data.DataSec.BattUsage.IsLearningEnabled=false;
        RunLogEntry.Data.DataSec.BattUsage.DesignedCapacity=UsedCapacity;
        RunLogEntry.Data.DataSec.BattUsage.IsCalibrationDone=true;//自检完毕
-       RunLogEntry.CurrentDataCRC=CalcRunLogCRC32(&RunLogEntry.Data);//重新计算CRC-32
-       WriteRuntimeLogToROM();//尝试写ROM
+			 RunLogEntry.CurrentDataCRC=CalcRunLogCRC32(&RunLogEntry.Data);//重新计算CRC-32  
+		   WriteRuntimeLogToROM();//尝试写ROM
 			 }
+		 //不是更新容量，标记低电压告警触发
+		 else WriteRunLogWithLVAlert();
 		 //关机
 		 #ifndef FlashLightOS_Debug_Mode
 		 SysPstatebuf.Pstate=PState_Error;

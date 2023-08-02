@@ -199,7 +199,4 @@ void INA219_POR(void)
 	}
  //正常显示
  UartPost(Msg_info,"INA21x","SMBUS Power Gauge has been started without error.");
- UartPost(Msg_info,"INA21x","Current Battery Voltage : %.2fV",PORINADout.BusVolt);
- UartPost(Msg_info,"INA21x","Current Battery Current : %.2fA",PORINADout.BusCurrent);
- UartPost(Msg_info,"INA21x","Current Battery Power : %.2fW\r\n",PORINADout.BusPower);
  }

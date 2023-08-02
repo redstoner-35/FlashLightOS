@@ -3,6 +3,7 @@
 #include "console.h"
 #include "delay.h"
 #include "modelogic.h"
+#include "runtimelogger.h"
 #include "ADC.h"
 #include "I2C.h"
 #include "logger.h"
@@ -193,7 +194,31 @@ void CollectLoginfo(const char *ErrorArea,INADoutSreDef *BattStat)
 	 LogData.LoggerDateSection.DriverTelem.BatteryVoltageUVLO=false;
 	 LogData.LoggerDateSection.DriverTelem.BatteryOverCurrent=false;
 	 }
- INA219_SetConvMode(INA219_ADC_Off,INA219ADDR);
+ //如果运行日志记录器开启，则根据传入的error code增加对应的错误计数
+ if(IsRunTimeLoggingEnabled)
+   {
+	 switch(SysPstatebuf.ErrorCode)
+	   {
+		 case Error_LED_OverCurrent:
+		 case Error_Input_OCP:
+			 if(RunLogEntry.Data.DataSec.OCPFaultCount<32766)RunLogEntry.Data.DataSec.OCPFaultCount++; //OCP
+		   break;
+		 case Error_LED_Open:
+		 case Error_LED_Short:
+			 if(RunLogEntry.Data.DataSec.LEDOpenShortCount<32766)RunLogEntry.Data.DataSec.LEDOpenShortCount++;//开短路
+			 break;
+		 case Error_LED_ThermTrip:
+			 if(RunLogEntry.Data.DataSec.LEDThermalFaultCount<32766)RunLogEntry.Data.DataSec.LEDThermalFaultCount++;//LED过热
+		   break;
+		 case Error_SPS_ThermTrip:
+			 if(RunLogEntry.Data.DataSec.DriverThermalFaultCount<32766)RunLogEntry.Data.DataSec.DriverThermalFaultCount++;//驱动过热
+		   break;
+		 default: //其余故障
+			 if(RunLogEntry.Data.DataSec.OtherFaultCount<32766)RunLogEntry.Data.DataSec.OtherFaultCount++;
+		 }
+	 CalcLastLogCRCBeforePO();//重新计算CRC-32  
+	 WriteRuntimeLogToROM();//尝试写ROM
+	 }
  //开始计算CRC32然后更新头并写入到ROM内
  UpdateHeaderCounter=0;//标记头部需要更新
  LoggerHdr.LoggerHeader.IsEntryHasError[LoggerHdr.LoggerHeader.CurrentLoggerIndex]=true; 

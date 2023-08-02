@@ -136,6 +136,7 @@ void RunTimeDataLogging(void)
 	 }
  //填写降档等级
  RunLogEntry.Data.DataSec.ThermalStepDownValue=SysPstatebuf.CurrentThrottleLevel;
+ RunLogEntry.Data.DataSec.MaximumThermalStepDown=fmaxf(SysPstatebuf.CurrentThrottleLevel,RunLogEntry.Data.DataSec.MaximumThermalStepDown);
  //数据填写完毕，更新CRC32校验和
  RunLogEntry.Data.DataSec.IsRunlogHasContent=true;//运行日志已经有内容了
  RunLogEntry.CurrentDataCRC=CalcRunLogCRC32(&RunLogEntry.Data);
@@ -197,7 +198,10 @@ void ForceWriteRuntimelog(void)
   RunLogEntry.Data.DataSec.LogIncrementCode=SelfIncCode;//将计算好的自增码写进去
 	//尝试编程
   if(SaveRunLogDataToROM(&RunLogEntry.Data,RunLogEntry.ProgrammedEntry))
+	  {
+		CalcLastLogCRCBeforePO();  //编程结束后将新的log的CRC-32值替换过去避免重复写入
     RunLogEntry.ProgrammedEntry=(RunLogEntry.ProgrammedEntry+1)%RunTimeLoggerDepth;//编程成功，指向下一个entry，如果达到额定的entry数目则翻转回来  		
+		}
 	else 
 		RunLogEntry.Data.DataSec.LogIncrementCode=OldCode;//编程失败，entry数不增加的同时，还原更改了的自增码
 	}
@@ -297,6 +301,13 @@ void LogDataSectionInit(RunLogDataUnionDef *DIN)
 	DIN->DataSec.ThermalStepDownValue=0;
 	DIN->DataSec.IsRunlogHasContent=false;
 	DIN->DataSec.RampModeConf=0;
+	DIN->DataSec.LowVoltageShutDownCount=0;
+	DIN->DataSec.DriverThermalFaultCount=0;
+	DIN->DataSec.LEDThermalFaultCount=0;
+	DIN->DataSec.OCPFaultCount=0;
+	DIN->DataSec.OtherFaultCount=0;
+	DIN->DataSec.LEDOpenShortCount=0;
+	DIN->DataSec.MaximumThermalStepDown=0;
 	DIN->DataSec.RampModeDirection=false;
 	DIN->DataSec.IsFlashLightLocked=false;
 	DIN->DataSec.BattUsage.DesignedCapacity=3000;
@@ -314,7 +325,7 @@ bool ResetRunTimeLogArea(void)
  //复位系统RAM中的数据区域和存储
  LogDataSectionInit(&RunLogEntry.Data);
  RunLogEntry.ProgrammedEntry=0;
- RunLogEntry.LastDataCRC=CalcRunLogCRC32(&RunLogEntry.Data);
+ CalcLastLogCRCBeforePO();
  RunLogEntry.CurrentDataCRC=RunLogEntry.LastDataCRC;//计算CRC-32
  //重置RAM内的数据
  for(i=0;i<RunTimeLoggerDepth;i++)
@@ -391,7 +402,7 @@ void RunLogModule_POR(void)
  //日志功能被关闭
  if(!CfgFile.EnableRunTimeLogging)
    {
-	 UartPost(Msg_info,"RTLogger","System run-time logger has been disabled by user.Run-Time log will not available.");
+	 UartPost(Msg_info,"RTLogger","System run-time logger has been disabled by user.");
 	 IsRunTimeLoggingEnabled=false;
 	 //初始化无极调光和锁定模式以及库仑计的变量
 	 RunLogEntry.Data.DataSec.BattUsage.IsCalibrationDone=false;
@@ -404,7 +415,6 @@ void RunLogModule_POR(void)
 	 return;	 
 	 }
  //首先我们需要把整个log区域遍历一遍
- UartPost(Msg_info,"RTLogger","Checking All Run-Time log entry's integrity,please wait...");
  for(i=0;i<RunTimeLoggerDepth;i++)
 	 {
 	 //从ROM内读取数据
@@ -432,7 +442,7 @@ void RunLogModule_POR(void)
  i=FindLatestEntryViaIncCode(SelfIncBuf);
  if(!LoadRunLogDataFromROM(&RunLogEntry.Data,i))//从ROM内读取选择的Entry作为目前数据的内容
     {
-	  UartPost(Msg_critical,"RTLogger","Failed to load runtime-logger data section #%d from EEPROM,EEPROM is offline.",i);
+	  UartPost(Msg_critical,"RTLogger","Failed to load runtime-logger data section #%d.",i);
 	  SelfTestErrorHandler();
 	  }
  IsLogEmpty=true;
@@ -440,7 +450,7 @@ void RunLogModule_POR(void)
  if(IsLogEmpty)RunLogEntry.ProgrammedEntry=0;//如果目前事件日志一组记录都没有，则从0开始记录
  else RunLogEntry.ProgrammedEntry=(i+1)%RunTimeLoggerDepth;//目前entry已经有数据了，从下一条entry开始
  UartPost(Msg_info,"RTLogger","Last Entry is #%d,Logger will start to log at entry #%d.",i,RunLogEntry.ProgrammedEntry);
- RunLogEntry.LastDataCRC=CalcRunLogCRC32(&RunLogEntry.Data);
+ CalcLastLogCRCBeforePO();
  RunLogEntry.Data.DataSec.IsLowVoltageAlert=false;//已经重启了需要重置低压警告不然用户会发现换了电池还是低压警告.
  RunLogEntry.CurrentDataCRC=CalcRunLogCRC32(&RunLogEntry.Data);//计算CRC-32
  UartPost(Msg_info,"RTLogger","Run-Time logger has been started,last log data CRC-32 value is 0x%08X.",RunLogEntry.CurrentDataCRC);

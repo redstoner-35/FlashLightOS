@@ -139,6 +139,7 @@ void PStateStateMachine(void)
 				else //如果自检成功则跳转到开灯状态，否则跳转到错误状态并写入日志。
 				  {	
 				  if(SysPstatebuf.ErrorCode!=Error_Input_UVP)CollectLoginfo(ErrorStrDuringPost,&BattO);
+					else WriteRunLogWithLVAlert();//标记低压告警次数+1
 					SysPstatebuf.Pstate=PState_Error; 
 					TurnLightOFFLogic();
 					ResetRampMode();//重置无极调光模块
@@ -182,6 +183,7 @@ void PStateStateMachine(void)
 				else //如果自检成功则跳转到开灯状态，否则跳转到错误状态并写入日志。
 				  {		
 					if(SysPstatebuf.ErrorCode!=Error_Input_UVP)CollectLoginfo(ErrorStrDuringPost,&BattO);
+					else WriteRunLogWithLVAlert();//标记低压告警次数+1
 					SysPstatebuf.Pstate=PState_Error; 
 					TurnLightOFFLogic();
 		      ResetBreathStateMachine();
