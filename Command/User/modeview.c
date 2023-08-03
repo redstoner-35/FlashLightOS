@@ -8,6 +8,17 @@
 extern const char *ModeSelectStr[];
 static const char *ModeInfoStr="\r\n  挡位";
 
+
+//显示挡位组信息
+static void DisplayModeGroupBar(const char *GrpName)
+  {
+	UARTPuts("\r\n  ");
+	UARTPutc('-',10);
+	UartPrintf("  %s功能挡位组  ",GrpName);
+	UARTPutc('-',10);
+	UARTPuts("\r\n  | 挡位序号 |  挡位模式  |  挡位名称  ");
+	}
+
 //参数帮助entry
 const char *modeviewArgument(int ArgCount)
   {
@@ -48,6 +59,8 @@ void modeviewhandler(void)
 			UartPrintf("%s是否启用 : %s",(char *)ModeInfoStr,TargetMode->IsModeEnabled?"是":"否");
 			UartPrintf("%s是否带记忆功能 : %s",(char *)ModeInfoStr,TargetMode->IsModeHasMemory?"是":"否");
 			UartPrintf("%s是否带温控功能 : %s",(char *)ModeInfoStr,TargetMode->IsModeAffectedByStepDown?"是":"否");
+			if(TargetMode->MaxMomtTurboCount>0)
+			  UartPrintf("%s鸡血最大次数 : %d",(char *)ModeInfoStr,TargetMode->MaxMomtTurboCount);
 			UARTPuts("\r\n  定时关机 : ");
 			if(TargetMode->PowerOffTimer>0)
 				UartPrintf("%d分钟后自动关机",TargetMode->PowerOffTimer);
@@ -113,8 +126,7 @@ void modeviewhandler(void)
 		//显示常规挡位组内的挡位
 		if(totalstep>0)
 		  {			
-			UartPrintf("\r\n  ----------  常规功能挡位组 -----------");
-			UartPrintf("\r\n  | 挡位序号 |  挡位模式  |  挡位名称  ");
+      DisplayModeGroupBar("常规");
 			for(i=0;i<8;i++)
 				{
 				TargetMode=GetSelectedModeConfig(ModeGrp_Regular,i);
@@ -130,8 +142,7 @@ void modeviewhandler(void)
 		TargetMode=GetSelectedModeConfig(ModeGrp_DoubleClick,0);
 		if(TargetMode!=NULL&&TargetMode->IsModeEnabled)
 		  {
-		  UartPrintf("\r\n  ----------  双击功能挡位组 -----------");
-		  UartPrintf("\r\n  | 挡位序号 |  挡位模式  |  挡位名称  ");
+      DisplayModeGroupBar("双击");
 			UartPrintf("\r\n  |   ----   |  ");
 			len=UartPrintf("%s",LightModeString[(int)TargetMode->Mode]);
 			UARTPutc(' ',10-len);
@@ -149,8 +160,7 @@ void modeviewhandler(void)
 		//显示常规挡位组内的挡位
 		if(totalstep>0)
 		  {			
-			UartPrintf("\r\n  ----------  特殊功能挡位组 -----------");
-			UartPrintf("\r\n  | 挡位序号 |  挡位模式  |  挡位名称  ");
+      DisplayModeGroupBar("特殊");
 			for(i=0;i<4;i++)
 				{
 				TargetMode=GetSelectedModeConfig(ModeGrp_Special,i);

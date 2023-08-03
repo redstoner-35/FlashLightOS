@@ -32,10 +32,29 @@ void RunTimeDataLogging(void)
  double Buf;
  float EffCalcBuf;
  int i;
- //logger没有激活或者当前手电筒不在运行，退出
- if(!IsRunTimeLoggingEnabled)return; //logger被禁止
- if(SysPstatebuf.Pstate!=PState_LEDOn&&SysPstatebuf.Pstate!=PState_LEDOnNonHold)
-	  return;//LED没开启
+ //logger没有激活或者当前手电筒不在运行，退出 
+ if(SysPstatebuf.Pstate!=PState_LEDOn&&SysPstatebuf.Pstate!=PState_LEDOnNonHold)return;//LED没开启  
+ if(!IsRunTimeLoggingEnabled)//logger被禁止，只采样平均SPS温度保障温控系统正常运作。
+   {
+   if(RuntimeAverageCount==0)//第一次，载入旧数据
+	   {
+	   RuntimeAverageCount++;
+     AverageBuf[4]=RunLogEntry.Data.DataSec.AverageSPSTemp; //MOS温度
+		 }
+	 else if(RuntimeAverageCount==5)//平均完毕，输出结果后准备下一轮计算
+	   {
+		 RuntimeAverageCount=0;
+	   RunLogEntry.Data.DataSec.AverageSPSTemp=AverageBuf[4]/(float)5; //SPS温度
+		 AverageBuf[4]=0; //清除平均缓存
+     }
+	 else
+	   {
+		 if(ADCO.SPSTMONState==SPS_TMON_OK)AverageBuf[4]+=ADCO.SPSTemp;
+	   else AverageBuf[4]+=RunLogEntry.Data.DataSec.AverageSPSTemp;  //如果在本次平均的时候温度数据不可用则使用老数据
+	   RuntimeAverageCount++;
+		 }
+   return; 
+   }
  //令ADC采样参数
  if(!ADC_GetResult(&ADCO))
     {
@@ -414,6 +433,7 @@ void RunLogModule_POR(void)
 	 RunLogEntry.Data.DataSec.RampModeConf=0; 
 	 RunLogEntry.Data.DataSec.TotalLogCount=0;
 	 RunLogEntry.Data.DataSec.IsLowVoltageAlert=false;
+	 RunLogEntry.Data.DataSec.AverageSPSTemp=20;//初始的平均SPS温度设置为20度
 	 RunLogEntry.Data.DataSec.RampModeDirection=false;//默认从0%开始，向上
 	 return;	 
 	 }

@@ -16,6 +16,8 @@ typedef enum
  }runlogCfgStateDef;
 
 static const char *RunLogOpStr="\r\n运行日志记录器已被%s,您需要使用'reboot'命令重启驱动以使更改生效.";
+static const char *RunLogFileName="运行日志文件";
+
 runlogCfgStateDef RunLogCmdState;
 #ifndef Firmware_DIY_Mode
 const char *NeedRoot="\r\n错误:您需要超级用户(厂家售后工程师)的用户权限方可%s";
@@ -192,10 +194,10 @@ void runlogcfgHandler(void)
 		       RunLogCmdState=RunLogCmd_XmodemRxInProgress;
 	         XmodemInitRXModule(RunTimeLogSize,XmodemConfRecvBase);
 				   }
-				 DisplayXmodemBackUp("运行日志文件",!ParamOK); //显示提示信息
+				 DisplayXmodemBackUp(RunLogFileName,!ParamOK); //显示提示信息
 				 break;
 				 }
-   case RunLogCmd_XmodemTxInProgress:XmodemTxDisplayHandler("运行日志文件",&ExitRunLogCmdHandler,&ExitRunLogCmdHandler);break; //Xmodem发送进行中
-   case RunLogCmd_XmodemRxInProgress:XmodemRxDisplayHandler("运行日志文件",&ExitRunLogCmdHandler,&RestoreRunLog);break;  //Xmodem接收进行中
+   case RunLogCmd_XmodemTxInProgress:XmodemTxDisplayHandler(RunLogFileName,&ExitRunLogCmdHandler,&ExitRunLogCmdHandler);break; //Xmodem发送进行中
+   case RunLogCmd_XmodemRxInProgress:XmodemRxDisplayHandler(RunLogFileName,&ExitRunLogCmdHandler,&RestoreRunLog);break;  //Xmodem接收进行中
 	 }
  }

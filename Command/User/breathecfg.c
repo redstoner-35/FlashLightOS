@@ -7,6 +7,7 @@
 
 //外部字符串指针数组
 extern const char *ModeSelectStr[];
+static const char *TimeParamHasSet="的%s时间(信标模式)%s已被设置为%.1f秒.\r\n";
 
 //参数帮助entry
 const char *breathecfgArgument(int ArgCount)
@@ -69,7 +70,7 @@ void breathecfghandler(void)
 		  {
 			TargetMode->CurrentRampUpTime=buf;
 			DisplayWhichModeSelected(UserSelect,modenum);
-			UartPrintf("的电流爬升时间(信标模式)Trampup已被设置为%.1f秒.\r\n",buf);
+			UartPrintf((char *)TimeParamHasSet,"电流爬升","Trampup",buf);
 			if(TargetMode->Mode!=LightMode_Breath)
 			   UartPrintf((char *)ModeSelectStr[5],"信标");
 			}
@@ -92,7 +93,7 @@ void breathecfghandler(void)
 		  {
 			TargetMode->CurrentRampDownTime=buf;
 			DisplayWhichModeSelected(UserSelect,modenum);
-			UartPrintf("的电流下滑时间(信标模式)Trampdn已被设置为%.1f秒.\r\n",buf);
+			UartPrintf((char *)TimeParamHasSet,"电流下滑","Trampdn",buf);
 			if(TargetMode->Mode!=LightMode_Breath)
 			   UartPrintf((char *)ModeSelectStr[5],"信标");
 			}
@@ -115,7 +116,7 @@ void breathecfghandler(void)
 		  {
 			TargetMode->MaxCurrentHoldTime=buf;
 			DisplayWhichModeSelected(UserSelect,modenum);
-			UartPrintf("的天花板电流保持时间(信标模式)Tholdup已被设置为%.1f秒.\r\n",buf);
+			UartPrintf((char *)TimeParamHasSet,"天花板电流保持","Tholdup",buf);
 			if(TargetMode->Mode!=LightMode_Breath)
 			   UartPrintf((char *)ModeSelectStr[5],"信标");
 			}
@@ -138,7 +139,7 @@ void breathecfghandler(void)
 		  {
 			TargetMode->MaxCurrentHoldTime=buf;
 			DisplayWhichModeSelected(UserSelect,modenum);
-			UartPrintf("的地板电流保持时间(信标模式)Tholddn已被设置为%.1f秒.\r\n",buf);
+			UartPrintf((char *)TimeParamHasSet,"地板电流保持","Tholddn",buf);
 			if(TargetMode->Mode!=LightMode_Breath)
 			   UartPrintf((char *)ModeSelectStr[5],"信标");
 			}

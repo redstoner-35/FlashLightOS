@@ -10,12 +10,13 @@
 #include <math.h>
 #include <stdlib.h>
 
-//声明一下fmax和fmin的定义
+//声明一下函数
 float fmaxf(float x,float y);
 float fminf(float x,float y);
+float PIDThermalControl(ADCOutTypeDef *ADCResult);//PID温控
+void FillThermalFilterBuf(ADCOutTypeDef *ADCResult);//填充温度stepdown的缓冲区
 
 //内部变量
-float StepDownFilterBuf[10];
 static float LEDVfFilterBuf[12];
 static char ShortCount=0;
 extern float LEDVfMin;
@@ -42,31 +43,6 @@ float LEDVfFilter(float VfIN)
 	}
  buf-=(min+max);
  buf/=(float)10;//去掉最高和最低值，取剩下的8个值里面的平均值
- return buf;
-}
-
-//温控降档部分的简易数字滤波器（避免降档不稳）
-float StepDownFilter(float StepIN)
-{
- int i;
- float buf,min,max;
- //搬数据
- for(i=9;i>0;i--)StepDownFilterBuf[i]=StepDownFilterBuf[i-1];
- StepDownFilterBuf[i]=StepIN;
- //找最高和最低的同时累加数据
- min=2000;
- max=-2000;
- buf=0;
- for(i=0;i<10;i++)
-	{
-	buf+=StepDownFilterBuf[i];//累加数据
-	min=fminf(min,StepDownFilterBuf[i]);
-	max=fmaxf(max,StepDownFilterBuf[i]); //取最小和最大
-	}
- buf-=(min+max);
- buf/=(float)8;//去掉最高和最低值，取剩下的8个值里面的平均值
- if(buf>100)buf=100;
- if(buf<5)buf=5; //限制幅度最大95%，最小0%
  return buf;
 }
 
@@ -185,7 +161,6 @@ void LinearDIM_POR(void)
  delay_ms(10);
  AD5693R_SetOutput(0);
  SetPWMDuty(0);			 
- for(i=0;i<10;i++)StepDownFilterBuf[i]=100;//填上100的初始值
  UartPost(Msg_info,"LineDIM","Linear dimming module initialization done.");
 }
 //从开灯状态切换到关灯状态的逻辑
@@ -299,6 +274,7 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
  ********************************************************/
  SysPstatebuf.IsLEDShorted=false;
  SysPstatebuf.ToggledFlash=true;// LED没有短路，上电点亮
+ FillThermalFilterBuf(&ADCO); //填写温度信息
  for(i=0;i<12;i++)LEDVfFilterBuf[i]=ADCO.LEDVf;//填写LEDVf 
  return Error_None;
  }
@@ -311,7 +287,7 @@ void RuntimeModeCurrentHandler(void)
  ModeConfStr *CurrentMode;
  ADCOutTypeDef ADCO;
  bool IsCurrentControlledByMode;
- float Current,Throttle,SPSThrottle,DACVID,delta;
+ float Current,Throttle,DACVID,delta;
  /********************************************************
  运行时挡位处理的第一步.首先获取当前的挡位，然后我们使能ADC
  的转换负责获取LED的电流,温度和驱动功率管的温度,接下来就是
@@ -349,33 +325,13 @@ void RuntimeModeCurrentHandler(void)
 		 return;
 	   }
  /********************************************************
- 运行时挡位处理的第二步.我们根据用户配置的温度曲线和当前
+ 运行时挡位处理的第二步.我们根据用户配置的PID温控参数和当前
  ADC读取到的各组件温度计算出降档的幅度，并且最终汇总为一个
  降档系数用于限制电流
  ********************************************************/
- Throttle=QueueLinearTable(5,ADCO.LEDTemp,CfgFile.LEDThermalStepThr,CfgFile.LEDThermalStepRatio);//根据LED的温度取数值
- if(Throttle==NAN)
-	  {
-		//LED的线性降档温度表数据有问题,这是严重的逻辑错误,立即写log并停止驱动运行
-	  RunTimeErrorReportHandler(Error_Thremal_Logic);
-		return;
-	  }
- SPSThrottle=QueueLinearTable(5,ADCO.SPSTemp,CfgFile.SPSThermalStepThr,CfgFile.SPSThermalStepRatio);//根据功率管的降档曲线取出对应的数值
- if(SPSThrottle==NAN)
-	  {
-	  //功率管的线性降档温度表数据有问题,这是严重的逻辑错误,立即写log并停止驱动运行
-    RunTimeErrorReportHandler(Error_Thremal_Logic);
-		return;
-	  }
- if(ADCO.NTCState==LED_NTC_OK)//LED的NTCOK,正常执行权重逻辑
-    {
-		Throttle*=(float)CfgFile.LEDThermalStepWeight/(float)100;
-    SPSThrottle*=(float)(100-CfgFile.LEDThermalStepWeight)/(float)100;
-    Throttle+=SPSThrottle;//按照权重设置对LED和SPS的降档数值进行加权得到最终的降档系数
-		}
- else	Throttle=SPSThrottle;//LED的NTC故障，此时SPS的降档数值不经过任何处理直接写入到最终的降档数值buffer里面
- if(Throttle<5)Throttle=5;//最多只可以降到5%
- Throttle=StepDownFilter(Throttle);//将算出来的值写入到数字滤波器中然后从滤波器取数值
+ Throttle=PIDThermalControl(&ADCO);//执行PID温控
+ if(Throttle>100)Throttle=100;
+ if(Throttle<5)Throttle=5;//温度降档值限幅
  if(!CurrentMode->IsModeAffectedByStepDown)SysPstatebuf.CurrentThrottleLevel=0;
  else SysPstatebuf.CurrentThrottleLevel=(float)100-Throttle;//将最后的降档系数记录下来用于事件日志使用
  /********************************************************

@@ -74,35 +74,6 @@ bool GetUserModeNum(int cmdindex,ModeGrpSelDef *UserSelect,int *modenum)
 	else *modenum=0;//双击挡位组编号为0
 	return true;
 	}
-
-//检查用户选择了哪个数据来源的温控曲线
-//输入：字符串  输出:枚举方式分别表示用户输入了什么
-const char *ThermalsensorString[2]={"LED基板","驱动MOS"};
-
-UserInputThermalSensorDef CheckUserInputForThermalSens(char *Param)
-  {
-	int i;
-  int InputLen;
-  if(Param==NULL)return ThermalSens_None;
-  InputLen=strlen(Param);
-  for(i=0;i<2;i++)//找到匹配的字符串
-  if(InputLen==strlen(ThermalsensorString[i])&&!strcmp(ThermalsensorString[i],Param))switch(i)
-   {
-	 case 0:return ThermalSens_LEDNTC;
-	 case 1:return ThermalSens_DriverSPS;
-	 }
-	return ThermalSens_None;
-	}
-
-//当用户输入的传感器选项无效时指示用户该输入什么
-//输入：字符串  输出:无
-void DisplayCorrectSensor(void)
- {
- int i;
- UARTPuts("\r\n有效的温控表数据来源参数如下:");
- for(i=0;i<2;i++)UartPrintf("\r\n%s : 指定使用%s作为数据来源的温控表进行编辑操作.",ThermalsensorString[i],ThermalsensorString[i]);
- }		
-
 //检查用户选择了哪个挡位模式
 //输入：字符串  输出:枚举方式分别表示用户输入了什么
  const char *LightModeString[8]={"常亮","爆闪","随机爆闪","SOS","摩尔斯发送","呼吸","无极调光","自定义闪"};
@@ -113,7 +84,7 @@ static const char *ModeUsageString[8]=
  "随机频率爆闪",
  "按照用户指定的速度发送SOS求救光学信号(... --- ...)",
  "通过摩尔斯电码以光学方式发送用户设置的自定义字符串",
- "用户指定的参数平滑的增高亮度,等待一会后然后亮度平滑的下跌,再度等待并以此反复循环,模拟呼吸效果。",
+ "用户指定的参数平滑的增高亮度,等待一会后亮度平滑下跌,再度等待并反复循环模拟呼吸效果。",
  "保持点亮,用户可自由设定亮度.",
  "依据用户指定的字符串所指定的闪烁模式闪烁"	 
  };

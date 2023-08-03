@@ -33,16 +33,6 @@ const float IMONGainSettings[SPSCompensateTableSize*2]=
 0.8196,1.307,1.066,1.12,1.057 ,1.068,1.075,1.071,1.087,1.089	
 };
 /*
-默认驱动的温控曲线，从50度开始缓缓降档到原始值的85%，
-超过65度后开始迅速降档
-当温度达到82度的时候降档至原始值的10%
-*/
-const float DefaultThermalThrCurve[10]=
-{
-50,55,65,75,80,  //温度阈值
-100,95,85,50,10  //百分比
-};
-/*
 被加密的管理员用户ADMIN和超级用户root的默认密码
 密码使用AES-256加密，可以通过'cptextgen'命令生成，
 然后替换掉下方数组的内容即可，密码长度需要小于或
@@ -65,7 +55,6 @@ const char AdminPassword[16]=
 void LoadDefaultConf(void)
  {
  int i;
- float SPSStepRatio;
  //系统基本设置
  CfgFile.USART_Baud=115200;
  CfgFile.EnableRunTimeLogging=true;
@@ -87,18 +76,15 @@ void LoadDefaultConf(void)
 	 CfgFile.LEDIMONCalGain[i]=IMONGainSettings[i+SPSCompensateTableSize];
 	 }
  //恢复温控设置
- CfgFile.LEDThermalStepWeight=65;//LED的降档设置权重为65%
  CfgFile.LEDThermalTripTemp=90;
  CfgFile.MOSFETThermalTripTemp=110; //LED热跳闸为110度，LED 90度
- for(i=0;i<5;i++)
-	 {
-	 CfgFile.LEDThermalStepThr[i]=DefaultThermalThrCurve[i];
-	 CfgFile.SPSThermalStepThr[i]=DefaultThermalThrCurve[i]+16.5; //温度阈值
-	 CfgFile.LEDThermalStepRatio[i]=DefaultThermalThrCurve[i+5];
-	 SPSStepRatio=DefaultThermalThrCurve[i+5]+1.5;
-	 if(SPSStepRatio>100)SPSStepRatio=100;//SPS降档减缓5%
-	 CfgFile.SPSThermalStepRatio[i]=SPSStepRatio; //温度曲线
-	 }
+ CfgFile.PIDTriggerTemp=65; //当MOS和LED的平均温度等于65度时温控接入
+ CfgFile.PIDTargetTemp=55; //PID目标温度55度
+ CfgFile.PIDRelease=50; //当温度低于50度时，PID不调节
+ CfgFile.ThermalPIDKp=0.25;
+ CfgFile.ThermalPIDKi=0.78;
+ CfgFile.ThermalPIDKd=0.2; //PID温控的P I D
+ CfgFile.LEDThermalWeight=60;//
  //恢复电池设置
  CfgFile.VoltageFull=4.0*BatteryCellCount;
  CfgFile.VoltageAlert=3.0*BatteryCellCount;

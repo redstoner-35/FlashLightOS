@@ -737,6 +737,11 @@
               <FileType>1</FileType>
               <FilePath>.\ExtPeriphal\TempMonitor.c</FilePath>
             </File>
+            <File>
+              <FileName>TempControl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\ExtPeriphal\TempControl.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

@@ -6,9 +6,10 @@
 #include <math.h>
 
 //外部变量
+const char *IllegalVoltageConfig="\r\n您应当指定一个在%.1f-%.1f(V)之间的数值作为电池的%s值.";
 extern float UsedCapacity;
 #ifndef Firmware_DIY_Mode
-const char *NeedRoot;
+extern const char *NeedRoot;
 #endif
 
 //参数帮助entry
@@ -93,7 +94,7 @@ void battcfghandler(void)
   if(ParamOK&&AccountState!=Log_Perm_Root)
      {
 	   UartPrintf((char *)NeedRoot,"重置系统中库仑计的统计信息!"); 
-	   CmdParamOK=true;
+	   IsCmdParamOK=true;
 	   }
   else if(ParamOK)
   #else
@@ -121,7 +122,7 @@ void battcfghandler(void)
   if(Param!=NULL&&AccountState!=Log_Perm_Root)
      {
 	   UartPrintf((char *)NeedRoot,"手动设置库仑计的设计电池容量信息!"); 
-	   CmdParamOK=true;
+	   IsCmdParamOK=true;
 	   }
   else if(Param!=NULL)
   #else
@@ -176,7 +177,7 @@ void battcfghandler(void)
     if(buf==NAN||buf<=CfgFile.VoltageFull||buf>15.5)
 		  {
 			DisplayIllegalParam(Param,24,6);//显示用户输入了非法参数
-			UartPrintf("\r\n您应当指定一个在%.2f-15.5(V)之间的数值作为电池的过压保护值.",CfgFile.VoltageFull+0.05);
+			UartPrintf((char *)IllegalVoltageConfig,CfgFile.VoltageFull+0.05,15.5,"过压保护");
 			}
 		else
 		  {
@@ -193,7 +194,7 @@ void battcfghandler(void)
     if(buf==NAN||buf<=CfgFile.VoltageAlert||buf>=CfgFile.VoltageOverTrip)
 		  {
 			DisplayIllegalParam(Param,24,4);//显示用户输入了非法参数
-			UartPrintf("\r\n您应当指定一个在%.2f-%.2f(V)之间的数值作为电池的满电电压值.",CfgFile.VoltageAlert+0.05,CfgFile.VoltageOverTrip-0.05);
+			UartPrintf((char *)IllegalVoltageConfig,CfgFile.VoltageAlert+0.05,CfgFile.VoltageOverTrip-0.05);
 			}
 		else
 		  {
@@ -210,7 +211,7 @@ void battcfghandler(void)
     if(buf==NAN||buf<6||buf>=CfgFile.VoltageAlert)
 		  {
 			DisplayIllegalParam(Param,24,2);//显示用户输入了非法参数
-			UartPrintf("\r\n您应当指定一个在6-%.2f(V)之间的数值作为电池的低电压断电保护门限值.",CfgFile.VoltageAlert-0.05);
+			UartPrintf((char *)IllegalVoltageConfig,6,CfgFile.VoltageAlert-0.05,"低电压断电保护门限");
 			}
 		else
 		  {
@@ -227,7 +228,7 @@ void battcfghandler(void)
     if(buf==NAN||buf<CfgFile.VoltageTrip||buf>=CfgFile.VoltageFull)
 		  {
 			DisplayIllegalParam(Param,24,0);//显示用户输入了非法参数
-			UartPrintf("\r\n您应当指定一个在6-%.2f(V)之间的数值作为电池的低电压警告门限值.",CfgFile.VoltageTrip+0.05,CfgFile.VoltageFull-0.05);
+			UartPrintf((char *)IllegalVoltageConfig,CfgFile.VoltageTrip+0.05,CfgFile.VoltageFull-0.05,"低电压警告门限");
 			}
 		else
 		  {

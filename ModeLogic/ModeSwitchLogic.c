@@ -111,6 +111,7 @@ void RestoreFactoryModeCfg(void)
 	 CfgFile.RegularMode[i].RandStrobeMinFreq=5;		//随机爆闪频率 
 	 CfgFile.RegularMode[i].MosTransferStep=0.5;//摩尔斯码发送的step为0.5秒1阶		 
 	 CfgFile.RegularMode[i].RampModeSpeed=2.5; //无极调光模式下电流上升下降的速度(2.5秒1循环)
+	 CfgFile.RegularMode[i].MaxMomtTurboCount=0;//不支持鸡血模式
 	 CfgFile.RegularMode[i].MaxCurrentHoldTime=1;
 	 CfgFile.RegularMode[i].MinCurrentHoldTime=10;
 	 CfgFile.RegularMode[i].CurrentRampDownTime=2;
@@ -133,6 +134,7 @@ void RestoreFactoryModeCfg(void)
 	CfgFile.RegularMode[0].MosTransferStep=0.5;//摩尔斯码发送的step为0.5秒1阶		 
 	CfgFile.RegularMode[0].RampModeSpeed=2.5; //无极调光模式下电流上升下降的速度(多少秒1循环)
 	CfgFile.RegularMode[0].MaxCurrentHoldTime=1;
+	CfgFile.RegularMode[i].MaxMomtTurboCount=0;//不支持鸡血模式
 	CfgFile.RegularMode[0].RandStrobeMaxFreq=16;
 	CfgFile.RegularMode[0].RandStrobeMinFreq=5;		//随机爆闪频率 
 	CfgFile.RegularMode[0].MinCurrentHoldTime=10;
@@ -151,6 +153,7 @@ void RestoreFactoryModeCfg(void)
 	 CfgFile.RegularMode[i].IsModeAffectedByStepDown=true;//受温控影响
 	 CfgFile.RegularMode[i].LEDCurrentLow=0;//呼吸模式低电流为0
 	 CfgFile.RegularMode[i].LEDCurrentHigh=10;//编程电流
+	 CfgFile.RegularMode[i].MaxMomtTurboCount=0;//不支持鸡血模式
    CfgFile.RegularMode[i].Mode=LightMode_On;//正常挡位全是常亮档
 	 CfgFile.RegularMode[i].StrobeFrequency=10;//默认爆闪频率为10Hz
 	 CfgFile.RegularMode[i].MosTransferStep=0.1;//摩尔斯码发送的step为0.1秒1阶	 
@@ -176,7 +179,8 @@ void RestoreFactoryModeCfg(void)
 	CfgFile.DoubleClickMode.LEDCurrentHigh=FusedMaxCurrent;//编程电流(配置为驱动允许的最大电流)
   CfgFile.DoubleClickMode.Mode=LightMode_On;//双击极亮也是常亮档
 	CfgFile.DoubleClickMode.RandStrobeMaxFreq=16;
-	CfgFile.DoubleClickMode.RandStrobeMinFreq=5;		//随机爆闪频率 
+	CfgFile.DoubleClickMode.RandStrobeMinFreq=5;		//随机爆闪频率
+  CfgFile.DoubleClickMode.MaxMomtTurboCount=4;//支持4次鸡血模式	 
 	CfgFile.DoubleClickMode.MosTransferStep=0.1;//摩尔斯码发送的step为0.1秒1阶		 
 	CfgFile.DoubleClickMode.MaxCurrentHoldTime=1;
 	CfgFile.DoubleClickMode.MinCurrentHoldTime=10;
@@ -191,6 +195,7 @@ void RestoreFactoryModeCfg(void)
 	memset(CfgFile.DoubleClickMode.CustomFlashStr,0x00,32);
 	strncpy(CfgFile.DoubleClickMode.ModeName,"保留挡位",16);//挡位名称
 	CfgFile.DoubleClickMode.IsModeHasMemory=false;//不记忆
+	CfgFile.DoubleClickMode.MaxMomtTurboCount=0;//不支持鸡血
 	CfgFile.DoubleClickMode.IsModeAffectedByStepDown=true;//受温控影响
 	CfgFile.DoubleClickMode.LEDCurrentLow=0;//呼吸模式低电流为0
 	CfgFile.DoubleClickMode.LEDCurrentHigh=10;//编程电流
@@ -214,6 +219,7 @@ void RestoreFactoryModeCfg(void)
 	 CfgFile.SpecialMode[i].PowerOffTimer=0;//自动关机定时器禁用
 	 memset(CfgFile.SpecialMode[i].CustomFlashStr,0x00,32);
    CfgFile.SpecialMode[i].IsModeHasMemory=false;//不记忆
+	 CfgFile.SpecialMode[i].MaxMomtTurboCount=0;//不支持鸡血
 	 CfgFile.SpecialMode[i].RandStrobeMaxFreq=16;
 	 CfgFile.SpecialMode[i].RandStrobeMinFreq=5;		//随机爆闪频率 
 	 CfgFile.SpecialMode[i].IsModeAffectedByStepDown=true;//受温控影响
@@ -394,7 +400,7 @@ void ModeSwitchLogicHandler(void)
 	  if(DCPressstatebuf)//用户执行了操作
 	    {
 		  CurrentMode=GetCurrentModeConfig();//获取目前挡位
-		  if(CurrentMode->PowerOffTimer>0)//有时间设置
+			if(CurrentMode->MaxMomtTurboCount==0&&CurrentMode->PowerOffTimer>0)//有时间设置且该挡位没有鸡血
 		    {
 		    if(AutoOffTimer==-1)
 		      {

@@ -17,6 +17,7 @@ typedef enum
 //变量和常量
 logbkupStatuDef logbkupcmdstate=logbkup_XmodemInit; 
 #ifndef Firmware_DIY_Mode
+void ExitRunLogCmdHandler(void);
 extern const char *NeedRoot;
 #endif 
  

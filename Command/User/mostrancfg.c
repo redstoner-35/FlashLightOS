@@ -7,6 +7,7 @@
 
 //外部字符串指针数组
 extern const char *ModeSelectStr[];
+static const char *IllegalMosStr="\r\n错误:自定义摩尔斯码发送的字符串内容%s.\r\n";
 
 //参数帮助entry
 const char *mostranscfgArgument(int ArgCount)
@@ -77,10 +78,10 @@ void mostranscfghandler(void)
 		TargetMode=GetSelectedModeConfig(UserSelect,modenum);
 		strresult=CheckForStringCanBeSentViaMorse(ParamPtr);
 		if(strlen(ParamPtr)>31||strlen(ParamPtr)<1)
-			UARTPuts("\r\n错误:自定义摩尔斯码发送的字符串内容不得超过31字符且应至少包含1个字符.\r\n");
+			UartPrintf((char *)IllegalMosStr,"不得超过31字符且应至少包含1个字符");
 		else if(strresult!=-1)//字符串包含非法内容
 		  {
-			UARTPuts("\r\n错误:自定义摩尔斯码发送的字符串内容中仅能包含大小写字母[A-Z,a-z]数字[0-9]和部分特殊符号[? / ( ) - _ .]。");
+			UartPrintf((char *)IllegalMosStr,"仅能包含大小写字母[A-Z,a-z]数字[0-9]和部分特殊符号[? / ( ) - _ .]");
 		  UartPrintf("\r\n您输入的字符串'%s'在第%d个字符的位置存在非法内容,请修正后再试.\r\n",ParamPtr,strresult+1);
 			UARTPutc(' ',strresult+15);
 			UARTPuts("^\r\n");

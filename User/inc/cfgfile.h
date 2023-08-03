@@ -41,11 +41,13 @@ typedef struct
  //温控设置
  char MOSFETThermalTripTemp;
  char LEDThermalTripTemp; //MOS管和LED的过热拉闸温度
- float LEDThermalStepThr[5]; //LED的降档阈值
- float LEDThermalStepRatio[5]; //LED的降档设置(按照百分比)
- float SPSThermalStepThr[5]; //集成功率管的降档阈值
- float SPSThermalStepRatio[5]; //集成功率管的设置(按照百分比)
- char LEDThermalStepWeight;//LED降档的权重
+ float ThermalPIDKp; 
+ float ThermalPIDKi;
+ float ThermalPIDKd; //PID控制的Kp Ki Kd
+ float PIDTriggerTemp; //PID温控触发温度
+ float PIDRelease; //PID温控释放温度
+ float PIDTargetTemp; //PID目标温度
+ float LEDThermalWeight;//LED温度和MOS温度对于PID输入的影响
  //电池电量保护设置
  float VoltageFull;
  float VoltageAlert;

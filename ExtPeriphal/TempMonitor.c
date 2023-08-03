@@ -7,23 +7,24 @@
 #include <string.h>
 #include <math.h>
 
-//显示降档程度
-static void DisplayStepTable(float Value)
+//显示驱动MOS和LED的降档情况
+void DisplayTemp(float TempIN)
   {
-	if(Value==NAN)return; 
-	if(Value>97)strncat(LEDModeStr,"111",sizeof(LEDModeStr)-1); //降档值小于3%，绿色
-	else if(Value>75)strncat(LEDModeStr,"333",sizeof(LEDModeStr)-1);//降档值3-25%，黄色
-	else strncat(LEDModeStr,"222",sizeof(LEDModeStr)-1); //降档值大于40%，红色	
-	strncat(LEDModeStr,"0D",sizeof(LEDModeStr)-1);
+  if(TempIN>=CfgFile.PIDTriggerTemp)
+	  strncat(LEDModeStr,"222",sizeof(LEDModeStr)-1);
+	else if(TempIN>=CfgFile.PIDTargetTemp)
+		strncat(LEDModeStr,"333",sizeof(LEDModeStr)-1);
+	else 
+		strncat(LEDModeStr,"111",sizeof(LEDModeStr)-1);
+  strncat(LEDModeStr,"00",sizeof(LEDModeStr)-1);//显示个位
 	}
 
 //当用户三击的时候显示LED温度
 void DisplayLEDTemp(void)
   {
   ADCOutTypeDef ADCO;
-	float buf[2],SPSTemp;
-  int i;
 	ModeConfStr *CurrentMode;
+	float SPSTemp;
 	//获得挡位
 	CurrentMode=GetCurrentModeConfig();
 	if(CurrentMode==NULL)return;
@@ -50,23 +51,14 @@ void DisplayLEDTemp(void)
 	strncat(LEDModeStr,"D",sizeof(LEDModeStr)-1); //显示百位
 	LED_AddStrobe(((int)ADCO.LEDTemp%100)/10,"30"); 
 	strncat(LEDModeStr,"D",sizeof(LEDModeStr)-1); //显示十位
-	LED_AddStrobe(((int)ADCO.LEDTemp%100)%10,"10"); 
-  strncat(LEDModeStr,"D",sizeof(LEDModeStr)-1); //显示个位
-	//显示降档幅值
-	if(!CurrentMode->IsModeAffectedByStepDown) //降档被禁用
-	   {
-	   buf[0]=100;
-	   buf[1]=100;
-		 }
-	else //温度降档正常运行
-	   {		
-	   buf[0]=QueueLinearTable(5,ADCO.LEDTemp,CfgFile.LEDThermalStepThr,CfgFile.LEDThermalStepRatio);//根据LED的温度取降档数值
-	   if(ADCO.SPSTMONState!=SPS_TMON_OK)SPSTemp=RunLogEntry.Data.DataSec.AverageSPSTemp;
-		 else SPSTemp=ADCO.SPSTemp;  //如果当前数据不可用则使用最近的均值
-		 buf[1]=QueueLinearTable(5,SPSTemp,CfgFile.SPSThermalStepThr,CfgFile.SPSThermalStepRatio);//根据SPS的温度取降档数值
-		 }
-  for(i=0;i<2;i++)DisplayStepTable(buf[i]);
+	LED_AddStrobe(((int)ADCO.LEDTemp%100)%10,"10");
+	strncat(LEDModeStr,"D",sizeof(LEDModeStr)-1);//显示个位
+	//降档提示，当温度超过降档温度时显示信息	 
+	if(ADCO.SPSTMONState==SPS_TMON_OK)SPSTemp=ADCO.SPSTemp;
+	else SPSTemp=RunLogEntry.Data.DataSec.AverageSPSTemp; //取温度
+	DisplayTemp(ADCO.NTCState==LED_NTC_OK?ADCO.LEDTemp:25);
+	DisplayTemp(SPSTemp);  //显示降档情况
 	//结束显示，传指针过去
-	strncat(LEDModeStr,SysPstatebuf.Pstate==PState_LEDOn||SysPstatebuf.Pstate==PState_LEDOnNonHold?"0DE":"0E",sizeof(LEDModeStr)-1); //添加结束符
+	strncat(LEDModeStr,SysPstatebuf.Pstate==PState_LEDOn||SysPstatebuf.Pstate==PState_LEDOnNonHold?"DE":"E",sizeof(LEDModeStr)-1); //添加结束符
 	ExtLEDIndex=&LEDModeStr[0];//传指针过去
 	}

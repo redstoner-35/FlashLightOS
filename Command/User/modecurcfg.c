@@ -7,7 +7,8 @@
 
 //外部字符串指针数组
 extern const char *ModeSelectStr[];
-
+static const char *CurrentIllegalInfo="\r\n错误:您指定的%s电流值无效.有效的值应该在%.1f-%.1f(A)之间且大于该挡位的额定电流%.1f(A).\r\n";
+static const char *CurrentHasChanged="的%s电流已变更为%.2fA.\r\n";
 //参数帮助entry
 const char *modecurcfgArgument(int ArgCount)
   {
@@ -56,14 +57,14 @@ void modecurcfghandler(void)
 		if(TargetMode==NULL)
 			UARTPuts((char *)ModeSelectStr[4]);
 		else if(buf<0||buf==NAN||buf>FusedMaxCurrent||buf>=TargetMode->LEDCurrentHigh)
-			UartPrintf("\r\n错误:您指定的最小电流值无效.有效的值应该在0-%d(A)之间且小于该挡位的额定电流%.2f(A).\r\n",FusedMaxCurrent,TargetMode->LEDCurrentHigh);
+			UartPrintf((char *)CurrentIllegalInfo,"最小",0,FusedMaxCurrent,TargetMode->LEDCurrentHigh);
 	  else if(TargetMode->Mode==LightMode_Ramp&&buf<0.5)
 			UartPrintf("\r\n错误:对于无极调光模式而言,您指定的最小电流值(地板电流)应大于等于0.5A.\r\n");
 		else
 			{
 			TargetMode->LEDCurrentLow=buf;
 			DisplayWhichModeSelected(UserSelect,modenum);
-			UartPrintf("的最小电流已变更为%.2fA.\r\n",TargetMode->LEDCurrentLow);
+			UartPrintf((char *)CurrentHasChanged,"最小",TargetMode->LEDCurrentLow);
 			}
 		IsCmdParamOK=true;
 		}
@@ -76,16 +77,15 @@ void modecurcfghandler(void)
 		if(TargetMode==NULL)
 			UARTPuts((char *)ModeSelectStr[4]);
 		else if(buf<0.5||buf==NAN||buf>FusedMaxCurrent||buf<=TargetMode->LEDCurrentLow)
-			UartPrintf("\r\n错误:您指定的额定电流值无效.有效的值应该在0.5-%d(A)之间且大于该挡位的额定电流%.2f(A).\r\n",FusedMaxCurrent,TargetMode->LEDCurrentLow);
+			UartPrintf((char *)CurrentIllegalInfo,"额定",0.5,FusedMaxCurrent,TargetMode->LEDCurrentLow);
 	  else
 			{
 			TargetMode->LEDCurrentHigh=buf;
 			DisplayWhichModeSelected(UserSelect,modenum);
-			UartPrintf("的额定电流已变更为%.2fA.\r\n",TargetMode->LEDCurrentHigh);
+			UartPrintf((char *)CurrentHasChanged,"额定",TargetMode->LEDCurrentHigh);
 			}
 		IsCmdParamOK=true;
 		}		
-		
 	if(!IsCmdParamOK)UartPrintCommandNoParam(18);//显示啥也没找到的信息 
 	//命令处理完毕
 	ClearRecvBuffer();//清除接收缓冲

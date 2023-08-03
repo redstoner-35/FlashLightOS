@@ -6,8 +6,8 @@
 #define HardwareMinorVer 1  //硬件版本号
 
 #define MajorVersion 1
-#define MinorVersion 3
-#define HotfixVersion 3  //固件版本号
+#define MinorVersion 4
+#define HotfixVersion 0  //固件版本号
 
 //固件模式配置
 #define Firmware_DIY_Mode //是否启用DIY高级用户模式，在此模式下驱动所有功能可以使用，否则温控调整和日志清除和恢复功能会被禁用。
@@ -23,7 +23,7 @@
 #define MaxAllowedLEDCurrent 35 //驱动硬件熔断的最大输出电流设置(测得电流超过此电流的1.2倍将触发保护)
 #define BatteryCellCount 3 //默认情况下驱动使用的电池组中锂电池的串数(按照三元锂电池计算)
 #define DeepsleepDelay 40 //驱动的出厂深度睡眠时间,40秒内没有操作则睡眠
-#define ForceRequireLEDNTC //驱动的LED NTC热敏电阻强制要求存在,如果检测不到热敏电阻则驱动将自检失败
+//#define ForceRequireLEDNTC //驱动的LED NTC热敏电阻强制要求存在,如果检测不到热敏电阻则驱动将自检失败
 //#define SideKeyPolar_positive  //侧按的极性，保留此define表示侧按按键高有效，否则低有效
 
 //FRU中LED类型的配置

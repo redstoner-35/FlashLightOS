@@ -89,7 +89,7 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		{
 		 {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//7
 		"modepofcfg",
-		"配置挡位的自动关机定时器的延时时间.当定时器被用户激活后,定时器将会从该时间开始倒数,倒数结束后手电将自动关闭.",
+		"配置指定挡位的自动关机定时器的延时时间或者最大的鸡血次数.",
 		"-mg\0--mode_group\0-mn\0--mode_number\0-t\0--time\0\n",
 		" <模式组名称.>\0 <模式组名称.>\0 <挡位序号.>\0 <挡位序号.>\0 <时间(分钟)>\0 <时间(分钟)>\0\n",
 		&modepofcfgArgument,
@@ -262,15 +262,11 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		 false		
 		},
 		{
-		 #ifndef Firmware_DIY_Mode
-		 {Log_Perm_Root,Log_Perm_End},//22
-		 #else
 		 {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//22
-		 #endif
      "thermalcfg",
-		 "允许系统管理员配置驱动的两组分别针对LED基板和驱动MOS管的温控降档曲线以及调整这两条曲线的权重.",
-     "-ds\0--data_source\0-sn\0--setpoint_num\0-thr\0--threshold_temp\0-outr\0--output_ratio\0-w\0--weight\0-v\0--view\0\n",
-		 " <所属传感器名称>\0 <所属传感器名称>\0 <阈值点编号(0-4)>\0 <阈值点编号(0-4)>\0 <阈值温度('C)>\0 <阈值温度('C)>\0 <输出百分比(%)>\0 <输出百分比(%)>\0 <权重(5-95%)>\0 <权重(5-95%)>\0 \0 \0\n",
+		 "允许系统管理员配置驱动的PID温控系统的参数.",
+     "\0-w\0--weight\0-et\0--pid_trigger_temp\0-mt\0--pid_maintain_temp\0-st\0--pid_stop_temp\0-kp\0--pid_Kp\0-ki\0--pid_Ki\0-kd\0--pid_Kd\0-v\0--view\0\n",
+		 " <权重(5-95%)>\0 <权重(5-95%)>\0 <温度('C)>\0 <温度('C)>\0 <温度('C)>\0 <温度('C)>\0 <温度('C)>\0 <温度('C)>\0 <PID参数(0-100)>\0 <PID参数(0-100)>\0 <PID参数(0-100)>\0 <PID参数(0-100)>\0 <PID参数(0-100)>\0 <PID参数(0-100)>\0 \0 \0\n",
 		 &thremalcfgArgument,
 		 Command_thermalcfg,
 		 NULL,

@@ -139,13 +139,6 @@ UserInput_False,
 UserInput_Nothing
 }UserInputTrueFalseDef; //有些函数需要判断用户输入的是true false还是其他东西
 
-typedef enum
-{
-ThermalSens_None,
-ThermalSens_LEDNTC,
-ThermalSens_DriverSPS
-}UserInputThermalSensorDef;  //编辑温度曲线的函数需要辨识用户输入的温度传感器是啥
-
 /*******************************************
 以下是在控制器进行自检输出时，自检系统向自检
 输出模块提交消息时标记消息类型的枚举变量。
@@ -189,7 +182,6 @@ char CheckIfParamOnlyDigit(char *Param);
 UserInputTrueFalseDef CheckUserInputIsTrue(char *Param);
 ModeGrpSelDef CheckUserInputForModeGroup(char *Param);	
 LightModeDef CheckUserInputForLightmode(char *Param);
-UserInputThermalSensorDef CheckUserInputForThermalSens(char *Param);
 bool GetUserModeNum(int cmdindex,ModeGrpSelDef *UserSelect,int *modenum);//负责获取用户选择了哪个模式组的函数
 char GetLEDTypeFromUserInput(char *Param);//根据用户输入解码出FRU LED Code的函数
 
@@ -199,7 +191,6 @@ void DisplayCorrectModeGroup(void);//输出正确的模式组的功能
 void DisplayIllegalParam(char *UserInput,int cmdindex,int optionIndex); //显示用户输入的非法参数
 void DisplayCorrectMode(void);//显示正确的挡位信息
 void DisplayWhichModeSelected(ModeGrpSelDef UserSelect,int modenum);//显示用户的操作
-void DisplayCorrectSensor(void);//当用户输入的传感器选项无效时指示用户该输入什么
 void DisplayCorrectLEDType(void);//当用户的FRU LED类型输入错误时显示应该输入什么
 
 //在命令结束后负责复位接收缓冲的函数(内部使用的函数，切勿在除了命令执行后端的handler以外的任何其他地方引用)
