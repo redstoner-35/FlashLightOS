@@ -83,7 +83,7 @@ void modeviewhandler(void)
 					UartPrintf("\r\n  随机爆闪上/下限频率 : %.1fHz/%.1fHz",TargetMode->RandStrobeMinFreq,TargetMode->RandStrobeMaxFreq);
 				   break;
 				case LightMode_Flash://爆闪
-					 UartPrintf("%s爆闪频率 : %.1fHz",TargetMode->StrobeFrequency);
+					 UartPrintf("\r\n  爆闪频率 : %.1fHz",TargetMode->StrobeFrequency);
 				   break;
 			  case LightMode_MosTrans://摩尔斯代码发送
 					 UartPrintf("\r\n  自定义发送内容 : '%s'",TargetMode->MosTransStr);

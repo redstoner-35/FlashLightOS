@@ -897,6 +897,11 @@
               <FileType>1</FileType>
               <FilePath>.\Command\User\modepofcfg.c</FilePath>
             </File>
+            <File>
+              <FileName>thermaltripcfg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Command\User\thermaltripcfg.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

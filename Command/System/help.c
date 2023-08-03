@@ -2,11 +2,13 @@
 #include <string.h>
 
 //const vars
-const char AllResultListed[]={"\r\n\r\n提示：您可使用'\033[40;33m-kw\033[0m'参数指定一个命令描述的查找关键词或者'\033[40;33m-n\033[0m'参数指定待查找的部分或全部命令名称。"};
+const char AllResultListed[]={"\r\n\r\n提示:您可使用'\033[40;33m-kw\033[0m'参数指定一个命令描述的查找关键词或者'\033[40;33m-n\033[0m'参数指定待查找的部分或全部命令名称."};
+extern const char *ModeRelCommandStr;
+extern const char *ModeRelCommandParam;
 
 const char *HelpArgument(int ArgCount)
   {
-	if(ArgCount==0||ArgCount==1)return "提供一个用于描述匹配的关键词";
+	if(ArgCount<2)return "提供一个用于描述匹配的关键词";
 	return "提供部分或完整的命令名称用于匹配";
 	}
 
@@ -38,8 +40,18 @@ void HelpHandler(void)
 	 if(IsNeedtoprint)  
 		 {
 		 //开始转换命令参数
-     ParamCount=ParamToConstPtr(paramptr,Commands[i].Parameter,20);
-		 ParamUsageCount=ParamToConstPtr(ParamUsage,Commands[i].ParamUsage,20);//对指定的参数字符串进行解码
+     if(Commands[i].IsModeCommand) //模式相关命令,解码
+			 {
+			 ParamCount=ParamToConstPtr(paramptr,ModeRelCommandParam,4);
+			 ParamCount+=ParamToConstPtr(&paramptr[4],Commands[i].Parameter,16);//对指定的参数字符串进行解码
+			 ParamUsageCount=ParamToConstPtr(ParamUsage,ModeRelCommandStr,4); //取出前面的模式参数的提示字符串
+			 ParamUsageCount+=ParamToConstPtr(&ParamUsage[4],Commands[i].ParamUsage,16);//取出后面的其余参数
+			 }
+			else //模式无关命令,正常解码
+			 {
+			 ParamCount=ParamToConstPtr(paramptr,Commands[i].Parameter,20);
+			 ParamUsageCount=ParamToConstPtr(ParamUsage,Commands[i].ParamUsage,20);
+			 }
 		 //打印各个参数的用法
 		 UARTPuts("\r\n\r\n");
 		 TotalLength=UartPrintf("---------------- '\033[40;32m%s\033[0m' 命令的使用方法  ----------------",Commands[i].CommandName);
@@ -76,9 +88,9 @@ void HelpHandler(void)
  if(CmdName==NULL&&KeyWord==NULL)
 	 UARTPutsAuto((char *)AllResultListed,TotalLength,TotalLength);
  else if(resultcount)
-	 UartPrintf("\r\n\r\n查找完毕，共找到%d条结果。",resultcount);
+	 UartPrintf("\r\n\r\n查找完毕,共找到%d条结果.",resultcount);
  else
-	 UARTPuts("\r\n\r\n未找到匹配结果，您可尝试缩短或去除关键词限制。");
+	 UARTPuts("\r\n\r\n未找到匹配结果,您可尝试缩短或去除关键词限制.");
  ClearRecvBuffer();//清除接收缓冲
  CmdHandle=Command_None;//命令执行完毕		
  }

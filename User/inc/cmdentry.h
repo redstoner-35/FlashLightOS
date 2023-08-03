@@ -30,6 +30,7 @@ void battcfghandler(void);
 void customflashcfgHandler(void);
 void modeviewhandler(void);
 void fruedithandler(void);
+void thermaltripcfgHandler(void);
 
 //Ctrl+C force stop entry
 void cfgmgmt_ctrlc_handler(void);

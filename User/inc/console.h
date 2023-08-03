@@ -6,7 +6,7 @@
 #define CmdBufLen 134 //命令输入缓冲区的长度(字节)
 #define TxqueueLen 384 //发送缓冲区的长度(字节)
 #define RXDMAIdleCount 5 //RX DMA Idle trigger count
-#define TotalCommandCount 28  //总命令数
+#define TotalCommandCount 29  //总命令数
 #define DefaultTimeOutSec 90  //默认的命令行超时时间(秒)
 
 //内部包含
@@ -81,6 +81,7 @@ Command_battcfg,
 Command_customflashcfg,
 Command_modeview,
 Command_fruedit,
+Command_thermaltripcfg
 }CommandHandle;
 
 /*******************************************
@@ -165,6 +166,7 @@ typedef struct
 	CommandHandle TargetHandle;
 	void (*CtrlCProc)(void);//CtrlC处理的槽函数指针
 	const bool AllowInputDuringExecution;
+	const bool IsModeCommand;//是否是模式相关命令
 	}ComamandStringStr;
 
 //负责发送内容的函数(内部使用的函数，切勿在除了命令执行后端的handler以外的任何其他地方引用)

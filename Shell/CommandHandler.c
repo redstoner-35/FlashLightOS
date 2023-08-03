@@ -497,8 +497,18 @@ void TabHandler(void)
 		matchcmdindex=i;//存储匹配的命令参数
 		if(matchcmdindex<TotalCommandCount)//有有效的命令
 		  {
-			paramcount=ParamToConstPtr(paramptr,Commands[matchcmdindex].Parameter,20);
-			ParamUsagecount=ParamToConstPtr(ParamUsage,Commands[matchcmdindex].ParamUsage,20);//对指定的参数字符串进行解码
+			if(Commands[matchcmdindex].IsModeCommand)	//是模式组相关命令
+			 {
+			 paramcount=ParamToConstPtr(paramptr,ModeRelCommandParam,4);
+			 paramcount+=ParamToConstPtr(&paramptr[4],Commands[matchcmdindex].Parameter,16);//对指定的参数字符串进行解码
+			 ParamUsagecount=ParamToConstPtr(ParamUsage,ModeRelCommandStr,4); 
+			 ParamUsagecount+=ParamToConstPtr(&ParamUsage[4],Commands[matchcmdindex].ParamUsage,16);//取出后面的其余参数
+			 }
+		  else //不是模式字符串，正常取参数
+			 {				
+			 paramcount=ParamToConstPtr(paramptr,Commands[matchcmdindex].Parameter,20);
+			 ParamUsagecount=ParamToConstPtr(ParamUsage,Commands[matchcmdindex].ParamUsage,20);
+		   }
 			if(paramcount==0||ParamUsagecount==0)//该命令没有可用参数
 			 {
 			 ConsoleStat=BUF_Idle;//标记串口可以继续接收

@@ -5,6 +5,7 @@
 
 //常量
 const char *ConstHexID="0X0x";
+extern const char *ModeRelCommandParam;
 
 //支持UTF字符正确计算长度的strlen函数
 //输入:字符串 输出:该字符串在终端显示的实际等效ASCII字符长度
@@ -69,7 +70,13 @@ char *IsParameterExist(const char *TargetArgcList,int CmdIndex,char *Result)
 	if(Result!=NULL)*Result=0;
 	if(CmdIndex>=TotalCommandCount)return NULL;//命令index大于总命令数
 	targc=strlen(TargetArgcList);
-	argc=ParamToConstPtr(paramptr,Commands[CmdIndex].Parameter,20);//取参数
+	if(Commands[CmdIndex].IsModeCommand)
+	  {
+		argc=ParamToConstPtr(paramptr,ModeRelCommandParam,4);
+	  argc+=ParamToConstPtr(&paramptr[4],Commands[CmdIndex].Parameter,16); //是模式命令，从前面取参数
+		}
+	else //正常取参数
+		argc=ParamToConstPtr(paramptr,Commands[CmdIndex].Parameter,20);
 	for(i=0;i<targc;i++)//遍历需要寻找的指针
 	 if(AcoI(TargetArgcList[i])>=argc)return NULL;//需要寻找的指针非法
   //开始寻找
