@@ -1,6 +1,8 @@
 #include "console.h"
 #include "FirmwareConf.h"
+#include "ht32.h"
 #include "delay.h"
+#include "I2C.h"
 
 #define ProgramSize 0x1FBFF  //程序的大小
 #define CRCWordAddress 0x1FC00  //存储CRC字的存储器
@@ -9,6 +11,9 @@
 unsigned int MainProgramRegionCRC(void)
  {
  unsigned int DATACRCResult;
+ #ifdef EnableSecureStor
+ char buf[64];
+ #endif 
  int i;
  CKCU_PeripClockConfig_TypeDef CLKConfig={{0}};
  //初始化CRC32      
@@ -19,6 +24,14 @@ unsigned int MainProgramRegionCRC(void)
  HT_CRC->CR = CRC_32_POLY | CRC_BIT_RVS_WR | CRC_BIT_RVS_SUM | CRC_BYTE_RVS_SUM | CRC_CMPL_SUM;
  //开始校验
  for(i=0;i<ProgramSize;i+=4)HT_CRC->DR=*(u32 *)i;//将内容写入到CRC寄存器内
+ for(i=4;i<8;i++)HT_CRC->DR=i<4?*(u32*)(0x40080310+(i*4)):~*(u32*)(0x40080310+((i-4)*4));//写入FMC UID
+ #ifdef EnableSecureStor
+ if(!M24C512_ReadUID(buf,64))for(i=0;i<64;i++)
+   {
+	 buf[i]^=(i+3);
+	 wb(&HT_CRC->DR,buf[i]); //读取UID成功，写入UID
+	 }
+ #endif
  //校验完毕计算结果
  DATACRCResult=HT_CRC->CSR;
  CRC_DeInit(HT_CRC);//清除CRC结果
