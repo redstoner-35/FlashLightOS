@@ -24,7 +24,7 @@ void SetLEDVfMinMax(FRUBlockUnion *FRU)
 		case 0x08:LEDVfMin=2.3;LEDVfMax=4.2;break; //SBT90.2
 		case 0x07:
 		case 0x03:LEDVfMin=1.95;LEDVfMax=4.2;break; //通用3V LED、蓝色SBT70
-		case 0x04:LEDVfMin=1.3;LEDVfMax=3.2;;break;//红色SBT90
+		case 0x04:LEDVfMin=1.4;LEDVfMax=3.2;;break;//红色SBT90
 		case 0x05:LEDVfMin=1.85;LEDVfMax=4.9;break; //绿色SBT70
 		case 0x06:LEDVfMin=4.5;LEDVfMax=6.8;break; //6V LED
 	  //其他数值则使用默认值
@@ -41,7 +41,7 @@ float QueryMaximumCurrentLimit(FRUBlockUnion *FRU)
   switch(FRU->FRUBlock.Data.Data.FRUVersion[0]) //显示LED型号
 		{
 		case 0x03:result=50;break;
-		case 0x04:result=23.5;break;
+		case 0x04:result=25;break;
 		case 0x05:result=14;break;
 		case 0x06:result=30;break;
 		case 0x07:result=14;break;
