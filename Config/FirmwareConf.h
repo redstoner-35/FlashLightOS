@@ -7,7 +7,7 @@
 
 #define MajorVersion 1
 #define MinorVersion 4
-#define HotfixVersion 3  //固件版本号
+#define HotfixVersion 4  //固件版本号
 
 //固件模式配置
 #define Firmware_DIY_Mode //是否启用DIY高级用户模式，在此模式下驱动所有功能可以使用，否则温控调整和日志清除和恢复功能会被禁用。
@@ -42,6 +42,13 @@
 #define EnableSecureStor //对于FM24C512 系统会使用Security sector存储数据
 #define UsingEE_24C512 //使用24C512
 //#define UsingEE_24C256 //使用24C256
+
+//调光offset
+#if (HardwareMinorVer == 2)
+ #define DimmingOffset 0.05907 //补偿硬件电流DAC调光偏差的offset (Ver 1.2)
+#else
+ #define DimmingOffset 0.015 //硬件版本1.1的offset 直接按照原始值设置就OK
+#endif
 
 //SPS功率级的温度和电流反馈参数配置
 #define SPSIMONDiffOpGain 50 //SPS电流差分采样放大器的增益，单位*V/V

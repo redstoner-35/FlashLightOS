@@ -22,6 +22,8 @@ static char ShortCount=0;
 extern float LEDVfMin;
 extern float LEDVfMax; //LEDVf限制
 
+//字符串
+const char *SPSFailure="Smart Power Stage Reports Invalid %s signal during init.";
 
 //LED短路检测部分的简易数字滤波器（避免PWM调光时某一瞬间的波动）
 float LEDVfFilter(float VfIN)
@@ -53,17 +55,18 @@ void LinearDIM_POR(void)
  ADCOutTypeDef ADCO;	
  float VSet,VGet;
  int i,retry;
+ bool IMONOKFlag=false;
  /**********************************************************************
  自检过程中的第1步：我们首先需要配置好AD5693R DAC,将DAC内置基准打开并转
  换为工作模式。
  ***********************************************************************/
- UartPost(Msg_info,"LineDIM","Checking onboard DAC and IMON circult functionality...");
+ UartPost(Msg_info,"LineDIM","Checking DAC and IMON circult...");
  DACInitStr.DACPState=DAC_Normal_Mode;
  DACInitStr.DACRange=DAC_Output_REF;
  DACInitStr.IsOnchipRefEnabled=true; 
  if(!AD5693R_SetChipConfig(&DACInitStr))
   { 
- 	UartPost(Msg_critical,"LineDIM","DAC Did not response during init process.");
+ 	UartPost(Msg_critical,"LineDIM","Failed to config DAC.");
 	CurrentLEDIndex=20;//DAC无法启动,保护
 	SelfTestErrorHandler(); 
 	}
@@ -96,7 +99,6 @@ void LinearDIM_POR(void)
  ***********************************************************************/
  UartPost(Msg_info,"LineDIM","Checking dimming MUX functionality...");
  SetPWMDuty(0);
- delay_ms(2);
  AD5693R_SetOutput(1.25);
  if(!ADC_GetLEDIfPinVoltage(&VGet))OnChipADC_FaultHandler();//令ADC采样电压
  if(VGet>=0.05)
@@ -111,7 +113,7 @@ void LinearDIM_POR(void)
  输出0V的电压并通过ADC测量DAC的输出.这一步是为了测试DAC的输出能否正确的归
  零确保线性调光的准确性.
  ***********************************************************************/
- UartPost(Msg_info,"LineDIM","Checking DAC zero scale reset functionality...");
+ UartPost(Msg_info,"LineDIM","Checking DAC Zero functionality...");
  AD5693R_SetOutput(0);
  SetPWMDuty(100);		
  if(!ADC_GetLEDIfPinVoltage(&VGet))OnChipADC_FaultHandler();//令ADC采样电压
@@ -127,27 +129,44 @@ void LinearDIM_POR(void)
  buck不会意外输出电流到LED,然后我们让辅助电源上电,测量智能功率级是否正确
  的输出用于指示温度的电压信号确保温度传感器正常运行.
  ***********************************************************************/
- UartPost(Msg_info,"LineDIM","Checking Auxiliary PS and Smart Power Stage...");
- SetPWMDuty(0);
- delay_ms(2);		
- SetAUXPWR(true);
+ UartPost(Msg_info,"LineDIM","Checking System power stage...");
+ VSet=0.025;
+ SetPWMDuty(100);
+ AD5693R_SetOutput(VSet); //将DAC设置为初始输出，100%占空比
+ SetAUXPWR(true); 
  retry=0;//清零等待标志位
- for(i=0;i<200;i++)//等待辅助电源上电稳定
+ for(i=0;i<200;i++)//等待辅助电源上电稳定检测电压
 		{
-	  delay_ms(2);
+	  delay_ms(1);
 		if(!ADC_GetResult(&ADCO))OnChipADC_FaultHandler();//让ADC获取信息
-		if(ADCO.SPSTMONState==SPS_TMON_OK)retry++;
+		if(ADCO.SPSTMONState==SPS_TMON_OK)
+		   {
+		   if(ADCO.LEDVf>=LEDVfMax)retry++;
+		   else if(ADCO.LEDIf<0.1)
+			   {
+				 if(VSet<0.08)VSet+=0.01;  
+			   AD5693R_SetOutput(VSet); //设置DAC输出提高电压直到检测通过
+			   retry=0;
+				 }
+		   else //电流检测正常，累加数值
+			   {
+				 IMONOKFlag=true;
+			   retry++; 
+				 }
+	     }
 		else retry=0;
-		if(retry==20)break;
+		if(retry==5)break;
 		}
  if(i==200)
    {	 
-	 //SPS没有正确返回温度信号或者直接将温度信号拉高到3.3V.这说明SPS或者辅助电源出现灾难性异常,需要锁死。
+	 //SPS没有正确返回温度信号或者直接将温度信号拉高到3.3V,或者电流检测电流没有信号输入.这说明SPS或者辅助电源出现灾难性异常,需要锁死。
 	 CurrentLEDIndex=24;
 	 if(ADCO.SPSTMONState==SPS_TMON_CriticalFault)
-		  UartPost(Msg_critical,"LineDIM","Smart Power Stage reports catastrophic error during initialization.");
-	 else
-	    UartPost(Msg_critical,"LineDIM","Smart Power Stage did not provide temperature feedback signal.");
+		  UartPost(Msg_critical,"LineDIM",(char *)SPSFailure,"CATERR");
+	 else if(ADCO.SPSTMONState!=SPS_TMON_OK)
+	    UartPost(Msg_critical,"LineDIM",(char *)SPSFailure,"TMON");	 	 
+	 else if(!IMONOKFlag)
+		  UartPost(Msg_critical,"LineDIM",(char *)SPSFailure,"IMON");
 	 //严重错误,死循环使驱动锁定
 	 SetAUXPWR(false);
 	 SelfTestErrorHandler();  
@@ -158,10 +177,9 @@ void LinearDIM_POR(void)
  在我们不想要的情况下意外启动。 
  ***********************************************************************/
  SetAUXPWR(false);
- delay_ms(10);
+ delay_ms(5);
  AD5693R_SetOutput(0);
  SetPWMDuty(0);			 
- UartPost(Msg_info,"LineDIM","Linear dimming module initialization done.");
 }
 //从开灯状态切换到关灯状态的逻辑
 void TurnLightOFFLogic(void)
@@ -355,13 +373,21 @@ void RuntimeModeCurrentHandler(void)
 	 Current=LVAlertCurrentLimit;//当低电压告警发生时限制输出电流 
  SysPstatebuf.TargetCurrent=Current;//存储下目标设置的电流给短路保护模块用
  /********************************************************
+ 运行时挡位处理的第四步,如果目前LED电流为0，为了避免红色LED
+ 鬼火，程序会把LED的主buck相关的电路关闭。
+ ********************************************************/
+ if(Current==0||!SysPstatebuf.ToggledFlash)	 
+	 SetAUXPWR(false);
+ else
+	 SetAUXPWR(true);  	 
+ /********************************************************
  对于呼吸挡位，为了实现平滑的熄灭，我们需要完全使用线性调
  光。这时候我们会有一个专门的部分来处理。这部分和正常的逻
  辑是独立的
  ********************************************************/
  if(CurrentMode->Mode==LightMode_Breath)
    {
-   DACVID=Current*(float)30; //计算DAC的VID,公式为:VID=30mV*LEDIf(A)
+   DACVID=Current*(float)30*(1-DimmingOffset); //计算DAC的VID,公式为:VID=30mV*LEDIf(A)
 	 if(DACVID>10)DACVID+=23;//大于10mV的时候为了保证电压准确自动的加上23mV的offset
 	 DACVID/=(float)1000; //除以1000转V
 	 SysPstatebuf.IsLinearDim=true;
@@ -377,14 +403,6 @@ void RuntimeModeCurrentHandler(void)
 	 TimerCanTrigger=true;//允许GPTM1定时器执行特殊功能
 	 return;
 	 }
- /********************************************************
- 运行时挡位处理的第四步,如果目前LED电流为0，为了避免红色LED
- 鬼火，程序会把LED的主buck相关的电路关闭。
- ********************************************************/
- if(Current==0||!SysPstatebuf.ToggledFlash)	 
-	 SetAUXPWR(false);
- else
-	 SetAUXPWR(true);  	 
  /********************************************************
  运行时挡位处理的第五步,将计算出的电流通过PWM调光和DAC线
  性调光混合的方式把LED调节到目标的电流实现挡位控制（这是对
@@ -406,8 +424,8 @@ void RuntimeModeCurrentHandler(void)
  //大于1A电流,使用纯线性调光实现无频闪
  else
 	 {
-   DACVID=Current*(float)30/(float)1000;
-	 DACVID+=(float)23/(float)1000; //计算DAC的VID,公式为:VID=(30mV*LEDIf(A))+23mV 
+   DACVID=Current*(float)(30*(1-DimmingOffset))/(float)1000;
+	 DACVID+=(float)23/(float)1000; //计算DAC的VID,公式为:VID=(30mV*offset*LEDIf(A))+23mV 
 	 SysPstatebuf.IsLinearDim=true;
 	 SetPWMDuty(!SysPstatebuf.ToggledFlash?0:100); //纯线性调光,PWM占空比仅受特殊功能控制量在0-100之间转换
 	 }
@@ -437,7 +455,7 @@ void RuntimeModeCurrentHandler(void)
 			 return;
 			 }
 		//根据实际LED电流和预设的偏差情况,设置占空比
-		delta=Current-ADCO.LEDIf;
+		delta=Current-(ADCO.LEDIf*(1+DimmingOffset));
 		if(delta>0)SysPstatebuf.Duty=SysPstatebuf.Duty<100?SysPstatebuf.Duty+0.1:SysPstatebuf.Duty;
 	  else if(delta<0)SysPstatebuf.Duty=SysPstatebuf.Duty>30?SysPstatebuf.Duty-0.1:SysPstatebuf.Duty;
 		SetPWMDuty(SysPstatebuf.Duty);

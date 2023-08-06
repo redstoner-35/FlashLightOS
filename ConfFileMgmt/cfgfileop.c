@@ -124,7 +124,7 @@ int CheckConfigurationInROM(cfgfiletype cfgtyp,unsigned int *CRCResultO)
  //读取FRU并计算数值
  if(ReadFRU(&FRU))return 1; //读取FRU失败
  FRUHwResult=0x35;
- for(i=0;i<3;i++)FRUHwResult^=FRU.FRUBlock.Data.Data.FRUVersion[i];
+ for(i=0;i<2;i++)FRUHwResult^=FRU.FRUBlock.Data.Data.FRUVersion[i]; //仅仅是把LED类型和major version加入计算
  //开始校验
  if(ReadFRU(&FRU))return 1; //读取FRU失败
  i=0;
@@ -221,7 +221,7 @@ int WriteConfigurationToROM(cfgfiletype cfgtyp)
  //读取FRU并计算数值
  if(ReadFRU(&FRU))return 1; //读取FRU失败
  FRUHwResult=0x35;
- for(i=0;i<3;i++)FRUHwResult^=FRU.FRUBlock.Data.Data.FRUVersion[i];
+ for(i=0;i<2;i++)FRUHwResult^=FRU.FRUBlock.Data.Data.FRUVersion[i]; //仅仅是把LED类型和major version加入计算
  //开始写数据
  i=0;
  k=0;
@@ -275,13 +275,19 @@ unsigned int ActiveConfigurationCRC(void)
  {
  unsigned int DATACRCResult;
  int i;
+ char FRUHwResult;
  CKCU_PeripClockConfig_TypeDef CLKConfig={{0}};
+ FRUBlockUnion FRU;
  //初始化CRC32      
  CLKConfig.Bit.CRC = 1;
  CKCU_PeripClockConfig(CLKConfig,ENABLE);//启用CRC-32时钟  
  CRC_DeInit(HT_CRC);//清除配置
  HT_CRC->SDR = 0x0;//CRC-32 poly: 0x04C11DB7  
  HT_CRC->CR = CRC_32_POLY | CRC_BIT_RVS_WR | CRC_BIT_RVS_SUM | CRC_BYTE_RVS_SUM | CRC_CMPL_SUM;
+ //读取FRU并计算数值
+ if(ReadFRU(&FRU))return 1; //读取FRU失败
+ FRUHwResult=0x35;
+ for(i=0;i<2;i++)FRUHwResult^=FRU.FRUBlock.Data.Data.FRUVersion[i]; //仅仅是把LED类型和major version加入计算
  //开始校验
  for(i=0;i<sizeof(CfgFile);i++)
 	 wb(&HT_CRC->DR,CfgFileUnion.StrBUF[i]);//将内容写入到CRC寄存器内
@@ -367,6 +373,4 @@ void PORConfHandler(void)
  //显示警告和重新初始化休眠定时器
  if(CfgFile.DeepSleepTimeOut>0)DeepSleepTimer=CfgFile.DeepSleepTimeOut;
  else DeepSleepTimer=-1;
- if(CfgFile.IdleTimeout==0)
-	 UartPost(Msg_warning,EEPModName,"No Admin account time out can cause major security issue.");
  }
