@@ -123,7 +123,6 @@ void usrmodhandler(void)
 		//root用户无需输入密码即可改ADMIN的账户
 		if(AccountState==Log_Perm_Root&&TargetAccount==VerifyAccount_Admin&&Verifystat==ACC_Enter_Pswd)
 		  {
-			UARTPuts("\r\n提示:超级用户身份可以直接更改管理员用户的登录密码。");
 			Verifystat=ACC_Verify_OK;
 			ClearRecvBuffer();//清除接收缓冲
 			}
@@ -157,7 +156,7 @@ void usrmodhandler(void)
 		if(Verifystat==ACC_ChgPswdErr_NoPerm||Verifystat==ACC_ChgPswdErr_LenErr)
 		  {
 			UARTPuts("\r\n\r\n错误:");
-			if(Verifystat==ACC_ChgPswdErr_NoPerm)UARTPuts("您当前没有更改超级用户密码的权限。");
+			if(Verifystat==ACC_ChgPswdErr_NoPerm)UARTPuts("您当前没有更改超级用户密码的权限.");
 			else UARTPuts("新密码应在6-15字符长度的范围内且仅能包含ASCII字符。");
 			TargetAccount=VerifyAccount_None;
 			CmdHandle=Command_None;//命令执行完毕

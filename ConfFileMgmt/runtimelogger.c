@@ -91,47 +91,49 @@ void RunTimeDataLogging(void)
  //其余平均值数据的积分模块
  if(RuntimeAverageCount==0)//第一次，载入旧数据
    {
-	 AverageBuf[0]=RunLogEntry.Data.DataSec.AverageBatteryCurrent;
-	 AverageBuf[1]=RunLogEntry.Data.DataSec.AverageBatteryPower;
-	 AverageBuf[2]=RunLogEntry.Data.DataSec.AverageBatteryVoltage;
 	 AverageBuf[3]=RunLogEntry.Data.DataSec.AverageLEDTemp==NAN?0:RunLogEntry.Data.DataSec.AverageLEDTemp; //LED温度测量
 	 AverageBuf[4]=RunLogEntry.Data.DataSec.AverageSPSTemp; //MOS温度
 	 RuntimeAverageCount++;
 	 }
  else	if(RuntimeAverageCount==5)//平均完毕，输出结果后准备下一轮计算
    {
-	 RunLogEntry.Data.DataSec.AverageBatteryCurrent=AverageBuf[0]/(float)5;
-	 RunLogEntry.Data.DataSec.AverageBatteryPower=AverageBuf[1]/(float)5;
-	 RunLogEntry.Data.DataSec.AverageBatteryVoltage=AverageBuf[2]/(float)5;
 	 RunLogEntry.Data.DataSec.AverageLEDTemp=AverageBuf[3]==NAN?NAN:AverageBuf[3]/(float)5; //LED温度，如果等于NAN则表示没数据
 	 RunLogEntry.Data.DataSec.AverageSPSTemp=AverageBuf[4]/(float)5; //SPS温度
-	 for(i=0;i<5;i++)AverageBuf[i]=0;
+	 for(i=3;i<5;i++)AverageBuf[i]=0;
 	 RuntimeAverageCount=0;
 	 }
  else //累加阶段，累计实测数据
    {
-	 AverageBuf[0]+=RunTimeBattTelemResult.BusCurrent;
-	 AverageBuf[1]+=RunTimeBattTelemResult.BusPower;
-	 AverageBuf[2]+=RunTimeBattTelemResult.BusVolt;
 	 if(ADCO.NTCState==LED_NTC_OK)AverageBuf[3]+=ADCO.LEDTemp; 
 	 else AverageBuf[3]=NAN;
 	 if(ADCO.SPSTMONState==SPS_TMON_OK)AverageBuf[4]+=ADCO.SPSTemp;
 	 else AverageBuf[4]+=RunLogEntry.Data.DataSec.AverageSPSTemp;  //如果在本次平均的时候温度数据不可用则使用老数据
 	 RuntimeAverageCount++;
 	 }	 
- //LED电压和电流的平均值数据积分模块
+ //LED和电池电压和电流的平均值数据积分模块
  if(LEDRuntimeAverageCount==0) //载入旧数据
    {
+	 AverageBuf[0]=RunLogEntry.Data.DataSec.AverageBatteryCurrent;
+	 AverageBuf[1]=RunLogEntry.Data.DataSec.AverageBatteryPower;
+	 AverageBuf[2]=RunLogEntry.Data.DataSec.AverageBatteryVoltage;
 	 AverageBuf[5]=RunLogEntry.Data.DataSec.AverageLEDVf;
    AverageBuf[6]=RunLogEntry.Data.DataSec.AverageLEDIf;
 	 LEDRuntimeAverageCount++; 
 	 }
  else if(LEDRuntimeAverageCount==5)//平均完毕
    {
+	 //填写平均的电池电量消耗
+	 RunLogEntry.Data.DataSec.AverageBatteryCurrent=AverageBuf[0]/(float)5;
+	 RunLogEntry.Data.DataSec.AverageBatteryVoltage=AverageBuf[2]/(float)5;
+	 RunLogEntry.Data.DataSec.AverageBatteryPower=AverageBuf[1]/(float)5; //计算电池功耗
 	 //填写平均的LEDVf If
 	 RunLogEntry.Data.DataSec.AverageLEDVf=AverageBuf[5]/(float)5;
    RunLogEntry.Data.DataSec.AverageLEDIf=AverageBuf[6]/(float)5;
-	 for(i=5;i<7;i++)AverageBuf[i]=0;
+	 for(i=0;i<7;i++)//清空平均缓存
+		 {
+		 AverageBuf[i]=0;
+		 if(i==2)i=4; //到最后一组数据，跳到5
+	   }
 	 LEDRuntimeAverageCount=0;
 	 //驱动的平均效率计算
 	 EffCalcBuf=RunLogEntry.Data.DataSec.AverageLEDVf*RunLogEntry.Data.DataSec.AverageLEDIf;//加入输出功率
@@ -147,8 +149,11 @@ void RunTimeDataLogging(void)
    for(i=0;i<5;i++)EffCalcBuf=fmaxf(MaxEfficiencyCalcBuf[i],EffCalcBuf);//取一段时间内的最大值
    RunLogEntry.Data.DataSec.MaximumEfficiency=EffCalcBuf;//峰值效率
 	 }
- else if(SysPstatebuf.ToggledFlash)//LED运行时累加电压和电流数据进去
+ else if(SysPstatebuf.ToggledFlash&&SysPstatebuf.TargetCurrent>0)//LED点亮运行时累加电压和电流数据进去
    {
+	 AverageBuf[0]+=RunTimeBattTelemResult.BusCurrent+(SysPstatebuf.ToggledFlash?0.05:0.017);	 
+	 AverageBuf[2]+=RunTimeBattTelemResult.BusVolt;//填写电池电压电流(需要加上驱动本底电流)
+	 AverageBuf[1]+=RunTimeBattTelemResult.BusCurrent*RunTimeBattTelemResult.BusVolt; //计算功率
 	 AverageBuf[5]+=ADCO.LEDVf;
 	 AverageBuf[6]+=ADCO.LEDIf;
 	 LEDRuntimeAverageCount++; 
