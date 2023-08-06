@@ -55,6 +55,8 @@ const char AdminPassword[16]=
 void LoadDefaultConf(void)
  {
  int i;
+ FRUBlockUnion FRU;
+ bool IsUsingHighTemp;
  //系统基本设置
  CfgFile.USART_Baud=115200;
  CfgFile.EnableRunTimeLogging=true;
@@ -78,19 +80,24 @@ void LoadDefaultConf(void)
  //恢复温控设置
  CfgFile.LEDThermalTripTemp=90;
  CfgFile.MOSFETThermalTripTemp=110; //LED热跳闸为110度，LED 90度
- CfgFile.PIDTriggerTemp=65; //当MOS和LED的平均温度等于65度时温控接入
- CfgFile.PIDTargetTemp=55; //PID目标温度55度
- CfgFile.PIDRelease=50; //当温度低于50度时，PID不调节
- CfgFile.ThermalPIDKp=0.25;
- CfgFile.ThermalPIDKi=0.78;
- CfgFile.ThermalPIDKd=0.2; //PID温控的P I D
- CfgFile.LEDThermalWeight=60;//
+ //根据FRU信息决定是否使用更高的温度墙
+ if(ReadFRU(&FRU))IsUsingHighTemp=false;
+ else if(!CheckFRUInfoCRC(&FRU))IsUsingHighTemp=false;
+ else if(FRU.FRUBlock.Data.Data.FRUVersion[0]==0x08)IsUsingHighTemp=true; //SBT90.2 LED，使用较高温度墙
+ else IsUsingHighTemp=false;	 
+ CfgFile.PIDTriggerTemp=IsUsingHighTemp?70:65; //当MOS和LED的平均温度等于指定温度时温控接入
+ CfgFile.PIDTargetTemp=IsUsingHighTemp?57:55; //PID目标温度
+ CfgFile.PIDRelease=50; //当温度低于50度时，PID不调节 
+ CfgFile.ThermalPIDKp=0.28;
+ CfgFile.ThermalPIDKi=0.8;
+ CfgFile.ThermalPIDKd=1.10; //PID温控的P I D
+ CfgFile.LEDThermalWeight=60;//LED温度加权值
  //恢复电池设置
  CfgFile.VoltageFull=4.0*BatteryCellCount;
  CfgFile.VoltageAlert=3.0*BatteryCellCount;
  CfgFile.VoltageTrip=2.8*BatteryCellCount;
  CfgFile.VoltageOverTrip=14.5;//过压保护值14.5V
- CfgFile.OverCurrentTrip=13;// 13A的电池端过流保护值
+ CfgFile.OverCurrentTrip=IsUsingHighTemp?20:15;// 如果是SBT90.2，则使用20A否则15A的电池端过流保护值
  } 
 //检查ROM中的数据是否损坏
 int CheckConfigurationInROM(cfgfiletype cfgtyp,unsigned int *CRCResultO)
@@ -348,12 +355,12 @@ void PORConfHandler(void)
  else 
    {
 	 LoadDefaultConf();
-	 UartPost(Msg_critical,EEPModName,"No usable config found,driver will restore to default settings.");
+	 UartPost(Msg_critical,EEPModName,"No usable config found,driver will reverb to default.");
 	 UartPost(Msg_info,EEPModName,(char *)RestoreCfg,"Main");	 
 	 DisplayCheckResult(WriteConfigurationToROM(Config_Main),true);
 	 UartPost(Msg_info,EEPModName,(char *)RestoreCfg,"Backup"); 
 	 DisplayCheckResult(WriteConfigurationToROM(Config_Backup),true);
-	 UartPost(Msg_info,EEPModName,"Restore completed,system will restart automatically."); 
+	 UartPost(Msg_info,EEPModName,"Restore completed.restarting..."); 
 	 delay_Second(2);		
    NVIC_SystemReset();//硬重启
 	 }

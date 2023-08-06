@@ -15,7 +15,7 @@ const ComamandStringStr Commands[TotalCommandCount]=
     {
      {Log_Perm_Guest,Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//0
      "help",
-		 "提供各个命令相关参数的帮助信息.",
+		 "提供各个命令参数的帮助信息.",
      "-kw\0--keyword\0-n\0--name\0\n",
 		 " <描述关键词>\0 <描述关键词>\0 <命令名称(部分或全部)>\0 <命令名称(部分或全部)>\0\n",
 		 &HelpArgument,
@@ -27,7 +27,7 @@ const ComamandStringStr Commands[TotalCommandCount]=
     {
      {Log_Perm_Guest,Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//1
      "login",
-		 "输入凭据以登录到管理员或超级用户并获得驱动的配置权限.",
+		 "输入凭据以获得管理员或超级用户权限.",
      "\n",
 		 "\n",
 		 NULL,
@@ -111,7 +111,7 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		{
 		 {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//8
 		"termcfg",
-		"配置CLI终端的参数(登录超时时间和波特率等等)并且允许用户配置驱动的自动省电睡眠的超时时间.",
+		"配置CLI终端的参数(登录超时时间和波特率等等)并且允许用户配置驱动省电睡眠的超时时间.",
 		"-it\0--idle_timeout\0-b\0--baud_rate\0-st\0--sleep_timeout\0\n",
 		" <终端超时时间(秒)>\0 <终端超时时间(秒)>\0 <波特率(bps)>\0 <波特率(bps)>\0 <睡眠超时时间(秒)>\0 <睡眠超时时间(秒)>\0\n",
 		&termcfgArgument,

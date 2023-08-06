@@ -24,7 +24,7 @@ void DisplayLEDTemp(void)
   {
   ADCOutTypeDef ADCO;
 	ModeConfStr *CurrentMode;
-	float SPSTemp;
+	float SPSTemp,LEDTemp;
 	//获得挡位
 	CurrentMode=GetCurrentModeConfig();
 	if(CurrentMode==NULL)return;
@@ -54,10 +54,16 @@ void DisplayLEDTemp(void)
 	LED_AddStrobe(((int)ADCO.LEDTemp%100)%10,"10");
 	strncat(LEDModeStr,"D",sizeof(LEDModeStr)-1);//显示个位
 	//降档提示，当温度超过降档温度时显示信息	 
-	if(ADCO.SPSTMONState==SPS_TMON_OK)SPSTemp=ADCO.SPSTemp;
-	else SPSTemp=RunLogEntry.Data.DataSec.AverageSPSTemp; //取温度
-	DisplayTemp(ADCO.NTCState==LED_NTC_OK?ADCO.LEDTemp:25);
-	DisplayTemp(SPSTemp);  //显示降档情况
+	
+	LEDTemp=ADCO.NTCState==LED_NTC_OK?ADCO.LEDTemp:25; //获取LED温度
+	if(SysPstatebuf.Pstate==PState_LEDOn||SysPstatebuf.Pstate==PState_LEDOnNonHold)  //运行状态
+	  {
+	  if(ADCO.SPSTMONState==SPS_TMON_OK)SPSTemp=ADCO.SPSTemp;
+	  else SPSTemp=RunLogEntry.Data.DataSec.AverageSPSTemp; //取温度
+	  }
+	else SPSTemp=LEDTemp; //非运行状态,按照LED温度显示
+	DisplayTemp(LEDTemp);	
+	DisplayTemp(SPSTemp);  //显示降档情况	
 	//结束显示，传指针过去
 	strncat(LEDModeStr,SysPstatebuf.Pstate==PState_LEDOn||SysPstatebuf.Pstate==PState_LEDOnNonHold?"DE":"E",sizeof(LEDModeStr)-1); //添加结束符
 	ExtLEDIndex=&LEDModeStr[0];//传指针过去

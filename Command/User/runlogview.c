@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-const char *Rlvstr[]=
+static const char *Rlvstr[]=
 {
 "\r\n  LED",//0
 "\r\n  驱动",//1
@@ -13,7 +13,9 @@ const char *Rlvstr[]=
 "数据不可用",//4
 "%.2f'C",//5
 "\r\n  %s告警次数 : %d 次",//6
-"\r\n  运行日志" //7
+"\r\n  运行日志", //7
+"\r\n  库仑计", //8
+"\r\n由于运行日志%s,因此无法查看.",//9
 };
 
 void DisplayLampTime(double time)
@@ -38,9 +40,9 @@ extern float UsedCapacity;
 void runlogviewHandler(void)
   {
 	if(!IsRunTimeLoggingEnabled)
-		UARTPuts("\r\n运行日志已被系统管理员禁用,无法查看.");
+		UartPrintf((char *)Rlvstr[9],"已被系统管理员禁用");
 	else if(!RunLogEntry.Data.DataSec.IsRunlogHasContent)
-	  UARTPuts("\r\n当前运行日志内容为空因此无法查看,请让手电运行一会后再试.");
+	  UartPrintf((char *)Rlvstr[9],"内容为空");
 	else
 	  {
 		//正常显示
@@ -85,6 +87,7 @@ void runlogviewHandler(void)
 	  UartPrintf("%s平均运行效率 : %.1f%%",Rlvstr[1],RunLogEntry.Data.DataSec.AverageDriverEfficiency);
 		UartPrintf("%s峰值运行效率 : %.1f%%",Rlvstr[1],RunLogEntry.Data.DataSec.MaximumEfficiency);
 		UartPrintf("%s是否锁定 : %s",Rlvstr[2],RunLogEntry.Data.DataSec.IsFlashLightLocked?"是":"否");
+		UartPrintf("%s强制极亮次数 : %d",Rlvstr[2],RunLogEntry.Data.DataSec.TotalMomtTurboCount);
 		PrintStatuBar("电池输入");
 	  UartPrintf("%s输入低压告警 : %s",Rlvstr[3],RunLogEntry.Data.DataSec.IsLowVoltageAlert?"是":"否");
 	  UartPrintf("%s最低电压 : %.3fV",Rlvstr[3],RunLogEntry.Data.DataSec.MinimumBatteryVoltage);
@@ -101,8 +104,8 @@ void runlogviewHandler(void)
 			UartPrintf("%s设计容量 : %.1fmAH",Rlvstr[3],RunLogEntry.Data.DataSec.BattUsage.DesignedCapacity);
 			UartPrintf("%s已用容量 : %.1fmAH",Rlvstr[3],UsedCapacity);
 			}
-		UartPrintf("\r\n  库仑计校准完毕 : %s",RunLogEntry.Data.DataSec.BattUsage.IsCalibrationDone?"是":"否");
-		UartPrintf("\r\n  库仑计自学习已启用 : %s\r\n",RunLogEntry.Data.DataSec.BattUsage.IsLearningEnabled?"是":"否");
+		UartPrintf("%s校准完毕 : %s",Rlvstr[8],RunLogEntry.Data.DataSec.BattUsage.IsCalibrationDone?"是":"否");
+		UartPrintf("%s自学习已启用 : %s\r\n",Rlvstr[8],RunLogEntry.Data.DataSec.BattUsage.IsLearningEnabled?"是":"否");
 		PrintStatuBar("告警统计");
 		UartPrintf((char *)Rlvstr[6],"电池欠压",RunLogEntry.Data.DataSec.LowVoltageShutDownCount);
 		UartPrintf((char *)Rlvstr[6],"过流",RunLogEntry.Data.DataSec.OCPFaultCount);	

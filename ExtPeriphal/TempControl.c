@@ -92,6 +92,7 @@ float PIDThermalControl(ADCOutTypeDef *ADCResult)
 			  {
 				if(RemainingMomtBurstCount>0)
 				  {
+					if(RunLogEntry.Data.DataSec.TotalMomtTurboCount<65534)RunLogEntry.Data.DataSec.TotalMomtTurboCount++; //技能次数+1
 					RemainingMomtBurstCount--;
 					TempControlEnabled=false; //技能还有剩余次数，发动技能禁用温控强制最高亮度
 					}
@@ -127,8 +128,8 @@ float PIDThermalControl(ADCOutTypeDef *ADCResult)
 	//温控的PID部分
 	err_temp=CfgFile.PIDTargetTemp-ActualTemp; //计算误差值
 	integral_temp+=err_temp;
-	if(integral_temp>10)integral_temp=5;
-	if(integral_temp<-80)integral_temp=-80; //积分和积分限幅
+	if(integral_temp>10)integral_temp=10;
+	if(integral_temp<-85)integral_temp=-85; //积分和积分限幅
 	AdjustValue=CfgFile.ThermalPIDKp*err_temp+CfgFile.ThermalPIDKi*integral_temp+CfgFile.ThermalPIDKd*(err_temp-err_last_temp); //PID算法算出调节值
 	err_last_temp=err_temp;//记录上一个误差值
 	return 90+AdjustValue; //返回base值+调节value

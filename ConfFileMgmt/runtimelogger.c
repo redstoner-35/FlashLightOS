@@ -329,6 +329,7 @@ void LogDataSectionInit(RunLogDataUnionDef *DIN)
 	DIN->DataSec.LEDOpenShortCount=0;
 	DIN->DataSec.TotalLogCount=0;
 	DIN->DataSec.MaximumThermalStepDown=0;
+	DIN->DataSec.TotalMomtTurboCount=0;
 	DIN->DataSec.RampModeDirection=false;
 	DIN->DataSec.IsFlashLightLocked=false;
 	DIN->DataSec.BattUsage.DesignedCapacity=3000;
@@ -435,6 +436,7 @@ void RunLogModule_POR(void)
 	 RunLogEntry.Data.DataSec.IsLowVoltageAlert=false;
 	 RunLogEntry.Data.DataSec.AverageSPSTemp=20;//初始的平均SPS温度设置为20度
 	 RunLogEntry.Data.DataSec.RampModeDirection=false;//默认从0%开始，向上
+	 RunLogEntry.Data.DataSec.TotalMomtTurboCount=0;//总共turbo次数为0
 	 return;	 
 	 }
  //首先我们需要把整个log区域遍历一遍
@@ -443,7 +445,7 @@ void RunLogModule_POR(void)
 	 //从ROM内读取数据
 	 if(!LoadRunLogDataFromROM(&Data,i))
       {
-	    UartPost(Msg_critical,"RTLogger","Failed to load runtime-logger data section #%d from EEPROM,EEPROM is offline.",i);
+	    UartPost(Msg_critical,"RTLogger","EEPROM error occurred during verify #%d entry.",i);
 	    SelfTestErrorHandler();
 	    }
 	 //检查log entry(如果发生损坏，则使用默认配置去重写)

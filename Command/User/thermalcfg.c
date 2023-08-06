@@ -152,7 +152,7 @@ void thermalcfghandler(void)
 		}
 	#endif
   //设置温控器的Kp
-	Param=IsParameterExist("89",28,NULL);
+	Param=IsParameterExist("89",22,NULL);
 	if(Param!=NULL)
 	  {
 		IsCmdParamOK=true;
@@ -180,7 +180,7 @@ void thermalcfghandler(void)
 			}
 		}	
 	//设置温控器的Kd
-	Param=IsParameterExist("CD",28,NULL);
+	Param=IsParameterExist("CD",22,NULL);
 	if(Param!=NULL)
 	  {
 		IsCmdParamOK=true;
@@ -193,7 +193,7 @@ void thermalcfghandler(void)
 			CfgFile.ThermalPIDKd=buf2;
 			}
 		}	
-  if(!IsCmdParamOK)UartPrintCommandNoParam(28);//显示啥也没找到的信息
+  if(!IsCmdParamOK)UartPrintCommandNoParam(22);//显示啥也没找到的信息
 	//命令处理完毕
 	ClearRecvBuffer();//清除接收缓冲
   CmdHandle=Command_None;//命令执行完毕
