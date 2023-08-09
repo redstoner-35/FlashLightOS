@@ -30,6 +30,9 @@ typedef struct
  float MaximumBatteryPower;  //平均和最大电池输出功率
  float AverageDriverEfficiency;  //平均驱动运行效率
  float MaximumEfficiency;//峰值效率
+ float MoonPWMPIDIntegral;
+ float MoonPWMPIDLastError; //月光档PID的累计数值
+ float MoonPWMDuty; //月光档的PWM占空比
  double TotalBatteryCapDischarged;  //总共电池放电的mAH数
  float RampModeConf; //无极调光模式的目前挡位
  bool RampModeDirection; //无极调光模式的方向
@@ -63,7 +66,7 @@ typedef struct
 #define RunTimeLoggerDepth 64  //运行日志的深度
 #define RunTimeLogBase LoggerAreaSize+LoggerBase //运行日志的位置
 #define RunTimeLogSize RunTimeLoggerDepth*sizeof(RunLogDataStrDef)  //运行日志的大小
-#define RunTimeLogKey "RLoG" //运行log的内容检查Key
+#define RunTimeLogKey "rLoG" //运行log的内容检查Key
 
 //函数
 void RunTimeDataLogging(void);//记录模块

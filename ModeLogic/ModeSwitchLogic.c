@@ -10,7 +10,7 @@
 CurrentModeStr CurMode;//当前模式的结构体
 
 //常量
-#define MoresIDCode "DDH-D8B-Red35"
+#define MoresIDCode "Example"
 #ifndef DefaultRampMode
 const char *ModeConst[5]={"月光","低亮","中亮","中高亮","高亮"};
 const float regModeCurrent[4]={5,15,30,60};  //常规挡位电流百分比(100%为满量程)

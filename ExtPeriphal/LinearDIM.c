@@ -200,8 +200,14 @@ void LinearDIM_POR(void)
  delay_ms(1);
  AD5693R_SetOutput(0);
  SetPWMDuty(0);
- LED_Current_Integral=0;
- LED_Current_Last_Error=0; //初始化PID
+ /***********************************************************************
+ 最后，我们还需要从运行日志里面取出上一次PID模块累加的积分值和上次错误值
+ 以及PWM设置,这些值的目的是保证PID模块每次都从上次上电的运行值处开始加载 
+ 这样就可以解决每次重新上电后月光档第一次开机亮度会闪的bug
+ ***********************************************************************/
+ SysPstatebuf.Duty=RunLogEntry.Data.DataSec.MoonPWMDuty;  //加载占空比
+ LED_Current_Integral=RunLogEntry.Data.DataSec.MoonPWMPIDIntegral;
+ LED_Current_Last_Error=RunLogEntry.Data.DataSec.MoonPWMPIDLastError;  //最后一步,PID复位
 }
 //从开灯状态切换到关灯状态的逻辑
 void TurnLightOFFLogic(void)
@@ -215,6 +221,10 @@ void TurnLightOFFLogic(void)
  SetAUXPWR(false);//切断3.3V辅助电源
  CurrentLEDIndex=0;
  LED_Reset();//复位LED管理器
+ RunLogEntry.Data.DataSec.MoonPWMPIDIntegral=LED_Current_Integral;
+ RunLogEntry.Data.DataSec.MoonPWMPIDLastError=LED_Current_Last_Error;//关灯的时候，存储本次的PID结果到ROM内
+ RunLogEntry.Data.DataSec.MoonPWMDuty=SysPstatebuf.Duty;//存储占空比数值
+ RunLogEntry.CurrentDataCRC=CalcRunLogCRC32(&RunLogEntry.Data); //计算新的CRC-32
  } 
 //放在系统延时里面进行积分的函数
 void LEDShortCounter(void)
@@ -246,8 +256,6 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
  CurrentMode=GetCurrentModeConfig();
  if(CurrentMode==NULL)return Error_Mode_Logic; //挡位逻辑异常
  detectOKCurrent=CurrentMode->LEDCurrentHigh;
- if(CurrentMode->LEDCurrentHigh>=1)SysPstatebuf.Duty=100;
- else SysPstatebuf.Duty=35;  //设置初始占空比
  if(detectOKCurrent>0.5)detectOKCurrent=0.5;
  /********************************************************
  首先我们需要将负责电池遥测的INA219功率级启动,然后先将DAC
@@ -327,11 +335,12 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
  FillThermalFilterBuf(&ADCO); //填写温度信息
  for(i=0;i<12;i++)LEDVfFilterBuf[i]=ADCO.LEDVf;//填写LEDVf 
  for(i=0;i<14;i++)LEDIfFilter[i]=ADCO.LEDIf;
- SetPWMDuty(SysPstatebuf.Duty); //设置占空比
  CurrentSynthRatio=100; //默认合成比例设置为100%
- LED_Current_Last_Error=0; //上次error清零
- if(LED_Current_Integral==0)LED_Current_Integral=-40; //默认设置为-30的积分值
- if(CurrentMode->LEDCurrentHigh<1)AD5693R_SetOutput(0.08); //电流小于1A设置DAC输出电压为0.08进入PWM调光
+ if(CurrentMode->LEDCurrentHigh<1)//电流小于1A设置DAC输出电压为0.08进入PWM调光
+   {
+	 SetPWMDuty(SysPstatebuf.Duty); //设置占空比
+	 AD5693R_SetOutput(0.08);
+   } 
  return Error_None;
  }
 /*

@@ -68,7 +68,7 @@ void logviewhandler(void)
 		  UartPrintf("  %s   |",LoggerHdr.LoggerHeader.IsEntryHasError[i]?"\033[40;31m存在错误记录\033[0m":"日志条目为空");
 			}
 		UARTPuts((char *)LogVIewAlertStr[4]);UARTPutc('-',46);
-		UARTPuts("\r\n   注:系统中最新的错误日志条目前方使用'$'标注.");
+		UARTPuts("\r\n   注:最新的错误日志条目为'$'标注的条目.");
 		}		
 	 else //详细显示
 	  {
