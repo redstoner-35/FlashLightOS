@@ -4,6 +4,25 @@
 #include <string.h>
 #include "modelogic.h"
 
+//获取用户选择的配置文件类型
+//输入：字符串指针 输出：枚举类型指示用户输入了什么
+const char *CfgFileTypeStr[]={"Main","Backup"};
+
+userSelectConfigDef getCfgTypeFromUserInput(char *Param)
+  {
+	int i;
+  int InputLen;
+	if(Param==NULL)return UserInput_NoCfg; //用户输入内容非法
+  InputLen=strlen(Param);
+	for(i=0;i<2;i++)//找到匹配的字符串
+  if(InputLen==strlen(CfgFileTypeStr[i])&&!strcmp(CfgFileTypeStr[i],Param))switch(i)
+	 {
+		case 0:return UserInput_MainCfg;
+	  case 1:return UserInput_BackupCfg;
+	 }
+	return UserInput_NoCfg; //啥也没找到
+	}
+
 //获取用户选择的FRU LED类型字符串
 //输入：字符串指针 输出：FRU的LED类型代码，具体请前往FRU.c内查看
 const char *LEDStr[]={"G3V","SBT90R","SBT70G","G6V","SBT70B","SBT90G2"};
@@ -76,17 +95,18 @@ bool GetUserModeNum(int cmdindex,ModeGrpSelDef *UserSelect,int *modenum)
 	}
 //检查用户选择了哪个挡位模式
 //输入：字符串  输出:枚举方式分别表示用户输入了什么
- const char *LightModeString[8]={"常亮","爆闪","随机爆闪","SOS","摩尔斯发送","呼吸","无极调光","自定义闪"};
-static const char *ModeUsageString[8]=
+const char *LightModeString[9]={"常亮","爆闪","随机爆闪","SOS","摩尔斯发送","呼吸","无极调光","自定义闪","线性变频闪"};
+static const char *ModeUsageString[9]=
  {
  "一直保持点亮",
  "按照用户设置的爆闪频率闪烁",
- "随机频率爆闪",
+ "按照随机的频率和占空比爆闪",
  "按照用户指定的速度发送SOS求救光学信号(... --- ...)",
  "通过摩尔斯电码以光学方式发送用户设置的自定义字符串",
  "用户指定的参数平滑的增高亮度,等待一会后亮度平滑下跌,再度等待并反复循环模拟呼吸效果。",
  "保持点亮,用户可自由设定亮度.",
- "依据用户指定的字符串所指定的闪烁模式闪烁"	 
+ "依据用户指定的字符串所指定的闪烁模式闪烁",
+ "按照指定的爆闪速度从低频逐步升到高频爆闪然后再降回低频,反复循环"	 
  };
 
 LightModeDef CheckUserInputForLightmode(char *Param)
@@ -95,7 +115,7 @@ LightModeDef CheckUserInputForLightmode(char *Param)
  int InputLen;
  if(Param==NULL)return LightMode_None;
  InputLen=strlen(Param);
- for(i=0;i<8;i++)//找到匹配的字符串
+ for(i=0;i<9;i++)//找到匹配的字符串
 	 if(InputLen==strlen(LightModeString[i])&&!strcmp(LightModeString[i],Param))switch(i)
 	  {
 		 case 0:return LightMode_On;
@@ -106,6 +126,7 @@ LightModeDef CheckUserInputForLightmode(char *Param)
 		 case 5:return LightMode_Breath;
 		 case 6:return LightMode_Ramp;
 		 case 7:return LightMode_CustomFlash;
+		 case 8:return LightMode_BreathFlash;
 		}
  return LightMode_None;
  }
@@ -116,7 +137,7 @@ void DisplayCorrectMode(void)
  {
  int i;
  UARTPuts("\r\n有效的挡位模式参数如下:");
- for(i=0;i<8;i++)UartPrintf("\r\n%s : 手电筒的主LED将%s",LightModeString[i],ModeUsageString[i]);
+ for(i=0;i<9;i++)UartPrintf("\r\n%s : 手电筒的主LED将%s",LightModeString[i],ModeUsageString[i]);
  }	 
 //检查用户选择了哪个挡位组
 //输入：字符串  输出:枚举方式分别表示用户输入了什么
@@ -197,11 +218,18 @@ void UartPrintCommandNoParam(int cmdindex)
  }
 //当用户输入了非法的参数之后显示错误
 //输入：命令序号(command.h内定义) 选项序号 用户输入内容的字符串  输出:无 
+extern const char *ModeRelCommandParam; 
+ 
 void DisplayIllegalParam(char *UserInput,int cmdindex,int optionIndex)
  {
  const char *paramptr[20];
  int argc;
- argc=ParamToConstPtr(paramptr,Commands[cmdindex].Parameter,20);//取参数
+ 	if(Commands[cmdindex].IsModeCommand)
+	  {
+		argc=ParamToConstPtr(paramptr,ModeRelCommandParam,4);
+	  argc+=ParamToConstPtr(&paramptr[4],Commands[cmdindex].Parameter,16); //是模式命令，从前面取参数
+		}
+ else argc=ParamToConstPtr(paramptr,Commands[cmdindex].Parameter,20);//正常取参数
  if(optionIndex<0||optionIndex>argc-1)return;
  //显示
  UARTPuts("\r\n错误:'");

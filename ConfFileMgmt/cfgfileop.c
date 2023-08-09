@@ -290,7 +290,7 @@ unsigned int ActiveConfigurationCRC(void)
  for(i=0;i<2;i++)FRUHwResult^=FRU.FRUBlock.Data.Data.FRUVersion[i]; //仅仅是把LED类型和major version加入计算
  //开始校验
  for(i=0;i<sizeof(CfgFile);i++)
-	 wb(&HT_CRC->DR,CfgFileUnion.StrBUF[i]);//将内容写入到CRC寄存器内
+	 wb(&HT_CRC->DR,CfgFileUnion.StrBUF[i]^FRUHwResult);//将内容写入到CRC寄存器内
  //校验完毕计算结果
  DATACRCResult=HT_CRC->CSR;
  CRC_DeInit(HT_CRC);//清除CRC结果
@@ -305,16 +305,16 @@ void DisplayCheckResult(int Result,bool IsProgram)
 	 switch(Result)
      {
 		 case 1:
-			 UartPost(Msg_critical,EEPModName,"Configuration EEPROM offline.");
+			 UartPost(Msg_critical,EEPModName,"Config EEPROM offline.");
 		    CurrentLEDIndex=6;
 		    SelfTestErrorHandler();
 		 case 2:
-			  UartPost(Msg_critical,EEPModName,"AES-256 Decrypt routine error.");
+			  UartPost(Msg_critical,EEPModName,"AES256 routine error.");
 		    CurrentLEDIndex=7;
 		    SelfTestErrorHandler();
 	   case 3:
 			 if(IsProgram)break;
-			 UartPost(Msg_warning,EEPModName,"Configuration file Corrupted.");
+			 UartPost(Msg_warning,EEPModName,"Config file Verification Error.");
 		   break;
 	   }
 	}

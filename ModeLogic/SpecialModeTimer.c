@@ -25,6 +25,7 @@ void FlashTimerCallbackRoutine(void)
  switch(TimerMode)
    {
 	 case LightMode_CustomFlash:CustomFlashHandler();break;//自定义闪模式，交给对应的函数去处理
+	 case LightMode_BreathFlash:LinearFlashHandler();break;//线性变频闪模式，交给对应函数处理
 	 case LightMode_Ramp:RampModeHandler();break;//无极调光模式下跳转到相应的函数去处理
 	 case LightMode_Breath:BreatheStateMachine();break;//呼吸模式下，处理对应的状态机操作
 	 case LightMode_RandomFlash:RandomFlashHandler();//执行handler，然后跳转到下面的翻转输出
@@ -87,6 +88,7 @@ void FlashTimerInitHandler(void)
    {
 	 case LightMode_On:DisableFlashTimer();TimerHasStarted=true;return;//常亮档不需要启用定时器,关闭定时器后退出
 	 case LightMode_CustomFlash:Freq=CurrentMode->CustomFlashSpeed;break;//自定义闪模式按照指定频率
+	 case LightMode_BreathFlash:Freq=(float)2*CurrentMode->RandStrobeMinFreq;LinearFlashReset();break;//呼吸变频闪，进行处理
 	 case LightMode_Ramp:Freq=BreathTIMFreq;break;
 	 case LightMode_Breath:Freq=BreathTIMFreq;break;//呼吸和无极调光模式下，定时器生成的中断频率配置为指定值
 	 case LightMode_Flash:Freq=(float)2*CurrentMode->StrobeFrequency;break;//按照爆闪频率的2倍去配置

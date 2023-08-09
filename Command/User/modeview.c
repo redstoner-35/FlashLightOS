@@ -8,6 +8,8 @@
 extern const char *ModeSelectStr[];
 static const char *ModeInfoStr="\r\n  挡位";
 
+//外部函数
+const char *ConvertStrobeModeStr(ModeConfStr *TargetMode);
 
 //显示挡位组信息
 static void DisplayModeGroupBar(const char *GrpName)
@@ -79,8 +81,9 @@ void modeviewhandler(void)
 			switch(TargetMode->Mode)
 			  {
 				case LightMode_On:break;//常亮
+				case LightMode_BreathFlash:
 				case LightMode_RandomFlash:
-					UartPrintf("\r\n  随机爆闪上/下限频率 : %.1fHz/%.1fHz",TargetMode->RandStrobeMinFreq,TargetMode->RandStrobeMaxFreq);
+					UartPrintf("\r\n  %s上/下限频率 : %.1fHz/%.1fHz",ConvertStrobeModeStr(TargetMode),TargetMode->RandStrobeMinFreq,TargetMode->RandStrobeMaxFreq);
 				   break;
 				case LightMode_Flash://爆闪
 					 UartPrintf("\r\n  爆闪频率 : %.1fHz",TargetMode->StrobeFrequency);

@@ -74,8 +74,8 @@ void RestoreErrorLogFromXmodem(void)
 			   Address+=RWSize;
 			   WriteAddress+=RWSize;
 			   }
-			if(CarrySize>0||!fetchloggerheader(&LoggerHdr))UARTPuts("\r\n系统在还原错误日志文件时出现了错误.请重试.");
-			else UARTPuts("\r\n错误日志文件已经还原成功.您可使用'logview'查看新的日志");
+			if(CarrySize>0||!fetchloggerheader(&LoggerHdr))UARTPuts("\r\n在还原错误日志文件时出现了异常.");
+			else UARTPuts("\r\n错误日志文件已经还原成功.");
 			}
 	logbkupCmdEndHandler();	 	
   }
@@ -133,7 +133,7 @@ void logbkupHandler(void)
 				}
 		 break;
 		 }
-	 case logbkup_XmodemTxInprogress:XmodemTxDisplayHandler("指定的日志文件",&logbkupCmdEndHandler,&logbkupCmdEndHandler);break; //发送中
+	 case logbkup_XmodemTxInprogress:XmodemTxDisplayHandler("日志文件",&logbkupCmdEndHandler,&logbkupCmdEndHandler);break; //发送中
 	 case logbkup_XmodemRxInprogress:XmodemRxDisplayHandler("错误日志文件",&logbkupCmdEndHandler,&RestoreErrorLogFromXmodem);break;  //Xmodem接收进行中
 	}
  }

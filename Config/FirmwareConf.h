@@ -6,21 +6,22 @@
 #define HardwareMinorVer 1  //硬件版本号
 
 #define MajorVersion 1
-#define MinorVersion 4
-#define HotfixVersion 4  //固件版本号
+#define MinorVersion 5
+#define HotfixVersion 0  //固件版本号
 
 //固件模式配置
 #define Firmware_DIY_Mode //是否启用DIY高级用户模式，在此模式下驱动所有功能可以使用，否则温控调整和日志清除和恢复功能会被禁用。
 //#define FlashLightOS_Debug_Mode //是否启用debug模式，此时驱动将会禁用部分自检项目以及低电量关机功能，并且强制使用工厂配置
 //#define Internal_Driver_Debug //是否启用驱动内部设备驱动的额外信息输出。
 #define EnableFirmwareSecure //是否启用固件只读和CRC安全锁
-#define HardwarePlatformString "DiffTorch Extreme(Xtern Ripper)" //硬件平台字符串信息，可以任意修改
+#define HardwarePlatformString "Xtern Ripper" //硬件平台字符串信息，可以任意修改
 
 //性能参数定义
 #define BreathTIMFreq 50 //负责生成平滑呼吸灯效果的定时器频率(单位Hz)，越高越平滑
 #define GammaCorrectionValue 2.45   //亮度拟合曲线的gamma修正，根据不同LED有所不同
 #define LVAlertCurrentLimit 8 //当低电压警告触发后，驱动最大的输出电流值(A)
 #define MaxAllowedLEDCurrent 35 //驱动硬件熔断的最大输出电流设置(测得电流超过此电流的1.2倍将触发保护)
+#define MinimumLEDCurrent 0.4 //最小的LED电流
 #define BatteryCellCount 3 //默认情况下驱动使用的电池组中锂电池的串数(按照三元锂电池计算)
 #define DeepsleepDelay 40 //驱动的出厂深度睡眠时间,40秒内没有操作则睡眠
 #define ForceRequireLEDNTC //驱动的LED NTC热敏电阻强制要求存在,如果检测不到热敏电阻则驱动将自检失败
@@ -43,12 +44,10 @@
 #define UsingEE_24C512 //使用24C512
 //#define UsingEE_24C256 //使用24C256
 
-//调光offset
-#if (HardwareMinorVer == 2)
- #define DimmingOffset 0.05907 //补偿硬件电流DAC调光偏差的offset (Ver 1.2)
-#else
- #define DimmingOffset 0.015 //硬件版本1.1的offset 直接按照原始值设置就OK
-#endif
+//调光参数
+#define PWMDimmingKp 7.27
+#define PWMDimmingKi 0.51
+#define PWMDimmingKd 0.43  //PWM电流控制的Kp Ki Kd
 
 //SPS功率级的温度和电流反馈参数配置
 #define SPSIMONDiffOpGain 50 //SPS电流差分采样放大器的增益，单位*V/V

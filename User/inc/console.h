@@ -140,6 +140,13 @@ UserInput_False,
 UserInput_Nothing
 }UserInputTrueFalseDef; //有些函数需要判断用户输入的是true false还是其他东西
 
+typedef enum
+{
+UserInput_MainCfg,
+UserInput_BackupCfg,
+UserInput_NoCfg
+}userSelectConfigDef;  //检测用户输入了什么配置文件
+
 /*******************************************
 以下是在控制器进行自检输出时，自检系统向自检
 输出模块提交消息时标记消息类型的枚举变量。
@@ -186,7 +193,8 @@ ModeGrpSelDef CheckUserInputForModeGroup(char *Param);
 LightModeDef CheckUserInputForLightmode(char *Param);
 bool GetUserModeNum(int cmdindex,ModeGrpSelDef *UserSelect,int *modenum);//负责获取用户选择了哪个模式组的函数
 char GetLEDTypeFromUserInput(char *Param);//根据用户输入解码出FRU LED Code的函数
-
+userSelectConfigDef getCfgTypeFromUserInput(char *Param);//根据用户输入判断使用什么配置文件的判断函数
+	
 //负责输出特定错误提示信息和提示符的函数(内部使用的函数，切勿在除了命令执行后端的handler以外的任何其他地方引用)		
 void UartPrintCommandNoParam(int cmdindex);	
 void DisplayCorrectModeGroup(void);//输出正确的模式组的功能
@@ -235,7 +243,7 @@ void UartPost(Postmessagelevel msglvl,const char *Modules,char *Format,...); //�
 
 //外部参考变量(供其他函数使用)
 extern const char *ThermalsensorString[2];//温度传感字符串
-extern const char *LightModeString[8];//模式字符串
+extern const char *LightModeString[9];//模式字符串
 extern const char *ModeGrpString[3];//模式组字符串
 extern char RXRingBuffer[CmdBufLen];//RX 环形FIFO
 extern short QueueRearPTR;

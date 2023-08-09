@@ -58,8 +58,8 @@ void modecurcfghandler(void)
 			UARTPuts((char *)ModeSelectStr[4]);
 		else if(buf<0||buf==NAN||buf>FusedMaxCurrent||buf>=TargetMode->LEDCurrentHigh)
 			UartPrintf((char *)CurrentIllegalInfo,"最小",0,FusedMaxCurrent,TargetMode->LEDCurrentHigh);
-	  else if(TargetMode->Mode==LightMode_Ramp&&buf<0.5)
-			UartPrintf("\r\n错误:对于无极调光模式而言,您指定的最小电流值(地板电流)应大于等于0.5A.\r\n");
+	  else if(TargetMode->Mode==LightMode_Ramp&&buf<MinimumLEDCurrent)
+			UartPrintf("\r\n错误:对于无极调光模式而言,您指定的最小电流值(地板电流)应大于等于%.1fA.\r\n",MinimumLEDCurrent);
 		else
 			{
 			TargetMode->LEDCurrentLow=buf;
@@ -76,8 +76,8 @@ void modecurcfghandler(void)
 		TargetMode=GetSelectedModeConfig(UserSelect,modenum);
 		if(TargetMode==NULL)
 			UARTPuts((char *)ModeSelectStr[4]);
-		else if(buf<0.5||buf==NAN||buf>FusedMaxCurrent||buf<=TargetMode->LEDCurrentLow)
-			UartPrintf((char *)CurrentIllegalInfo,"额定",0.5,FusedMaxCurrent,TargetMode->LEDCurrentLow);
+		else if(buf<MinimumLEDCurrent||buf==NAN||buf>FusedMaxCurrent||buf<=TargetMode->LEDCurrentLow)
+			UartPrintf((char *)CurrentIllegalInfo,"额定",MinimumLEDCurrent,FusedMaxCurrent,TargetMode->LEDCurrentLow);
 	  else
 			{
 			TargetMode->LEDCurrentHigh=buf;

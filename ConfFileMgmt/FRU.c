@@ -241,7 +241,7 @@ void FirmwareVersionCheck(void)
    {
 	 #ifndef FlashLightOS_Debug_Mode
 	 CurrentLEDIndex=3;//红灯常亮表示FRU验证不通过
-	 UartPost(Msg_critical,"FRUChk","This firmware is targeted for Hardware version V%d.%d and not for current hardware.system halted!",HardwareMajorVer,HardwareMinorVer);
+	 UartPost(Msg_critical,"FRUChk","Hardware mismatch,This firmware for Hardware version V%d.%d.",HardwareMajorVer,HardwareMinorVer);
 	 SelfTestErrorHandler();//FRU信息损坏
 	 #else
 	 WriteNewFRU("Hardware Mismatch");//重写FRU
@@ -254,7 +254,7 @@ void FirmwareVersionCheck(void)
 		SetLEDVfMinMax(&FRU);//设置Vmin和Vmax
 		if(FRU.FRUBlock.Data.Data.MaxLEDCurrent>QueryMaximumCurrentLimit(&FRU))//非法的电流设置
 		  {
-			UartPost(msg_error,"FRUChk","Maximum Current value %.2fA is illegal for %s LED and will be trim to %.2fA.",
+			UartPost(msg_error,"FRUChk","Maximum Current %.2fA is illegal for %s LED and will be trim to %.2fA.",
 			  FRU.FRUBlock.Data.Data.MaxLEDCurrent,
 			  DisplayLEDType(&FRU),
 			  QueryMaximumCurrentLimit(&FRU));

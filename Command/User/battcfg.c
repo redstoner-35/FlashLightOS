@@ -7,6 +7,7 @@
 
 //外部变量
 const char *IllegalVoltageConfig="\r\n您应当指定一个在%.1f-%.1f(V)之间的数值作为电池的%s值.";
+const char *BatteryVoltagePoint="\r\n 电池%s电压 : %.2fV";
 extern float UsedCapacity;
 #ifndef Firmware_DIY_Mode
 extern const char *NeedRoot;
@@ -28,13 +29,13 @@ const char *battcfgArgument(int ArgCount)
 		case 8:
 		case 9:return "启用库仑计的自学习模式学习电池容量";
 		case 10:
-		case 11:return "手动设置库仑计的额定电池容量.";
+		case 11:return "手动设置库仑计的设计电池容量.";
 		case 12:
-		case 13:return "复位库仑计的电池统计数据(需要重新学习容量库仑计才能激活)";
+		case 13:return "复位库仑计的电池统计和容量数据";
 	  case 14:
 		case 15:return "查看系统中电池的参数和库仑计的统计信息";
 		case 16:
-		case 17:return "设置手电电池组的过流保护值";
+		case 17:return "设置电池组的过流保护电流阈值";
 		}
 	return NULL;
 	}
@@ -68,10 +69,10 @@ void battcfghandler(void)
 	if(ParamOK)
 	  {
 		UARTPuts("\r\n---------- 电池参数查看器 ----------\r\n");
-		UartPrintf("\r\n 电池过压保护电压 : %.2fV",CfgFile.VoltageOverTrip);	
-		UartPrintf("\r\n 电池满电电压 : %.2fV",CfgFile.VoltageFull);
-		UartPrintf("\r\n 电池低电量警告电压 : %.2fV",CfgFile.VoltageAlert);
-		UartPrintf("\r\n 电池低电量保护电压 : %.2fV",CfgFile.VoltageTrip);
+		UartPrintf((char *)BatteryVoltagePoint,"过压保护",CfgFile.VoltageOverTrip);	
+		UartPrintf((char *)BatteryVoltagePoint,"满电",CfgFile.VoltageFull);
+		UartPrintf((char *)BatteryVoltagePoint,"低电量警告",CfgFile.VoltageAlert);
+		UartPrintf((char *)BatteryVoltagePoint,"低电量保护",CfgFile.VoltageTrip);
 		UartPrintf("\r\n 电池过流保护电流 : %.2fA",CfgFile.OverCurrentTrip);
 		UARTPuts("\r\n   ------ 库仑计信息 ------\r\n");
 		if(!IsRunTimeLoggingEnabled)//日志被关闭
@@ -165,7 +166,7 @@ void battcfghandler(void)
 			UARTPuts("\r\n为了确保自学习过程顺利完成,请务必查看如下的步骤说明:");
 			UARTPuts("\r\n1:将需要使用的电池从手电中拆下,在充电器上彻底将其充满电.");	
 			UARTPuts("\r\n2:正常使用手电筒(不要开极亮)直到手电筒电池耗尽并自动关机(侧按按\r\n钮红色慢闪).");
-			UARTPuts("\r\n完成以上步骤后库仑计将完成校准并激活,此时手电将根据实际放电容量\r\n信息给您带来精准的电量指示.");
+		  UARTPuts("\r\n完成以上步骤后库仑计将完成校准并激活,为您提供准确的电量信息.");
 			}
 		IsCmdParamOK=true;
 		}

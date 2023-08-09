@@ -109,7 +109,7 @@ void Imonadjhandler(void)
  //非法的参数
  if(!CommandParamOK)UartPrintCommandNoParam(10);//显示啥也没找到的信息 
  #else
- UARTPuts("\r\n编辑电流探头参数的功能已被正式版固件禁用.");
+ UARTPuts("\r\n编辑电流参数的功能已被正式版固件禁用.");
  #endif
  //命令完毕的回调处理	 
  ClearRecvBuffer();//清除接收缓冲

@@ -252,9 +252,9 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		{
 		 {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//19
      "strobecfg",
-		 "在挡位配置为爆闪和随机爆闪模式时,允许用户编辑指定挡位的爆闪参数",
+		 "在挡位配置为爆闪、随机爆闪和线性变频闪模式时,允许用户编辑指定挡位的爆闪参数.",
      "-sf\0--strobe_freq\0-minf\0--min_freq\0\0-maxf\0--max_freq\0\n",
-		 " <频率(Hz)>\0 <频率(Hz)>\0 <频率(Hz)>\0 <频率(Hz)>\0 <频率(Hz)>\0 <频率(Hz)>\0\n",
+		 " <爆闪频率(Hz)>\0 <爆闪频率(Hz)>\0 <下限频率(Hz)>\0 <下限频率(Hz)>\0 <上限频率(Hz)>\0 <上限频率(Hz)>\0\n",
 		 &strobecfgArgument,
 		 Command_strobecfg,
 		 NULL,

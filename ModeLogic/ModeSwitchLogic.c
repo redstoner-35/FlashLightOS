@@ -103,8 +103,8 @@ void RestoreFactoryModeCfg(void)
 	 strncpy(CfgFile.RegularMode[i].ModeName,ModeConst[i],16);//挡位名称
 	 CfgFile.RegularMode[i].IsModeHasMemory=(i<4)?true:false;//高亮档不记忆
 	 CfgFile.RegularMode[i].IsModeAffectedByStepDown=i<2?false:true;//除了月光和低中亮，其他挡位都受温控影响
-	 CfgFile.RegularMode[i].LEDCurrentLow=0.5;//呼吸模式低电流为0.5
-	 CfgFile.RegularMode[i].LEDCurrentHigh=(i==0)?0.5:((FusedMaxCurrent*regModeCurrent[i-1])/(float)100);//编程电流(百分比)
+	 CfgFile.RegularMode[i].LEDCurrentLow=0;//呼吸模式低电流为0
+	 CfgFile.RegularMode[i].LEDCurrentHigh=(i==0)?MinimumLEDCurrent:((FusedMaxCurrent*regModeCurrent[i-1])/(float)100);//编程电流(百分比)
 	 CfgFile.RegularMode[i].Mode=LightMode_On;//正常挡位全是常亮档
 	 CfgFile.RegularMode[i].StrobeFrequency=10;//默认爆闪频率为10Hz
 	 CfgFile.RegularMode[i].RandStrobeMaxFreq=16;
@@ -127,7 +127,7 @@ void RestoreFactoryModeCfg(void)
 	strncpy(CfgFile.RegularMode[0].ModeName,"无极调光",16);//挡位名称
 	CfgFile.RegularMode[0].IsModeHasMemory=true;//记忆
 	CfgFile.RegularMode[0].IsModeAffectedByStepDown=true;//受温控影响
-	CfgFile.RegularMode[0].LEDCurrentLow=0.5;//无极调光最低电流为0.5
+	CfgFile.RegularMode[0].LEDCurrentLow=MinimumLEDCurrent;//无极调光最低电流为设置值
 	CfgFile.RegularMode[0].LEDCurrentHigh=(FusedMaxCurrent*80)/(float)100;//编程电流(百分比)
 	CfgFile.RegularMode[0].Mode=LightMode_Ramp;//无极调光模式
 	CfgFile.RegularMode[0].StrobeFrequency=10;//默认爆闪频率为10Hz

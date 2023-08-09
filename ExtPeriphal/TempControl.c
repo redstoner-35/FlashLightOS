@@ -9,13 +9,14 @@
 //声明函数
 float fmaxf(float x,float y);
 float fminf(float x,float y);
+float LEDFilter(float DIN,float *BufIN,int bufsize);
 
 //全局变量
 static float err_last_temp = 0.0;	//上一温度误差
 static float integral_temp = 0.0; //积分后的温度误差值
 static bool TempControlEnabled = false; //是否激活温控
 static bool DoubleClickPressed = false;//缓存，记录双击+长按是否按下
-static float ThermalFilterBuf[12]={0}; //温度滤波器
+float ThermalFilterBuf[12]={0}; //温度滤波器
 static char RemainingMomtBurstCount=0; //短时间鸡血技能的剩余次数
 
 //显示已经没有鸡血技能了
@@ -50,29 +51,6 @@ void FillThermalFilterBuf(ADCOutTypeDef *ADCResult)
 		}
 	//写缓冲区
 	for(i=0;i<12;i++)ThermalFilterBuf[i]=ActualTemp;
-	}
-
-//温度滤波器
-static float ThermalStepFilter(float Temp)
-  {
-  int i;
-  float buf,min,max;
-  //搬数据
-  for(i=11;i>0;i--)ThermalFilterBuf[i]=ThermalFilterBuf[i-1];
-  ThermalFilterBuf[i]=Temp;
-  //找最高和最低的同时累加数据
-  min=2000;
-  max=-2000;
-  buf=0;
-  for(i=0;i<12;i++)
-	 {
-	 buf+=ThermalFilterBuf[i];//累加数据
-	 min=fminf(min,ThermalFilterBuf[i]);
-	 max=fmaxf(max,ThermalFilterBuf[i]); //取最小和最大
-	 }
-  buf-=(min+max);
-  buf/=(float)10;//去掉最高和最低值，取剩下的8个值里面的平均值
-  return buf;	
 	}
 
 //基于PID算法的温度控制模块
@@ -117,7 +95,7 @@ float PIDThermalControl(ADCOutTypeDef *ADCResult)
 		else //否则取运行日志里面的平均SPS温度
 			ActualTemp=RunLogEntry.Data.DataSec.AverageSPSTemp;
 		}
-	ActualTemp=ThermalStepFilter(ActualTemp); //实际温度等于温度降档滤波器的均分输出
+	ActualTemp=LEDFilter(ActualTemp,ThermalFilterBuf,12); //实际温度等于温度降档滤波器的均分输出
 	if(TargetMode!=NULL&&ActualTemp<=CfgFile.PIDRelease)   //温控低于release点，装填鸡血设置
 		RemainingMomtBurstCount=TargetMode->MaxMomtTurboCount;	
 	//判断温控是否达到release或者trigger点

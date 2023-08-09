@@ -6,6 +6,8 @@
 //字符串
 static const char *PleaseEnterStr="请在下方输入 '我知道我在干什么' 然后回车以继续.";
 static const char *EnterInputSnippet="\r\n\r\n?";
+static const char *ConfigIsSame="\r\n当前配置和%s配置文件中的配置一致,无需加载.";
+static const char *ConfigFileCorrDetected="\r\n检测到%s配置文件损毁,系统将尝试自动修复.";
 
 //enum
 typedef enum
@@ -178,27 +180,24 @@ void cfgmgmthandler(void)
 		else if(IsParameterExist("23",4,&ParamExist)!=NULL)//处理保存函数
 		   {
 			 NamePtr=IsParameterExist("23",4,&ParamExist);//抓取参数
-			 namelen=NamePtr==NULL?0:strlen(NamePtr);//计算长度
-			 //参数不合法
-			 if(NamePtr==NULL||(strncmp("Main",NamePtr,128)&&strncmp("Backup",NamePtr,128)))
+		   switch(getCfgTypeFromUserInput(NamePtr))
 			   {
-         DisplayIllegalParam(NamePtr,4,2);//显示用户输入了非法参数
-				 DisplayParam();
-				 ClearRecvBuffer();//清除接收缓冲
-			   CmdHandle=Command_None;//命令执行完毕
-				 }
-			 //目标是主操作块
-			 else if(namelen==strlen("Main")&&!strncmp("Main",NamePtr,128))
-			   {
-					IsUsingBackupFiles=false;
-				  checkresult=CheckConfigurationInROM(Config_Main,&MainCRC);
-          if(DisplayConfError(checkresult,true))checkresult=0;//配置文件损坏
-				  else if(checkresult==3)//配置文件损坏，直接覆盖
+				 case UserInput_NoCfg://参数不合法
+           DisplayIllegalParam(NamePtr,4,2);//显示用户输入了非法参数
+				   DisplayParam();
+				   ClearRecvBuffer();//清除接收缓冲
+			     CmdHandle=Command_None;//命令执行完毕
+				   break;
+				 case UserInput_MainCfg://目标是主操作块
+					 IsUsingBackupFiles=false;
+				   checkresult=CheckConfigurationInROM(Config_Main,&MainCRC);
+           if(DisplayConfError(checkresult,true))checkresult=0;//配置文件损坏
+				   else if(checkresult==3)//配置文件损坏，直接覆盖
 					  {
-						UARTPuts("\r\n检测到主用配置文件损毁，系统将尝试自动修复。");
+						UartPrintf((char *)ConfigFileCorrDetected,"主用");
 						CfgmgmtState=CfgMgmtWriting;
 						}
-				  else //其余情况
+				   else //其余情况
 					  {
 					  if(MainCRC==ActiveConfigurationCRC())//包含相同配置
 						  {
@@ -208,19 +207,17 @@ void cfgmgmthandler(void)
 						else //直接启动写入
 							CfgmgmtState=CfgMgmtWriting;
 						}
-				 }
-			 //目标是备用操作块
-       else if(namelen==strlen("Backup")&&!strncmp("Backup",NamePtr,128))
-			   {
-					IsUsingBackupFiles=true;
-				  checkresult=CheckConfigurationInROM(Config_Backup,&MainCRC);
-          if(DisplayConfError(checkresult,true))checkresult=0;//配置文件损坏
-				  else if(checkresult==3)//配置文件损坏，直接覆盖
+					 break;
+				 case UserInput_BackupCfg:
+					 IsUsingBackupFiles=true;
+				   checkresult=CheckConfigurationInROM(Config_Backup,&MainCRC);
+           if(DisplayConfError(checkresult,true))checkresult=0;//配置文件损坏
+				   else if(checkresult==3)//配置文件损坏，直接覆盖
 					  {
-						UARTPuts("\r\n检测到备用配置文件损毁，系统将尝试自动修复。");
+						UartPrintf((char *)ConfigFileCorrDetected,"备用");
 						CfgmgmtState=CfgMgmtWriting;
 						}
-				  else //其余情况
+				   else //其余情况
 					  {
 					  if(MainCRC==ActiveConfigurationCRC())//包含相同配置
 						  {
@@ -230,141 +227,127 @@ void cfgmgmthandler(void)
 						else //直接启动写入
 							CfgmgmtState=CfgMgmtWriting;
 						}
-					}
+				   break;
+				   }
 			 }
 		else if(IsParameterExist("45",4,&ParamExist)!=NULL)//验证函数
 		   {
 			 NamePtr=IsParameterExist("45",4,&ParamExist);//抓取参数
-			 namelen=NamePtr==NULL?0:strlen(NamePtr);//计算长度
-			 //参数不合法
-			 if(NamePtr==NULL||(strncmp("Main",NamePtr,128)&&strncmp("Backup",NamePtr,128)))
+		   switch(getCfgTypeFromUserInput(NamePtr))
 			   {
-				 DisplayIllegalParam(NamePtr,4,4);//显示用户输入了非法参数
-				 DisplayParam();
-				 ClearRecvBuffer();//清除接收缓冲
-			   CmdHandle=Command_None;//命令执行完毕
-				 }
-			 //目标是主操作块
-			 else if(namelen==strlen("Main")&&!strncmp("Main",NamePtr,128))
-			   {
-				  checkresult=CheckConfigurationInROM(Config_Main,&MainCRC);
-          if(DisplayConfError(checkresult,true))//配置文件损坏
-					  {
-					  ClearRecvBuffer();//清除接收缓冲
-			      CmdHandle=Command_None;//命令执行完毕
-						}
-				  else DisplayFileState("主用配置",checkresult,MainCRC);//输出结果
-				 }
-			 //目标是备用操作块
-       else if(namelen==strlen("Backup")&&!strncmp("Backup",NamePtr,128))
-			   {
-				  checkresult=CheckConfigurationInROM(Config_Backup,&MainCRC);
-          if(DisplayConfError(checkresult,true))//配置文件损坏
-					  {
-					  ClearRecvBuffer();//清除接收缓冲
-			      CmdHandle=Command_None;//命令执行完毕
-						}
-				  else DisplayFileState("备用配置",checkresult,MainCRC);//输出结果
+				 case UserInput_NoCfg://参数不合法
+				   DisplayIllegalParam(NamePtr,4,4);//显示用户输入了非法参数
+				   DisplayParam();
+				   break;
+			   case UserInput_MainCfg://目标是主操作块
+				   checkresult=CheckConfigurationInROM(Config_Main,&MainCRC);
+           if(DisplayConfError(checkresult,true))//配置文件损坏
+					   {
+					   ClearRecvBuffer();//清除接收缓冲
+			       CmdHandle=Command_None;//命令执行完毕
+						 }
+				   else DisplayFileState("主用配置",checkresult,MainCRC);//输出结果
+					 break;
+				 case UserInput_BackupCfg://目标是备用操作块
+				   checkresult=CheckConfigurationInROM(Config_Backup,&MainCRC);
+           if(DisplayConfError(checkresult,true))//配置文件损坏
+					   {
+					   ClearRecvBuffer();//清除接收缓冲
+			       CmdHandle=Command_None;//命令执行完毕
+						 }
+				   else DisplayFileState("备用配置",checkresult,MainCRC);//输出结果
+					 break;
 				 }
 			  ClearRecvBuffer();//清除接收缓冲
 			  CmdHandle=Command_None;//命令执行完毕
-			 CfgmgmtState=CfgMgmtNoneOp;
-			 }
+			  CfgmgmtState=CfgMgmtNoneOp;
+			  }
 		else if(IsParameterExist("67",4,&ParamExist)!=NULL)//处理读取函数
 		   {
 			 NamePtr=IsParameterExist("67",4,&ParamExist);//抓取参数
-			 namelen=NamePtr==NULL?0:strlen(NamePtr);//计算长度
-			 //参数不合法
-			 if(NamePtr==NULL||(strncmp("Main",NamePtr,128)&&strncmp("Backup",NamePtr,128)))
+       switch(getCfgTypeFromUserInput(NamePtr))
 			   {
-         DisplayIllegalParam(NamePtr,4,6);//显示用户输入了非法参数
-				 DisplayParam();
-				 ClearRecvBuffer();//清除接收缓冲
-			   CmdHandle=Command_None;//命令执行完毕
-				 }
-			 //目标是主操作块
-			 else if(namelen==strlen("Main")&&!strncmp("Main",NamePtr,128))
-			   {
-				 IsUsingBackupFiles=false;
-				 checkresult=CheckConfigurationInROM(Config_Main,&MainCRC);
-         if(DisplayConfError(checkresult,false))checkresult=0;//出错了
-				 else //可以正常读取
-					 {
-				   if(MainCRC==ActiveConfigurationCRC())
-						   {
-						   CfgmgmtState=CfgMgmtNoneOp;
-						   UARTPuts("\r\n当前配置和主用配置文件中的配置一致。无需加载。");
-							 ClearRecvBuffer();//清除接收缓冲
-			         CmdHandle=Command_None;//命令执行完毕
-							 }
-						else  //需要加载
-						   {
-               ReadFileDisplay("主用");
-						   CfgmgmtState=CfgMgmtRequestRead;//请求读取
-							 }
-						}
-				 }
-		 //目标是备用操作块
-     else if(namelen==strlen("Backup")&&!strncmp("Backup",NamePtr,128))
-			   {
-					IsUsingBackupFiles=true;
-				  checkresult=CheckConfigurationInROM(Config_Backup,&MainCRC);
-          if(DisplayConfError(checkresult,false))checkresult=0;//出错了
-				  else //其余情况
-					  {
-					  if(MainCRC==ActiveConfigurationCRC())
-						   {
-						   CfgmgmtState=CfgMgmtNoneOp;
-						   UARTPuts("\r\n当前配置和备用配置文件中的配置一致。无需加载。");
-							 ClearRecvBuffer();//清除接收缓冲
-			         CmdHandle=Command_None;//命令执行完毕
-							 }
-						else
-						   {
-							 ReadFileDisplay("备用");
-						   CfgmgmtState=CfgMgmtRequestRead;//请求读取
-							 }
-						}
-				 }
+				 case UserInput_NoCfg://参数不合法
+            DisplayIllegalParam(NamePtr,4,6);//显示用户输入了非法参数
+				    DisplayParam();
+				    ClearRecvBuffer();//清除接收缓冲
+			      CmdHandle=Command_None;//命令执行完成
+				    break;
+			 case UserInput_MainCfg://目标是主操作块
+				    IsUsingBackupFiles=false;
+				    checkresult=CheckConfigurationInROM(Config_Main,&MainCRC);
+            if(DisplayConfError(checkresult,false))checkresult=0;//出错了
+				    else //可以正常读取
+					    {
+				      if(MainCRC==ActiveConfigurationCRC())
+						     {
+						     CfgmgmtState=CfgMgmtNoneOp;
+						     UartPrintf((char *)ConfigIsSame,"主用");
+							   ClearRecvBuffer();//清除接收缓冲
+			           CmdHandle=Command_None;//命令执行完毕
+							   }
+					  	else  //需要加载
+						     {
+                 ReadFileDisplay("主用");
+						     CfgmgmtState=CfgMgmtRequestRead;//请求读取
+							   }
+						  }
+						break;
+       case UserInput_BackupCfg://目标是备用操作块
+					  IsUsingBackupFiles=true;
+				    checkresult=CheckConfigurationInROM(Config_Backup,&MainCRC);
+            if(DisplayConfError(checkresult,false))checkresult=0;//出错了
+				    else //其余情况
+					    {
+					    if(MainCRC==ActiveConfigurationCRC())
+						     {
+						     CfgmgmtState=CfgMgmtNoneOp;
+						     UartPrintf((char *)ConfigIsSame,"备用");
+							   ClearRecvBuffer();//清除接收缓冲
+			           CmdHandle=Command_None;//命令执行完毕
+							   }
+						  else
+						     {
+							   ReadFileDisplay("备用");
+						     CfgmgmtState=CfgMgmtRequestRead;//请求读取
+							   }
+						  }
+						break;
+			   }
 			 }
 		else if(IsParameterExist("89",4,&ParamExist)!=NULL)//Xmodem备份函数
 		   {
 			 NamePtr=IsParameterExist("89",4,&ParamExist);//抓取参数
-			 namelen=NamePtr==NULL?0:strlen(NamePtr);//计算长度
-			 //参数不合法
-			 if(NamePtr==NULL||(strncmp("Main",NamePtr,128)&&strncmp("Backup",NamePtr,128)))
+       switch(getCfgTypeFromUserInput(NamePtr))
 			   {
-				 DisplayIllegalParam(NamePtr,4,4);//显示用户输入了非法参数
-				 DisplayParam();
-				 ClearRecvBuffer();//清除接收缓冲
-			   CmdHandle=Command_None;//命令执行完毕
-				 }
-			 //目标是主操作块
-			 else if(namelen==strlen("Main")&&!strncmp("Main",NamePtr,128))
-			   {
-				  checkresult=CheckConfigurationInROM(Config_Main,&MainCRC);
-          if(DisplayConfError(checkresult,false))//配置文件损坏
-					  {
-					  ClearRecvBuffer();//清除接收缓冲
+				 case UserInput_NoCfg://参数不合法
+				    DisplayIllegalParam(NamePtr,4,4);//显示用户输入了非法参数
+				    DisplayParam();
+				    ClearRecvBuffer();//清除接收缓冲
 			      CmdHandle=Command_None;//命令执行完毕
-						}
-				  else CfgmgmtState=CfgMgmtRequestBackup;//开始备份
-				 }
-			 //目标是备用操作块
-       else if(namelen==strlen("Backup")&&!strncmp("Backup",NamePtr,128))
-			   {
-				  checkresult=CheckConfigurationInROM(Config_Backup,&MainCRC);
-          if(DisplayConfError(checkresult,false))//配置文件损坏
-					  {
-					  ClearRecvBuffer();//清除接收缓冲
-			      CmdHandle=Command_None;//命令执行完毕
-						}
-				  else 
-					  {
-					  IsUsingBackupFiles=true;
-						CfgmgmtState=CfgMgmtRequestBackup;//开始备份
-						}
-				 }
+				    break;
+			   case UserInput_MainCfg://目标是主操作块
+				    checkresult=CheckConfigurationInROM(Config_Main,&MainCRC);
+            if(DisplayConfError(checkresult,false))//配置文件损坏
+					    {
+					    ClearRecvBuffer();//清除接收缓冲
+			        CmdHandle=Command_None;//命令执行完毕
+						  }
+				    else CfgmgmtState=CfgMgmtRequestBackup;//开始备份
+						break;
+         case UserInput_BackupCfg://目标是备用操作块
+				    checkresult=CheckConfigurationInROM(Config_Backup,&MainCRC);
+            if(DisplayConfError(checkresult,false))//配置文件损坏
+					    {
+					    ClearRecvBuffer();//清除接收缓冲
+			        CmdHandle=Command_None;//命令执行完毕
+						  }
+				    else 
+					    {
+					    IsUsingBackupFiles=true;
+						  CfgmgmtState=CfgMgmtRequestBackup;//开始备份
+						  }
+				  }
 			 }
 		else //啥也没有找到
 			{

@@ -21,6 +21,7 @@ typedef enum
  LightMode_Breath,//呼吸模式(参数调整正确时为信标模式)
  LightMode_Ramp, //无极调光模式
  LightMode_CustomFlash, //自定义闪模式
+ LightMode_BreathFlash, //呼吸闪(频率从低线性变化到高频然后再降回低频)
  LightMode_None   //无模式,不会出现在挡位配置里面，程序用于检测错误的
  }LightModeDef;
 
@@ -159,6 +160,8 @@ void LowVoltageIndicate(void);//低电压检测
 void DisplayBattVoltage(void);//显示电池电压
 void DisplayBatteryCapacity(void);//库仑计开启时显示百分比（精确到1%）
 void RandomFlashHandler(void);//随机变频闪的handler
+void LinearFlashReset(void);
+void LinearFlashHandler(void);//线性变频闪的复位和处理模块
 
 //外部引用
 extern CurrentModeStr CurMode;//当前模式的结构体 
