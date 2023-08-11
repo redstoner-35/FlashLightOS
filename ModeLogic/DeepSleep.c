@@ -44,7 +44,12 @@ void EnteredLowPowerMode(void)
   USART_RxCmd(HT_USART1, DISABLE); //关闭shell串口	
 	AFIO_GPxConfig(GPIO_PA,GPIO_PIN_4,AFIO_FUN_GPIO);
   AFIO_GPxConfig(GPIO_PA,GPIO_PIN_5,AFIO_FUN_GPIO); //配置为普通GPIO模式
-  GPIO_PullResistorConfig(HT_GPIOA,GPIO_PIN_5,GPIO_PR_DISABLE);//关闭内部上拉电阻
+	GPIO_PullResistorConfig(HT_GPIOA,GPIO_PIN_5,GPIO_PR_DISABLE);//关闭内部上拉电阻
+	if(CfgFile.EnableLocatorLED)
+	  {  
+    GPIO_DirectionConfig(LED_Green_IOG,LED_Green_IOP,GPIO_DIR_IN);//配置为高阻输入
+    GPIO_PullResistorConfig(LED_Green_IOG,LED_Green_IOP,GPIO_PR_UP);//打开绿色LED的上拉电阻，这样的话就可以让侧按微微发光指示手电位置
+		}
 	GPIO_DirectionConfig(HT_GPIOA,GPIO_PIN_4,GPIO_DIR_IN);
 	GPIO_DirectionConfig(HT_GPIOA,GPIO_PIN_5,GPIO_DIR_IN); //将PA4-5配置为高阻GPIO避免TX和RX往外漏电
 	GPIO_DirectionConfig(IIC_SCL_IOG,IIC_SCL_IOP,GPIO_DIR_IN);
@@ -109,6 +114,11 @@ void ExitLowPowerMode(void)
   AFIO_GPxConfig(GPIO_PA,GPIO_PIN_4,AFIO_FUN_USART_UART);
   AFIO_GPxConfig(GPIO_PA,GPIO_PIN_5,AFIO_FUN_USART_UART); //将PA4-5配置为USART1复用IO
   GPIO_PullResistorConfig(HT_GPIOA,GPIO_PIN_5,GPIO_PR_UP);//启用上拉
+  if(CfgFile.EnableLocatorLED) //仅在启用侧按后执行
+	  {  
+    GPIO_DirectionConfig(LED_Green_IOG,LED_Green_IOP,GPIO_DIR_OUT);//配置为输出
+	  GPIO_PullResistorConfig(LED_Green_IOG,LED_Green_IOP,GPIO_PR_DISABLE);//关闭上拉电阻
+		}
 	USART_TxCmd(HT_USART1, ENABLE);
   USART_RxCmd(HT_USART1, ENABLE); //重新启用shell的串口	
 	GPIO_DirectionConfig(IIC_SCL_IOG,IIC_SCL_IOP,GPIO_DIR_OUT);

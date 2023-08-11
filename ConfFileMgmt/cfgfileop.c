@@ -60,12 +60,13 @@ void LoadDefaultConf(void)
  //系统基本设置
  CfgFile.USART_Baud=115200;
  CfgFile.EnableRunTimeLogging=true;
+ CfgFile.EnableLocatorLED=true;//启用侧按定位LED
  CfgFile.IsDriverLockedAfterPOR=false; //上电不自锁
  CfgFile.PWMDIMFreq=20000;//20KHz调光频率
  CfgFile.DeepSleepTimeOut=8*DeepsleepDelay;//深度睡眠时间
  CfgFile.IdleTimeout=8*DefaultTimeOutSec; //定时器频率乘以超时时间得到超时值
  strncpy(CfgFile.AdminAccountname,"ADMIN",20);
- strncpy(CfgFile.HostName,"DDH-D8B-SBT90",20);
+ strncpy(CfgFile.HostName,"D8B-SBT90Gen2",20);
  /* 密码处理 */  	
  strncpy(CfgFile.RootAccountPassword,RootPassword,16);//root密码		 
  strncpy(CfgFile.AdminAccountPassword,AdminPassword,16);//管理员密码

@@ -678,11 +678,6 @@
               <FilePath>.\Command\System\help.c</FilePath>
             </File>
             <File>
-              <FileName>termcfg.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Command\System\termcfg.c</FilePath>
-            </File>
-            <File>
               <FileName>reboot.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Command\System\reboot.c</FilePath>
@@ -901,6 +896,11 @@
               <FileName>thermaltripcfg.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Command\User\thermaltripcfg.c</FilePath>
+            </File>
+            <File>
+              <FileName>misccfg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Command\User\misccfg.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -110,10 +110,10 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		},
 		{
 		 {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//8
-		"termcfg",
-		"配置CLI终端的参数(登录超时时间和波特率等等)并且允许用户配置驱动省电睡眠的超时时间.",
-		"-it\0--idle_timeout\0-b\0--baud_rate\0-st\0--sleep_timeout\0\n",
-		" <终端超时时间(秒)>\0 <终端超时时间(秒)>\0 <波特率(bps)>\0 <波特率(bps)>\0 <睡眠超时时间(秒)>\0 <睡眠超时时间(秒)>\0\n",
+		"misccfg",
+		"允许用户配置驱动的通用参数(CLI登录超时时间和波特率等等),以及省电睡眠超时时间及侧按LED的定位模式.",
+		"-it\0--idle_timeout\0-b\0--baud_rate\0-st\0--sleep_timeout\0-lled\0--locate_led\0\n",
+		" <终端超时时间(秒)>\0 <终端超时时间(秒)>\0 <波特率(bps)>\0 <波特率(bps)>\0 <睡眠超时时间(秒)>\0 <睡眠超时时间(秒)>\0 <true或false>\0 <true或false>\0\n",
 		&termcfgArgument,
 		Command_termcfg,
 		NULL,

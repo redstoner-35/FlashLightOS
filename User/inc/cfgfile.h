@@ -27,6 +27,7 @@ typedef struct
  int IdleTimeout;
  int DeepSleepTimeOut;
  //驱动硬件层面设定
+ bool EnableLocatorLED;//是否启用侧按定位LED
  bool EnableRunTimeLogging;//是否启用运行时记录
  unsigned short PWMDIMFreq;//PWM调光频率
  bool IsDriverLockedAfterPOR;//驱动上电后是否保持自锁

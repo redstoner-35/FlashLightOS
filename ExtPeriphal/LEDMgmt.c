@@ -102,8 +102,7 @@ static bool CheckForLEDOnStatus(void)
 //LED控制器初始化
 void LED_Init(void)
   {
-	 int i;
-	 UartPost(Msg_info,"LEDMgt","LED Controller Init Start...");
+	 UartPost(Msg_info,"LEDMgt","Side switch LED Controller Init Start...");
 	 //配置GPIO(绿色LED)
    AFIO_GPxConfig(LED_Green_IOB,LED_Green_IOP, AFIO_FUN_GPIO);
    GPIO_DirectionConfig(LED_Green_IOG,LED_Green_IOP,GPIO_DIR_OUT);//配置为输出
@@ -118,8 +117,7 @@ void LED_Init(void)
 	 ConstReadPtr=0;
 	 LastLEDIndex=0;
 	 CurrentLEDIndex=8;//自检序列运行中
-	 for(i=0;i<LEDPatternSize;i++)if(LEDPattern[i]==NULL)break;
-	 UartPost(Msg_info,"LEDMgt","LED Controller Has been started with %d Pattern Size.",i+1);
+	 UartPost(Msg_info,"LEDMgt","Side switch LED Controller started.");
 	}
 //在系统内控制LED的回调函数
 void LEDMgmt_CallBack(void)
