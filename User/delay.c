@@ -1,4 +1,4 @@
-﻿#include "ht32.h"
+#include "ht32.h"
 #include "delay.h"
 
 //定义
@@ -42,6 +42,7 @@ void delay_ms(u16 ms)
 void delay_us(u16 us)
 {	 		  	  
 	u32 temp;	
+	__disable_irq(); //为了避免影响us级别定时的精度，需要屏蔽所有中断
   #if (ms > 2796000)
   #error Delayus()-ERROR: Delay time exceeded maxmium value
 	#endif	
@@ -53,7 +54,8 @@ void delay_us(u16 us)
 		temp=SysTick->CTRL;
 	}while((temp&0x01)&&!(temp&(1<<16)));		//等待时间到达   
 	SysTick->CTRL&=~SysTick_CTRL_ENABLE_Msk;	//关闭计数器
-	SysTick->VAL =0X00;       					//清空计数器	  	    
+	SysTick->VAL =0x00;       					//清空计数器	  	    
+	__enable_irq(); //定时结束，开启所有中断
 }
 
 //s级别延时

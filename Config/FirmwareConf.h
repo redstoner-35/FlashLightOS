@@ -44,7 +44,10 @@
 #define UsingEE_24C512 //使用24C512
 //#define UsingEE_24C256 //使用24C256
 
-//调光参数
+//调光和自检运行参数
+#define StartupAUXPSUPGCount 4 //启动过程中等待电源PG的等待时间
+#define StartUpInitialVID 15 //启动过程中的初始VID值
+#define StartupLEDVIDStep 1.0 //启动过程中LED VID上升的速度
 #define PWMDimmingKp 7.27
 #define PWMDimmingKi 0.51
 #define PWMDimmingKd 0.43  //PWM电流控制的Kp Ki Kd

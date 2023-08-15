@@ -156,7 +156,7 @@ void LinearDIM_POR(void)
  retry=0;//清零等待标志位
  for(i=0;i<200;i++)//等待辅助电源上电稳定检测电压
 		{
-	  delay_ms(1);
+	  delay_us(100);
 		if(!ADC_GetResult(&ADCO))OnChipADC_FaultHandler();//让ADC获取信息
 		if(ADCO.SPSTMONState==SPS_TMON_OK)
 		   {
@@ -268,20 +268,19 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
 	 return Error_DAC_Logic;//将DAC输出设置为0V,确保送主电源时主Buck变换器不工作
  delay_ms(1);
  SetPWMDuty(100);//自检过程中我们使用线性调光,因此PWM占空比设置为100%
- delay_ms(1);
  SetAUXPWR(true);
  retry=0;//清零等待标志位
  for(i=0;i<2000;i++)//等待辅助电源上电稳定
 		{
-	  delay_ms(1);
+	  delay_us(50);
 		Result[1]=ADC_GetResult(&ADCO);
-		if(!Result[1])
-			return Error_ADC_Logic;//让ADC获取信息
+		if(!Result[1])//让ADC获取信息
+			return Error_ADC_Logic;
 		if(ADCO.SPSTMONState==SPS_TMON_OK)
 			retry++; //SPS正常运行，结果++
 		else 
 			retry=0; //SPS运行不正常
-		if(retry==5)break;
+		if(retry==StartupAUXPSUPGCount)break;
 		}
  if(i==2000)return Error_PWM_Logic;//启动超时		
  /********************************************************
@@ -308,7 +307,7 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
  爬升到0.5A的小电流.系统将会在协商结束后检测LED的If和Vf和
  DAC的VID判断是否短路
  ********************************************************/
- VID=10;
+ VID=StartUpInitialVID;
  VIDIncValue=0.5;
  while(VID<60)
 		 {
@@ -316,7 +315,7 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
 		 ADC_GetResult(&ADCO);
 		 if(ADCO.LEDIf>=detectOKCurrent)break; //电流足够，退出
 		 VID+=VIDIncValue; //继续增加VID
-		 VIDIncValue+=0.5; //每次VID增加
+		 VIDIncValue+=StartupLEDVIDStep; //每次VID增加的数值
 		 }
  SysPstatebuf.CurrentDACVID=VID;
  /********************************************************
@@ -325,7 +324,7 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
  ********************************************************/
  if(!ADC_GetResult(&ADCO))return Error_ADC_Logic;
  //DAC的输出电压已经到了最高允许值,但是电流仍然未达标,这意味着LED可能短路或PWM逻辑异常
- if(VID==100)return  ADCO.LEDVf>=LEDVfMax?Error_LED_Open:Error_PWM_Logic;
+ if(VID>=60)return  ADCO.LEDVf>=LEDVfMax?Error_LED_Open:Error_PWM_Logic;
  if(ADCO.LEDVf<LEDVfMin)return Error_LED_Short;		 //LEDVf过低,LED可能短路
  /********************************************************
  LED自检顺利结束,驱动硬件和负载工作正常,此时返回无错误代码
