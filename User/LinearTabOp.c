@@ -2,6 +2,19 @@
 #include <stdlib.h>
 #include "console.h"
 
+//自己实现的四舍五入函数
+//输入：浮点数
+//输出：该浮点数四舍五入后的整数
+int iroundf(float IN)
+  {
+	int buf;
+	float fbuf=IN;
+	buf=(int)IN;
+	fbuf-=(float)buf;
+	fbuf*=10;
+	return (fbuf>=5)?buf+1:buf;
+	}
+
 /*
 检查线性阈值表函数
 输入：待查找的表大小(int)、待查表阈值的浮点数组和待查表的值域数组(浮点指针)

@@ -74,7 +74,7 @@ void strobecfghandler(void)
 		  {
 			TargetMode->StrobeFrequency=buf;
 			DisplayWhichModeSelected(UserSelect,modenum);
-			UartPrintf("的爆闪频率已被设置为%.1fHz.\r\n",buf);
+			UartPrintf((char *)RandStrobeSetDoneString,"爆","闪",buf);
 			if(TargetMode->Mode!=LightMode_Flash)
 			  UartPrintf((char *)ModeSelectStr[5],"爆闪");
 			}

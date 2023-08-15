@@ -31,8 +31,7 @@ void SMBUS_Init(void)
 	 IsSelftestLoggerReady=true;
 	 delay_ms(10);
 	 //扫描设备
-	 UartPost(Msg_info,"SMBUSDrv","SMBUS Access speed=480Khz.");
-	 UartPost(Msg_info,"SMBUSDrv","--- Probing all accessible SMBUS slave devices ---\r\n");
+	 UartPost(Msg_info,"SMBUSDrv","--- Enumerating all SMBUS slave devices ---\r\n");
 	 slavecount=0;
 	 for(i=0;i<0x7F;i++)
      {
@@ -45,7 +44,7 @@ void SMBUS_Init(void)
 		 slavecount++;
 		 IIC_Stop();
 		 }		
-	UartPost(Msg_info,"SMBUSDrv","Device Probing Done,found %d Slave Devices.\r\n",slavecount); 
+	UartPost(Msg_info,"SMBUSDrv","Device enumeration done,found %d Slave Devices.\r\n",slavecount); 
 	}
 //设置传输方向
 static void SetTransferDir(BDIR DIR)

@@ -367,8 +367,7 @@ void PORConfHandler(void)
 	 DisplayCheckResult(WriteConfigurationToROM(Config_Main),true);
 	 UartPost(Msg_info,EEPModName,(char *)RestoreCfg,"Backup"); 
 	 DisplayCheckResult(WriteConfigurationToROM(Config_Backup),true);
-	 UartPost(Msg_info,EEPModName,"Restore completed.restarting..."); 
-	 delay_Second(2);		
+	 delay_Second(1);		
    NVIC_SystemReset();//硬重启
 	 }
  //显示警告和重新初始化休眠定时器

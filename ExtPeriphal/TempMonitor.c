@@ -7,6 +7,9 @@
 #include <string.h>
 #include <math.h>
 
+//四舍五入
+int iroundf(float IN);
+
 //显示驱动MOS和LED的降档情况
 void DisplayTemp(float TempIN)
   {
@@ -51,7 +54,7 @@ void DisplayLEDTemp(void)
 	strncat(LEDModeStr,"D",sizeof(LEDModeStr)-1); //显示百位
 	LED_AddStrobe(((int)ADCO.LEDTemp%100)/10,"30"); 
 	strncat(LEDModeStr,"D",sizeof(LEDModeStr)-1); //显示十位
-	LED_AddStrobe(((int)ADCO.LEDTemp%100)%10,"10");
+	LED_AddStrobe((iroundf(ADCO.LEDTemp)%100)%10,"10");
 	strncat(LEDModeStr,"D",sizeof(LEDModeStr)-1);//显示个位
 	//降档提示，当温度超过降档温度时显示信息	 
 	

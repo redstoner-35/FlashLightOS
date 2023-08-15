@@ -39,9 +39,9 @@ bool InputDataBlackList(char DIN)
 void ConsoleReconfigure(void)
   {
 	USART_InitTypeDef USART1InitStr;
-	UARTPuts("\r\n智能驱动的上电自检已经完毕，驱动将进入用户操作模式。");
+	//重新初始化串口	
+	UartPost(Msg_EndOfPost,"EndOfPost","智能驱动的上电自检已经完毕，驱动将进入用户操作模式。");
 	UartPrintf("\r\n请将您的终端软件的波特率配置为%dbps以访问驱动的终端。",CfgFile.USART_Baud);
-	PrintShellIcon();
 	USART1InitStr.USART_BaudRate=CfgFile.USART_Baud;
 	USART1InitStr.USART_Mode=USART_MODE_NORMAL;
 	USART1InitStr.USART_Parity=USART_PARITY_NO;
@@ -51,6 +51,8 @@ void ConsoleReconfigure(void)
 	//进行LED自检
 	CurrentLEDIndex=1;//红绿交替闪一下
   while(CurrentLEDIndex==1);//循环等待直到自检序列结束
+	//打印串口ICON
+	PrintShellIcon();
 	}
 //初始化console
 void ConsoleInit(void)

@@ -40,7 +40,7 @@ const float DimmingCompTable[]=
 
 {
 0.1,1.65,4.95,9.9,19.8,
-1.005,1.005,1.005,1.005,1.005
+1.007,1.005,1.004,1.003,1.002
 };
 #endif
 
@@ -89,7 +89,7 @@ void LinearDIM_POR(void)
  DACInitStr.IsOnchipRefEnabled=true; 
  if(!AD5693R_SetChipConfig(&DACInitStr))
   { 
- 	UartPost(Msg_critical,"LineDIM","Failed to push config into DAC for initialization.");
+ 	UartPost(Msg_critical,"LineDIM","Failed to push config into DAC.");
 	CurrentLEDIndex=20;//DAC无法启动,保护
 	SelfTestErrorHandler(); 
 	}
@@ -126,7 +126,7 @@ void LinearDIM_POR(void)
  if(VGet>=0.05)
     {
 	  //有超过0.05的电压,说明PWM MUX无法切断电压.PWM相关电路有问题
-		UartPost(Msg_critical,"LineDIM","PWM Dimming MUX failure detected,expected near 0V but get %.2fV.",VGet);
+		UartPost(Msg_critical,"LineDIM","PWM Dimming MUX failure detected");
 	  CurrentLEDIndex=30;
 	  SelfTestErrorHandler();  		
 		}
@@ -141,14 +141,13 @@ void LinearDIM_POR(void)
  if(VGet>=0.05)
 	  {
 		//有超过0.05的电压,说明DAC有问题输出无法归零
-		UartPost(Msg_critical,"LineDIM","DAC Failed to reset into zero scale,near 0V but get %.2fV.",VGet);
+		UartPost(Msg_critical,"LineDIM","DAC failed to reset into zero scale.");
 	  CurrentLEDIndex=20;
 	  SelfTestErrorHandler();  		
 		}
   /**********************************************************************
- 自检过程中的最后一步：我们将DAC输出的PWM Mux设置为常闭(0%占空比)确保主
- buck不会意外输出电流到LED,然后我们让辅助电源上电,测量智能功率级是否正确
- 的输出用于指示温度的电压信号确保温度传感器正常运行.
+ 自检过程中的最后一步：我们打开主buck输出小电流检查电流反馈电路，温度传感
+ 器(MOSFET)是否运行正常。
  ***********************************************************************/
  VSet=0.01;
  SetPWMDuty(100);
@@ -248,7 +247,7 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
  ADCOutTypeDef ADCO;
  bool Result[2];
  ModeConfStr *CurrentMode;
- float VID,detectOKCurrent;
+ float VID,detectOKCurrent,VIDIncValue;
  int i,retry; 
  /********************************************************
  我们首先需要检查传进来的模式组是否有效。
@@ -309,13 +308,15 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
  爬升到0.5A的小电流.系统将会在协商结束后检测LED的If和Vf和
  DAC的VID判断是否短路
  ********************************************************/
- VID=9.5;
- while(VID<100)
+ VID=10;
+ VIDIncValue=0.5;
+ while(VID<60)
 		 {
 		 if(!AD5693R_SetOutput(VID/(float)1000))return Error_DAC_Logic;
 		 ADC_GetResult(&ADCO);
 		 if(ADCO.LEDIf>=detectOKCurrent)break; //电流足够，退出
-		 VID+=0.5; //继续增加VID
+		 VID+=VIDIncValue; //继续增加VID
+		 VIDIncValue+=0.5; //每次VID增加
 		 }
  SysPstatebuf.CurrentDACVID=VID;
  /********************************************************
@@ -463,8 +464,8 @@ void RuntimeModeCurrentHandler(void)
        if(fabsf(delta)>4)SysPstatebuf.Duty=Duty; //避免PID输出的过小变化影响占空比导致闪烁
 			 else if(fabsf(delta)>0.02)
 			   {
-				 if(SysPstatebuf.Duty>Duty)SysPstatebuf.Duty-=0.0025;
-				 else SysPstatebuf.Duty+=0.0025;			   
+				 if(SysPstatebuf.Duty>Duty)SysPstatebuf.Duty-=0.005;
+				 else SysPstatebuf.Duty+=0.005;			   
 				 }		   
 			 SetPWMDuty(SysPstatebuf.Duty); //设置占空比
 			 }

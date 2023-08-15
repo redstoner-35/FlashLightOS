@@ -158,7 +158,8 @@ typedef enum
 Msg_info,
 Msg_warning,
 msg_error,
-Msg_critical
+Msg_critical,
+Msg_EndOfPost
 }Postmessagelevel;
 
 //串口命令结构体的定义

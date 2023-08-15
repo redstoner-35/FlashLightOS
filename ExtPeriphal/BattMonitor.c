@@ -9,7 +9,8 @@
 #include "runtimelogger.h"
 #include <string.h>
 
-//静态变量声明
+//静态变量和函数声明
+int iroundf(float IN);
 INADoutSreDef RunTimeBattTelemResult;
 float UsedCapacity=0;
 static char LVFlashTimer=0;
@@ -69,7 +70,7 @@ void DisplayBattVoltage(void)
    strncat(LEDModeStr,"20D",sizeof(LEDModeStr)-1);
  LED_AddStrobe((int)(INADO.BusVolt)%10,"30"); //使用黄色显示个位数
  strncat(LEDModeStr,"D",sizeof(LEDModeStr)-1);
- LED_AddStrobe((int)(INADO.BusVolt*(float)10)%10,"10");//绿色显示小数点后1位
+ LED_AddStrobe(iroundf(INADO.BusVolt*(float)10)%10,"10");//绿色显示小数点后1位
  if(SysPstatebuf.Pstate==PState_LEDOn||SysPstatebuf.Pstate==PState_LEDOnNonHold) //如果手电筒点亮状态则延迟一下再恢复正常显示
 	 strncat(LEDModeStr,"D",sizeof(LEDModeStr)-1);
  strncat(LEDModeStr,"E",sizeof(LEDModeStr)-1);//结束闪烁
@@ -95,7 +96,7 @@ void DisplayBatteryCapacity(void)
 	 strncat(LEDModeStr,"20D",sizeof(LEDModeStr)-1);	//使用红色代表电压百位数
  LED_AddStrobe(((int)(BatteryMidLevel)%100)/10,"30");//使用黄色代表十位数
  strncat(LEDModeStr,"D",sizeof(LEDModeStr)-1);
- LED_AddStrobe(((int)(BatteryMidLevel)%100)%10,"10");//使用绿色代表点亮个位数
+ LED_AddStrobe((iroundf(BatteryMidLevel)%100)%10,"10");//使用绿色代表点亮个位数
  if(SysPstatebuf.Pstate==PState_LEDOn||SysPstatebuf.Pstate==PState_LEDOnNonHold) //如果手电筒点亮状态则延迟一下再恢复正常显示
 	 strncat(LEDModeStr,"D",sizeof(LEDModeStr)-1);
  strncat(LEDModeStr,"E",sizeof(LEDModeStr)-1);//结束闪烁

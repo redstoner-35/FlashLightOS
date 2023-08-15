@@ -1,6 +1,7 @@
 #include "delay.h"
 #include "console.h"
 #include "modelogic.h"
+#include "Cfgfile.h"
 #include "LEDMgmt.h"
 #include <string.h>
 
@@ -30,7 +31,7 @@ const char *LEDPattern[LEDPatternSize]=
 	 "20202D101001010DD",//红色灯快速闪三次，绿色灯闪4次，LED开路 14
 	 "20202D101001010010DD",//红色灯快速闪三次，绿色灯闪5次，LED短路 15
 	 "20202D10100101001010DD",//红色灯快速闪三次，绿色灯闪6次，LED过热闭锁 16
-     "202020D3030D10DDD",//红色灯闪三次，橙色两次，绿色一次，驱动内部灾难性逻辑错误 17
+   "202020D3030D10DDD",//红色灯闪三次，橙色两次，绿色一次，驱动内部灾难性逻辑错误 17
 	 "303010E",//橙色两次+绿色一次，进入战术模式 18
 	 "30301010E",//橙色两次+绿色一次，退出战术模式 19
 	 "20202020DD2020DDD",//快速闪烁四次，暂停两秒，闪两次 #DAC初始化失败 20
@@ -50,6 +51,7 @@ const char *LEDPattern[LEDPatternSize]=
 char LEDModeStr[64]; //LED模式的字符串
 static int ConstReadPtr;
 static int LastLEDIndex;
+static bool IsLEDInitOK=false; //LED是否初始化完毕
 volatile int CurrentLEDIndex;
 static char LEDThermalBlinkTimer=20;//用于在温控介入时闪侧按指示灯
 char *ExtLEDIndex = NULL; //用于传入的外部序列
@@ -100,9 +102,11 @@ static bool CheckForLEDOnStatus(void)
 	}
 
 //LED控制器初始化
+const char *LEDControllerInitMsg="Side switch LED controller init %s.";	
+	
 void LED_Init(void)
   {
-	 UartPost(Msg_info,"LEDMgt","Side switch LED Controller Init Start...");
+	 UartPost(Msg_info,"LEDMgt",(char *)LEDControllerInitMsg,"Start..");
 	 //配置GPIO(绿色LED)
    AFIO_GPxConfig(LED_Green_IOB,LED_Green_IOP, AFIO_FUN_GPIO);
    GPIO_DirectionConfig(LED_Green_IOG,LED_Green_IOP,GPIO_DIR_OUT);//配置为输出
@@ -117,16 +121,30 @@ void LED_Init(void)
 	 ConstReadPtr=0;
 	 LastLEDIndex=0;
 	 CurrentLEDIndex=8;//自检序列运行中
-	 UartPost(Msg_info,"LEDMgt","Side switch LED Controller started.");
+	 IsLEDInitOK=true; //LED GPIO初始化已完毕
+	 UartPost(Msg_info,"LEDMgt",(char *)LEDControllerInitMsg,"done..");
 	}
 //在系统内控制LED的回调函数
 void LEDMgmt_CallBack(void)
   {
+	//安全措施，保证GPIO配置后才执行LED操作
+	if(!IsLEDInitOK)return;
 	//检测到主机配置了新的LED状态
   if(CurrentLEDIndex!=LastLEDIndex||LastExtLEDIdx!=ExtLEDIndex)
 	  {
 		if(LastExtLEDIdx!=ExtLEDIndex)LastExtLEDIdx=ExtLEDIndex;
 		if(CurrentLEDIndex!=LastLEDIndex)LastLEDIndex=CurrentLEDIndex;//同步index 
+		if(LastExtLEDIdx==NULL&&LastLEDIndex==0&&CfgFile.EnableLocatorLED) //如果当前LED为熄灭状态且侧按定位功能开启，则让侧按LED微微闪烁
+		  {
+			GPIO_DirectionConfig(LED_Green_IOG,LED_Green_IOP,GPIO_DIR_IN);//配置为高阻输入
+      GPIO_PullResistorConfig(LED_Green_IOG,LED_Green_IOP,GPIO_PR_UP);//打开绿色LED的上拉电阻，这样的话就可以让侧按微微发光指示手电位置
+			}
+		else //这些条件不满足，配置为推挽输出并关闭上拉电阻使LED不能发微微绿光
+		  {
+			GPIO_DirectionConfig(LED_Green_IOG,LED_Green_IOP,GPIO_DIR_OUT);//配置为输出
+	    GPIO_PullResistorConfig(LED_Green_IOG,LED_Green_IOP,GPIO_PR_DISABLE);//关闭上拉电阻
+			LEDDelayTimer=0; //复位变量
+			}
 		LED_Reset();//复位LED状态机
 		}
 	//当手电开启，且温控介入后，侧按指示灯闪
@@ -141,9 +159,19 @@ void LEDMgmt_CallBack(void)
 			return;
 			}			
 		else LEDThermalBlinkTimer++;//继续计时
+		}	
+		//如果侧按LED启用则让侧按LED反复发光
+	if(LastExtLEDIdx==NULL&&LastLEDIndex==0&&CfgFile.EnableLocatorLED)
+	  {
+		if(LEDDelayTimer<16)
+		  {
+			LEDDelayTimer++;
+			GPIO_PullResistorConfig(LED_Green_IOG,LED_Green_IOP,LEDDelayTimer<8?GPIO_PR_DISABLE:GPIO_PR_UP); //控制上拉电阻
+			}
+		else LEDDelayTimer=0;
 		}
 	//正常执行		
-	if(LEDDelayTimer>0)//当前正在等待中
+	else if(LEDDelayTimer>0)//当前正在等待中
 	  {
 		LEDDelayTimer--;
 		return;
