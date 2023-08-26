@@ -8,6 +8,7 @@
 static bool IsKeyPressed = false; //按键是否按下
 static unsigned char KeyTimer[2];//计时器0用于按键按下计时，计时器1用于连按检测计时
 static KeyEventStrDef Keyevent;
+extern unsigned char BlankTimer; //按键松开后进行消隐判断的定时器
 
 //侧按按键计时模块
 void SideKey_TIM_Callback(void)
@@ -31,6 +32,15 @@ void SideKey_TIM_Callback(void)
 		KeyTimer[1]|=buf; //将数值取出来，加1再写回去
 		}
 	else KeyTimer[1]=0; //定时器关闭
+	//定时器2（用于长按关机后等待用户松开按键才执行换挡判断）
+	if(BlankTimer&0x80)
+	  {
+		buf=BlankTimer&0x7F;
+		if(buf<0x03)buf++;
+		BlankTimer&=0x80;
+		BlankTimer|=buf; //将数值取出来，加1再写回去
+		}
+	else BlankTimer=0;//定时器关闭
 	}
 
 //初始化侧按键
@@ -38,7 +48,7 @@ void SideKeyInit(void)
   {
 	CKCU_PeripClockConfig_TypeDef CLKConfig={{0}};
   EXTI_InitTypeDef EXTI_InitStruct;
-	UartPost(Msg_info,"SideKey","Configuring Side-Key Process module...");
+	UartPost(Msg_info,"SideKey","Configuring Key process routine...");
   //配置时钟打开GPIOC AFIO和EXTI系统
 	CLKConfig.Bit.PC=1;
   CLKConfig.Bit.AFIO=1;
@@ -79,7 +89,7 @@ void SideKey_Callback(void)
 	if(CfgFile.DeepSleepTimeOut>0)DeepSleepTimer=CfgFile.DeepSleepTimeOut;
   else DeepSleepTimer=-1;//复位定时器
 	//给内部处理变量赋值
-	delay_ms(12); //软件消抖
+	delay_ms(13); //软件消抖
 	#ifdef SideKeyPolar_positive	
 	if(GPIO_ReadInBit(ExtKey_IOG,ExtKey_IOP))
 	#else	

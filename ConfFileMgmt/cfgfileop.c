@@ -60,13 +60,14 @@ void LoadDefaultConf(void)
  //系统基本设置
  CfgFile.USART_Baud=115200;
  CfgFile.EnableRunTimeLogging=true;
+ CfgFile.IsHoldForPowerOn=false;//使用阿木的操控逻辑，单击开机长按关机
  CfgFile.EnableLocatorLED=true;//启用侧按定位LED
  CfgFile.IsDriverLockedAfterPOR=false; //上电不自锁
  CfgFile.PWMDIMFreq=20000;//20KHz调光频率
  CfgFile.DeepSleepTimeOut=8*DeepsleepDelay;//深度睡眠时间
  CfgFile.IdleTimeout=8*DefaultTimeOutSec; //定时器频率乘以超时时间得到超时值
  strncpy(CfgFile.AdminAccountname,"ADMIN",20);
- strncpy(CfgFile.HostName,"D8B-SBT90Gen2",20);
+ strncpy(CfgFile.HostName,"Xtern-Ripper",20);
  /* 密码处理 */  	
  strncpy(CfgFile.RootAccountPassword,RootPassword,16);//root密码		 
  strncpy(CfgFile.AdminAccountPassword,AdminPassword,16);//管理员密码
@@ -124,7 +125,7 @@ int CheckConfigurationInROM(cfgfiletype cfgtyp,unsigned int *CRCResultO)
  HT_CRC->CR = CRC_32_POLY | CRC_BIT_RVS_WR | CRC_BIT_RVS_SUM | CRC_BYTE_RVS_SUM | CRC_CMPL_SUM;
  //读取FRU并计算数值
  if(ReadFRU(&FRU))return 1; //读取FRU失败
- FRUHwResult=0x35;
+ FRUHwResult=0x32;
  for(i=0;i<2;i++)FRUHwResult^=FRU.FRUBlock.Data.Data.FRUVersion[i]; //仅仅是把LED类型和major version加入计算
  //开始校验
  if(ReadFRU(&FRU))return 1; //读取FRU失败
@@ -221,7 +222,7 @@ int WriteConfigurationToROM(cfgfiletype cfgtyp)
  HT_CRC->CR = CRC_32_POLY | CRC_BIT_RVS_WR | CRC_BIT_RVS_SUM | CRC_BYTE_RVS_SUM | CRC_CMPL_SUM;
  //读取FRU并计算数值
  if(ReadFRU(&FRU))return 1; //读取FRU失败
- FRUHwResult=0x35;
+ FRUHwResult=0x32;
  for(i=0;i<2;i++)FRUHwResult^=FRU.FRUBlock.Data.Data.FRUVersion[i]; //仅仅是把LED类型和major version加入计算
  //开始写数据
  i=0;
@@ -287,7 +288,7 @@ unsigned int ActiveConfigurationCRC(void)
  HT_CRC->CR = CRC_32_POLY | CRC_BIT_RVS_WR | CRC_BIT_RVS_SUM | CRC_BYTE_RVS_SUM | CRC_CMPL_SUM;
  //读取FRU并计算数值
  if(ReadFRU(&FRU))return 1; //读取FRU失败
- FRUHwResult=0x35;
+ FRUHwResult=0x32;
  for(i=0;i<2;i++)FRUHwResult^=FRU.FRUBlock.Data.Data.FRUVersion[i]; //仅仅是把LED类型和major version加入计算
  //开始校验
  for(i=0;i<sizeof(CfgFile);i++)

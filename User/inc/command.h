@@ -111,9 +111,9 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		{
 		 {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//8
 		"misccfg",
-		"允许用户配置驱动的通用参数(CLI登录超时时间和波特率等等),以及省电睡眠超时时间及侧按LED的定位模式.",
-		"-it\0--idle_timeout\0-b\0--baud_rate\0-st\0--sleep_timeout\0-lled\0--locate_led\0\n",
-		" <终端超时时间(秒)>\0 <终端超时时间(秒)>\0 <波特率(bps)>\0 <波特率(bps)>\0 <睡眠超时时间(秒)>\0 <睡眠超时时间(秒)>\0 <true或false>\0 <true或false>\0\n",
+		"允许用户配置驱动的通用参数(CLI登录超时时间和波特率,省电睡眠超时时间和侧按开关的配置)",
+		"-it\0--idle_timeout\0-b\0--baud_rate\0-st\0--sleep_timeout\0-lled\0--locate_led\0-km\0--key_mode\0\n",
+		" <终端超时(秒)>\0 <终端超时(秒)>\0 <波特率(bps)>\0 <波特率(bps)>\0 <睡眠超时(秒)>\0 <睡眠超时(秒)>\0 <true或false>\0 <true或false>\0 <true或false>\0 <true或false>\0\n",
 		&termcfgArgument,
 		Command_termcfg,
 		NULL,
@@ -134,12 +134,14 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		},
 		{
 		 {Log_Perm_Root,Log_Perm_End},//10
-		"imonadj",
-		"允许厂家配置驱动输出电流测量模块的矫正参数.",
-		#ifndef FlashLightOS_Debug_Mode    
+		#ifndef FlashLightOS_Debug_Mode  
+		"nan",
+		"无描述",  
 		"\0\n",
     "\0\n",
-    #else		 
+    #else		
+		"imonadj",
+		"允许厂家配置驱动输出电流测量模块的矫正参数.",  		 
 		"-v\0--view\0-g\0--gain\0-thr\0--threshold\0-n\0--node\0\n",
 		" \0 \0 <增益(0.5-1.5)>\0 <增益(0.5-1.5)>\0 <阈值电流(A)>\0 <阈值电流(A)>\0 <节点编号>\0 <节点编号>\0\n",
 		#endif

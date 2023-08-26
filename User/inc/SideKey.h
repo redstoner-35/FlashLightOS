@@ -5,8 +5,8 @@
 #include <stdbool.h>
 
 //按键检测延时(每个单位=0.125秒)
-#define LongPressTime 5 //长按按键检测延时(按下时间超过这个数值则判定为长按)
-#define ContShortPressWindow 3 //连续多次按下时侧按的检测释抑时间(在该时间以内按下的短按才算入短按次数内)
+#define LongPressTime 4 //长按按键检测延时(按下时间超过这个数值则判定为长按)
+#define ContShortPressWindow 2 //连续多次按下时侧按的检测释抑时间(在该时间以内按下的短按才算入短按次数内)
 
 /*负责处理外部中断的自动Define，不允许修改！*/
 #define ExtKey_IOB STRCAT2(GPIO_P,ExtKey_IOBank)

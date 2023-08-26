@@ -18,11 +18,16 @@ const float regModeCurrent[4]={5,15,30,60};  //常规挡位电流百分比(100%�
 const LightModeDef ModeCfgConst[4]={LightMode_Flash,LightMode_SOS,LightMode_Breath,LightMode_MosTrans};
 const char *SpecModeConst[4]={"爆闪","SOS","信标","识别码发送"};
 const char *ModeGroupName[3]={"regular","double-click","special"};
-const char *ModeHasBeenOvrd="Default mode has been over-written to ";
+//字符串
+const char *ModeHasBeenSet="Default mode has been %s to %s mode NO.%d(name:%s)";
+const char *OverwrittenStr="over-written";
+const char *ConfigWriteFailed="Write_EEP::%s.cfg failed with error %d";
+const char *ConfigWriteDone="%s config has been stored into %s config.";
 
 //变量
 int AutoOffTimer=-1; //定时关机延时器
 static bool DCPressstatebuf=false;
+unsigned char BlankTimer=0; //关闭手电时促使换挡模式消隐的定时器
 static bool DisplayBattBuf=false;
 
 //电池电量和温度的显示
@@ -80,12 +85,12 @@ static void SaveMainConfig(void)
 	errorcode=WriteConfigurationToROM(Config_Main);
 	if(errorcode)
 	  {
-	  UartPost(Msg_critical,"CfgEEP","Write_EEP::Main.config failed with error code %d",errorcode);
+	  UartPost(Msg_critical,"CfgEEP",(char *)ConfigWriteFailed,"Main",errorcode);
 	  #ifndef FlashLightOS_Debug_Mode
 	  SelfTestErrorHandler();
 		#endif
 		}
-	else UartPost(Msg_info,"ModeSel","Corrected config has been stored into main config files.");
+	else UartPost(Msg_info,"ModeSel",(char *)ConfigWriteDone,"Corrected","Main");
 	}
 //挡位设置出厂配置
 void RestoreFactoryModeCfg(void)
@@ -265,26 +270,26 @@ void ModeSwitchInit(void)
 		    case ModeGrp_Special:i=CurMode.SpecialGrpMode;break;//三击挡位
 		    default: break;
 				}	
-		  UartPost(Msg_info,"ModeSel","Default mode has been set to %s mode NO.%d(name:%s)",ModeGroupName[(int)CurMode.ModeGrpSel],i,BootMode->ModeName);
+		  UartPost(Msg_info,"ModeSel",(char *)ModeHasBeenSet,"set",ModeGroupName[(int)CurMode.ModeGrpSel],i,BootMode->ModeName);
 		  return;
 			}
 	//模式被禁止
-  UartPost(msg_error,"ModeSel","Specified default mode was disabled by user and not usable!");
+  UartPost(msg_error,"ModeSel","Specified default mode was disabled and not usable!");
 	errorcode=WriteConfigurationToROM(Config_Backup);
 	if(errorcode)
 	  {
-	  UartPost(Msg_critical,"CfgEEP","Write_EEP::Backup.config failed with error code %d",errorcode);
+	  UartPost(Msg_critical,"CfgEEP",(char *)ConfigWriteFailed,"Backup",errorcode);
 	  #ifndef FlashLightOS_Debug_Mode
 		SelfTestErrorHandler();
 	  #endif
 		}
-	else UartPost(Msg_info,"ModeSel","Old Config has been stored in backup config files.");
+	else UartPost(Msg_info,"ModeSel",(char *)ConfigWriteDone,"Illegal","Backup");
 	if(CfgFile.BootupModeGroup==ModeGrp_Special)//从特殊挡位开始找
 	  {
 		//搜索每个挡位
 		for(i=0;i<4;i++)if(CfgFile.SpecialMode[i].IsModeEnabled)
        {
-			 UartPost(Msg_info,"ModeSel","%sto special mode NO.%d(name:%s)",ModeHasBeenOvrd,i+1,CfgFile.SpecialMode[i].ModeName);
+			 UartPost(Msg_info,"ModeSel",(char *)ModeHasBeenSet,OverwrittenStr,ModeGroupName[2],i+1,CfgFile.SpecialMode[i].ModeName);
 			 CfgFile.BootupModeNum=i;	 
 			 SaveMainConfig();//保存修改好的配置文件
 			 return;
@@ -295,7 +300,7 @@ void ModeSwitchInit(void)
 	  {
 		if(CfgFile.DoubleClickMode.IsModeEnabled)
 		  {
-			UartPost(Msg_info,"ModeSel","%sto double-click mode(name:%s)",ModeHasBeenOvrd,CfgFile.DoubleClickMode.ModeName);
+			UartPost(Msg_info,"ModeSel",(char *)ModeHasBeenSet,OverwrittenStr,ModeGroupName[1],0,CfgFile.DoubleClickMode.ModeName);
 			CfgFile.BootupModeNum=0;
 			SaveMainConfig();//保存修改好的配置文件
 			return;
@@ -307,7 +312,7 @@ void ModeSwitchInit(void)
 		//搜索每个挡位
 		for(i=0;i<4;i++)if(CfgFile.RegularMode[i].IsModeEnabled)
        {
-			 UartPost(Msg_info,"ModeSel","%sregular mode NO.%d(name:%s)",ModeHasBeenOvrd,i+1,CfgFile.SpecialMode[i].ModeName);
+			 UartPost(Msg_info,"ModeSel",(char *)ModeHasBeenSet,OverwrittenStr,ModeGroupName[0],i+1,CfgFile.SpecialMode[i].ModeName);
 			 CfgFile.BootupModeNum=i;
 			 SaveMainConfig();
 			 return;
@@ -353,33 +358,33 @@ static void EnteredRegular(void)
 		j=(j+1)%8;//找下一个模式	
 		}				
 	}
-//普通模式换挡
-static void RegularModeSwitchGear(void)
+//普通和特殊模式换挡
+static void ModeSwitchGear(void)
   {
-	int i,j;
-	j=CurMode.RegularGrpMode;//获取当前模式值
-	for(i=0;i<9;i++)
+	int i,j,maxmodecount;
+	if(CurMode.ModeGrpSel==ModeGrp_Regular)
+	  {
+	  maxmodecount=8;
+		j=CurMode.RegularGrpMode; //当前模式组为普通模式
+		}
+	else 
+	  {
+		maxmodecount=4;
+		j=CurMode.SpecialGrpMode;	//当前模式组为特殊模式
+		}
+	//寻找下一个模式
+	for(i=0;i<(maxmodecount+1);i++)
     {
-		j=(j+1)%8;//找下一个模式	
-		if(CfgFile.RegularMode[j].IsModeEnabled)//找到可用的模式
+		j=(j+1)%maxmodecount;//找下一个模式	
+		if(CurMode.ModeGrpSel==ModeGrp_Regular&&CfgFile.RegularMode[j].IsModeEnabled)//找到可用的普通模式
 			{
 			CurMode.RegularGrpMode=j;
-			return;
+			break;
 			}
-		}
-	}
-//特殊模式换挡
-static void SpecialModeSwitchGear(void)
-  {
-	int i,j;
-	j=CurMode.SpecialGrpMode;//获取当前模式值
-	for(i=0;i<5;i++)
-    {
-		j=(j+1)%4;//找下一个模式	
-		if(CfgFile.SpecialMode[j].IsModeEnabled)//找到可用的模式
+		if(CurMode.ModeGrpSel!=ModeGrp_Regular&&CfgFile.SpecialMode[j].IsModeEnabled)//找到可用的特殊模式
 			{
 			CurMode.SpecialGrpMode=j;
-			return;
+			break;
 			}
 		}
 	}
@@ -388,7 +393,7 @@ void ModeSwitchLogicHandler(void)
   {
 	int keycount;
 	ModeConfStr *CurrentMode;
-  bool DoubleClickHoldDetected;
+  bool DoubleClickHoldDetected,IsNeedToSwitchGear;
 	if(SysPstatebuf.Pstate==PState_Locked||SysPstatebuf.Pstate==PState_Error)return;//处于锁定或者错误状态，此时不处理
 	//获取按键次数
   DoubleClickHoldDetected=getSideKeyDoubleClickAndHoldEvent();//获取用户是否使能操作
@@ -415,8 +420,32 @@ void ModeSwitchLogicHandler(void)
 		    }			
 		   }
 		 }
-	//处理换挡逻辑
-  if(!keycount||keycount>3)return;	//啥也没按或者短按按键次数按了超过三次不处理
+	//根据用户的首选项选择是否长按换挡
+	if(SysPstatebuf.Pstate==PState_LEDOnNonHold)//战术模式不允许换挡
+		IsNeedToSwitchGear=false; 
+	else if(CfgFile.IsHoldForPowerOn&&keycount==1)//长按开机，固定短按换挡
+		IsNeedToSwitchGear=true; 
+	else if(!CfgFile.IsHoldForPowerOn) //单击开机，逻辑比较复杂
+	  {
+		//开机和战术模式待机状态单击换挡
+		if(SysPstatebuf.Pstate==PState_LEDOn||SysPstatebuf.Pstate==PState_NonHoldStandBy)
+		  {
+		  BlankTimer=0; //关闭消隐计时器
+			IsNeedToSwitchGear=(keycount==1)?true:false;
+			}
+		//关机状态长按换挡
+		else
+		  {
+			if(!getSideKeyHoldEvent()&&BlankTimer==0)BlankTimer=0x80; //按键松开，开始计时
+			if(BlankTimer!=0x83)IsNeedToSwitchGear=false; //处于消隐状态，不换档
+			else if(!getSideKeyHoldEvent())IsNeedToSwitchGear=false; //没有按下换挡
+			else if(ExtLEDIndex!=NULL)IsNeedToSwitchGear=false; //按下换挡但是挡位指示还没结束
+			else IsNeedToSwitchGear=true;//启动一次换挡
+			}			
+		}	  
+	else IsNeedToSwitchGear=false;//不需要换挡
+	//处理换挡逻辑 
+	if(!IsNeedToSwitchGear&&(keycount<2||keycount>3))return;	//短按按键次数小于2次或者按了超过三次不处理
 	//检测到换挡操作时重置特殊功能的定时器和状态机
   ResetPowerOffTimerForPoff();//重置定时器
 	ResetBreathStateMachine();//重置呼吸闪状态机
@@ -429,8 +458,8 @@ void ModeSwitchLogicHandler(void)
 	  {
 		case ModeGrp_Regular://常规挡位
 		  {
-			//单击在常规循环挡位组里面选择一个新的挡位
-			if(keycount==1)RegularModeSwitchGear();
+			//在常规循环挡位组里面选择一个新的挡位
+			if(IsNeedToSwitchGear)ModeSwitchGear();
 			//双击，在有挡位启用的情况下进入双击挡位
 			else if(keycount==2&&CfgFile.DoubleClickMode.IsModeEnabled)
 				 CurMode.ModeGrpSel=ModeGrp_DoubleClick;//进入双击挡位
@@ -449,7 +478,7 @@ void ModeSwitchLogicHandler(void)
 		case ModeGrp_Special://三击特殊挡位组
 		  {
 			//单击在特殊循环挡位组里面选择一个新的挡位
-			if(keycount==1)SpecialModeSwitchGear();
+			if(IsNeedToSwitchGear)ModeSwitchGear();
 			//双击，如果双击挡位启用则进入双击挡位
 		  else if(keycount==2&&CfgFile.DoubleClickMode.IsModeEnabled)
 				CurMode.ModeGrpSel=ModeGrp_DoubleClick;//进入双击挡位
@@ -463,14 +492,16 @@ void ModeSwitchLogicHandler(void)
 	if(SysPstatebuf.Pstate==PState_LEDOn||SysPstatebuf.Pstate==PState_LEDOnNonHold)
 	  SetAUXPWR(true); //换挡的时候,如果LED是启动的，那就需要重新使能辅助电源否则会出现信标模式无光的问题
 	else
-	  SideLED_GenerateModeInfoPattern(); //手电筒处于关机状态，显示挡位数据
+	  SideLED_GenerateModeInfoPattern(false); //手电筒处于关机状态，显示挡位数据
 	}
 //手电筒关闭切换挡位时,生成一组跳档后指示当前挡位的序列让侧按LED显示
-void SideLED_GenerateModeInfoPattern(void)
+void SideLED_GenerateModeInfoPattern(bool IsSwitchOff)
   {
 	int flashCount;
+	char Strbuf[7]={0};
 	LED_Reset();//复位LED管理器
   memset(LEDModeStr,0,sizeof(LEDModeStr));//清空内存
+	if(IsSwitchOff)strncat(LEDModeStr,"D",sizeof(LEDModeStr)-1); //开关关闭时加入额外的延时
   switch(CurMode.ModeGrpSel) 	
 	  {
 		case ModeGrp_Regular:flashCount=1;break;//常规挡位
@@ -479,7 +510,7 @@ void SideLED_GenerateModeInfoPattern(void)
 		default: return;
 		}
   LED_AddStrobe(flashCount,"10");
-	strncat(LEDModeStr,"00000",sizeof(LEDModeStr)-1);	
+	strncat(LEDModeStr,"0000",sizeof(LEDModeStr)-1);	
   switch(CurMode.ModeGrpSel) 	
 	  {
 		case ModeGrp_Regular:flashCount=CurMode.RegularGrpMode+1;break;//常规挡位
@@ -488,6 +519,11 @@ void SideLED_GenerateModeInfoPattern(void)
 		default: break;
 		}		
 	LED_AddStrobe(flashCount,"30");
+	if(!IsSwitchOff&&!CfgFile.IsHoldForPowerOn)		
+	  {
+	  memset(Strbuf,'0',sizeof(Strbuf)-1);
+		strncat(LEDModeStr,Strbuf,sizeof(LEDModeStr)-1); //加上后面的值
+		}
 	strncat(LEDModeStr,"E",sizeof(LEDModeStr)-1);
 	ExtLEDIndex=&LEDModeStr[0];//传指针过去
 	}
@@ -563,7 +599,7 @@ void ModeNoMemoryRollBackHandler(void)
   CurrentMode=GetCurrentModeConfig();
 	if(CurrentMode->IsModeEnabled)
   	{
-		SideLED_GenerateModeInfoPattern();//生成侧按LED序列提示当前在哪个档
+		SideLED_GenerateModeInfoPattern(true);//生成侧按LED序列提示当前在哪个档
 	  return;
 		}
 	ModeOffset=(ModeOffset+1)%CfgFile.BootupModeGroup==ModeGrp_Regular?8:4;

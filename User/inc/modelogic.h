@@ -181,7 +181,7 @@ void DisplayUserWhenTimerOff(void);
 void DisplayUserWhenTimerOn(void);//当用户使能或者除能自动关机定时器时，指示用户定时器的时间
 void DriverLockPOR(void);//初始化上电锁定设置
 void RunTimeErrorReportHandler(SystemErrorCodeDef ErrorCode);//系统运行中出现错误时负责提交日志并关闭输出的模块
-void SideLED_GenerateModeInfoPattern(void);//控制侧按LED生成提示序列的模块
+void SideLED_GenerateModeInfoPattern(bool IsSwitchOff);//控制侧按LED生成提示序列的模块
 void ModeNoMemoryRollBackHandler(void);//关闭手电后执行非记忆逻辑
 void ModeSwitchInit(void);//初始化挡位设置
 void RestoreFactoryModeCfg(void);//复位挡位设置

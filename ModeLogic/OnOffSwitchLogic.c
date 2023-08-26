@@ -85,6 +85,7 @@ void RunTimeErrorReportHandler(SystemErrorCodeDef ErrorCode)
 void PStateStateMachine(void)
   {
 	bool LongPressOnce,LongPressHold,DoubleClickHold;
+	bool IsPowerOn;
 	int ShortPress;
 	INADoutSreDef BattO;
   //获取侧按按钮的操作(按下并按住，短按，长按等等)
@@ -92,6 +93,10 @@ void PStateStateMachine(void)
 	LongPressOnce=getSideKeyLongPressEvent(); 
 	ShortPress=getSideKeyShortPressCount(true); 
 	DoubleClickHold=getSideKeyDoubleClickAndHoldEvent();
+	//根据用户配置选择是短按还是长按开机
+	if(!CfgFile.IsHoldForPowerOn&&ShortPress==1)IsPowerOn=true; //单击开机
+	else if(CfgFile.IsHoldForPowerOn&&LongPressOnce)IsPowerOn=true;	//长按开机
+	else IsPowerOn=false;	 
 	//电源状态的状态机
 	switch(SysPstatebuf.Pstate)
 	  {
@@ -131,7 +136,7 @@ void PStateStateMachine(void)
 				SysPstatebuf.Pstate=PState_Locked; 
 				}
 			//长按3秒开启手电
-		  else if(LongPressOnce)
+		  else if(IsPowerOn)
 			  {
 			  if(IsRunTimeLoggingEnabled)CalcLastLogCRCBeforePO();//计算运行log的CRC32
 			  SysPstatebuf.ErrorCode=TurnLightONLogic(&BattO);//执行自检逻辑
