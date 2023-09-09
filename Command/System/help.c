@@ -2,20 +2,21 @@
 #include <string.h>
 
 //const vars
-const char AllResultListed[]={"\r\n\r\n提示:您可使用'\033[40;33m-kw\033[0m'参数指定一个命令描述的查找关键词或者'\033[40;33m-n\033[0m'参数指定待查找的部分或全部命令名称."};
+const char AllResultListed[]={"\r\n\r\n提示:您可使用'\033[40;33m-kw\033[0m'参数指定一个命令描述关键词或者'\033[40;33m-n\033[0m'参数指定部分/全部命令名称进行查找."};
 extern const char *ModeRelCommandStr;
 extern const char *ModeRelCommandParam;
+static const char *NoInfoProvided="该%s没有描述.";
 
 const char *HelpArgument(int ArgCount)
   {
-	if(ArgCount<2)return "提供一个用于描述匹配的关键词";
+	if(ArgCount<2)return "提供一个关键词用于描述匹配";
 	return "提供部分或完整的命令名称用于匹配";
 	}
 
 //帮助菜单处理函数
 void HelpHandler(void)
  {
- int i,j,resultcount=0;
+ int i,j,resultcount=0,k;
  const char *KeyWord;
  const char *CmdName;
  bool IsNeedtoprint;
@@ -54,16 +55,18 @@ void HelpHandler(void)
 			 }
 		 //打印各个参数的用法
 		 UARTPuts("\r\n\r\n");
-		 TotalLength=UartPrintf("---------------- '\033[40;32m%s\033[0m' 命令的使用方法  ----------------",Commands[i].CommandName);
+     TotalLength=32;
+		 UARTPutc('-',16);
+		 TotalLength+=UartPrintf(" '\033[40;32m%s\033[0m' 命令的使用方法  ",Commands[i].CommandName);
 		 TotalLength-=strlen("\033[40;32m\033[0m");
+		 UARTPutc('-',16);
 		 UARTPuts("\r\n 命令描述 : ");
-     UARTPutsAuto((char *)Commands[i].CommandDesc,(TotalLength-strlen(" 命令描述 : "))-1,TotalLength);		 
-		 if(ParamCount==0||ParamUsageCount==0)
-			 UartPrintf("\r\n 使用方法 : '\033[40;32m%s\033[0m'",Commands[i].CommandName);
-		 else //有多个参数，打印出来
+     UARTPutsAuto((char *)Commands[i].CommandDesc,(TotalLength-strlen(" 命令描述 : "))-1,TotalLength);	
+			UartPrintf("\r\n 使用方法 : '\033[40;32m%s\033[0m'",Commands[i].CommandName);	 
+		 if(ParamCount>0&&ParamUsageCount>0)  //有多个参数，打印出来
 		   {
-			 UartPrintf("\r\n 使用方法 : '\033[40;32m%s \033[40;33m[选项1] \033[40;35m<参数1>",Commands[i].CommandName);
-			 UARTPuts(" \033[40;33m[选项2(无参数)] [选项3]\r\n \033[40;35m<参数3> \033[0m...'\r\n 参数和选项('*'表示该选项没有参数) :\r\n");
+			 for(k=1;k<3;k++)UartPrintf("\033[40;33m[选项%d] \033[40;35m<参数%d> ",k,k);
+			 UARTPuts("\033[40;33m[选项3\r\n(无参数)]...'\033[0m\r\n 参数和选项('*'表示该选项没有参数) :\r\n");
 			 for(j=0;j<ParamCount;j++)
 				 {
 				 if(j>=ParamUsageCount)continue;//参数数量超过允许值，不显示这一行的内容
@@ -75,9 +78,9 @@ void HelpHandler(void)
 				   {
 					 if(Commands[i].QueueHelpProc(j)!=NULL)
 					   UARTPutsAuto((char *)Commands[i].QueueHelpProc(j),(TotalLength-ParamLength)-1,TotalLength);//执行打印函数打印这一行的内容
-					 else UARTPuts("该选项没有描述。");
+					 else UartPrintf((char *)NoInfoProvided,"选项");
 					 }
-				 else UARTPuts("该命令没有描述。");
+				 else UartPrintf((char *)NoInfoProvided,"命令");
 				 }
 			 }
      //找到匹配结果，标记一下
@@ -90,7 +93,7 @@ void HelpHandler(void)
  else if(resultcount)
 	 UartPrintf("\r\n\r\n查找完毕,共找到%d条结果.",resultcount);
  else
-	 UARTPuts("\r\n\r\n未找到匹配结果,您可尝试缩短或去除关键词限制.");
+	 UARTPuts("\r\n\r\n无匹配结果,您可尝试缩短或去除关键词限制.");
  ClearRecvBuffer();//清除接收缓冲
  CmdHandle=Command_None;//命令执行完毕		
  }

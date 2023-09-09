@@ -5,6 +5,7 @@
 #include "AES256.h"
 #include "FirmwareConf.h"
 #include "FRU.h"
+#include "ADC.h"
 
 extern const char FRUVersion[3];
 
@@ -37,8 +38,9 @@ void verHandler(void)
   {
 	int i;
 	char EncryptBUF[48];
-  const char *TextPtr;
+  const char *TextPtr="未知";
 	FRUBlockUnion FRU;
+	ADCOutTypeDef ADCO;
 	UARTPuts("\r\n");
 	for(i=0;i<7;i++)//打印logo
 		 {
@@ -46,10 +48,21 @@ void verHandler(void)
 		 UARTPuts((char *)FlashLightOSIcon[i]);
 		 }
 	#ifndef FlashLightOS_Debug_Mode
-	UartPrintf("\r\n\r\nPowered by FlashLight OS version-%d.%d.%d,终端波特率:%dbps",MajorVersion,MinorVersion,HotfixVersion,CfgFile.USART_Baud);
+	  #ifndef Firmware_UV_Mode
+	  UartPrintf("\r\n\r\nPowered by FlashLight OS version %d.%d.%d,终端波特率:%dbps",MajorVersion,MinorVersion,HotfixVersion,CfgFile.USART_Baud);
+		#else
+		UartPrintf("\r\n\r\nPowered by FlashLight OS(UV Special Edition)version %d.%d.%d,终端波特率:%dbps",MajorVersion,MinorVersion,HotfixVersion,CfgFile.USART_Baud); 
+		#endif
 	#else
-	UartPrintf("\r\n\r\nPowered by FlashLight OS version(debug)-%d.%d.%d,终端波特率:%dbps",MajorVersion,MinorVersion,HotfixVersion,CfgFile.USART_Baud);	 
+	UartPrintf("\r\n\r\nPowered by FlashLight OS version(debug) %d.%d.%d,终端波特率:%dbps",MajorVersion,MinorVersion,HotfixVersion,CfgFile.USART_Baud);	 
 	#endif
+	//打印温度
+  ADC_GetResult(&ADCO);
+	UARTPuts("\r\n当前LED温度:");
+  if(ADCO.NTCState!=LED_NTC_OK)UARTPuts((char *)TextPtr); 
+  else UartPrintf("%.1f'C",ADCO.LEDTemp);
+  //打印硬件信息		 
+	UARTPuts("\r\n硬件平台:");
   #ifndef EnableSecureStor
   if(!M24C512_PageRead(FRU.FRUBUF,SelftestLogEnd,sizeof(FRUBlockUnion))&&CheckFRUInfoCRC(&FRU))
   #else
@@ -57,11 +70,12 @@ void verHandler(void)
   #endif	 
 	   {
      TextPtr=DisplayLEDType(&FRU);
-		 UartPrintf("\r\n硬件平台:%s V%d.%d for %s LED.",HardwarePlatformString,FRU.FRUBlock.Data.Data.FRUVersion[1],FRU.FRUBlock.Data.Data.FRUVersion[2],TextPtr);
-		 UartPrintf("\r\n产品序列号:%s",FRU.FRUBlock.Data.Data.SerialNumber);
+		 UartPrintf("%s V%d.%d for %s LED.",HardwarePlatformString,FRU.FRUBlock.Data.Data.FRUVersion[1],FRU.FRUBlock.Data.Data.FRUVersion[2],TextPtr);		 
+		 TextPtr=FRU.FRUBlock.Data.Data.SerialNumber;//获取序列号字符串
 		 }
-	else //读取失败
-     UARTPuts("\r\n硬件平台:未知平台\r\n产品序列号:未知");
+  else //读取失败，显示未知
+	   UARTPuts((char *)TextPtr);
+	UartPrintf("\r\n产品序列号:%s",TextPtr);
 	switch(AccountState)//根据当前登录状态显示信息
 	   {
 		 case Log_Perm_Guest:TextPtr="游客";break;

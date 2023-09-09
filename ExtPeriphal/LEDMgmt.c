@@ -57,7 +57,8 @@ static char LEDThermalBlinkTimer=20;//用于在温控介入时闪侧按指示灯
 char *ExtLEDIndex = NULL; //用于传入的外部序列
 static char *LastExtLEDIdx = NULL;
 static char LEDDelayTimer=0; //侧按LED等待
-
+bool IsRedLED=false;//对于SBT90-R，侧按会亮红灯
+ 
 //往自定义LED缓存里面加上闪烁字符
 void LED_AddStrobe(int count,const char *ColorStr) 
   {
@@ -124,6 +125,30 @@ void LED_Init(void)
 	 IsLEDInitOK=true; //LED GPIO初始化已完毕
 	 UartPost(Msg_info,"LEDMgt",(char *)LEDControllerInitMsg,"done..");
 	}
+//控制侧按LED实现LED微微发光的控制函数
+void SideLEDWeakLitControl(bool IsEnabled)
+  {
+	if(IsEnabled)
+	 {
+	 if(!IsRedLED) //绿色LED
+		 {		
+		 GPIO_DirectionConfig(LED_Green_IOG,LED_Green_IOP,GPIO_DIR_IN);//配置为高阻输入
+     GPIO_PullResistorConfig(LED_Green_IOG,LED_Green_IOP,GPIO_PR_UP);//打开LED的上拉电阻，这样的话就可以让侧按微微发光指示手电位置
+		 }
+	 else //红色LED
+		 {
+		 GPIO_DirectionConfig(LED_Red_IOG,LED_Red_IOP,GPIO_DIR_IN);//配置为高阻输入
+     GPIO_PullResistorConfig(LED_Red_IOG,LED_Red_IOP,GPIO_PR_UP);//打开LED的上拉电阻，这样的话就可以让侧按微微发光指示手电位置						
+		 }
+	 }
+	else //侧按定位LED关闭
+	 {
+	 GPIO_DirectionConfig(LED_Green_IOG,LED_Green_IOP,GPIO_DIR_OUT);
+	 GPIO_DirectionConfig(LED_Red_IOG,LED_Red_IOP,GPIO_DIR_OUT);//配置为输出
+	 GPIO_PullResistorConfig(LED_Green_IOG,LED_Green_IOP,GPIO_PR_DISABLE);	 
+   GPIO_PullResistorConfig(LED_Red_IOG,LED_Red_IOP,GPIO_PR_DISABLE);	//关闭上拉电阻	 
+	 }
+	}
 //在系统内控制LED的回调函数
 void LEDMgmt_CallBack(void)
   {
@@ -135,14 +160,10 @@ void LEDMgmt_CallBack(void)
 		if(LastExtLEDIdx!=ExtLEDIndex)LastExtLEDIdx=ExtLEDIndex;
 		if(CurrentLEDIndex!=LastLEDIndex)LastLEDIndex=CurrentLEDIndex;//同步index 
 		if(LastExtLEDIdx==NULL&&LastLEDIndex==0&&CfgFile.EnableLocatorLED) //如果当前LED为熄灭状态且侧按定位功能开启，则让侧按LED微微闪烁
+      SideLEDWeakLitControl(true);
+		else //这些条件不满足，关闭侧按LED
 		  {
-			GPIO_DirectionConfig(LED_Green_IOG,LED_Green_IOP,GPIO_DIR_IN);//配置为高阻输入
-      GPIO_PullResistorConfig(LED_Green_IOG,LED_Green_IOP,GPIO_PR_UP);//打开绿色LED的上拉电阻，这样的话就可以让侧按微微发光指示手电位置
-			}
-		else //这些条件不满足，配置为推挽输出并关闭上拉电阻使LED不能发微微绿光
-		  {
-			GPIO_DirectionConfig(LED_Green_IOG,LED_Green_IOP,GPIO_DIR_OUT);//配置为输出
-	    GPIO_PullResistorConfig(LED_Green_IOG,LED_Green_IOP,GPIO_PR_DISABLE);//关闭上拉电阻
+      SideLEDWeakLitControl(false);
 			LEDDelayTimer=0; //复位变量
 			}
 		LED_Reset();//复位LED状态机
@@ -166,7 +187,10 @@ void LEDMgmt_CallBack(void)
 		if(LEDDelayTimer<16)
 		  {
 			LEDDelayTimer++;
-			GPIO_PullResistorConfig(LED_Green_IOG,LED_Green_IOP,LEDDelayTimer<8?GPIO_PR_DISABLE:GPIO_PR_UP); //控制上拉电阻
+			if(!IsRedLED) //根据是否为红色LED控制上拉电阻
+			  GPIO_PullResistorConfig(LED_Green_IOG,LED_Green_IOP,LEDDelayTimer<8?GPIO_PR_DISABLE:GPIO_PR_UP); 
+			else
+				GPIO_PullResistorConfig(LED_Red_IOG,LED_Red_IOP,LEDDelayTimer<8?GPIO_PR_DISABLE:GPIO_PR_UP); //控制上拉电阻
 			}
 		else LEDDelayTimer=0;
 		}

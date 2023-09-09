@@ -117,7 +117,12 @@ bool ADC_GetResult(ADCOutTypeDef *ADCOut)
 	ADCOut->LEDIf=buf;//计算完毕返回结果
 	//计算SPS温度数值
 	buf=(float)ADCResult[SPS_Temp_Ch]*(ADC_AVRef/(float)4096);//将AD值转换为电压
-	if(buf<SPSTMONStdVal)//温度为负数
+	if(buf>3.05)
+	  {
+		ADCOut->SPSTemp=-20;//温度反馈为-20度		
+    ADCOut->SPSTMONState=SPS_TMON_CriticalFault;//SPS会在故障时将温度检测拉高到3.3V	
+		}
+	else if(buf<SPSTMONStdVal)//温度为负数
 	  {
 		buf=SPSTMONStdVal-buf;//计算出电压差
 		buf*=(float)1000;//将电压单位变为mV
@@ -139,16 +144,8 @@ bool ADC_GetResult(ADCOutTypeDef *ADCOut)
 		buf-=SPSTMONStdVal;//计算出电压差
 		buf*=(float)1000;//将电压单位变为mV
 		buf/=(float)SPSTMONScale;//除以scale换算出温度
-     if(buf>125)
-		  {
-			ADCOut->SPSTMONState=SPS_TMON_CriticalFault;//温度过高视为出现致命错误（SPS会在故障时将温度检测拉高到3.3V）
-			ADCOut->SPSTemp=125;//温度为125
-			}
-    else 
-		  {
-			ADCOut->SPSTMONState=SPS_TMON_OK;//温度正常
-			ADCOut->SPSTemp=buf;//温度反馈为buf值				
-			}		
+		ADCOut->SPSTMONState=SPS_TMON_OK;//温度正常
+		ADCOut->SPSTemp=buf;//温度反馈为buf值					
 		}
 	else //输出为0.6V，温度正常
 		{
@@ -211,6 +208,11 @@ void InternalADC_Init(void)
 		 UartPost(Msg_info,"IntADC","LED BasePlate Temperature : %.1f'C",ADCO.LEDTemp);
 	 else 
 	   {
+		 #ifdef FlashLightOS_Debug_Mode
+     UartPost(msg_error,"IntADC","Base Plate temperature sensor did not work properly.");
+     return;
+		 #endif
+     //非自检模式正常输出的部分			 
 		 #ifndef ForceRequireLEDNTC
 		 UartPost(msg_error,"IntADC","Base Plate temperature sensor did not work properly.");
 		 #else

@@ -126,7 +126,7 @@ void LinearDIM_POR(void)
  if(VGet>=0.05)
     {
 	  //有超过0.05的电压,说明PWM MUX无法切断电压.PWM相关电路有问题
-		UartPost(Msg_critical,"LineDIM","PWM Dimming MUX failure detected");
+		UartPost(Msg_critical,"LineDIM","PWM Dimming MUX Error detected");
 	  CurrentLEDIndex=30;
 	  SelfTestErrorHandler();  		
 		}
@@ -161,16 +161,16 @@ void LinearDIM_POR(void)
 		if(ADCO.SPSTMONState==SPS_TMON_OK)
 		   {
 		   if(ADCO.LEDVf>=LEDVfMax)retry++;
-		   else if(ADCO.LEDIf<0.35)
-			   {
-				 if(VSet<0.1)VSet+=0.01;  
-			   AD5693R_SetOutput(VSet); //设置DAC输出提高电压直到检测通过
-			   retry=0;
-				 }
-		   else //电流检测正常，累加数值
+		   else if(ADCO.LEDIf>0.35)//电流检测正常，累加数值
 			   {
 				 IMONOKFlag=true;
 			   retry++; 
+				 }
+		   else 
+			   {				 
+				 if(VSet<0.1)VSet+=0.01;  
+			   AD5693R_SetOutput(VSet); //设置DAC输出提高电压直到检测通过
+			   retry=0;
 				 }
 	     }
 		else retry=0;
@@ -324,7 +324,7 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
  ********************************************************/
  if(!ADC_GetResult(&ADCO))return Error_ADC_Logic;
  //DAC的输出电压已经到了最高允许值,但是电流仍然未达标,这意味着LED可能短路或PWM逻辑异常
- if(VID>=60)return  ADCO.LEDVf>=LEDVfMax?Error_LED_Open:Error_PWM_Logic;
+ if(VID>=60)return (ADCO.LEDVf>=LEDVfMax)?Error_LED_Open:Error_PWM_Logic;
  if(ADCO.LEDVf<LEDVfMin)return Error_LED_Short;		 //LEDVf过低,LED可能短路
  /********************************************************
  LED自检顺利结束,驱动硬件和负载工作正常,此时返回无错误代码
@@ -476,7 +476,8 @@ void RuntimeModeCurrentHandler(void)
 	 {
    DACVID=Current*30;  //计算DAC的VID,公式为:VID=(30mV*offset*LEDIf(A))+23mV 
 	 DACVID/=QueueLinearTable(5,Current,(float *)&DimmingCompTable[0],(float *)&DimmingCompTable[5]);//除以补偿系数得到补偿后的VID
-	 if(fabsf(Current-ADCO.LEDIf)>0.02) 
+	 if(CurrentMode->Mode==LightMode_Breath)CurrentSynthRatio=100;//呼吸模式不使用线性调光
+	 else if(fabsf(Current-ADCO.LEDIf)>0.02) 
 	   { 
 	   if(Current>ADCO.LEDIf)CurrentSynthRatio=CurrentSynthRatio<110?CurrentSynthRatio+0.1:110; 
 	   else CurrentSynthRatio=CurrentSynthRatio>50?CurrentSynthRatio-0.1:50;

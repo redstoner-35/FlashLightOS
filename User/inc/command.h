@@ -133,13 +133,14 @@ const ComamandStringStr Commands[TotalCommandCount]=
     false			
 		},
 		{
-		 {Log_Perm_Root,Log_Perm_End},//10
 		#ifndef FlashLightOS_Debug_Mode  
+    {Log_Perm_Root,Log_Perm_End},//10
 		"nan",
 		"无描述",  
 		"\0\n",
     "\0\n",
     #else		
+		{Log_Perm_Guest,Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//1
 		"imonadj",
 		"允许厂家配置驱动输出电流测量模块的矫正参数.",  		 
 		"-v\0--view\0-g\0--gain\0-thr\0--threshold\0-n\0--node\0\n",

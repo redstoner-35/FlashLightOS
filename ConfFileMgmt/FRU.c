@@ -13,6 +13,7 @@ float LEDVfMin;
 float LEDVfMax; //LEDVf限制
 const char FRUVersion[3]={FRUVer,HardwareMajorVer,HardwareMinorVer}; //版本信息
 extern const char *LEDInfoStr[];//外部的LED类型常量
+extern bool IsRedLED;
 
 /**************************************************************
 这个函数负责根据传入的LED类型设置LED的最低和最高Vf限制。
@@ -23,7 +24,11 @@ void SetLEDVfMinMax(FRUBlockUnion *FRU)
 		{
 		case 0x08:LEDVfMin=2.3;LEDVfMax=4.2;break; //SBT90.2
 		case 0x07:
+		#ifndef Firmware_UV_Mode
 		case 0x03:LEDVfMin=1.95;LEDVfMax=4.2;break; //通用3V LED、蓝色SBT70
+		#else
+    case 0x03:LEDVfMin=2.3;LEDVfMax=4.5;break; //使用8颗XM-L UV灯,Vf为2.3-4.5V
+    #endif	
 		case 0x04:LEDVfMin=1.4;LEDVfMax=3.2;;break;//红色SBT90
 		case 0x05:LEDVfMin=1.85;LEDVfMax=4.9;break; //绿色SBT70
 		case 0x06:LEDVfMin=4.5;LEDVfMax=6.8;break; //6V LED
@@ -40,7 +45,11 @@ float QueryMaximumCurrentLimit(FRUBlockUnion *FRU)
   float result;
   switch(FRU->FRUBlock.Data.Data.FRUVersion[0]) //显示LED型号
 		{
+		#ifndef Firmware_UV_Mode
 		case 0x03:result=50;break;
+		#else
+    case 0x03:result=27.5;break; //使用8颗XM-L UV灯，最大电流27.5A
+    #endif			
 		case 0x04:result=25;break;
 		case 0x05:result=14;break;
 		case 0x06:result=30;break;
@@ -61,7 +70,11 @@ const char *DisplayLEDType(FRUBlockUnion *FRU)
   {
   switch(FRU->FRUBlock.Data.Data.FRUVersion[0]) //显示LED型号
 		{
+		#ifndef Firmware_UV_Mode
 		case 0x03:return "Generic 3V";
+		#else
+    case 0x03:return "XM-L-365UV*8"; 
+    #endif				
 		case 0x04:return LEDInfoStr[1];
 		case 0x05:return LEDInfoStr[2];
 		case 0x06:return "Generic 6V";
@@ -222,7 +235,7 @@ void FirmwareVersionCheck(void)
  if(ReadFRU(&FRU))
  	 {
 	 CurrentLEDIndex=6;//EEPROM不工作
-	 UartPost(Msg_critical,"FRUChk","Failed to check Hardware FRU info in EEPROM.");
+	 UartPost(Msg_critical,"FRUChk","Failed to load FRU from EEPROM.");
 	 SelfTestErrorHandler();//EEPROM掉线
 	 }
  //检查FRU数据是否有效
@@ -230,7 +243,7 @@ void FirmwareVersionCheck(void)
    {
 	 #ifndef FlashLightOS_Debug_Mode
 	 CurrentLEDIndex=3;//红灯常亮表示FRU验证不通过
-	 UartPost(Msg_critical,"FRUChk","FRU information corrupted and not usable.System halted!");
+	 UartPost(Msg_critical,"FRUChk","FRU information corrupted.System halted!");
 	 SelfTestErrorHandler();//FRU信息损坏
 	 #else
 	 WriteNewFRU("information corrupted");//重写FRU
@@ -241,7 +254,7 @@ void FirmwareVersionCheck(void)
    {
 	 #ifndef FlashLightOS_Debug_Mode
 	 CurrentLEDIndex=3;//红灯常亮表示FRU验证不通过
-	 UartPost(Msg_critical,"FRUChk","Hardware mismatch,This firmware for Hardware version V%d.%d.",HardwareMajorVer,HardwareMinorVer);
+	 UartPost(Msg_critical,"FRUChk","This Firmware only works on V%d.%d hardware.",HardwareMajorVer,HardwareMinorVer);
 	 SelfTestErrorHandler();//FRU信息损坏
 	 #else
 	 WriteNewFRU("Hardware Mismatch");//重写FRU
@@ -252,6 +265,7 @@ void FirmwareVersionCheck(void)
     {
 		UartPost(Msg_info,"FRUChk","FRU Information has been loaded.");
 		SetLEDVfMinMax(&FRU);//设置Vmin和Vmax
+		if(FRU.FRUBlock.Data.Data.FRUVersion[0]==0x04)IsRedLED=true; //如果FRU内LED型号是SBT90R,则休眠指示变为红色
 		if(FRU.FRUBlock.Data.Data.MaxLEDCurrent>QueryMaximumCurrentLimit(&FRU))//非法的电流设置
 		  {
 			UartPost(msg_error,"FRUChk","Maximum Current %.2fA is illegal for %s LED and will be trim to %.2fA.",

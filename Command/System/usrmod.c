@@ -137,7 +137,7 @@ void usrmodhandler(void)
 		//认证结束且失败。
 		if(Verifystat==ACC_Verify_Error)
 		  {
-			UARTPuts("\r\n原始密码不匹配，无法更新用户凭据信息。");
+			UARTPuts("\r\n原始密码不匹配,无法更新用户凭据信息.");
 		  TargetAccount=VerifyAccount_None;
 			CmdHandle=Command_None;//命令执行完毕
 			Verifystat=ACC_No_Login;//复位状态
@@ -146,7 +146,7 @@ void usrmodhandler(void)
 		//改密码成功
 		if(Verifystat==ACC_ChgPswdOK)
 		  {
-			UARTPuts("\r\n\r\n用户凭据信息已更新，请使用新的凭据进行登录。");
+			UARTPuts("\r\n\r\n用户凭据信息已更新,请使用新的凭据进行登录.");
 			AccountState=Log_Perm_Guest;
 			TargetAccount=VerifyAccount_None;
 			CmdHandle=Command_None;//命令执行完毕
@@ -157,7 +157,7 @@ void usrmodhandler(void)
 		  {
 			UARTPuts("\r\n\r\n错误:");
 			if(Verifystat==ACC_ChgPswdErr_NoPerm)UARTPuts("您当前没有更改超级用户密码的权限.");
-			else UARTPuts("新密码应在6-15字符长度的范围内且仅能包含ASCII字符。");
+			else UARTPuts("新密码应在6-15字符长度的范围内且仅能包含ASCII字符.");
 			TargetAccount=VerifyAccount_None;
 			CmdHandle=Command_None;//命令执行完毕
 			Verifystat=ACC_No_Login;//复位状态

@@ -16,11 +16,7 @@ const unsigned int KeyBox2[Nk]=
  0x351DA345,0xA896FEC2,0x7BA3590D,0x5BC32544,
  0x94A6D158,0x9B10ADF5,0x3FE65A8B,0x6418ADBE
  };	
- 
-#pragma push
-#pragma Otime//优化该函数使用3级别优化
-#pragma O3
- 
+
 /*------------------------------
 行移位
 Shift operation of the state.
@@ -341,4 +337,3 @@ int AES_EncryptDecryptData(char *InputBuf,char Mode)
 	InputBuf[k]=state[(k%4)*4+k/4];
 	return 0;
 }
-#pragma pop

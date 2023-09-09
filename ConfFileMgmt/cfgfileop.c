@@ -14,7 +14,7 @@ const char ZeroConstBuf[32]={0};
 //字符串
 const char *EEPModName="CfgEEP";
 static const char *CheckingFileInt="Checking %s configuration file integrity...";
-static const char *LoadFileInfo="Loading %s configuration file into RAM..";
+static const char *LoadFileInfo="Loading %s config file into RAM...";
 static const char *ConfigHasBeenLoaded="%s configuration has been loaded,file CRC-32 value:0x%8X.";
 static const char *ConfigHasRestored="%s config file has been re-writed with %s config.";
 static const char *FixingConfigFile="fixing corrupted %s config file...";
@@ -29,7 +29,7 @@ SPS电流检测的非线性矫正曲线。这部分数值会因为驱动的电�
 */
 const float IMONGainSettings[SPSCompensateTableSize*2]=
 {
-     1,    2,    5,   8,10.037,   12,   16,   20,   25,MaxAllowedLEDCurrent,
+     1,    2,    5,   8,10.037,   12,   16,   20,   25,33,
 0.8196,1.307,1.066,1.12,1.057 ,1.068,1.075,1.071,1.087,1.089	
 };
 /*
@@ -55,17 +55,27 @@ const char AdminPassword[16]=
 void LoadDefaultConf(void)
  {
  int i;
+ #ifndef Firmware_UV_Mode		 
  FRUBlockUnion FRU;
  bool IsUsingHighTemp;
+ #endif
  //系统基本设置
  CfgFile.USART_Baud=115200;
  CfgFile.EnableRunTimeLogging=true;
+ #ifdef AMUTorchMode
  CfgFile.IsHoldForPowerOn=false;//使用阿木的操控逻辑，单击开机长按关机
- CfgFile.EnableLocatorLED=true;//启用侧按定位LED
+ #else
+ CfgFile.IsHoldForPowerOn=true;//使用默认的操控逻辑，长按开关机	 
+ #endif
  CfgFile.IsDriverLockedAfterPOR=false; //上电不自锁
  CfgFile.PWMDIMFreq=20000;//20KHz调光频率
  CfgFile.DeepSleepTimeOut=8*DeepsleepDelay;//深度睡眠时间
  CfgFile.IdleTimeout=8*DefaultTimeOutSec; //定时器频率乘以超时时间得到超时值
+ #ifdef EnableSideLocLED	 
+ CfgFile.EnableLocatorLED=true;//启用侧按定位LED
+ #else
+ CfgFile.EnableLocatorLED=false;//禁用侧按定位LED
+ #endif
  strncpy(CfgFile.AdminAccountname,"ADMIN",20);
  strncpy(CfgFile.HostName,"Xtern-Ripper",20);
  /* 密码处理 */  	
@@ -80,16 +90,22 @@ void LoadDefaultConf(void)
 	 CfgFile.LEDIMONCalGain[i]=IMONGainSettings[i+SPSCompensateTableSize];
 	 }
  //恢复温控设置
- CfgFile.LEDThermalTripTemp=90;
- CfgFile.MOSFETThermalTripTemp=110; //LED热跳闸为110度，LED 90度
- //根据FRU信息决定是否使用更高的温度墙
+ CfgFile.MOSFETThermalTripTemp=110; //MOS热跳闸为110度
+ #ifndef Firmware_UV_Mode	
+ CfgFile.LEDThermalTripTemp=90; //LED热跳闸90度
  if(ReadFRU(&FRU))IsUsingHighTemp=false;
  else if(!CheckFRUInfoCRC(&FRU))IsUsingHighTemp=false;
  else if(FRU.FRUBlock.Data.Data.FRUVersion[0]==0x08)IsUsingHighTemp=true; //SBT90.2 LED，使用较高温度墙
- else IsUsingHighTemp=false;	 
+ else IsUsingHighTemp=false;	   
  CfgFile.PIDTriggerTemp=IsUsingHighTemp?70:65; //当MOS和LED的平均温度等于指定温度时温控接入
  CfgFile.PIDTargetTemp=IsUsingHighTemp?57:55; //PID目标温度
  CfgFile.PIDRelease=50; //当温度低于50度时，PID不调节 
+ #else  //UV灯承受不了太高的温度所以需要下调温控设置
+ CfgFile.LEDThermalTripTemp=85; //LED热跳闸85度
+ CfgFile.PIDTriggerTemp=57; //当MOS和LED的平均温度等于57度时温控启动
+ CfgFile.PIDTargetTemp=50; //PID目标温度50度
+ CfgFile.PIDRelease=45; //当温度低于45度时，PID不调节  
+ #endif	 
  CfgFile.ThermalPIDKp=0.28;
  CfgFile.ThermalPIDKi=0.8;
  CfgFile.ThermalPIDKd=1.10; //PID温控的P I D
@@ -99,7 +115,11 @@ void LoadDefaultConf(void)
  CfgFile.VoltageAlert=3.0*BatteryCellCount;
  CfgFile.VoltageTrip=2.8*BatteryCellCount;
  CfgFile.VoltageOverTrip=14.5;//过压保护值14.5V
+ #ifndef Firmware_UV_Mode		 
  CfgFile.OverCurrentTrip=IsUsingHighTemp?20:15;// 如果是SBT90.2，则使用20A否则15A的电池端过流保护值
+ #else
+ CfgFile.OverCurrentTrip=15; //UV模式，电池端电流限制15A
+ #endif
  } 
 //检查ROM中的数据是否损坏
 int CheckConfigurationInROM(cfgfiletype cfgtyp,unsigned int *CRCResultO)

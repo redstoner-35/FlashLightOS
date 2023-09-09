@@ -4,28 +4,54 @@
 #include <stdbool.h>
 #include "FirmwareConf.h"
 
+//处理UV模式的自动define
+#ifdef Firmware_UV_Mode
+ #define FRUVer 0x03 //使用通用的3V LED标准
+ #if (MaxAllowedLEDCurrent > 28)
+ #error "Maxmium current should not larger that 28 Amps for 8 XM-L UV LEDs!"
+ #endif
+#endif
+
 //关于LED选择的自动define
 #ifdef Using_SBT90Gen2_LED
+  #ifdef Firmware_UV_Mode
+	#error "UV Mode is Not compatible with Normal LED Defines! Please Comment 'Using_SBT90Gen2_LED' define in FirmwareConf.h!"
+	#endif
 #define FRUVer 0x08
 #endif
 
 #ifdef Using_SBT90R_LED
 #define FRUVer 0x04
+  #ifdef Firmware_UV_Mode
+	#error "UV Mode is Not compatible with Normal LED Defines! Please Comment 'Using_SBT90R_LED' define in FirmwareConf.h!"
+	#endif
 #endif
 
 #ifdef Using_SBT70G_LED
+  #ifdef Firmware_UV_Mode
+	#error "UV Mode is Not compatible with Normal LED Defines! Please Comment 'Using_SBT70G_LED' define in FirmwareConf.h!"
+	#endif
 #define FRUVer 0x05
 #endif
 
 #ifdef Using_SBT70B_LED
+  #ifdef Firmware_UV_Mode
+	#error "UV Mode is Not compatible with Normal LED Defines! Please Comment 'Using_SBT70B_LED' define in FirmwareConf.h!"
+	#endif
 #define FRUVer 0x07
 #endif
 
 #ifdef Using_Generic_3V_LED
+  #ifdef Firmware_UV_Mode
+	#error "UV Mode is Not compatible with Normal LED Defines! Please Comment 'Using_Generic_3V_LED' define in FirmwareConf.h!"
+	#endif
 #define FRUVer 0x03
 #endif
 
 #ifdef Using_Generic_6V_LED
+  #ifdef Firmware_UV_Mode
+	#error "UV Mode is Not compatible with Normal LED Defines! Please Comment 'Using_Generic_6V_LED' define in FirmwareConf.h!"
+	#endif
 #define FRUVer 0x06
 #endif
 
