@@ -123,7 +123,7 @@ void LED_Init(void)
 	 LastLEDIndex=0;
 	 CurrentLEDIndex=8;//自检序列运行中
 	 IsLEDInitOK=true; //LED GPIO初始化已完毕
-	 UartPost(Msg_info,"LEDMgt",(char *)LEDControllerInitMsg,"done..");
+	 UartPost(Msg_info,"LEDMgt",(char *)LEDControllerInitMsg,"done");
 	}
 //控制侧按LED实现LED微微发光的控制函数
 void SideLEDWeakLitControl(bool IsEnabled)

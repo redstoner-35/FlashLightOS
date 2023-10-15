@@ -607,7 +607,7 @@ void ModeNoMemoryRollBackHandler(void)
  else return;//否则直接退出
  //在对应挡位组找了一圈都没有使能的挡位，报错		 
  SysPstatebuf.Pstate=PState_Error;
- SysPstatebuf.ErrorCode=Error_ADC_Logic;
+ SysPstatebuf.ErrorCode=Error_Mode_Logic;
  CollectLoginfo("挡位变换",NULL);
  }
 //从结构体获取当前的挡位

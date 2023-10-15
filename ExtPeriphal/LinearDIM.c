@@ -20,9 +20,8 @@ void FillThermalFilterBuf(ADCOutTypeDef *ADCResult);//填充温度stepdown的缓
 static float LEDVfFilterBuf[12];
 static float LEDIfFilter[14];
 static float CurrentSynthRatio=100;  //电流合成比例
-static float LED_Current_Integral;
-static float LED_Current_Last_Error;
 static char ShortCount=0;
+static bool IsDisableMoon; //是否关闭月光档
 extern float LEDVfMin;
 extern float LEDVfMax; //LEDVf限制
 
@@ -46,7 +45,8 @@ const float DimmingCompTable[]=
 
 
 //字符串
-const char *SPSFailure="SPS Reports Invalid %s signal during init.";
+const char *SPSFailure="SPS %sreports %s signal during init.";
+const char *DidnotStr="did Not ";
 
 //LED短路,温度检测和电流合成环检测部分的简易数字滤波器（避免PWM调光时某一瞬间的波动）
 float LEDFilter(float DIN,float *BufIN,int bufsize)
@@ -83,7 +83,7 @@ void LinearDIM_POR(void)
  自检过程中的第1步：我们首先需要配置好AD5693R DAC,将DAC内置基准打开并转
  换为工作模式。
  ***********************************************************************/
- UartPost(Msg_info,"LineDIM","Checking dimming/DAC circult functionality...");
+ UartPost(Msg_info,"LineDIM","Checking Hybrid dim circult...");
  DACInitStr.DACPState=DAC_Normal_Mode;
  DACInitStr.DACRange=DAC_Output_REF;
  DACInitStr.IsOnchipRefEnabled=true; 
@@ -109,7 +109,7 @@ void LinearDIM_POR(void)
 	if(!ADC_GetLEDIfPinVoltage(&VGet))OnChipADC_FaultHandler();//ADC寮傚父
 	if(VGet<(VSet-0.05)||VGet>(VSet+0.05))
 	  {
-		UartPost(Msg_critical,"LineDIM","DAC calibration failure,Expected %.2fV but get %.2fV.",VSet,VGet);
+		UartPost(Msg_critical,"LineDIM","Expected DAC Out is %.2fV but get %.2fV.",VSet,VGet);
 	  CurrentLEDIndex=30;//电压误差过大,说明PWM MUX或者电流反馈MUX相关的电流反馈电路有问题。
 	  SelfTestErrorHandler();  		
 		}
@@ -181,15 +181,17 @@ void LinearDIM_POR(void)
 	 //SPS没有正确返回温度信号或者直接将温度信号拉高到3.3V,或者电流检测电流没有信号输入.这说明SPS或者辅助电源出现灾难性异常,需要锁死。
 	 CurrentLEDIndex=24;
 	 if(ADCO.SPSTMONState==SPS_TMON_CriticalFault)
-		  UartPost(Msg_critical,"LineDIM",(char *)SPSFailure,"CATERR");
+		  UartPost(Msg_critical,"LineDIM",(char *)SPSFailure,"","CATERR");
 	 else if(ADCO.SPSTMONState!=SPS_TMON_OK)
-	    UartPost(Msg_critical,"LineDIM",(char *)SPSFailure,"TMON");	 	 
+	    UartPost(Msg_critical,"LineDIM",(char *)SPSFailure,DidnotStr,"TMON");	 	 
 	 else if(!IMONOKFlag)
-		  UartPost(Msg_critical,"LineDIM",(char *)SPSFailure,"IMON");
+		  UartPost(Msg_critical,"LineDIM",(char *)SPSFailure,DidnotStr,"IMON");
 	 //严重错误,死循环使驱动锁定
 	 SetAUXPWR(false);
 	 SelfTestErrorHandler();  
 	 }
+ if(ADCO.SPSTemp>85)IsDisableMoon=true; //MOSFET温度大于85度此时月光档会出现问题因此需要限制使用
+ else IsDisableMoon=false;
  /**********************************************************************
  自检成功完成,此时我们可以让辅助电源下电了。然后我们将DAC输出重置为0V并且
  让PWM模块输出0%占空比使得不会有意外的电压信号进入主Buck的控制脚使得buck
@@ -200,13 +202,15 @@ void LinearDIM_POR(void)
  AD5693R_SetOutput(0);
  SetPWMDuty(0);
  /***********************************************************************
- 最后，我们还需要从运行日志里面取出上一次PID模块累加的积分值和上次错误值
- 以及PWM设置,这些值的目的是保证PID模块每次都从上次上电的运行值处开始加载 
- 这样就可以解决每次重新上电后月光档第一次开机亮度会闪的bug
+ 最后，我们还需要从运行日志里面取出月光档的额定PWM占空比。
  ***********************************************************************/
  SysPstatebuf.Duty=RunLogEntry.Data.DataSec.MoonPWMDuty;  //加载占空比
- LED_Current_Integral=RunLogEntry.Data.DataSec.MoonPWMPIDIntegral;
- LED_Current_Last_Error=RunLogEntry.Data.DataSec.MoonPWMPIDLastError;  //最后一步,PID复位
+ if(SysPstatebuf.Duty>100||SysPstatebuf.Duty<1) //占空比非法值，启动修正处理
+  {
+	SysPstatebuf.Duty=40;
+	RunLogEntry.Data.DataSec.MoonPWMDuty=40; //修正错误的占空比设置
+	RunLogEntry.Data.DataSec.MoonCurrent=0; //占空比设置已经损坏，需要重新学习月光档的电流设置
+	}
 }
 //从开灯状态切换到关灯状态的逻辑
 void TurnLightOFFLogic(void)
@@ -220,9 +224,6 @@ void TurnLightOFFLogic(void)
  SetAUXPWR(false);//切断3.3V辅助电源
  CurrentLEDIndex=0;
  LED_Reset();//复位LED管理器
- RunLogEntry.Data.DataSec.MoonPWMPIDIntegral=LED_Current_Integral;
- RunLogEntry.Data.DataSec.MoonPWMPIDLastError=LED_Current_Last_Error;//关灯的时候，存储本次的PID结果到ROM内
- RunLogEntry.Data.DataSec.MoonPWMDuty=SysPstatebuf.Duty;//存储占空比数值
  RunLogEntry.CurrentDataCRC=CalcRunLogCRC32(&RunLogEntry.Data); //计算新的CRC-32
  } 
 //放在系统延时里面进行积分的函数
@@ -352,7 +353,7 @@ void RuntimeModeCurrentHandler(void)
  ModeConfStr *CurrentMode;
  ADCOutTypeDef ADCO;
  bool IsCurrentControlledByMode;
- float Current,Throttle,DACVID,delta,Duty;
+ float Current,Throttle,DACVID,delta;
  /********************************************************
  运行时挡位处理的第一步.首先获取当前的挡位，然后我们使能ADC
  的转换负责获取LED的电流,温度和驱动功率管的温度,接下来就是
@@ -418,6 +419,15 @@ void RuntimeModeCurrentHandler(void)
  if(Current>FusedMaxCurrent)Current=FusedMaxCurrent;//限制算出的电流值,最小=0,最大为熔断限制值
  if(RunLogEntry.Data.DataSec.IsLowVoltageAlert&&Current>LVAlertCurrentLimit)
 	 Current=LVAlertCurrentLimit;//当低电压告警发生时限制输出电流 
+ /* 如果当前的MOS管温度大于80度，月光档会出现问题（没有输出）
+ 所以需要限制最小电流，温度下去后才能恢复月光档的使用*/
+ if(ADCO.SPSTMONState==SPS_TMON_OK) //检测MOS温度来控制是否允许月光档
+   {
+   if(ADCO.SPSTemp>85)IsDisableMoon=true; //MOSFET温度过高关闭月光档
+	 else if(ADCO.SPSTemp<55)IsDisableMoon=false; //恢复月光档的使用
+	 }
+ if(IsDisableMoon&&Current>0&&Current<2.1)Current=2.1;//MOSFET温度过高，限制月光档的使用
+ /* 存储处理之后的目标电流 */
  SysPstatebuf.TargetCurrent=Current;//存储下目标设置的电流给短路保护模块用
  /********************************************************
  运行时挡位处理的第四步,如果目前LED电流为0，为了避免红色LED
@@ -452,20 +462,36 @@ void RuntimeModeCurrentHandler(void)
 	   SetPWMDuty(0);		 
 	 else //正常求解
 		   {
-		   //根据实际LED电流和预设的偏差情况,对占空比进行PID控制
-		   delta=Current-LEDFilter(ADCO.LEDIf,LEDIfFilter,14); //求误差
-       LED_Current_Integral+=delta; 
-		   if(LED_Current_Integral<-97.3)LED_Current_Integral=-97.3;
-		   if(LED_Current_Integral>150)LED_Current_Integral=150; //积分限幅	   
-			 Duty=35+(delta*PWMDimmingKp+LED_Current_Integral*PWMDimmingKi+PWMDimmingKd*(delta-LED_Current_Last_Error));
-		   LED_Current_Last_Error=delta;
-			 delta=fabsf(SysPstatebuf.Duty-Duty);
-       if(fabsf(delta)>4)SysPstatebuf.Duty=Duty; //避免PID输出的过小变化影响占空比导致闪烁
-			 else if(fabsf(delta)>0.02)
+		   //当前月光档电流未锁相,对占空比进行控制以达到目标电流
+       if(Current!=RunLogEntry.Data.DataSec.MoonCurrent)
 			   {
-				 if(SysPstatebuf.Duty>Duty)SysPstatebuf.Duty-=0.005;
-				 else SysPstatebuf.Duty+=0.005;			   
-				 }		   
+				 delta=Current-LEDFilter(ADCO.LEDIf,LEDIfFilter,14); //求误差
+			   if(fabsf(delta)>0.75)//电流误差严重过高，开始大幅度修正
+				   {
+					 if(delta>0)SysPstatebuf.Duty+=0.5; //电流过小增大占空比
+					 else if(delta<0)SysPstatebuf.Duty-=0.5;//电流过大减小占空比
+					 }
+				 else if(fabsf(delta)>0.3)//电流误差过大，开始大幅度修正
+				   {
+					 if(delta>0)SysPstatebuf.Duty+=0.01; //电流过小增大占空比
+					 else if(delta<0)SysPstatebuf.Duty-=0.01;//电流过大减小占空比
+					 }					 
+				 else if(fabsf(delta)>0.03)//电流误差未到额定值，继续小幅度修正
+				   {
+					 if(delta>0)SysPstatebuf.Duty+=0.005; //电流过小增大占空比
+					 else if(delta<0)SysPstatebuf.Duty-=0.005;//电流过大减小占空比
+					 }
+				 else //电流到误差范围，锁定
+				   {
+				   RunLogEntry.Data.DataSec.MoonCurrent=Current;
+			     if(SysPstatebuf.Duty>100)SysPstatebuf.Duty=100;
+			     else if(SysPstatebuf.Duty<1)SysPstatebuf.Duty=1; //PWM占空比限幅
+				   RunLogEntry.Data.DataSec.MoonPWMDuty=SysPstatebuf.Duty; //存下已锁相的占空比和电流，关闭电流环路
+					 }
+				 }
+			 //占空比限幅和应用
+			 if(SysPstatebuf.Duty>100)SysPstatebuf.Duty=100;
+			 else if(SysPstatebuf.Duty<1)SysPstatebuf.Duty=1;
 			 SetPWMDuty(SysPstatebuf.Duty); //设置占空比
 			 }
 	 DACVID=0.08;  //80mV

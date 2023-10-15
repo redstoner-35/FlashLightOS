@@ -67,7 +67,11 @@ void LoadDefaultConf(void)
  #else
  CfgFile.IsHoldForPowerOn=true;//使用默认的操控逻辑，长按开关机	 
  #endif
+ #ifndef Firmware_UV_Mode	
  CfgFile.IsDriverLockedAfterPOR=false; //上电不自锁
+ #else
+ CfgFile.IsDriverLockedAfterPOR=true; //UV灯辐射功率很大，误开启会造成人眼灼伤，为了安全起见需要上电自锁	 
+ #endif
  CfgFile.PWMDIMFreq=20000;//20KHz调光频率
  CfgFile.DeepSleepTimeOut=8*DeepsleepDelay;//深度睡眠时间
  CfgFile.IdleTimeout=8*DefaultTimeOutSec; //定时器频率乘以超时时间得到超时值
@@ -90,9 +94,9 @@ void LoadDefaultConf(void)
 	 CfgFile.LEDIMONCalGain[i]=IMONGainSettings[i+SPSCompensateTableSize];
 	 }
  //恢复温控设置
- CfgFile.MOSFETThermalTripTemp=110; //MOS热跳闸为110度
+ CfgFile.MOSFETThermalTripTemp=135; //MOS热跳闸为135度
  #ifndef Firmware_UV_Mode	
- CfgFile.LEDThermalTripTemp=90; //LED热跳闸90度
+ CfgFile.LEDThermalTripTemp=80; //LED热跳闸80度
  if(ReadFRU(&FRU))IsUsingHighTemp=false;
  else if(!CheckFRUInfoCRC(&FRU))IsUsingHighTemp=false;
  else if(FRU.FRUBlock.Data.Data.FRUVersion[0]==0x08)IsUsingHighTemp=true; //SBT90.2 LED，使用较高温度墙
@@ -101,10 +105,10 @@ void LoadDefaultConf(void)
  CfgFile.PIDTargetTemp=IsUsingHighTemp?57:55; //PID目标温度
  CfgFile.PIDRelease=50; //当温度低于50度时，PID不调节 
  #else  //UV灯承受不了太高的温度所以需要下调温控设置
- CfgFile.LEDThermalTripTemp=85; //LED热跳闸85度
- CfgFile.PIDTriggerTemp=57; //当MOS和LED的平均温度等于57度时温控启动
- CfgFile.PIDTargetTemp=50; //PID目标温度50度
- CfgFile.PIDRelease=45; //当温度低于45度时，PID不调节  
+ CfgFile.LEDThermalTripTemp=70; //LED热跳闸70度
+ CfgFile.PIDTriggerTemp=60; //当MOS和LED的平均温度等于60度时温控启动
+ CfgFile.PIDTargetTemp=55; //PID目标温度55度
+ CfgFile.PIDRelease=50; //当温度低于50度时，PID不调节  
  #endif	 
  CfgFile.ThermalPIDKp=0.28;
  CfgFile.ThermalPIDKi=0.8;
@@ -118,7 +122,7 @@ void LoadDefaultConf(void)
  #ifndef Firmware_UV_Mode		 
  CfgFile.OverCurrentTrip=IsUsingHighTemp?20:15;// 如果是SBT90.2，则使用20A否则15A的电池端过流保护值
  #else
- CfgFile.OverCurrentTrip=15; //UV模式，电池端电流限制15A
+ CfgFile.OverCurrentTrip=12.5; //UV模式，电池端电流限制12.5A
  #endif
  } 
 //检查ROM中的数据是否损坏

@@ -73,7 +73,7 @@ void LoggerHeader_POR(void)
  ResetLoggerHeader_AutoUpdateTIM();//复位TIM
  if(!fetchloggerheader(&LoggerHdr))
   {
-	UartPost(Msg_critical,"Logger","Failed to load logger header from EEPROM,EEPROM is offline.");
+	UartPost(Msg_critical,"Logger","Failed to load logger header from EEPROM.");
 	SelfTestErrorHandler();
 	}
  //检查读出来的logger头部信息
@@ -86,7 +86,7 @@ void LoggerHeader_POR(void)
 		//从ROM内读取数据
 		if(!FetchLoggerData(&LogData,i))
       {
-	    UartPost(Msg_critical,"Logger","Failed to load logger data section #%d from EEPROM,EEPROM is offline.",i);
+	    UartPost(Msg_critical,"Logger","Failed to load logger data section #%d from EEPROM.",i);
 	    SelfTestErrorHandler();
 	    }
 	  //验证log entry的CRC32，如果不一致，则写入数据
@@ -94,8 +94,7 @@ void LoggerHeader_POR(void)
 		if(CRCResult!=LoggerHdr.LoggerHeader.EntryCRC[i])
 		  {
 		  HeaderUpdated=true;
-			UartPost(Msg_warning,"Logger","Find broken error log entry #%d in ROM,overwriting...",i);
-			UartPost(Msg_warning,"Logger","Expected CRC32 value is 0x%08X but get 0x%08X",LoggerHdr.LoggerHeader.EntryCRC[i],CRCResult);
+			UartPost(Msg_warning,"Logger","Expected CRC32 value of log entry #%d is 0x%08X but get 0x%08X",i,LoggerHdr.LoggerHeader.EntryCRC[i],CRCResult);
 			PushDefaultInfoInsideLog(&LogData);
 			LoggerHdr.LoggerHeader.IsEntryHasError[i]=false;
 		  LoggerHdr.LoggerHeader.EntryCRC[i]=calculateLogEntryCRC32(&LogData);//加入默认配置并计算CRC-32

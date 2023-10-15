@@ -88,10 +88,9 @@ void runlogviewHandler(void)
 		UartPrintf("%s峰值运行效率 : %.1f%%",Rlvstr[1],RunLogEntry.Data.DataSec.MaximumEfficiency);
 		UartPrintf("%s是否锁定 : %s",Rlvstr[2],RunLogEntry.Data.DataSec.IsFlashLightLocked?"是":"否");
 		UartPrintf("%s强制极亮次数 : %d",Rlvstr[2],RunLogEntry.Data.DataSec.TotalMomtTurboCount);
-		if(AccountState==Log_Perm_Root) //额外的PID参数显示
+		if(AccountState==Log_Perm_Root) //额外的月光档参数显示
 		  {
-		  UartPrintf("%sPID_I : %.2f",Rlvstr[2],RunLogEntry.Data.DataSec.MoonPWMPIDIntegral);
-	    UartPrintf("%sPID_LastErr : %.2f",Rlvstr[2],RunLogEntry.Data.DataSec.MoonPWMPIDLastError);	
+		  UartPrintf("%sMoon_Current : %.2fA",Rlvstr[2],RunLogEntry.Data.DataSec.MoonCurrent);
 		  UartPrintf("%sPWM_Duty : %.2f%%",Rlvstr[2],RunLogEntry.Data.DataSec.MoonPWMDuty);
 			}
 		PrintStatuBar("电池输入");

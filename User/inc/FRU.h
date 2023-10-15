@@ -7,8 +7,8 @@
 //处理UV模式的自动define
 #ifdef Firmware_UV_Mode
  #define FRUVer 0x03 //使用通用的3V LED标准
- #if (MaxAllowedLEDCurrent > 28)
- #error "Maxmium current should not larger that 28 Amps for 8 XM-L UV LEDs!"
+ #if (MaxAllowedLEDCurrent > 30)
+ #error "Maxmium current should not larger that 30 Amps for 8 XM-L UV LEDs!"
  #endif
 #endif
 

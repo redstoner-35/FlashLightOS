@@ -9,7 +9,7 @@
 //内部和外部变量
 volatile SYSPStateStrDef SysPstatebuf;
 extern int AutoOffTimer;
-const char *ErrorStrDuringPost="上电自检期间";
+const char *ErrorStrDuringPost="上电自检时";
 
 /*  辅助电源引脚的自动define,不允许修改！  */
 #define AUXPWR_EN_IOB STRCAT2(GPIO_P,AUXPWR_EN_IOBank)
@@ -50,7 +50,7 @@ void DriverLockPOR(void)
 	if(CfgFile.IsDriverLockedAfterPOR)IsLightNeedtolock=true; 
 	else IsLightNeedtolock=RunLogEntry.Data.DataSec.IsFlashLightLocked; 
 	SysPstatebuf.Pstate=IsLightNeedtolock?PState_Locked:PState_Standby;//根据配置文件配置为locked或者状态
-	UartPost(Msg_info,"PORLock","Flash light will be set to %s state after selftest is done.",IsLightNeedtolock?"locked":"unlocked");
+	UartPost(Msg_info,"PORLock","Flash light has been set to %slocked state.",IsLightNeedtolock?"":"un");
 	//将变更后的手电锁定状态写入到ROM
 	if(!IsRunTimeLoggingEnabled)return;
 	if(IsRunTimeLoggingEnabled)CalcLastLogCRCBeforePO();//填写数据前更新运行log的CRC32
@@ -87,6 +87,7 @@ void PStateStateMachine(void)
 	bool LongPressOnce,LongPressHold,DoubleClickHold;
 	bool IsPowerOn;
 	int ShortPress;
+	ModeConfStr *CurrentMode;
 	INADoutSreDef BattO;
   //获取侧按按钮的操作(按下并按住，短按，长按等等)
 	LongPressHold=getSideKeyHoldEvent(); 
@@ -111,6 +112,10 @@ void PStateStateMachine(void)
 				ForceWriteRuntimelog();//尝试写ROM
 				CurrentLEDIndex=25;
 				SysPstatebuf.Pstate=PState_Standby; 
+				//解锁时如果位于的挡位大于额定功率的一半则执行跳档,避免解锁之后开幕雷击伤人
+        CurrentMode=GetCurrentModeConfig();
+        if(CurrentMode==NULL)break;//当前挡位为空
+			  if(CurrentMode->LEDCurrentHigh>=(FusedMaxCurrent/2))ModeNoMemoryRollBackHandler();
 				}
 			//其余任何按键情况，手电红色灯闪烁三次表示已锁定
 			else if(ShortPress||LongPressOnce||DoubleClickHold||LongPressHold||getSideKeyTripleClickAndHoldEvent())

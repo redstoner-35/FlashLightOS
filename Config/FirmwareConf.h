@@ -7,7 +7,7 @@
 
 #define MajorVersion 1
 #define MinorVersion 6
-#define HotfixVersion 2  //固件版本号
+#define HotfixVersion 5  //固件版本号
 
 //固件模式配置
 //#define Firmware_UV_Mode //适用于UV LED的特殊模式
@@ -21,7 +21,7 @@
 #define BreathTIMFreq 50 //负责生成平滑呼吸灯效果的定时器频率(单位Hz)，越高越平滑
 #define GammaCorrectionValue 2.45   //亮度拟合曲线的gamma修正，根据不同LED有所不同
 #define LVAlertCurrentLimit 8 //当低电压警告触发后，驱动最大的输出电流值(A)
-#define MaxAllowedLEDCurrent 28 //驱动硬件熔断的最大输出电流设置(测得电流超过此电流的1.2倍将触发保护)
+#define MaxAllowedLEDCurrent 50 //驱动硬件熔断的最大输出电流设置(测得电流超过此电流的1.2倍将触发保护)
 #define MinimumLEDCurrent 0.4 //最小的LED电流
 #define BatteryCellCount 3 //默认情况下驱动使用的电池组中锂电池的串数(按照三元锂电池计算)
 #define DeepsleepDelay 40 //驱动的出厂深度睡眠时间,40秒内没有操作则睡眠
@@ -47,19 +47,15 @@
 #define UsingEE_24C512 //使用24C512
 //#define UsingEE_24C256 //使用24C256
 
-//调光和自检运行参数
+//自检运行参数
 #define StartupAUXPSUPGCount 4 //启动过程中等待电源PG的等待时间
 #define StartUpInitialVID 15 //启动过程中的初始VID值
 #define StartupLEDVIDStep 1.0 //启动过程中LED VID上升的速度
-#define PWMDimmingKp 7.27
-#define PWMDimmingKi 0.51
-#define PWMDimmingKd 0.43  //PWM电流控制的Kp Ki Kd
 
 //SPS功率级的温度和电流反馈参数配置
 #define SPSIMONDiffOpGain 50 //SPS电流差分采样放大器的增益，单位*V/V
 #define SPSIMONScale 5 //电流回报数值，单位uA/A
 #define SPSIMONShunt 200 //SPS的电流回报分压电阻，单位欧姆
-
 #define SPSTMONScale 8 //温度回报数值，单位mV/℃
 #define SPSTMONStdVal 0.6 //SPS为0度时的温度，单位V
 

@@ -30,8 +30,7 @@ typedef struct
  float MaximumBatteryPower;  //平均和最大电池输出功率
  float AverageDriverEfficiency;  //平均驱动运行效率
  float MaximumEfficiency;//峰值效率
- float MoonPWMPIDIntegral;
- float MoonPWMPIDLastError; //月光档PID的累计数值
+ float MoonCurrent; //月光档的电流值
  float MoonPWMDuty; //月光档的PWM占空比
  double TotalBatteryCapDischarged;  //总共电池放电的mAH数
  float RampModeConf; //无极调光模式的目前挡位

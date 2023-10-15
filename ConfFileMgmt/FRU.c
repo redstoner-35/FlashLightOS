@@ -27,7 +27,7 @@ void SetLEDVfMinMax(FRUBlockUnion *FRU)
 		#ifndef Firmware_UV_Mode
 		case 0x03:LEDVfMin=1.95;LEDVfMax=4.2;break; //通用3V LED、蓝色SBT70
 		#else
-    case 0x03:LEDVfMin=2.3;LEDVfMax=4.5;break; //使用8颗XM-L UV灯,Vf为2.3-4.5V
+    case 0x03:LEDVfMin=2.4;LEDVfMax=4.0;break; //使用8颗XM-L UV灯,Vf为2.4-4.0V
     #endif	
 		case 0x04:LEDVfMin=1.4;LEDVfMax=3.2;;break;//红色SBT90
 		case 0x05:LEDVfMin=1.85;LEDVfMax=4.9;break; //绿色SBT70
@@ -48,7 +48,7 @@ float QueryMaximumCurrentLimit(FRUBlockUnion *FRU)
 		#ifndef Firmware_UV_Mode
 		case 0x03:result=50;break;
 		#else
-    case 0x03:result=27.5;break; //使用8颗XM-L UV灯，最大电流27.5A
+    case 0x03:result=30;break; //使用8颗XM-L UV灯，最大电流30A
     #endif			
 		case 0x04:result=25;break;
 		case 0x05:result=14;break;
@@ -71,7 +71,7 @@ const char *DisplayLEDType(FRUBlockUnion *FRU)
   switch(FRU->FRUBlock.Data.Data.FRUVersion[0]) //显示LED型号
 		{
 		#ifndef Firmware_UV_Mode
-		case 0x03:return "Generic 3V";
+		case 0x03:return "SFT-40*8";
 		#else
     case 0x03:return "XM-L-365UV*8"; 
     #endif				

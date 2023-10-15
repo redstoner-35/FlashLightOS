@@ -4,14 +4,14 @@ bool IsUsingOtherKeySet = true;
 unsigned int GenerateSeqCodeForAES(void);
 
 //key set 1
-const unsigned int KeyBox[Nk]=
+static const unsigned int KeyBox[Nk]=
  {
  0x4F37AD24,0x3EA795DC,0x76e4a3b,0x7A46CED6,
  0xA87E5F4B,0x1C456BA6,0xA746D5C4,0xA69d34E7 
  };
 
 //key set 2
-const unsigned int KeyBox2[Nk]=
+static const unsigned int KeyBox2[Nk]=
  {
  0x351DA345,0xA896FEC2,0x7BA3590D,0x5BC32544,
  0x94A6D158,0x9B10ADF5,0x3FE65A8B,0x6418ADBE
