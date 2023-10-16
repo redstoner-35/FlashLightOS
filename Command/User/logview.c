@@ -134,7 +134,7 @@ void logviewhandler(void)
 		 UartPrintf((char *)LogVIewAlertStr[6],"详细");
 		 UartPrintf("%s日志CRC32数值 : 0x%08X",LogVIewAlertStr[4],calculateLogEntryCRC32(&LogData));
 		 UartPrintf("%s错误类型 : %s",LogVIewAlertStr[4],ErrorString);
-		 UartPrintf("%s错误发生时的位置 : %s",LogVIewAlertStr[4],LogData.LoggerDateSection.ErrorStageText);
+		 UartPrintf("%s错误位置 : %s",LogVIewAlertStr[4],LogData.LoggerDateSection.ErrorStageText);
 		 UartPrintf("%s------------  详细参数记录  ------------",LogVIewAlertStr[4]);
 		 UartPrintf("%s系统电源状态(P-State) : %s",LogVIewAlertStr[4],PstateString);
 		 UartPrintf("%s调光模式 : %s",LogVIewAlertStr[4],LogData.LoggerDateSection.IsLinearDim?"线性":"PWM");

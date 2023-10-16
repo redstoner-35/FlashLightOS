@@ -22,6 +22,10 @@ static float LEDIfFilter[14];
 static float CurrentSynthRatio=100;  //电流合成比例
 static char ShortCount=0;
 static bool IsDisableMoon; //是否关闭月光档
+unsigned char PSUState=0x00; //辅助电源的状态
+
+//外部变量
+extern float UnLoadBattVoltage; //没有负载时的电池电压
 extern float LEDVfMin;
 extern float LEDVfMax; //LEDVf限制
 
@@ -45,7 +49,7 @@ const float DimmingCompTable[]=
 
 
 //字符串
-const char *SPSFailure="SPS %sreports %s signal during init.";
+const char *SPSFailure="SPS %sreports %s during init.";
 const char *DidnotStr="did Not ";
 
 //LED短路,温度检测和电流合成环检测部分的简易数字滤波器（避免PWM调光时某一瞬间的波动）
@@ -223,6 +227,7 @@ void TurnLightOFFLogic(void)
  INA219_SetConvMode(INA219_PowerDown,INA219ADDR);//关闭INA219功率计
  SetAUXPWR(false);//切断3.3V辅助电源
  CurrentLEDIndex=0;
+ PSUState=0x00;//关闭主电源控制的定时器
  LED_Reset();//复位LED管理器
  RunLogEntry.CurrentDataCRC=CalcRunLogCRC32(&RunLogEntry.Data); //计算新的CRC-32
  } 
@@ -303,6 +308,7 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
  //检查INA219读取到的电池电压确保电压合适
  if(BattOutput->BusVolt<=CfgFile.VoltageTrip||BattOutput->BusVolt>CfgFile.VoltageOverTrip) 
 	 return BattOutput->BusVolt>CfgFile.VoltageOverTrip?Error_Input_OVP:Error_Input_UVP;
+ UnLoadBattVoltage=BattOutput->BusVolt;//存储空载时的电池电压
  /********************************************************
  电流协商开始,此时系统将会逐步增加DAC的输出值使得电流缓慢
  爬升到0.5A的小电流.系统将会在协商结束后检测LED的If和Vf和
@@ -353,12 +359,14 @@ void RuntimeModeCurrentHandler(void)
  ModeConfStr *CurrentMode;
  ADCOutTypeDef ADCO;
  bool IsCurrentControlledByMode;
+ volatile bool IsMainLEDEnabled,IsNeedToEnableBuck;
  float Current,Throttle,DACVID,delta;
  /********************************************************
  运行时挡位处理的第一步.首先获取当前的挡位，然后我们使能ADC
  的转换负责获取LED的电流,温度和驱动功率管的温度,接下来就是
  根据我们读取到的温度和电流执行各种保护
  ********************************************************/
+ IsMainLEDEnabled=SysPstatebuf.ToggledFlash; //读取当前主LED的控制位
  CurrentMode=GetCurrentModeConfig();
  if(!ADC_GetResult(&ADCO))//令ADC得到温度和电流
      {
@@ -419,12 +427,14 @@ void RuntimeModeCurrentHandler(void)
  if(Current>FusedMaxCurrent)Current=FusedMaxCurrent;//限制算出的电流值,最小=0,最大为熔断限制值
  if(RunLogEntry.Data.DataSec.IsLowVoltageAlert&&Current>LVAlertCurrentLimit)
 	 Current=LVAlertCurrentLimit;//当低电压告警发生时限制输出电流 
+ if(RunLogEntry.Data.DataSec.IsLowQualityBattAlert)
+   Current=(CurrentMode->LEDCurrentHigh>(0.5*FusedMaxCurrent)) ?Current*0.6:Current;  //电池质量太次，限制电流
  /* 如果当前的MOS管温度大于80度，月光档会出现问题（没有输出）
  所以需要限制最小电流，温度下去后才能恢复月光档的使用*/
  if(ADCO.SPSTMONState==SPS_TMON_OK) //检测MOS温度来控制是否允许月光档
    {
-   if(ADCO.SPSTemp>85)IsDisableMoon=true; //MOSFET温度过高关闭月光档
-	 else if(ADCO.SPSTemp<55)IsDisableMoon=false; //恢复月光档的使用
+   if(ADCO.SPSTemp>80)IsDisableMoon=true; //MOSFET温度过高关闭月光档
+	 else if(ADCO.SPSTemp<60)IsDisableMoon=false; //恢复月光档的使用
 	 }
  if(IsDisableMoon&&Current>0&&Current<2.1)Current=2.1;//MOSFET温度过高，限制月光档的使用
  /* 存储处理之后的目标电流 */
@@ -433,10 +443,11 @@ void RuntimeModeCurrentHandler(void)
  运行时挡位处理的第四步,如果目前LED电流为0，为了避免红色LED
  鬼火，程序会把LED的主buck相关的电路关闭。
  ********************************************************/
- if(Current==0||!SysPstatebuf.ToggledFlash)	 
-	 SetAUXPWR(false);
+ if(Current==0||!IsMainLEDEnabled)	 
+	 PSUState|=0x80; //额定LED电流为0或者toggle模式需要关闭主灯,启动计时器
  else
-	 SetAUXPWR(true);  	 
+	 PSUState=0x00; //电源开启 
+ SetAUXPWR((PSUState==0x8A)?false:true); //控制辅助电源引脚
  /********************************************************
  运行时挡位处理的第五步,将计算出的电流通过PWM调光和DAC线
  性调光混合的方式把LED调节到目标的电流实现挡位控制（这是对
@@ -458,7 +469,7 @@ void RuntimeModeCurrentHandler(void)
 		   RunTimeErrorReportHandler(Error_ADC_Logic);
 		   return;
 	     }
-   if(!SysPstatebuf.ToggledFlash)//特殊功能控制量请求关闭LED,不执行电流控制输出	
+   if(!IsMainLEDEnabled)//特殊功能控制量请求关闭LED,不执行电流控制输出	
 	   SetPWMDuty(0);		 
 	 else //正常求解
 		   {
@@ -487,7 +498,7 @@ void RuntimeModeCurrentHandler(void)
 			     if(SysPstatebuf.Duty>100)SysPstatebuf.Duty=100;
 			     else if(SysPstatebuf.Duty<1)SysPstatebuf.Duty=1; //PWM占空比限幅
 				   RunLogEntry.Data.DataSec.MoonPWMDuty=SysPstatebuf.Duty; //存下已锁相的占空比和电流，关闭电流环路
-					 }
+					 } 
 				 }
 			 //占空比限幅和应用
 			 if(SysPstatebuf.Duty>100)SysPstatebuf.Duty=100;
@@ -502,20 +513,20 @@ void RuntimeModeCurrentHandler(void)
 	 {
    DACVID=Current*30;  //计算DAC的VID,公式为:VID=(30mV*offset*LEDIf(A))+23mV 
 	 DACVID/=QueueLinearTable(5,Current,(float *)&DimmingCompTable[0],(float *)&DimmingCompTable[5]);//除以补偿系数得到补偿后的VID
-	 if(CurrentMode->Mode==LightMode_Breath)CurrentSynthRatio=100;//呼吸模式不使用线性调光
+	 if(CurrentMode->Mode!=LightMode_On&&CurrentMode->Mode!=LightMode_Ramp)CurrentSynthRatio=100;//不是常亮和无极调光模式，不使用电流补偿
 	 else if(fabsf(Current-ADCO.LEDIf)>0.02) 
 	   { 
 	   if(Current>ADCO.LEDIf)CurrentSynthRatio=CurrentSynthRatio<110?CurrentSynthRatio+0.1:110; 
 	   else CurrentSynthRatio=CurrentSynthRatio>50?CurrentSynthRatio-0.1:50;
 		 }
 	 DACVID+=23;//加上23mV的offset 
-	 DACVID*=CurrentSynthRatio/(float)100; //乘上自适应电流补偿系数
+	 DACVID*=(CurrentSynthRatio/(float)100); //乘上自适应电流补偿系数
 	 DACVID/=1000;//mV转换为V
 	 SysPstatebuf.IsLinearDim=true;
-	 SetPWMDuty(!SysPstatebuf.ToggledFlash?0:100); //纯线性调光,PWM占空比仅受特殊功能控制量在0-100之间转换
+	 SetPWMDuty((IsMainLEDEnabled==false)?0:100); //纯线性调光,PWM占空比仅受特殊功能控制量在0-100之间转换
 	 }
  /*  根据目标的DAC VID(电压值) 发送指令控制DAC输出  */
- SysPstatebuf.CurrentDACVID=DACVID;//将当前DAC的VID记录下来用于事件日志
+ SysPstatebuf.CurrentDACVID=DACVID*1000;//将当前DAC的VID记录下来用于事件日志
  if(!AD5693R_SetOutput(DACVID))
    {
 	 //DAC对于发送的指令没有回应无法设置输出,这是严重故障,立即写log并停止驱动运行
@@ -533,9 +544,10 @@ void RuntimeModeCurrentHandler(void)
 		 RunTimeErrorReportHandler(Error_ADC_Logic);
 		 return;
 	   }
- if(Current>0&&SysPstatebuf.ToggledFlash)//额定电流大于0且LED被启动才积分
+ if(IsMainLEDEnabled&&Current>0)//额定电流大于0且LED被启动才积分
      {
-     if(LEDFilter(ADCO.LEDVf,LEDVfFilterBuf,12)>LEDVfMin)SysPstatebuf.IsLEDShorted=false; //LEDVf大于短路保护值，正常运行
+		 if(ADCO.LEDIf<MinimumLEDCurrent)SysPstatebuf.IsLEDShorted=false;//当前LED没有电流，禁止检测	 
+     else if(LEDFilter(ADCO.LEDVf,LEDVfFilterBuf,12)>LEDVfMin)SysPstatebuf.IsLEDShorted=false; //LEDVf大于短路保护值，正常运行
      else SysPstatebuf.IsLEDShorted=true;
      }
  }

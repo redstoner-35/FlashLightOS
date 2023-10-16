@@ -21,6 +21,7 @@ RunLogEntryStrDef RunLogEntry;
 
 //外部变量
 extern float UsedCapacity;
+extern unsigned char PSUState;
 
 /*******************************************
 在驱动正常运行时，读取LED和电池信息并记录到
@@ -83,7 +84,7 @@ void RunTimeDataLogging(void)
  //实现LED运行时间和库仑计积分的模块 
  if(SysPstatebuf.ToggledFlash)RunLogEntry.Data.DataSec.LEDRunTime+=0.125;//如果LED激活，则运行时间每次加1/8秒
  Buf=(double)RunTimeBattTelemResult.BusCurrent*(double)1000;//将A转换为mA方便积分
- Buf+=SysPstatebuf.ToggledFlash?50:17;//加上17mA(驱动处于灭灯状态)50mA(驱动处于开灯状态)的驱动本底消耗数值
+ Buf+=(PSUState!=0x8A)?50:17;//加上17mA(驱动处于灭灯状态)50mA(驱动处于开灯状态)的驱动本底消耗数值
  Buf*=0.125;//将mA转换为mAS(每秒的毫安数，这里乘以0.125是因为每秒钟会积分8次)
  Buf/=(double)(60*60);//将mAS转换为mAH累加到缓冲区内
  UsedCapacity+=(float)Buf; //已用容量加上本次的结果
@@ -328,6 +329,7 @@ void LogDataSectionInit(RunLogDataUnionDef *DIN)
 	DIN->DataSec.ThermalStepDownValue=0;
 	DIN->DataSec.IsRunlogHasContent=false;
 	DIN->DataSec.RampModeConf=0;
+	DIN->DataSec.IsLowQualityBattAlert=false;
 	DIN->DataSec.LowVoltageShutDownCount=0;
 	DIN->DataSec.DriverThermalFaultCount=0;
 	DIN->DataSec.LEDThermalFaultCount=0;

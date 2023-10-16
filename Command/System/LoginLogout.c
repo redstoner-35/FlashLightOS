@@ -1,6 +1,7 @@
 #include "cfgfile.h"
 #include "console.h"
 #include <string.h>
+#include "runtimelogger.h"
 
 unsigned int LogErrTimer=0;
 unsigned int PunishSec=80;
@@ -56,7 +57,7 @@ void LoginHandler(void)
 		//认证结束
 		if(Verifystat==ACC_Verify_OK)
 		  {
-			UARTPuts("\r\n登录完毕，您当前以");
+			UARTPuts("\r\n登录完毕,您当前以");
 			if(TargetAccount==VerifyAccount_Admin)
 			  {
 				UARTPuts("管理员");
@@ -68,6 +69,12 @@ void LoginHandler(void)
 				AccountState=Log_Perm_Root;							
 				}
 			UARTPuts("的身份登录.");
+			if(RunLogEntry.Data.DataSec.IsLowQualityBattAlert) //电池质量警告生效
+			  {
+			  UARTPuts("\r\n\r\n警告:您使用的电池无法满足放电需求,为了保证电池和您的安全,手电将会被暂时");
+			  UartPrintf("\r\n被限制为60%的功率.您需要为这把手电准备至少需要放电能力大于%.2fA的锂电池.",CfgFile.OverCurrentTrip*1.15);
+				UARTPuts("\r\n为了您的安全,请尽快更换高性能电池,然后使用'battcfg -crst'命令消除告警.\r\n");
+				}
 	    if(CfgFile.IdleTimeout>0)IdleTimer=CfgFile.IdleTimeout;//重置登录超时计时器
 			TargetAccount=VerifyAccount_None;
 			CmdHandle=Command_None;//命令执行完毕
@@ -78,7 +85,7 @@ void LoginHandler(void)
 			UARTPuts("\r\n您提供的凭据无效,登录失败.");
 			LogErrTimer=PunishSec;
 			PunishSec*=2;
-			UARTPuts("\r\n为了保证安全，在重新尝试登录前您需等待");
+			UARTPuts("\r\n为了保证安全,在重新尝试登录前您需等待");
       DisplayLoginDelayTime();
 			AccountState=Log_Perm_Guest;
 			TargetAccount=VerifyAccount_None;

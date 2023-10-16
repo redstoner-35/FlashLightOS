@@ -2,12 +2,12 @@
 #define _FirmwareConf_
 
 //版本信息
-#define HardwareMajorVer 1
-#define HardwareMinorVer 1  //硬件版本号
+#define HardwareMajorVer 2
+#define HardwareMinorVer 0  //硬件版本号
 
 #define MajorVersion 1
 #define MinorVersion 6
-#define HotfixVersion 5  //固件版本号
+#define HotfixVersion 7  //固件版本号
 
 //固件模式配置
 //#define Firmware_UV_Mode //适用于UV LED的特殊模式
@@ -66,6 +66,6 @@
 #define NTCT0 25 //NTC电阻的标定温度，一般是25℃
 
 //ADC模拟电压参考电压
-#define ADC_AVRef 3.2795 //实际的ADC电压参考值
+#define ADC_AVRef 3.2985 //实际的ADC电压参考值
 
 #endif

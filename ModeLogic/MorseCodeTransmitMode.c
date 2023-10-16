@@ -29,6 +29,7 @@ MorseCode_StringDoneWait//整个字符串发送完毕，等待
 //静态变量
 static unsigned char MosSeqPtr=0;//摩尔斯序列的指针
 static unsigned char MosStrPtr=0;//要被发送的字符串的指针
+static unsigned char MosGapTIM=0;//摩尔斯发送器实现字符串长短控制的计时器
 static char *Text=NULL;//需要送出的字符串指针
 static char MorseWaitTimer=0;//静态变量，等待
 static MorseSendStateDef MorseSendState=MorseCode_LoadString;
@@ -38,6 +39,7 @@ void MorseSenderReset(void)
  {
  MosStrPtr=0;//要被发送的字符串的指针
  MosSeqPtr=0;//摩尔斯序列的指针
+ MosGapTIM=0;//复位计时器
  Text=NULL;//需要送出的字符串指针
  MorseWaitTimer=0;//静态变量，等待
  MorseSendState=MorseCode_LoadString;
@@ -48,49 +50,49 @@ static const char *GetMorseSequenceFromASCII(char ASCIIIn)
  {
   switch(ASCIIIn)
    {
-	 case 'A':return "101110";  //.-
-	 case 'B':return "1110101010";  //-...
-	 case 'C':return "111010111010";  //-.-.
-	 case 'D':return "11101010";  //-.. 
-	 case 'E':return "10";  //.
-	 case 'F':return "1010111010";  //..-.
-	 case 'G':return "1110111010";  //--.
-	 case 'H':return "10101010";  //.... 
-	 case 'I':return "1010";  //..
-	 case 'J':return "10111011101110";  //.---
-	 case 'K':return "1110101110";  //-.-
-	 case 'L':return "1011101010";  //.-..
-	 case 'M':return "11101110";  //--
-	 case 'N':return "111010";  //-.
-	 case 'O':return "111011101110";  //---
-	 case 'P':return "101110111010";  //.--.
-   case 'Q':return "11101110101110";  //--.-		 
-	 case 'R':return "10111010";  //.-.
-	 case 'S':return "101010";  //...
-	 case 'T':return "1110";  //-
-	 case 'U':return "10101110";  //..-
-	 case 'V':return "1010101110";  //...-
-	 case 'W':return "1011101110";  //.--
-	 case 'X':return "111010101110";  //-..-
-	 case 'Y':return "11101011101110";  //-.--
-	 case 'Z':return "111011101010";  //--..
-	 case '1':return "101110111011101110";  //.----
-	 case '2':return "1010111011101110";  //..---
-	 case '3':return "10101011101110";  //...--
-	 case '4':return "101010101110";  //....-
-	 case '5':return "1010101010";  //.....
-	 case '6':return "111010101010";  //-....
-	 case '7':return "11101110101010";  //--...
-	 case '8':return "1110111011101010";  //---..
-	 case '9':return "111011101110111010";  //----.
-	 case '0':return "11101110111011101110";  //-----
-	 case '?':return "1010111011101010";  //..--..
-	 case '/':return "111011101010111010";  //--..-.
+	 case 'A':return ".-";  //.-
+	 case 'B':return "-...";  //-...
+	 case 'C':return "-.-.";  //-.-.
+	 case 'D':return "-..";  //-.. 
+	 case 'E':return ".";  //.
+	 case 'F':return "..-.";  //..-.
+	 case 'G':return "--.";  //--.
+	 case 'H':return "....";  //.... 
+	 case 'I':return "..";  //..
+	 case 'J':return ".---";  //.---
+	 case 'K':return "-.-";  //-.-
+	 case 'L':return ".-..";  //.-..
+	 case 'M':return "--";  //--
+	 case 'N':return "-.";  //-.
+	 case 'O':return "---";  //---
+	 case 'P':return ".--.";  //.--.
+   case 'Q':return "--.-";  //--.-		 
+	 case 'R':return ".-.";  //.-.
+	 case 'S':return "...";  //...
+	 case 'T':return "-";  //-
+	 case 'U':return "..-";  //..-
+	 case 'V':return "...-";  //...-
+	 case 'W':return ".--";  //.--
+	 case 'X':return "-..-";  //-..-
+	 case 'Y':return "-.--";  //-.--
+	 case 'Z':return "--..";  //--..
+	 case '1':return ".----";  //.----
+	 case '2':return "..---";  //..---
+	 case '3':return "...--";  //...--
+	 case '4':return "....-";  //....-
+	 case '5':return ".....";  //.....
+	 case '6':return "-....";  //-....
+	 case '7':return "--...";  //--...
+	 case '8':return "---..";  //---..
+	 case '9':return "----.";  //----.
+	 case '0':return "-----";  //-----
+	 case '?':return "..--..";  //..--..
+	 case '/':return "--..-.";  //--..-.
 	 case '(':
-	 case ')':return "11101011101110101110";  //-.--.-
+	 case ')':return "-.--.-";  //-.--.-
 	 case '-':
-	 case '_':return "1110101010101110";  //-....-
-	 case '.':return "101110101110101110";  //.-.-.-
+	 case '_':return "-....-";  //-....-
+	 case '.':return ".-.-.-";  //.-.-.-
 	 }
  return NULL;
  }
@@ -117,15 +119,24 @@ static bool MorseLetterTrasnsmit(char Letter)
 	 SysPstatebuf.ToggledFlash=false;//关闭LED
 	 return true;//发送完毕
 	 }
- else if(Morseq[MosSeqPtr]=='0'||Morseq[MosSeqPtr]=='1')
+ else if(MosGapTIM>0)
    {
-	 SysPstatebuf.ToggledFlash=Morseq[MosSeqPtr]=='1'?true:false;//1等于灯亮，0等于灯灭
-	 MosSeqPtr++;//指向下一个内容
+   if(MosGapTIM==1)SysPstatebuf.ToggledFlash=false;//等于1的时候关闭LED
+   MosGapTIM--; //定时器继续计时
 	 }
- else //其余字符，表明已经发送完毕
-   {	 
-	 SysPstatebuf.ToggledFlash=false;//关闭LED
-	 return true;//发送完毕
+ else 
+   {
+   switch(Morseq[MosSeqPtr]) //进行解析
+			{
+			case '.': MosGapTIM=1;break;//发送.
+			case '-': MosGapTIM=3;break;//发送-
+			default: //发送完毕
+				MosGapTIM=0; //定时器为0
+				SysPstatebuf.ToggledFlash=false;//关闭LED
+				return true;//发送完毕
+	    }
+	 SysPstatebuf.ToggledFlash=MosGapTIM>0?true:false;//发送'.'或者'-',打开LED否则关闭LED
+	 MosSeqPtr++;//指向序列内的下一个内容
 	 }
  return false;//发送未完毕，继续
  }
@@ -149,6 +160,7 @@ void MorseSenderStateMachine(void)
 		 else Text=CurrentMode->MosTransStr;//
 		 MosSeqPtr=0;
 		 MosStrPtr=0;//重置字符串和单个字母发送序列的指针
+		 MosGapTIM=0;//复位计时器
 		 MorseSendState=MorseCode_SendingLetter;//跳转到发送字母
 		 break;
 		 }

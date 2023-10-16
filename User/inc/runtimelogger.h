@@ -37,6 +37,7 @@ typedef struct
  bool RampModeDirection; //无极调光模式的方向
  bool IsFlashLightLocked; //手电筒是否锁定
  bool IsLowVoltageAlert; //是否低电压报警
+ bool IsLowQualityBattAlert; //是否有电池质量不佳的告警
  unsigned short TotalMomtTurboCount; //总计强制极亮次数
  unsigned short LowVoltageShutDownCount;//低电压关机次数统计
  unsigned short DriverThermalFaultCount;//驱动因为严重过热关机的次数统计

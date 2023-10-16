@@ -165,9 +165,11 @@ extern bool RXTimerFilpFlag;
 void IdleTimerCallback(void); 
 void reboot_TIM_Callback(void);
 extern bool DeepSleepTimerFlag;
+extern unsigned char PSUState;
  
 void GPTM0_IRQHandler(void)
  {
+	 unsigned char buf;
    //更新事件标志位使能
 	 if(TM_GetFlagStatus(HT_GPTM0,TM_INT_UEV))
 	  {
@@ -181,6 +183,14 @@ void GPTM0_IRQHandler(void)
     if(LogErrTimer>0)LogErrTimer--;			
 	  IdleTimerCallback();//超时计时器
 	  SideKey_TIM_Callback();//侧按按键计时器
+	  //主电源延时关闭计时器
+		if(PSUState&0x80)	
+		  {
+			buf=PSUState&0x7F;
+			if(buf<0x0A)buf++;
+		  PSUState&=0x80; 
+		  PSUState|=buf;  //计时器被使能，开始累加
+			}
 		}
  }
  

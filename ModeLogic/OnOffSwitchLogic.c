@@ -118,8 +118,15 @@ void PStateStateMachine(void)
 			  if(CurrentMode->LEDCurrentHigh>=(FusedMaxCurrent/2))ModeNoMemoryRollBackHandler();
 				}
 			//其余任何按键情况，手电红色灯闪烁三次表示已锁定
-			else if(ShortPress||LongPressOnce||DoubleClickHold||LongPressHold||getSideKeyTripleClickAndHoldEvent())
-				CurrentLEDIndex=27;
+			else if(
+			  getSideKeyClickAndHoldEvent()||
+			  ShortPress||
+			  LongPressOnce||
+			  DoubleClickHold||
+			  LongPressHold||
+			  getSideKeyTripleClickAndHoldEvent()
+			       )
+			  CurrentLEDIndex=27;
 			//时间到，深度睡眠
 			else if(DeepSleepTimer==0)
 				SysPstatebuf.Pstate=PState_DeepSleep; 

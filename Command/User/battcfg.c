@@ -8,6 +8,7 @@
 //外部变量
 const char *IllegalVoltageConfig="\r\n您应当指定一个在%.1f-%.1f(V)之间的数值作为电池的%s值.";
 const char *BatteryVoltagePoint="\r\n 电池%s电压 : %.2fV";
+const char *FailedToDoSthColumb="\r\n由于运行日志连带库仑计已被管理员禁用,因此您无法对库仑计进行%s操作.\r\n";
 extern float UsedCapacity;
 #ifndef Firmware_DIY_Mode
 extern const char *NeedRoot;
@@ -31,7 +32,7 @@ const char *battcfgArgument(int ArgCount)
 		case 10:
 		case 11:return "手动设置库仑计的设计电池容量.";
 		case 12:
-		case 13:return "复位库仑计的电池统计和容量数据";
+		case 13:return "复位库仑计的电池统计和容量数据以及电池质量警告";
 	  case 14:
 		case 15:return "查看系统中电池的参数和库仑计的统计信息";
 		case 16:
@@ -94,7 +95,16 @@ void battcfghandler(void)
 	#ifndef Firmware_DIY_Mode
   if(ParamOK&&AccountState!=Log_Perm_Root)
      {
-	   UartPrintf((char *)NeedRoot,"重置系统中库仑计的统计信息!"); 
+		 if(RunLogEntry.Data.DataSec.IsLowQualityBattAlert)
+		   {
+	     CalcLastLogCRCBeforePO();//计算旧的CRC-32值
+		   RunLogEntry.Data.DataSec.IsLowQualityBattAlert=false;//重置警告
+		   RunLogEntry.CurrentDataCRC=CalcRunLogCRC32(&RunLogEntry.Data);//算新的CRC-32值
+		   WriteRuntimeLogToROM();//更新运行日志数据
+		   UARTPuts("\r\n电池质量警告已被复位.\r\n");
+		   }
+		 else
+	     UartPrintf((char *)NeedRoot,"重置系统中库仑计的统计信息!"); 
 	   IsCmdParamOK=true;
 	   }
   else if(ParamOK)
@@ -103,7 +113,15 @@ void battcfghandler(void)
   #endif
 	  {
 		if(!IsRunTimeLoggingEnabled)//日志被关闭
-		  UARTPuts("\r\n由于运行日志连带库仑计已被管理员禁用,因此您无法对库仑计进行复位操作.\r\n");
+		  UartPrintf((char *)FailedToDoSthColumb,"复位");
+		else if(RunLogEntry.Data.DataSec.IsLowQualityBattAlert) //电池质量警告生效
+		   {
+			 CalcLastLogCRCBeforePO();//计算旧的CRC-32值
+		   RunLogEntry.Data.DataSec.IsLowQualityBattAlert=false;//重置警告
+		   RunLogEntry.CurrentDataCRC=CalcRunLogCRC32(&RunLogEntry.Data);//算新的CRC-32值
+		   WriteRuntimeLogToROM();//更新运行日志数据
+		   UARTPuts("\r\n电池质量警告已被复位.\r\n");
+		   }
 		else
 		  {
 			CalcLastLogCRCBeforePO();//计算旧的CRC-32值
@@ -111,6 +129,7 @@ void battcfghandler(void)
 	    RunLogEntry.Data.DataSec.BattUsage.IsCalibrationDone=false;
 			RunLogEntry.Data.DataSec.BattUsage.IsLearningEnabled=false;
 			RunLogEntry.Data.DataSec.TotalBatteryCapDischarged=0;//复位数据
+			RunLogEntry.Data.DataSec.IsLowQualityBattAlert=false;//重置警告
 			RunLogEntry.CurrentDataCRC=CalcRunLogCRC32(&RunLogEntry.Data);//算新的CRC-32值
 			WriteRuntimeLogToROM();//更新运行日志数据
 			UARTPuts("\r\n库仑计的统计数据已被复位且库仑计已暂时禁用,您需要重新运行一次电池容量自学习以启用库仑计.\r\n");
@@ -132,7 +151,7 @@ void battcfghandler(void)
 	  {
 		buf=atof(Param);
 		if(!IsRunTimeLoggingEnabled)//日志被关闭
-		  UARTPuts("\r\n由于运行日志连带库仑计已被管理员禁用,因此您无法设置库仑计的参数.\r\n");
+		  UartPrintf((char *)FailedToDoSthColumb,"参数设置");
 		else if(buf==NAN||buf<2000||buf>100000)
 		  {
 			DisplayIllegalParam(Param,24,10);//显示用户输入了非法参数
@@ -154,7 +173,7 @@ void battcfghandler(void)
 	if(ParamOK)
 	  {
 		if(!IsRunTimeLoggingEnabled)//日志被关闭
-		  UARTPuts("\r\n由于运行日志连带库仑计已被管理员禁用,因此您无法启用库仑计的自学习功能.\r\n");
+		  UartPrintf((char *)FailedToDoSthColumb,"启用自学习");
 		else
 		  {
 			CalcLastLogCRCBeforePO();//计算旧的CRC-32值
@@ -162,11 +181,7 @@ void battcfghandler(void)
 			RunLogEntry.Data.DataSec.BattUsage.IsLearningEnabled=true;
 			RunLogEntry.CurrentDataCRC=CalcRunLogCRC32(&RunLogEntry.Data);//算新的CRC-32值
 			WriteRuntimeLogToROM();//更新运行日志数据
-			UARTPuts("\r\n库仑计的自学习模式已启用,在这期间,系统的容量测量功能将会暂时禁用.");
-			UARTPuts("\r\n为了确保自学习过程顺利完成,请务必查看如下的步骤说明:");
-			UARTPuts("\r\n1:将需要使用的电池从手电中拆下,在充电器上彻底将其充满电.");	
-			UARTPuts("\r\n2:正常使用手电筒(不要开极亮)直到手电筒电池耗尽并自动关机(侧按按\r\n钮红色慢闪).");
-		  UARTPuts("\r\n完成以上步骤后库仑计将完成校准并激活,为您提供准确的电量信息.");
+			UARTPuts("\r\n库仑计的自学习模式已启用.");
 			}
 		IsCmdParamOK=true;
 		}

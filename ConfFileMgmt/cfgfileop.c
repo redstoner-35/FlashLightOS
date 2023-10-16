@@ -99,6 +99,7 @@ void LoadDefaultConf(void)
  CfgFile.LEDThermalTripTemp=80; //LED热跳闸80度
  if(ReadFRU(&FRU))IsUsingHighTemp=false;
  else if(!CheckFRUInfoCRC(&FRU))IsUsingHighTemp=false;
+ else if(FRU.FRUBlock.Data.Data.FRUVersion[0]==0x03)IsUsingHighTemp=true; //通用3V高功率LED,使用较高温度设置
  else if(FRU.FRUBlock.Data.Data.FRUVersion[0]==0x08)IsUsingHighTemp=true; //SBT90.2 LED，使用较高温度墙
  else IsUsingHighTemp=false;	   
  CfgFile.PIDTriggerTemp=IsUsingHighTemp?70:65; //当MOS和LED的平均温度等于指定温度时温控接入
@@ -112,7 +113,7 @@ void LoadDefaultConf(void)
  #endif	 
  CfgFile.ThermalPIDKp=0.28;
  CfgFile.ThermalPIDKi=0.8;
- CfgFile.ThermalPIDKd=1.10; //PID温控的P I D
+ CfgFile.ThermalPIDKd=0.95; //PID温控的P I D
  CfgFile.LEDThermalWeight=60;//LED温度加权值
  //恢复电池设置
  CfgFile.VoltageFull=4.0*BatteryCellCount;
@@ -120,7 +121,7 @@ void LoadDefaultConf(void)
  CfgFile.VoltageTrip=2.8*BatteryCellCount;
  CfgFile.VoltageOverTrip=14.5;//过压保护值14.5V
  #ifndef Firmware_UV_Mode		 
- CfgFile.OverCurrentTrip=IsUsingHighTemp?20:15;// 如果是SBT90.2，则使用20A否则15A的电池端过流保护值
+ CfgFile.OverCurrentTrip=IsUsingHighTemp?20:15;// 如果是SBT90.2或者高功率LED，则使用20A否则15A的电池端过流保护值
  #else
  CfgFile.OverCurrentTrip=12.5; //UV模式，电池端电流限制12.5A
  #endif

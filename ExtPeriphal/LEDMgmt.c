@@ -3,6 +3,7 @@
 #include "modelogic.h"
 #include "Cfgfile.h"
 #include "LEDMgmt.h"
+#include "runtimelogger.h"
 #include <string.h>
 
 /*LED闪烁的pattern(每阶段0.25秒)
@@ -94,7 +95,7 @@ static bool CheckForLEDOnStatus(void)
   {
 	if(SysPstatebuf.Pstate!=PState_LEDOn&&SysPstatebuf.Pstate!=PState_LEDOnNonHold)return false;//LED熄灭
 	else if(LEDPattern[LastLEDIndex<LEDPatternSize?LastLEDIndex:0][ConstReadPtr]=='\0')return false;//目前已经运行到序列的末尾，不能熄灭
-	else if(SysPstatebuf.CurrentThrottleLevel<4)return false;//温控降档未介入
+	else if(SysPstatebuf.CurrentThrottleLevel<4&&!RunLogEntry.Data.DataSec.IsLowQualityBattAlert)return false;//温控和输入低电流警告未介入
 	else if(LastExtLEDIdx!=NULL)return false;//外部指定了LED闪烁内容
 	else if(CurrentLEDIndex==2||CurrentLEDIndex==3)return true;
 	else if(CurrentLEDIndex==23)return true; //电量提示
