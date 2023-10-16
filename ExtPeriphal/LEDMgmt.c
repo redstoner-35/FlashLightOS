@@ -25,13 +25,13 @@ const char *LEDPattern[LEDPatternSize]=
 	 "2020DD2020DDD",//快速闪烁两次，暂停两秒，闪两次 #EEPROM AES256解密失败 7
 	 "1200210D",//红绿交替闪0.25秒，停0.5秒，绿红交替闪0.25秒，停1秒反复循环 #自检序列运行中 8
 	 "2D0D",//红色灯慢闪1秒一循环，电力严重不足 9
-	 "20202D10DD",//红色灯快速闪三次，绿色灯闪一次，驱动过热闭锁 10
-	 "20202D1010DD",//红色灯快速闪三次，绿色灯闪两次，驱动输入过压保护 11
-	 "20202D101010DD",//红色灯快速闪三次，绿色灯闪三次，驱动输出过流保护 12
+	 "202020D10DD",//红色灯快速闪三次，绿色灯闪一次，驱动过热闭锁 10
+	 "202020D1010DD",//红色灯快速闪三次，绿色灯闪两次，驱动输入过压保护 11
+	 "202020D101010DD",//红色灯快速闪三次，绿色灯闪三次，驱动输出过流保护 12
 	 "2020D202020DD",//快速闪烁两次，暂停1秒，闪三次，ADC异常 13
-	 "20202D101001010DD",//红色灯快速闪三次，绿色灯闪4次，LED开路 14
-	 "20202D101001010010DD",//红色灯快速闪三次，绿色灯闪5次，LED短路 15
-	 "20202D10100101001010DD",//红色灯快速闪三次，绿色灯闪6次，LED过热闭锁 16
+	 "202020D101001010DD",//红色灯快速闪三次，绿色灯闪4次，LED开路 14
+	 "202020D101001010010DD",//红色灯快速闪三次，绿色灯闪5次，LED短路 15
+	 "202020D10100101001010DD",//红色灯快速闪三次，绿色灯闪6次，LED过热闭锁 16
    "202020D3030D10DDD",//红色灯闪三次，橙色两次，绿色一次，驱动内部灾难性逻辑错误 17
 	 "303010E",//橙色两次+绿色一次，进入战术模式 18
 	 "30301010E",//橙色两次+绿色一次，退出战术模式 19
@@ -153,6 +153,7 @@ void SideLEDWeakLitControl(bool IsEnabled)
 //在系统内控制LED的回调函数
 void LEDMgmt_CallBack(void)
   {
+	bool IsNeedToOffLED;
 	//安全措施，保证GPIO配置后才执行LED操作
 	if(!IsLEDInitOK)return;
 	//检测到主机配置了新的LED状态
@@ -172,8 +173,14 @@ void LEDMgmt_CallBack(void)
 	//当手电开启，且温控介入后，侧按指示灯闪
 	if(CheckForLEDOnStatus())	
 	  {
-		if(LEDThermalBlinkTimer==20)LEDThermalBlinkTimer=0; //时间到，翻转回去
-		else if(LEDThermalBlinkTimer==0||LEDThermalBlinkTimer==2) //令所有LED熄灭后下个周期再动作
+		//根据温度控制指示
+		if(LEDThermalBlinkTimer==0||LEDThermalBlinkTimer==2)IsNeedToOffLED=true;
+		else if(SysPstatebuf.CurrentThrottleLevel>=4)IsNeedToOffLED=false; //如果温控指示灯触发则屏蔽后面的电池质量警告
+		else if(RunLogEntry.Data.DataSec.IsLowQualityBattAlert&&LEDThermalBlinkTimer==4)IsNeedToOffLED=true;
+		else IsNeedToOffLED=false;
+		//指示灯闪的计时器
+	  if(LEDThermalBlinkTimer==20)LEDThermalBlinkTimer=0; //时间到，翻转回去
+		else if(IsNeedToOffLED) //令所有LED熄灭后下个周期再动作
 		  {
 			LEDThermalBlinkTimer++;
 			GPIO_ClearOutBits(LED_Green_IOG,LED_Green_IOP);
