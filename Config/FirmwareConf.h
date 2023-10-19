@@ -7,7 +7,7 @@
 
 #define MajorVersion 1
 #define MinorVersion 6
-#define HotfixVersion 7  //固件版本号
+#define HotfixVersion 8  //固件版本号
 
 //固件模式配置
 //#define Firmware_UV_Mode //适用于UV LED的特殊模式
@@ -29,11 +29,11 @@
 //#define SideKeyPolar_positive  //侧按的极性，保留此define表示侧按按键高有效，否则低有效
 
 //FRU中LED类型的配置
-#define Using_SBT90Gen2_LED //使用SBT90.2
+//#define Using_SBT90Gen2_LED //使用SBT90.2
 //#define Using_SBT90R_LED //使用红色的SBT90
 //#define Using_SBT70G_LED //使用绿色的SBT70
 //#define Using_SBT70B_LED //使用蓝色的SBT70
-//#define Using_Generic_3V_LED //使用其他任意未指定型号的3V LED
+#define Using_Generic_3V_LED //使用其他任意未指定型号的3V LED
 //#define Using_Generic_6V_LED //使用其他任意未指定型号的6V LED
 
 //挡位和操作逻辑配置

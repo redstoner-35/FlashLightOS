@@ -127,7 +127,7 @@ void LowVoltageIndicate(void)
 //在手电筒运行期间测量电池参数的函数
 void RunTimeBatteryTelemetry(void)
  {
- float BatteryMidLevel,voltDiff;
+ float BatteryMidLevel,voltDiff,VoltAlert;
  bool IsNeedToUpdateCapacity;
  //令INA219获取电池(输入电源)信息
  if(SysPstatebuf.Pstate!=PState_LEDOn&&SysPstatebuf.Pstate!=PState_LEDOnNonHold)return;//LED没开启
@@ -149,11 +149,17 @@ void RunTimeBatteryTelemetry(void)
  else if(voltDiff<1.25&&voltDiff>0)
 		UnLoadBattVoltage=RunTimeBattTelemResult.BusVolt; //小电流下对压差进行修正
  //根据读到的电池电压/容量控制电量指示灯
+ if(SysPstatebuf.TargetCurrent>=(0.6*FusedMaxCurrent))//如果开启极亮挡位，则下调低电压检测阈值电压避免一上来就黄灯
+    {
+    VoltAlert=CfgFile.VoltageAlert-0.1;
+    BatteryMidLevel=VoltAlert+0.5; 
+		}
+ else VoltAlert=CfgFile.VoltageAlert; //正常执行
  if(!RunLogEntry.Data.DataSec.BattUsage.IsCalibrationDone)
     {   
 	  if(RunLogEntry.Data.DataSec.IsLowVoltageAlert)CurrentLEDIndex=3;//低压告警触发，电池电量不足，红灯常亮
     else if(RunTimeBattTelemResult.BusVolt>=BatteryMidLevel)CurrentLEDIndex=2;//电池电量充足，绿灯常亮		 
-    else if(RunTimeBattTelemResult.BusVolt>CfgFile.VoltageAlert)CurrentLEDIndex=23;//电池电量一般，黄灯常亮
+    else if(RunTimeBattTelemResult.BusVolt>VoltAlert)CurrentLEDIndex=23;//电池电量一般，黄灯常亮
     else if(RunTimeBattTelemResult.BusVolt>CfgFile.VoltageTrip)CurrentLEDIndex=3;//电池电量不足，红灯常亮
     else CurrentLEDIndex=9;//电池电量严重不足，红色慢闪
 		}
