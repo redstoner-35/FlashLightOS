@@ -138,23 +138,23 @@ void RunTimeBatteryTelemetry(void)
 		 RunTimeErrorReportHandler(Error_ADC_Logic);
 		 return;
 	   }
- //根据每次启动手电空载的电压判断电池质量		 
+ //根据每次启动手电空载的电压判断电池质量的前置准备 
  BatteryMidLevel=((CfgFile.VoltageFull-CfgFile.VoltageAlert)*0.5)+CfgFile.VoltageAlert;//计算还有一半电量以上的电压
  voltDiff=UnLoadBattVoltage-RunTimeBattTelemResult.BusVolt;
  if(voltDiff<0)voltDiff=0;//计算负载条件下的电压差
- if(UnLoadBattVoltage>BatteryMidLevel&&voltDiff>2.2) //在大电流输出下电压差大于2.2，电池质量太次触发警告
-    {
-    if(SysPstatebuf.TargetCurrent>=(0.6*FusedMaxCurrent))RunLogEntry.Data.DataSec.IsLowQualityBattAlert=true; 			
-		}
- else if(voltDiff<1.25&&voltDiff>0)
-		UnLoadBattVoltage=RunTimeBattTelemResult.BusVolt; //小电流下对压差进行修正
- //根据读到的电池电压/容量控制电量指示灯
  if(SysPstatebuf.TargetCurrent>=(0.6*FusedMaxCurrent))//如果开启极亮挡位，则下调低电压检测阈值电压避免一上来就黄灯
     {
     VoltAlert=CfgFile.VoltageAlert-0.1;
     BatteryMidLevel=VoltAlert+0.5; 
 		}
  else VoltAlert=CfgFile.VoltageAlert; //正常执行
+ //电池质量检测		
+ if(UnLoadBattVoltage>(CfgFile.VoltageFull-0.5)&&voltDiff>=2.4) //在大电流输出下电压差大于2.5或者电压低于警告值，电池质量太次触发警告
+    {
+    if(SysPstatebuf.TargetCurrent>=(0.6*FusedMaxCurrent))RunLogEntry.Data.DataSec.IsLowQualityBattAlert=true; 			
+		}
+ else if(voltDiff<2.4)UnLoadBattVoltage=RunTimeBattTelemResult.BusVolt; //小电流下对压差进行修正	
+ //根据读到的电池电压/容量控制电量指示灯
  if(!RunLogEntry.Data.DataSec.BattUsage.IsCalibrationDone)
     {   
 	  if(RunLogEntry.Data.DataSec.IsLowVoltageAlert)CurrentLEDIndex=3;//低压告警触发，电池电量不足，红灯常亮

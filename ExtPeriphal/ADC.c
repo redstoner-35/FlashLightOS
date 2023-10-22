@@ -19,7 +19,7 @@ void ADC_EOC_interrupt_Callback(void)
 //片内ADC异常处理
 void OnChipADC_FaultHandler(void)
   {
-	UartPost(Msg_critical,"IntADC","On-Chip ADC Failed to completed task::Conversion timed out.");
+	UartPost(Msg_critical,"IntADC","On-Chip ADC Error::Conversion timed out.");
 	CurrentLEDIndex=13;//指示ADC异常
 	SelfTestErrorHandler();	
 	}
