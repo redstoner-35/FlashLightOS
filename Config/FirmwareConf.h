@@ -7,7 +7,7 @@
 
 #define MajorVersion 1
 #define MinorVersion 6
-#define HotfixVersion 8  //固件版本号
+#define HotfixVersion 9  //固件版本号
 
 //固件模式配置
 //#define Firmware_UV_Mode //适用于UV LED的特殊模式

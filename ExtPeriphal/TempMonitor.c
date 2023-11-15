@@ -31,8 +31,6 @@ void DisplayLEDTemp(void)
 	//获得挡位
 	CurrentMode=GetCurrentModeConfig();
 	if(CurrentMode==NULL)return;
-  LED_Reset();//复位LED管理器
-  memset(LEDModeStr,0,sizeof(LEDModeStr));//清空内存
 	//令ADC得到温度和电流
   if(!ADC_GetResult(&ADCO))
      {
@@ -48,16 +46,25 @@ void DisplayLEDTemp(void)
 	//检查读回来的结果，如果LED基板温度没数据则不显示
 	if(ADCO.NTCState!=LED_NTC_OK)return;
 	//开始显示结果
-  strncat(LEDModeStr,SysPstatebuf.Pstate==PState_LEDOn||SysPstatebuf.Pstate==PState_LEDOnNonHold?"D":"0",sizeof(LEDModeStr)-1);
-	strncat(LEDModeStr,"2310020D",sizeof(LEDModeStr)-1); //红黄绿切换之后熄灭,然后绿色闪一次表示LED温度
-	LED_AddStrobe((int)(ADCO.LEDTemp/100),"20");
+	LED_Reset();//复位LED管理器
+  memset(LEDModeStr,0,sizeof(LEDModeStr));//清空内存
+	strncat(LEDModeStr,SysPstatebuf.Pstate==PState_LEDOn||SysPstatebuf.Pstate==PState_LEDOnNonHold?"D":"0",sizeof(LEDModeStr)-1);
+	strncat(LEDModeStr,"2310020",sizeof(LEDModeStr)-1); //红黄绿切换之后熄灭,然后绿色闪一次表示LED温度
+  LEDTemp=ADCO.LEDTemp;		 
+	if(LEDTemp<0)
+	 {
+	 LEDTemp=-LEDTemp;//取正数
+	 strncat(LEDModeStr,"30",sizeof(LEDModeStr)-1); //如果LED温度为负数则闪烁一次黄色
+	 }
+	strncat(LEDModeStr,"D",sizeof(LEDModeStr)-1);
+	//显示数值
+	LED_AddStrobe((int)(LEDTemp/100),"20");
 	strncat(LEDModeStr,"D",sizeof(LEDModeStr)-1); //显示百位
-	LED_AddStrobe(((int)ADCO.LEDTemp%100)/10,"30"); 
+	LED_AddStrobe(((int)LEDTemp%100)/10,"30"); 
 	strncat(LEDModeStr,"D",sizeof(LEDModeStr)-1); //显示十位
-	LED_AddStrobe((iroundf(ADCO.LEDTemp)%100)%10,"10");
+	LED_AddStrobe((iroundf(LEDTemp)%100)%10,"10");
 	strncat(LEDModeStr,"D",sizeof(LEDModeStr)-1);//显示个位
 	//降档提示，当温度超过降档温度时显示信息	 
-	
 	LEDTemp=ADCO.NTCState==LED_NTC_OK?ADCO.LEDTemp:25; //获取LED温度
 	if(SysPstatebuf.Pstate==PState_LEDOn||SysPstatebuf.Pstate==PState_LEDOnNonHold)  //运行状态
 	  {
