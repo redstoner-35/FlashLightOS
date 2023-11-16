@@ -14,6 +14,7 @@ float LEDVfMax; //LEDVf限制
 const char FRUVersion[3]={FRUVer,HardwareMajorVer,HardwareMinorVer}; //版本信息
 extern const char *LEDInfoStr[];//外部的LED类型常量
 extern bool IsRedLED;
+extern short NTCBValue; //NTC B值
 
 /**************************************************************
 这个函数负责根据传入的LED类型设置LED的最低和最高Vf限制。
@@ -45,11 +46,7 @@ float QueryMaximumCurrentLimit(FRUBlockUnion *FRU)
   float result;
   switch(FRU->FRUBlock.Data.Data.FRUVersion[0]) //显示LED型号
 		{
-		#ifndef Firmware_UV_Mode
-		case 0x03:result=50;break;
-		#else
-    case 0x03:result=30;break; //使用8颗XM-L UV灯，最大电流30A
-    #endif			
+		case 0x03:result=50;break;		
 		case 0x04:result=25;break;
 		case 0x05:result=14;break;
 		case 0x06:result=30;break;
@@ -70,14 +67,10 @@ const char *DisplayLEDType(FRUBlockUnion *FRU)
   {
   switch(FRU->FRUBlock.Data.Data.FRUVersion[0]) //显示LED型号
 		{
-		#ifndef Firmware_UV_Mode
-		case 0x03:return "SFT-40*8";
-		#else
-    case 0x03:return "XM-L-365UV*8"; 
-    #endif				
+	  case 0x06:
+		case 0x03:return FRU->FRUBlock.Data.Data.GeneralLEDString; //返回LED内容				
 		case 0x04:return LEDInfoStr[1];
-		case 0x05:return LEDInfoStr[2];
-		case 0x06:return "Generic 6V";
+		case 0x05:return LEDInfoStr[2];		
 		case 0x07:return LEDInfoStr[4];
 		case 0x08:return LEDInfoStr[5];
 		}
@@ -151,7 +144,7 @@ bool CheckFRUInfoCRC(FRUBlockUnion *FRU)
 	UID|=UIDbuf[i];//将读取到的UID拼接一下
 	}
  DATACRCResult^=UID;
- DATACRCResult^=0x3C6AF8E3;
+ DATACRCResult^=0x3C6AF8E5;
  #endif
  if(DATACRCResult!=FRU->FRUBlock.CRC32Val)return false;
  return true;
@@ -193,7 +186,7 @@ bool CalcFRUCRC(FRUBlockUnion *FRU)
 	UID|=UIDbuf[i];//将读取到的UID拼接一下
 	}
  DATACRCResult^=UID;
- DATACRCResult^=0x3C6AF8E3;
+ DATACRCResult^=0x3C6AF8E5;
  #endif
  FRU->FRUBlock.CRC32Val=DATACRCResult;//填写一下
  return true;
@@ -209,10 +202,27 @@ static void WriteNewFRU(const char *reason)
  FRUBlockUnion FRU;
  const char *LEDStrPtr;
  //生成新的FRU数据并写入到EEPROM
- UartPost(Msg_info,"FRUChk","Due to %s,old FRU record will overwrite with new data.",reason);
- FRU.FRUBlock.Data.Data.MaxLEDCurrent=MaxAllowedLEDCurrent;//设置电流信息
- strncpy(FRU.FRUBlock.Data.Data.SerialNumber,"Serial Undefined",32);	//复制序列号信息
+ UartPost(Msg_info,"FRUChk","Due to %s,old FRU record will overwrite with new data.",reason); 
  memcpy(FRU.FRUBlock.Data.Data.FRUVersion,FRUVersion,3);//复制FRU信息		
+ #ifdef Firmware_UV_Mode
+ FRU.FRUBlock.Data.Data.CustomLEDIDCode=0x3125; //载入自定义LED Code
+ strncpy(FRU.FRUBlock.Data.Data.GeneralLEDString,"XM-L-UV365*8",16); //复制LED名称 
+ FRU.FRUBlock.Data.Data.MaxLEDCurrent=30; //固定30A最大电流限制
+ #else
+ if(FRU.FRUBlock.Data.Data.FRUVersion[0]==0x03) //使用未指定型号的LED
+   {
+   FRU.FRUBlock.Data.Data.CustomLEDIDCode=CustomLEDCode; //载入自定义LED Code
+   strncpy(FRU.FRUBlock.Data.Data.GeneralLEDString,CustomLEDName,32); //复制LED名称
+   }
+ else
+   {
+   FRU.FRUBlock.Data.Data.CustomLEDIDCode=0xFFFF; //自定义LED Code保留数值
+   strncpy(FRU.FRUBlock.Data.Data.GeneralLEDString,"Empty",32); //复制LED名称	 
+	 }
+ FRU.FRUBlock.Data.Data.MaxLEDCurrent=QueryMaximumCurrentLimit(&FRU);//设置电流信息
+ #endif
+ strncpy(FRU.FRUBlock.Data.Data.SerialNumber,"Serial Undefined",32);	//复制序列号信息
+ FRU.FRUBlock.Data.Data.NTCBValue=NTCB; //将B值写入到内存里面去
  if(!WriteFRU(&FRU))
    {
 	 LEDStrPtr=DisplayLEDType(&FRU);
@@ -221,6 +231,8 @@ static void WriteNewFRU(const char *reason)
 	 }
  else
 	 UartPost(msg_error,"FRUChk","Failed to overwrite FRU information.");
+ //写完FRU之后我们需要让系统重启来重新读取新的数据
+ NVIC_SystemReset(); 
  }	
 #endif
 
@@ -265,6 +277,7 @@ void FirmwareVersionCheck(void)
     {
 		UartPost(Msg_info,"FRUChk","FRU Information has been loaded.");
 		SetLEDVfMinMax(&FRU);//设置Vmin和Vmax
+		NTCBValue=FRU.FRUBlock.Data.Data.NTCBValue; //获取B值
 		if(FRU.FRUBlock.Data.Data.FRUVersion[0]==0x04)IsRedLED=true; //如果FRU内LED型号是SBT90R,则休眠指示变为红色
 		if(FRU.FRUBlock.Data.Data.MaxLEDCurrent>QueryMaximumCurrentLimit(&FRU))//非法的电流设置
 		  {

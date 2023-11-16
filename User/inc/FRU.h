@@ -7,9 +7,6 @@
 //处理UV模式的自动define
 #ifdef Firmware_UV_Mode
  #define FRUVer 0x03 //使用通用的3V LED标准
- #if (MaxAllowedLEDCurrent > 30)
- #error "Maxmium current should not larger that 30 Amps for 8 XM-L UV LEDs!"
- #endif
 #endif
 
 //关于LED选择的自动define
@@ -72,8 +69,11 @@
 typedef struct
  {
  char SerialNumber[32];
- char FRUVersion[3];
+ char GeneralLEDString[32];
+ short NTCBValue;
+ unsigned short CustomLEDIDCode;
  float MaxLEDCurrent;
+ char FRUVersion[3];
  }FRUDataSection;
 
 typedef union

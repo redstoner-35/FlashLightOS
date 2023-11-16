@@ -1002,6 +1002,11 @@
               <FileType>5</FileType>
               <FilePath>.\Config\Pindefs.h</FilePath>
             </File>
+            <File>
+              <FileName>LEDCode.txt</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Config\LEDCode.txt</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>

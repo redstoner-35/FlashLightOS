@@ -1,0 +1,6 @@
+0xFFFF 保留Code，型号已被定义的LED
+0x3125 东东海D7D 8颗光宏T6封装365nm紫外LED
+0x4E65 东东海D7D 8颗Luminus SFT-40-W 6500k冷白
+0X4E50 东东海D7D 8颗Luminus SFT-40-W 5000k中白
+0x1001 东东海D8B 昌达SFH43 3000K
+0x1002 东东海D8B 昌达SFH43 5500K

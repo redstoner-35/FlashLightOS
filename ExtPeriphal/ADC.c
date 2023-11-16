@@ -9,6 +9,7 @@ const char *NTCStateString[3]={"正常","开路","未连接"};
 const char *SPSTMONString[3]={"正常","未连接","致命错误"};
 
 static bool ADCEOCFlag=false;
+short NTCBValue=3450;
 
 //ADC结束转换回调
 void ADC_EOC_interrupt_Callback(void)
@@ -90,7 +91,7 @@ bool ADC_GetResult(ADCOutTypeDef *ADCOut)
   //计算温度
 	buf=(float)ADCResult[NTC_ADC_Ch]*(ADC_AVRef/(float)4096);//将AD值转换为电压
 	Rt=((float)NTCUpperResValueK*buf)/(ADC_AVRef-buf);//得到NTC的电阻
-	buf=1/((1/(273.15+(float)NTCT0))+log(Rt/(float)NTCUpperResValueK)/(float)NTCB);//计算出温度
+	buf=1/((1/(273.15+(float)NTCT0))+log(Rt/(float)NTCUpperResValueK)/(float)NTCBValue);//计算出温度
 	buf-=273.15;//减去开氏温标常数变为摄氏度
 	buf+=(float)NTCTRIM;//加上修正值	
 	if(buf<(-40)||buf>125)	//温度传感器异常

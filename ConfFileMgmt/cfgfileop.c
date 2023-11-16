@@ -151,6 +151,8 @@ int CheckConfigurationInROM(cfgfiletype cfgtyp,unsigned int *CRCResultO)
  //读取FRU并计算数值
  if(ReadFRU(&FRU))return 1; //读取FRU失败
  FRUHwResult=0x32;
+ FRUHwResult^=FRU.FRUBlock.Data.Data.CustomLEDIDCode&0xFF; 
+ FRUHwResult^=(FRU.FRUBlock.Data.Data.CustomLEDIDCode>>8)&0xFF; //加入特殊LED Code
  for(i=0;i<2;i++)FRUHwResult^=FRU.FRUBlock.Data.Data.FRUVersion[i]; //仅仅是把LED类型和major version加入计算
  //开始校验
  if(ReadFRU(&FRU))return 1; //读取FRU失败
@@ -248,6 +250,8 @@ int WriteConfigurationToROM(cfgfiletype cfgtyp)
  //读取FRU并计算数值
  if(ReadFRU(&FRU))return 1; //读取FRU失败
  FRUHwResult=0x32;
+ FRUHwResult^=FRU.FRUBlock.Data.Data.CustomLEDIDCode&0xFF; 
+ FRUHwResult^=(FRU.FRUBlock.Data.Data.CustomLEDIDCode>>8)&0xFF; //加入特殊LED Code
  for(i=0;i<2;i++)FRUHwResult^=FRU.FRUBlock.Data.Data.FRUVersion[i]; //仅仅是把LED类型和major version加入计算
  //开始写数据
  i=0;
@@ -314,6 +318,8 @@ unsigned int ActiveConfigurationCRC(void)
  //读取FRU并计算数值
  if(ReadFRU(&FRU))return 1; //读取FRU失败
  FRUHwResult=0x32;
+ FRUHwResult^=FRU.FRUBlock.Data.Data.CustomLEDIDCode&0xFF; 
+ FRUHwResult^=(FRU.FRUBlock.Data.Data.CustomLEDIDCode>>8)&0xFF; //加入特殊LED Code
  for(i=0;i<2;i++)FRUHwResult^=FRU.FRUBlock.Data.Data.FRUVersion[i]; //仅仅是把LED类型和major version加入计算
  //开始校验
  for(i=0;i<sizeof(CfgFile);i++)
