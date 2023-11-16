@@ -2,8 +2,8 @@
 #define _FirmwareConf_
 
 //版本信息
-#define HardwareMajorVer 1
-#define HardwareMinorVer 1  //硬件版本号
+#define HardwareMajorVer 2
+#define HardwareMinorVer 0  //硬件版本号
 
 #define MajorVersion 1
 #define MinorVersion 6
@@ -21,7 +21,7 @@
 #define BreathTIMFreq 50 //负责生成平滑呼吸灯效果的定时器频率(单位Hz)，越高越平滑
 #define GammaCorrectionValue 2.45   //亮度拟合曲线的gamma修正，根据不同LED有所不同
 #define LVAlertCurrentLimit 8 //当低电压警告触发后，驱动最大的输出电流值(A)
-#define MaxAllowedLEDCurrent 40 //驱动硬件熔断的最大输出电流设置(测得电流超过此电流的1.2倍将触发保护)
+#define MaxAllowedLEDCurrent 50 //驱动硬件熔断的最大输出电流设置(测得电流超过此电流的1.2倍将触发保护)
 #define MinimumLEDCurrent 0.4 //最小的LED电流
 #define BatteryCellCount 3 //默认情况下驱动使用的电池组中锂电池的串数(按照三元锂电池计算)
 #define DeepsleepDelay 40 //驱动的出厂深度睡眠时间,40秒内没有操作则睡眠
@@ -62,7 +62,7 @@
 //NTC温度测量设置
 #define NTCUpperResValueK 10 //NTC测温电路上面串联的电阻（单位KΩ）
 #define NTCTRIM 0.5 //温度修正值，单位℃
-#define NTCB 3450 //NTC热敏电阻的B值(V1.x 3450 V2.0 3950)
+#define NTCB 3950 //NTC热敏电阻的B值(V1.x 3450 V2.0 3950)
 #define NTCT0 25 //NTC电阻的标定温度，一般是25℃
 
 //ADC模拟电压参考电压
