@@ -902,6 +902,11 @@
               <FileType>1</FileType>
               <FilePath>.\Command\User\misccfg.c</FilePath>
             </File>
+            <File>
+              <FileName>rampcfg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Command\User\rampcfg.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

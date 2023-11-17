@@ -3,6 +3,12 @@
 
 #include "logger.h"
 
+typedef struct
+ {
+ float RampModeConf; //无极调光模式的目前挡位
+ bool RampModeDirection; //无极调光模式的方向
+ }RampModeStaticStorDef;
+
 //结构体
 typedef struct
  {
@@ -33,8 +39,7 @@ typedef struct
  float MoonCurrent; //月光档的电流值
  float MoonPWMDuty; //月光档的PWM占空比
  double TotalBatteryCapDischarged;  //总共电池放电的mAH数
- float RampModeConf; //无极调光模式的目前挡位
- bool RampModeDirection; //无极调光模式的方向
+ RampModeStaticStorDef RampModeStor[13]; //存储无极调光设置的存储器
  bool IsFlashLightLocked; //手电筒是否锁定
  bool IsLowVoltageAlert; //是否低电压报警
  bool IsLowQualityBattAlert; //是否有电池质量不佳的告警

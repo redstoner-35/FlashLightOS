@@ -40,7 +40,7 @@ extern float UsedCapacity;
 void runlogviewHandler(void)
   {
 	if(!IsRunTimeLoggingEnabled)
-		UartPrintf((char *)Rlvstr[9],"已被系统管理员禁用");
+		UartPrintf((char *)Rlvstr[9],"已被管理员禁用");
 	else if(!RunLogEntry.Data.DataSec.IsRunlogHasContent)
 	  UartPrintf((char *)Rlvstr[9],"内容为空");
 	else
@@ -86,8 +86,8 @@ void runlogviewHandler(void)
 		UartPrintf("%s平均/最高温度降档比例 : %.1f%% / %.1f%%",Rlvstr[1],RunLogEntry.Data.DataSec.ThermalStepDownValue,RunLogEntry.Data.DataSec.MaximumThermalStepDown);	
 	  UartPrintf("%s平均运行效率 : %.1f%%",Rlvstr[1],RunLogEntry.Data.DataSec.AverageDriverEfficiency);
 		UartPrintf("%s峰值运行效率 : %.1f%%",Rlvstr[1],RunLogEntry.Data.DataSec.MaximumEfficiency);
-		UartPrintf("%s是否锁定 : %s",Rlvstr[2],RunLogEntry.Data.DataSec.IsFlashLightLocked?"是":"否");
 		UartPrintf("%s强制极亮次数 : %d",Rlvstr[2],RunLogEntry.Data.DataSec.TotalMomtTurboCount);
+	  UartPrintf("%s是否锁定 : %s",Rlvstr[2],RunLogEntry.Data.DataSec.IsFlashLightLocked?"是":"否");
 		PrintStatuBar("电池输入");
 		UartPrintf("%s质量告警 : %s",Rlvstr[3],RunLogEntry.Data.DataSec.IsLowQualityBattAlert?"是":"否");
 	  UartPrintf("%s输入低压告警 : %s",Rlvstr[3],RunLogEntry.Data.DataSec.IsLowVoltageAlert?"是":"否");

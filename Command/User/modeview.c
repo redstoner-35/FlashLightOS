@@ -1,6 +1,7 @@
 #include "console.h"
 #include "CfgFile.h"
 #include "modelogic.h"
+#include "runtimelogger.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -37,7 +38,7 @@ const char *modeviewArgument(int ArgCount)
 void modeviewhandler(void)
   {
 	char ParamOK;
-  int modenum,i,len,totalstep;
+  int modenum,i,len,totalstep,RampCfgIndex;
 	ModeGrpSelDef UserSelect;
 	ModeConfStr *TargetMode;
 	//使用详细视图显示
@@ -52,6 +53,14 @@ void modeviewhandler(void)
 		   UARTPuts((char *)ModeSelectStr[4]);
 		else //正常显示
 		  {
+		  switch(UserSelect)
+	      {
+		    case ModeGrp_Regular:RampCfgIndex=modenum;break;//常规挡位
+		    case ModeGrp_DoubleClick:RampCfgIndex=8;break;//双击挡位
+		    case ModeGrp_Special:RampCfgIndex=modenum+9;break;//特殊功能
+	    	default : ClearRecvBuffer();CmdHandle=Command_None;return; //命令出错直接退出
+			  } 
+		  //显示数据
 			UARTPuts("\r\n");
 			UARTPutc('-',8);
 			UARTPuts(" 挡位信息查看器(详细视图) ");
@@ -100,6 +109,10 @@ void modeviewhandler(void)
 				   UartPrintf("\r\n  亮度下滑时间 : %.1f秒",TargetMode->MinCurrentHoldTime);
 				   break;
  				case LightMode_Ramp: //无极调光模式
+					 UartPrintf("\r\n默认亮度等级 : %.1f%%",CfgFile.DefaultLevel[RampCfgIndex]*100);
+			     UartPrintf("\r\n当前亮度等级 : %.1f%%",RunLogEntry.Data.DataSec.RampModeStor[RampCfgIndex].RampModeConf*100);
+			     UartPrintf("\r\n当前调光方向 : %s",!RunLogEntry.Data.DataSec.RampModeStor[RampCfgIndex].RampModeDirection?"向上":"向下");
+			     UartPrintf("\r\n亮度等级是否记忆 : %s",CfgFile.IsRememberBrightNess[RampCfgIndex]?"是":"否");	 
 					 UartPrintf("\r\n  亮度爬升/下滑总时长 : %.1f秒",TargetMode->RampModeSpeed);
 				   break;
  				case LightMode_CustomFlash: //自定义闪模式

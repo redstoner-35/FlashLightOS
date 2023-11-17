@@ -56,6 +56,10 @@ typedef struct
  float VoltageTrip;  //电池满电，警告和自动关机点
  float VoltageOverTrip; //电池过压保护点
  float OverCurrentTrip;  //电池电流过流保护点
+ //无极调光参数设置
+ float DefaultLevel[13]; //默认等级
+ bool IsRememberBrightNess[13]; //是否记忆亮度等级
+ bool IsNoteLEDEnabled; //是否启用调光方向提示LED
 }ConfFileStr;
 //用来读写配置文件的联合体
 typedef union

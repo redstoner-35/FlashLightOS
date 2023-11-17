@@ -9,7 +9,12 @@ const char *NTCStateString[3]={"正常","开路","未连接"};
 const char *SPSTMONString[3]={"正常","未连接","致命错误"};
 
 static bool ADCEOCFlag=false;
+
+//校准数据储存
 short NTCBValue=3450;
+float ADC_AVRef=3.3;
+float NTCTRIM=0;
+float SPSTRIM=0;
 
 //ADC结束转换回调
 void ADC_EOC_interrupt_Callback(void)
@@ -137,7 +142,7 @@ bool ADC_GetResult(ADCOutTypeDef *ADCOut)
     else 
 		  {
 			ADCOut->SPSTMONState=SPS_TMON_OK;//温度正常
-			ADCOut->SPSTemp=buf;//温度反馈为buf值				
+			ADCOut->SPSTemp=buf+SPSTRIM;//温度反馈为buf值+修正值				
 			}
 		}
 	else if(buf>SPSTMONStdVal)//温度为正数

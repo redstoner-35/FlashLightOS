@@ -22,5 +22,6 @@ const char *customflashcfgArgument(int ArgCount);//自定义闪配置
 const char *modeviewArgument(int ArgCount);//挡位查看器的帮助
 const char *frueditArgument(int ArgCount);//fru编辑器的帮助
 const char *thremaltripcfgArgument(int ArgCount);//温度热跳闸编辑的参数
+const char *rampcfgArgument(int ArgCount);//无极调光配置函数
 
 #endif

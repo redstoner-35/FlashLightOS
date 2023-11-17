@@ -12,6 +12,11 @@ float FusedMaxCurrent;//安全电流设置
 float LEDVfMin;
 float LEDVfMax; //LEDVf限制
 const char FRUVersion[3]={FRUVer,HardwareMajorVer,HardwareMinorVer}; //版本信息
+
+//外部变量
+extern float ADC_AVRef;
+extern float NTCTRIM;
+extern float SPSTRIM; //温度测量相关
 extern const char *LEDInfoStr[];//外部的LED类型常量
 extern bool IsRedLED;
 extern short NTCBValue; //NTC B值
@@ -223,6 +228,9 @@ static void WriteNewFRU(const char *reason)
  #endif
  strncpy(FRU.FRUBlock.Data.Data.SerialNumber,"Serial Undefined",32);	//复制序列号信息
  FRU.FRUBlock.Data.Data.NTCBValue=NTCB; //将B值写入到内存里面去
+ FRU.FRUBlock.Data.Data.NTCTrim=NTCTRIMValue;
+ FRU.FRUBlock.Data.Data.SPSTrim=SPSTRIMValue; //将温度修正值写入到内存里面去
+ FRU.FRUBlock.Data.Data.ADCVREF=ADC_VRef;//将ADC的电压参考值写入到内存里面去
  if(!WriteFRU(&FRU))
    {
 	 LEDStrPtr=DisplayLEDType(&FRU);
@@ -278,6 +286,9 @@ void FirmwareVersionCheck(void)
 		UartPost(Msg_info,"FRUChk","FRU Information has been loaded.");
 		SetLEDVfMinMax(&FRU);//设置Vmin和Vmax
 		NTCBValue=FRU.FRUBlock.Data.Data.NTCBValue; //获取B值
+		NTCTRIM=FRU.FRUBlock.Data.Data.NTCTrim;
+	  SPSTRIM=FRU.FRUBlock.Data.Data.SPSTrim; //获取温度修正值
+		ADC_AVRef=FRU.FRUBlock.Data.Data.ADCVREF;//获取ADC的电压参考值
 		if(FRU.FRUBlock.Data.Data.FRUVersion[0]==0x04)IsRedLED=true; //如果FRU内LED型号是SBT90R,则休眠指示变为红色
 		if(FRU.FRUBlock.Data.Data.MaxLEDCurrent>QueryMaximumCurrentLimit(&FRU))//非法的电流设置
 		  {

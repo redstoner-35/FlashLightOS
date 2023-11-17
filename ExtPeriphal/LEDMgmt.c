@@ -60,6 +60,16 @@ static char *LastExtLEDIdx = NULL;
 static char LEDDelayTimer=0; //侧按LED等待
 bool IsRedLED=false;//对于SBT90-R，侧按会亮红灯
  
+//在无极调光启动的时候显示方向
+void LED_DisplayRampDir(bool IsDirUp)
+  {
+	if(ExtLEDIndex!=NULL)return; //当前序列正在运行中
+	LED_Reset();//复位LED管理器
+  memset(LEDModeStr,0,sizeof(LEDModeStr));//清空内存
+  strncat(LEDModeStr,IsDirUp?"1030200E":"2030100E",sizeof(LEDModeStr)-1);//显示方向
+	ExtLEDIndex=&LEDModeStr[0];//传指针过去		
+	}
+ 
 //往自定义LED缓存里面加上闪烁字符
 void LED_AddStrobe(int count,const char *ColorStr) 
   {

@@ -73,6 +73,9 @@ typedef struct
  short NTCBValue;
  unsigned short CustomLEDIDCode;
  float MaxLEDCurrent;
+ float NTCTrim;
+ float SPSTrim;
+ float ADCVREF;
  char FRUVersion[3];
  }FRUDataSection;
 

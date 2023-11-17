@@ -6,7 +6,7 @@
 #define HardwareMinorVer 0  //硬件版本号
 
 #define MajorVersion 1
-#define MinorVersion 7
+#define MinorVersion 8
 #define HotfixVersion 0  //固件版本号
 
 //固件模式配置
@@ -62,13 +62,14 @@
 #define SPSTMONScale 8 //温度回报数值，单位mV/℃
 #define SPSTMONStdVal 0.6 //SPS为0度时的温度，单位V
 
-//NTC温度测量设置
+//温度测量设置
 #define NTCUpperResValueK 10 //NTC测温电路上面串联的电阻（单位KΩ）
-#define NTCTRIM 0.5 //温度修正值，单位℃
+#define NTCTRIMValue 0.5 //温度修正值，单位℃
 #define NTCB 3950 //NTC热敏电阻的B值(V1.x 3450 V2.0 3950,注意:此处B值仅对debug模式下初始化FRU时有效，初始化后此处数值将被忽略)
 #define NTCT0 25 //NTC电阻的标定温度，一般是25℃
+#define SPSTRIMValue 0 //
 
 //ADC模拟电压参考电压
-#define ADC_AVRef 3.2985 //实际的ADC电压参考值
+#define ADC_VRef 3.2985 //实际的ADC电压参考值
 
 #endif

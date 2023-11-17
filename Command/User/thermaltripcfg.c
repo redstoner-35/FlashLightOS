@@ -4,29 +4,34 @@
 #include <stdlib.h>
 #include <string.h>
 
-//×Ö·û´®
-static const char *IllegalTripTemperature="ÄúÉèÖÃµÄ%sãÐÖµ²»ºÏ·¨.ºÏ·¨µÄÊýÖµ·¶Î§ÊÇ%d-%d(ÉãÊÏ¶È).";
-static const char *TripTemperatureHasSet="%sãÐÖµÒÑ±»³É¹¦¸üÐÂÎª%dÉãÊÏ¶È.";
+//å­—ç¬¦ä¸²
+#ifdef FlashLightOS_Debug_Mode
+static const char *IllegalTripTemperature="æ‚¨è®¾ç½®çš„%sé˜ˆå€¼ä¸åˆæ³•.åˆæ³•çš„æ•°å€¼èŒƒå›´æ˜¯%d-%d(æ‘„æ°åº¦).";
+static const char *TripTemperatureHasSet="%sé˜ˆå€¼å·²è¢«æˆåŠŸæ›´æ–°ä¸º%dæ‘„æ°åº¦.";
+#endif
 
-//²ÎÊý°ïÖúentry
+//å‚æ•°å¸®åŠ©entry
 const char *thremaltripcfgArgument(int ArgCount)
   {
+	#ifdef FlashLightOS_Debug_Mode
 	switch(ArgCount)
 	  {
     case 0:
-		case 1:return "ÉèÖÃLED¹ýÈÈ¹Ø»úµÄ¼«ÏÞÎÂ¶È.";
+		case 1:return "è®¾ç½®LEDè¿‡çƒ­å…³æœºçš„æžé™æ¸©åº¦.";
     case 2:
-		case 3:return "ÉèÖÃÇý¶¯MOS¹ýÈÈ¹Ø»úµÄ¼«ÏÞÎÂ¶È";
+		case 3:return "è®¾ç½®é©±åŠ¨MOSè¿‡çƒ­å…³æœºçš„æžé™æ¸©åº¦";
 		}
+	#endif
 	return NULL;
 	}
 
 void thermaltripcfgHandler(void)
   {
+	#ifdef FlashLightOS_Debug_Mode
 	int buf;
 	char *Param;
   bool IsCmdParamOK=false;
-	//ÉèÖÃLED¹ýÈÈ¹Ø»úÎÂ¶È
+	//è®¾ç½®LEDè¿‡çƒ­å…³æœºæ¸©åº¦
 	Param=IsParameterExist("01",22,NULL);
 	if(Param!=NULL)
 	  {
@@ -34,14 +39,14 @@ void thermaltripcfgHandler(void)
 		if(!CheckIfParamOnlyDigit(Param))buf=atoi(Param);
 		else buf=-1;
 		if(buf>90||buf<60)
-			UartPrintf((char *)IllegalTripTemperature,"LED¹ýÈÈ¹Ø»ú",60,90);
+			UartPrintf((char *)IllegalTripTemperature,"LEDè¿‡çƒ­å…³æœº",60,90);
 		else
 		  {
-			UartPrintf((char *)TripTemperatureHasSet,"LED¹ýÈÈ¹Ø»ú",buf);
+			UartPrintf((char *)TripTemperatureHasSet,"LEDè¿‡çƒ­å…³æœº",buf);
 			CfgFile.LEDThermalTripTemp=(char)buf;
 			}
 		}	
-	//ÉèÖÃMOSFET¹ýÈÈ¹Ø»úÎÂ¶È
+	//è®¾ç½®MOSFETè¿‡çƒ­å…³æœºæ¸©åº¦
 	Param=IsParameterExist("23",22,NULL);
 	if(Param!=NULL)
 	  {
@@ -49,15 +54,16 @@ void thermaltripcfgHandler(void)
 		if(!CheckIfParamOnlyDigit(Param))buf=atoi(Param);
 		else buf=-1;
 		if(buf>110||buf<80)
-			UartPrintf((char *)IllegalTripTemperature,"Çý¶¯¹ýÈÈ¹Ø»ú",80,110);
+			UartPrintf((char *)IllegalTripTemperature,"é©±åŠ¨è¿‡çƒ­å…³æœº",80,110);
 		else
 		  {
-			UartPrintf((char *)TripTemperatureHasSet,"Çý¶¯¹ýÈÈ¹Ø»ú",buf);
+			UartPrintf((char *)TripTemperatureHasSet,"é©±åŠ¨è¿‡çƒ­å…³æœº",buf);
 			CfgFile.MOSFETThermalTripTemp=(char)buf;
 			}
 		}	
-	if(!IsCmdParamOK)UartPrintCommandNoParam(21);//ÏÔÊ¾É¶Ò²Ã»ÕÒµ½µÄÐÅÏ¢
-	//ÃüÁî´¦ÀíÍê±Ï
-	ClearRecvBuffer();//Çå³ý½ÓÊÕ»º³å
-  CmdHandle=Command_None;//ÃüÁîÖ´ÐÐÍê±Ï
+	if(!IsCmdParamOK)UartPrintCommandNoParam(21);//æ˜¾ç¤ºå•¥ä¹Ÿæ²¡æ‰¾åˆ°çš„ä¿¡æ¯
+	#endif
+	//å‘½ä»¤å¤„ç†å®Œæ¯•
+	ClearRecvBuffer();//æ¸…é™¤æŽ¥æ”¶ç¼“å†²
+  CmdHandle=Command_None;//å‘½ä»¤æ‰§è¡Œå®Œæ¯•
 	}

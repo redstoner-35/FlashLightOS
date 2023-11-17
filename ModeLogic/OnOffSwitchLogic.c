@@ -5,6 +5,7 @@
 #include "LEDMgmt.h"
 #include "logger.h"
 #include "runtimelogger.h"
+#include <string.h>
 
 //内部和外部变量
 volatile SYSPStateStrDef SysPstatebuf;
@@ -147,6 +148,17 @@ void PStateStateMachine(void)
 				CurrentLEDIndex=26;
 				SysPstatebuf.Pstate=PState_Locked; 
 				}
+			//按侧按6次重置亮度等级
+			else if(ShortPress==6)
+			  {
+				if(ResetRampBrightness()) //复位亮度等级,如果成功则侧按提示
+				  {
+					LED_Reset();//复位LED管理器
+          memset(LEDModeStr,0,sizeof(LEDModeStr));//清空内存
+          strncat(LEDModeStr,"0010202010DE",sizeof(LEDModeStr)-1);//填充头部 
+					ExtLEDIndex=&LEDModeStr[0];//传指针过去	
+					}
+				}
 			//长按3秒开启手电
 		  else if(IsPowerOn)
 			  {
@@ -278,8 +290,19 @@ void PStateStateMachine(void)
 			//执行运行过程中的故障检测,以及挡位逻辑
 			FlashTimerInitHandler();                  //定时器配置
 	    RuntimeModeCurrentHandler();              //运行过程中的电流管理
+			//按侧按6次重置亮度等级
+			if(ShortPress==6)
+			  {
+				if(ResetRampBrightness()) //复位亮度等级,如果成功则侧按提示
+				  {
+					LED_Reset();//复位LED管理器
+          memset(LEDModeStr,0,sizeof(LEDModeStr));//清空内存
+          strncat(LEDModeStr,"D10202010DE",sizeof(LEDModeStr)-1);//填充头部 
+					ExtLEDIndex=&LEDModeStr[0];//传指针过去	
+					}
+				}
 			//长按3秒或者定时器已经到时间了,关闭LED回到待机状态
-		  if(LongPressOnce||AutoOffTimer==0)
+		  else if(LongPressOnce||AutoOffTimer==0)
 			 {
 			 SysPstatebuf.Pstate=PState_Standby;//返回到待机状态
 			 TurnLightOFFLogic();

@@ -26,7 +26,7 @@ const char *battcfgArgument(int ArgCount)
     case 4:
 		case 5:return "设置电池组的满电电压(用于提高电量估算的精确度)";
 		case 6:
-		case 7:return "设置电池输入的过压保护电压(高于此电压驱动将停止运行以避免驱动损坏.)";
+		case 7:return "设置电池输入的过压保护电压";
 		case 8:
 		case 9:return "启用库仑计的自学习模式学习电池容量";
 		case 10:

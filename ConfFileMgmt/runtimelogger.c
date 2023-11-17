@@ -303,6 +303,8 @@ int FindLatestEntryViaIncCode(signed char *CodeIN)
 ********************************************/
 void LogDataSectionInit(RunLogDataUnionDef *DIN)
   {
+	int i;
+	//恢复基础设置
 	DIN->DataSec.AverageBatteryCurrent=0;
 	DIN->DataSec.AverageBatteryPower=0;
 	DIN->DataSec.AverageBatteryVoltage=0; 
@@ -328,7 +330,6 @@ void LogDataSectionInit(RunLogDataUnionDef *DIN)
 	DIN->DataSec.TotalBatteryCapDischarged=0;
 	DIN->DataSec.ThermalStepDownValue=0;
 	DIN->DataSec.IsRunlogHasContent=false;
-	DIN->DataSec.RampModeConf=0;
 	DIN->DataSec.IsLowQualityBattAlert=false;
 	DIN->DataSec.LowVoltageShutDownCount=0;
 	DIN->DataSec.DriverThermalFaultCount=0;
@@ -339,11 +340,16 @@ void LogDataSectionInit(RunLogDataUnionDef *DIN)
 	DIN->DataSec.TotalLogCount=0;
 	DIN->DataSec.MaximumThermalStepDown=0;
 	DIN->DataSec.TotalMomtTurboCount=0;
-	DIN->DataSec.RampModeDirection=false;
 	DIN->DataSec.IsFlashLightLocked=false;
 	DIN->DataSec.BattUsage.DesignedCapacity=3000;
 	DIN->DataSec.BattUsage.IsCalibrationDone=false;
   DIN->DataSec.BattUsage.IsLearningEnabled=false;
+	//重置无极调光设置
+	for(i=0;i<13;i++)
+	  {
+		DIN->DataSec.RampModeStor[i].RampModeConf=0.00;
+		DIN->DataSec.RampModeStor[i].RampModeDirection=false;//默认从0%开始，向上
+		}
 	}
 /*******************************************
 将运行日志的log区域清空恢复为初始状态，清除
@@ -435,19 +441,23 @@ void RunLogModule_POR(void)
    {
 	 UartPost(Msg_info,"RTLogger","System run-time logger has been disabled by user.");
 	 IsRunTimeLoggingEnabled=false;
-	 //初始化无极调光和锁定模式以及库仑计的变量
+	 //初始化锁定模式以及库仑计的变量
 	 RunLogEntry.Data.DataSec.BattUsage.IsCalibrationDone=false;
 	 RunLogEntry.Data.DataSec.BattUsage.DesignedCapacity=3000;
 	 RunLogEntry.Data.DataSec.BattUsage.IsLearningEnabled=false;
 	 RunLogEntry.Data.DataSec.IsFlashLightLocked=false;
-	 RunLogEntry.Data.DataSec.RampModeConf=0; 
 	 RunLogEntry.Data.DataSec.TotalLogCount=0;
 	 RunLogEntry.Data.DataSec.MoonPWMDuty=40;
 	 RunLogEntry.Data.DataSec.MoonCurrent=0;  //PID复位
 	 RunLogEntry.Data.DataSec.IsLowVoltageAlert=false;
 	 RunLogEntry.Data.DataSec.AverageSPSTemp=20;//初始的平均SPS温度设置为20度
-	 RunLogEntry.Data.DataSec.RampModeDirection=false;//默认从0%开始，向上
 	 RunLogEntry.Data.DataSec.TotalMomtTurboCount=0;//总共turbo次数为0
+	 //重置无极调光设置
+	 for(i=0;i<13;i++)
+	  {
+		RunLogEntry.Data.DataSec.RampModeStor[i].RampModeConf=CfgFile.DefaultLevel[i];
+		RunLogEntry.Data.DataSec.RampModeStor[i].RampModeDirection=false;//默认从0%开始，向上
+		}
 	 return;	 
 	 }
  //首先我们需要把整个log区域遍历一遍

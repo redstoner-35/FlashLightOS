@@ -231,9 +231,9 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		{
 		 {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//17
      "modeadvcfg",
-		 "允许用户编辑指定挡位的名称,挡位的运行模式(常亮/爆闪/SOS等)并且设定该挡位是否带记忆以及受温控逻辑影响,还可以设置无极调光模式下电流爬升和下滑的速度以及低电流下的PWM调光频率.",
-     "-rm\0--run_mode\0-n\0--name\0-mem\0--is_memory\0-ts\0--is_stepdown\0-rspd\0--ramp_speed\0-df\0-dimming_freq\0\n",
-		 " <模式>\0 <模式>\0 <挡位名称>\0 <挡位名称>\0 <true或false>\0 <true或false>\0 <true或false>\0 <true或false>\0 <电流升降时间(s)>\0 <电流升降时间(s)>\0 <调光频率(Khz)>\0 <调光频率(Khz)>\0\n",
+		 "允许用户编辑指定挡位的名称,挡位的运行模式(常亮/爆闪/SOS等)并且设定该挡位是否带记忆以及受温控逻辑影响,还可以设置低电流下的PWM调光频率.",
+     "-rm\0--run_mode\0-n\0--name\0-mem\0--is_memory\0-ts\0--is_stepdown\0-df\0-dimming_freq\0\n",
+		 " <模式>\0 <模式>\0 <挡位名称>\0 <挡位名称>\0 <true或false>\0 <true或false>\0 <true或false>\0 <true或false>\0 <调光频率(Khz)>\0 <调光频率(Khz)>\0\n",
 		 &modeadvcfgArgument,
 		 Command_modeadvcfg,
 		 NULL,
@@ -349,11 +349,21 @@ const ComamandStringStr Commands[TotalCommandCount]=
      true			 
 		},
 		{
-		 {Log_Perm_Root,Log_Perm_End},//27
-     "fruedit",
-		 "允许厂家工程师编辑驱动中的FRU信息并给FRU永久上锁.",
-     "-sn\0--serial_number\0-imax\0--maximum_current\0-p\0--platform\0-l\0--lock\0\n",
-		 " <序列号字符串>\0 <序列号字符串>\0 <最大电流(A)>\0 <最大电流(A)>\0 <目标LED平台>\0 <目标LED平台>\0 \0 \0\n",
+		 #ifdef FlashLightOS_Debug_Mode	
+		 {Log_Perm_Guest,Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//27
+     #else
+     {Log_Perm_Root,Log_Perm_End},//27
+     #endif
+		 "fruedit",
+		 #ifdef FlashLightOS_Debug_Mode
+		 "允许厂家工程师查看和编辑驱动中的FRU信息并给FRU永久上锁.",
+     "-v\0--view\0-sn\0-imax\0-p\0-l\0-ntcb\0-bptr\0-mstr\0-avref\0-ledid\0-majv\0-minv\0-ledn\0\n",
+		 " \0 \0 <序列号字符串>\0 <最大电流(A)>\0 <目标LED平台>\0 \0 <NTC B值>\0 <LED基板温度修正值'℃'>\0 <驱动MOS温度修正值'℃'>\0 <驱动ADC参考电压(V)>\0 <LED识别码(0x0-0xFFFE)>\0 <大版本号>\0 <小版本号>\0 <LED名称字符串>\0\n",
+		 #else
+		 "允许厂家工程师查看FRU信息.",
+     "-v\0--view\0\n",
+		 " \0 \0\n",		 	 
+		 #endif
 		 &frueditArgument,
 		 Command_fruedit,
 		 NULL,
@@ -363,14 +373,32 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		{
 		 {Log_Perm_Root,Log_Perm_End},//28
      "thermaltripcfg",
+		 #ifdef FlashLightOS_Debug_Mode
 		 "允许厂家工程师编辑驱动的过热关机温度阈值.",
      "-lmax\0--led_max_temp\0-smax\0--sps_max_temp\0\n",
 		 " <温度('C)>\0 <温度('C)>\0 <温度('C)>\0 <温度('C)>\0\n",
+		 #else
+		 "仅debug可用",
+     "\0\n",
+		 "\0\n",
+		 #endif
 		 &thremaltripcfgArgument,
 		 Command_thermaltripcfg,
 		 NULL,
 		 false,
      false			 
+		},
+		{
+		 {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//29
+     "rampcfg",
+		 "配置无极调光的亮度爬升速度,是否记忆以及默认和当前亮度等级.同时可以设置无极调光的方向指示是否启用",
+     "-rspd\0--ramp_speed\0-mem\0--is_memory\0-bset\0--bright_set\0-db\0-default_brightness\0-iled\0--info_led\0\n",
+		 " <爬升总耗时(s)>\0 <爬升总耗时(s)>\0 <true/false>\0  <true/false>\0 <0-100%>\0 <0-100%>\0 <0-100%>\0 <0-100%>\0 <true/false>\0  <true/false>\0\n",
+		 &rampcfgArgument,
+		 Command_rampcfg,
+		 NULL,
+		 false,
+     true			 
 		}
   };
 #endif

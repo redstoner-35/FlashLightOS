@@ -93,6 +93,13 @@ void LoadDefaultConf(void)
 	 CfgFile.LEDIMONCalThreshold[i]=IMONGainSettings[i];
 	 CfgFile.LEDIMONCalGain[i]=IMONGainSettings[i+SPSCompensateTableSize];
 	 }
+ //恢复无极调光设置
+ for(i=0;i<13;i++)
+	 {
+	 CfgFile.DefaultLevel[i]=0.10;
+	 CfgFile.IsRememberBrightNess[i]=true; //无极调光默认记忆亮度
+	 }
+ CfgFile.IsNoteLEDEnabled=true;// 启用无极调光的提示
  //恢复温控设置
  CfgFile.MOSFETThermalTripTemp=135; //MOS热跳闸为135度
  #ifndef Firmware_UV_Mode	

@@ -579,10 +579,17 @@ void DisplayUserWhenTimerOn(void)
 void ModeNoMemoryRollBackHandler(void)
  {
  ModeConfStr *CurrentMode;
+ RampModeStaticStorDef *RampConfig;
  int ModeOffset;
  //获取当前挡位信息
  CurrentMode=GetCurrentModeConfig();
  if(CurrentMode==NULL)return;//当前挡位为空
+ //如果当前挡位为无极调光，则根据挡位配置决定是否重置亮度
+ if(CurrentMode->Mode==LightMode_Ramp&&!CfgFile.IsRememberBrightNess[GetRampConfigIndexFromMode()])
+  {
+	RampConfig=&RunLogEntry.Data.DataSec.RampModeStor[GetRampConfigIndexFromMode()];//根据当前挡位信息获得目标需要处理的无极调光亮度结构体所在的位置
+	RampConfig->RampModeConf=CfgFile.DefaultLevel[GetRampConfigIndexFromMode()];//获取默认数据
+	}
  //执行跳档操作(循环找到使能的档)
  ModeOffset=CfgFile.BootupModeNum;//记录下目标要跳过去的挡位
  if(!CurrentMode->IsModeHasMemory)do

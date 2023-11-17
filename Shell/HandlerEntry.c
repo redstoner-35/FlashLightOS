@@ -38,6 +38,7 @@ void CommandHandler(void)
 		case Command_modeview:modeviewhandler();break;//modeview
 	  case Command_fruedit:fruedithandler();break;//fruedit
 		case Command_thermaltripcfg:thermaltripcfgHandler();break;//thermaltripcfg
+		case Command_rampcfg:rampcfghandler();break; //rampcfg
 		//其余情况，显示错误或者直接退出
     default:
 		  {
