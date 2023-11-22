@@ -17,6 +17,7 @@ float PIDThermalControl(ADCOutTypeDef *ADCResult);//PID温控
 void FillThermalFilterBuf(ADCOutTypeDef *ADCResult);//填充温度stepdown的缓冲区
 
 //内部变量
+static bool LastAdjustDirection; //存储上一次调节的方向
 static float LEDVfFilterBuf[12];
 static float LEDIfFilter[14];
 static float CurrentSynthRatio=100;  //电流合成比例
@@ -25,6 +26,8 @@ static bool IsDisableMoon; //是否关闭月光档
 unsigned char PSUState=0x00; //辅助电源的状态
 
 //外部变量
+extern bool IsMoonDimmingLocked; //反馈给无极调光模块，告诉调光模块电流是否调节完毕
+extern bool IsRampAdjusting; //外部调光是否在调节
 extern float UnLoadBattVoltage; //没有负载时的电池电压
 extern float LEDVfMin;
 extern float LEDVfMax; //LEDVf限制
@@ -93,7 +96,7 @@ void LinearDIM_POR(void)
  DACInitStr.IsOnchipRefEnabled=true; 
  if(!AD5693R_SetChipConfig(&DACInitStr))
   { 
- 	UartPost(Msg_critical,"LineDIM","Failed to push config into DAC.");
+ 	UartPost(Msg_critical,"LineDIM","Failed to init DAC.");
 	CurrentLEDIndex=20;//DAC无法启动,保护
 	SelfTestErrorHandler(); 
 	}
@@ -113,7 +116,7 @@ void LinearDIM_POR(void)
 	if(!ADC_GetLEDIfPinVoltage(&VGet))OnChipADC_FaultHandler();//ADC寮傚父
 	if(VGet<(VSet-0.05)||VGet>(VSet+0.05))
 	  {
-		UartPost(Msg_critical,"LineDIM","Expected DAC Out is %.2fV but get %.2fV.",VSet,VGet);
+		UartPost(Msg_critical,"LineDIM","Expected DAC out %.2fV but get %.2fV.",VSet,VGet);
 	  CurrentLEDIndex=30;//电压误差过大,说明PWM MUX或者电流反馈MUX相关的电流反馈电路有问题。
 	  SelfTestErrorHandler();  		
 		}
@@ -130,7 +133,7 @@ void LinearDIM_POR(void)
  if(VGet>=0.05)
     {
 	  //有超过0.05的电压,说明PWM MUX无法切断电压.PWM相关电路有问题
-		UartPost(Msg_critical,"LineDIM","PWM Dimming MUX Error detected");
+		UartPost(Msg_critical,"LineDIM","PWM Dimming MUX Error.");
 	  CurrentLEDIndex=30;
 	  SelfTestErrorHandler();  		
 		}
@@ -145,7 +148,7 @@ void LinearDIM_POR(void)
  if(VGet>=0.05)
 	  {
 		//有超过0.05的电压,说明DAC有问题输出无法归零
-		UartPost(Msg_critical,"LineDIM","DAC failed to reset into zero scale.");
+		UartPost(Msg_critical,"LineDIM","DAC output zero failure.");
 	  CurrentLEDIndex=20;
 	  SelfTestErrorHandler();  		
 		}
@@ -209,6 +212,7 @@ void LinearDIM_POR(void)
  最后，我们还需要从运行日志里面取出月光档的额定PWM占空比。
  ***********************************************************************/
  SysPstatebuf.Duty=RunLogEntry.Data.DataSec.MoonPWMDuty;  //加载占空比
+ LastAdjustDirection=true; //初始调节方向设置为反向
  if(SysPstatebuf.Duty>100||SysPstatebuf.Duty<1) //占空比非法值，启动修正处理
   {
 	SysPstatebuf.Duty=40;
@@ -358,9 +362,9 @@ void RuntimeModeCurrentHandler(void)
  {
  ModeConfStr *CurrentMode;
  ADCOutTypeDef ADCO;
- bool IsCurrentControlledByMode;
+ bool IsCurrentControlledByMode,CurrentAdjDirection;
  volatile bool IsMainLEDEnabled,IsNeedToEnableBuck;
- float Current,Throttle,DACVID,delta;
+ float Current,Throttle,DACVID,delta,corrvaule;
  /********************************************************
  运行时挡位处理的第一步.首先获取当前的挡位，然后我们使能ADC
  的转换负责获取LED的电流,温度和驱动功率管的温度,接下来就是
@@ -477,32 +481,32 @@ void RuntimeModeCurrentHandler(void)
        if(Current!=RunLogEntry.Data.DataSec.MoonCurrent)
 			   {
 				 delta=Current-LEDFilter(ADCO.LEDIf,LEDIfFilter,14); //求误差
-			   if(fabsf(delta)>0.75)//电流误差严重过高，开始大幅度修正
-				   {
-					 if(delta>0)SysPstatebuf.Duty+=0.5; //电流过小增大占空比
-					 else if(delta<0)SysPstatebuf.Duty-=0.5;//电流过大减小占空比
-					 }
-				 else if(fabsf(delta)>0.3)//电流误差过大，开始大幅度修正
-				   {
-					 if(delta>0)SysPstatebuf.Duty+=0.01; //电流过小增大占空比
-					 else if(delta<0)SysPstatebuf.Duty-=0.01;//电流过大减小占空比
-					 }					 
-				 else if(fabsf(delta)>0.03)//电流误差未到额定值，继续小幅度修正
-				   {
-					 if(delta>0)SysPstatebuf.Duty+=0.005; //电流过小增大占空比
-					 else if(delta<0)SysPstatebuf.Duty-=0.005;//电流过大减小占空比
-					 }
+			   if(fabsf(delta)>0.75)corrvaule=0.5;//电流误差严重过高，开始大幅度修正
+				 else if(fabsf(delta)>0.3)corrvaule=0.01;//电流误差过大，开始大幅度修正				 
+				 else if(fabsf(delta)>0.03)corrvaule=0.005;//电流误差未到额定值，继续小幅度修正
 				 else //电流到误差范围，锁定
 				   {
-				   RunLogEntry.Data.DataSec.MoonCurrent=Current;
+					 corrvaule=0; //不需要修正
+					 RunLogEntry.Data.DataSec.MoonCurrent=Current;
 			     if(SysPstatebuf.Duty>100)SysPstatebuf.Duty=100;
 			     else if(SysPstatebuf.Duty<1)SysPstatebuf.Duty=1; //PWM占空比限幅
 				   RunLogEntry.Data.DataSec.MoonPWMDuty=SysPstatebuf.Duty; //存下已锁相的占空比和电流，关闭电流环路
 					 } 
+				 //如果是正在无极调光则占空比调整范围加大50倍来提高调节速率
+				 if(IsRampAdjusting)
+				    {
+						CurrentAdjDirection=(delta>=0)?true:false; //计算出当前的调节方向
+						corrvaule*=(float)50; //默认在无极调光模式下调节倍率为50倍
+				    if(LastAdjustDirection!=CurrentAdjDirection)corrvaule/=(float)5; //为了避免震荡，如果上一次的调节方向和本次不同则采用较小的调节倍率
+						LastAdjustDirection=CurrentAdjDirection;//存储上一次的调节方向
+						}
+				 //根据电流误差修正占空比并对占空比进行限幅
+				 SysPstatebuf.Duty+=(delta>=0)?corrvaule:-corrvaule; //电流过大减小占空比,电流过小增大占空比		 
+				 if(SysPstatebuf.Duty>100)SysPstatebuf.Duty=100;
+			   if(SysPstatebuf.Duty<1)SysPstatebuf.Duty=1; //占空比限幅
 				 }
-			 //占空比限幅和应用
-			 if(SysPstatebuf.Duty>100)SysPstatebuf.Duty=100;
-			 else if(SysPstatebuf.Duty<1)SysPstatebuf.Duty=1;
+			 else IsMoonDimmingLocked=true; //月光档已经锁相
+			 //占空比应用
 			 SetPWMDuty(SysPstatebuf.Duty); //设置占空比
 			 }
 	 DACVID=0.08;  //80mV
@@ -511,6 +515,7 @@ void RuntimeModeCurrentHandler(void)
  //大于1A电流,使用纯线性调光实现无频闪
  else
 	 {
+	 IsMoonDimmingLocked=true; //线性调光不需要锁相，直接置true
    DACVID=Current*30;  //计算DAC的VID,公式为:VID=(30mV*offset*LEDIf(A))+23mV 
 	 DACVID/=QueueLinearTable(5,Current,(float *)&DimmingCompTable[0],(float *)&DimmingCompTable[5]);//除以补偿系数得到补偿后的VID
 	 if(CurrentMode->Mode!=LightMode_On&&CurrentMode->Mode!=LightMode_Ramp)CurrentSynthRatio=100;//不是常亮和无极调光模式，不使用电流补偿

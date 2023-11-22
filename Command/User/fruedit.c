@@ -82,6 +82,9 @@ void fruedithandler(void)
 			UartPrintf((char *)TempOffsetstr,"驱动MOS",FRU.FRUBlock.Data.Data.SPSTrim);
 			UartPrintf("\r\nADC参考电压 : %.4fV",FRU.FRUBlock.Data.Data.ADCVREF);
 			UartPrintf("\r\n硬件版本 : V%d.%d",FRU.FRUBlock.Data.Data.FRUVersion[1],FRU.FRUBlock.Data.Data.FRUVersion[2]);
+			#ifdef FlashLightOS_Debug_Mode
+			UartPrintf("\r\nNTC B值 : %d",FRU.FRUBlock.Data.Data.NTCBValue);
+			#endif
 			}
 		}
 	#ifdef FlashLightOS_Debug_Mode

@@ -33,7 +33,7 @@ void LoginHandler(void)
 		  {
 			if(LogErrTimer>0)//时间未到
 			  {
-				UARTPuts("\r\n在重新尝试登录前您仍需等待");
+				UARTPuts("\r\n在重新登录前您仍需等待");
         DisplayLoginDelayTime();
 				TargetAccount=VerifyAccount_None;
 			  CmdHandle=Command_None;//命令执行完毕
@@ -72,7 +72,7 @@ void LoginHandler(void)
 			if(RunLogEntry.Data.DataSec.IsLowQualityBattAlert) //电池质量警告生效
 			  {
 			  UARTPuts("\r\n\r\n警告:您使用的电池无法满足放电需求,为了保证电池和您的安全,手电筒的运行功率将");
-			  UartPrintf("\r\n会被暂时限制为60%%.为了您的安全,请尽快更换放电能力大于%.2fA的高性能动力电池并\r\n使用'battcfg -crst'命令消除告警.\r\n",CfgFile.OverCurrentTrip*1.15);
+			  UartPrintf("\r\n会被暂时限制为60%%.请尽快更换放电能力大于%.2fA的高性能动力电池并\r\n使用'battcfg -crst'命令消除告警.\r\n",CfgFile.OverCurrentTrip*1.15);
 				}
 	    if(CfgFile.IdleTimeout>0)IdleTimer=CfgFile.IdleTimeout;//重置登录超时计时器
 			TargetAccount=VerifyAccount_None;
@@ -81,10 +81,9 @@ void LoginHandler(void)
 			}
 		else if(Verifystat==ACC_Verify_Error)
 		  {
-			UARTPuts("\r\n您提供的凭据无效,登录失败.");
+			UARTPuts("\r\n您提供的凭据无效,登录失败.\r\n为了保证安全,在重新尝试登录前您需等待");
 			LogErrTimer=PunishSec;
 			PunishSec*=2;
-			UARTPuts("\r\n为了保证安全,在重新尝试登录前您需等待");
       DisplayLoginDelayTime();
 			AccountState=Log_Perm_Guest;
 			TargetAccount=VerifyAccount_None;

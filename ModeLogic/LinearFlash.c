@@ -1,82 +1,82 @@
-#include "modelogic.h"
+ï»¿#include "modelogic.h"
 #include "cfgfile.h"
 #include "delay.h"
 
 /*
-±¾ÎÄ¼þ¸ºÔðÊµÏÖÏßÐÔ±äÆµ±¬ÉÁµÄ¹¦ÄÜ£¬Õâ¸ö¹¦ÄÜÏÂ£¬
-Ã¿´Î¶¼»áÅäÖÃ¶¨Ê±Æ÷Éú³ÉÆµÂÊ±ä»¯µÄÉÁË¸
+æœ¬æ–‡ä»¶è´Ÿè´£å®žçŽ°çº¿æ€§å˜é¢‘çˆ†é—ªçš„åŠŸèƒ½ï¼Œè¿™ä¸ªåŠŸèƒ½ä¸‹ï¼Œ
+æ¯æ¬¡éƒ½ä¼šé…ç½®å®šæ—¶å™¨ç”Ÿæˆé¢‘çŽ‡å˜åŒ–çš„é—ªçƒ
 */
 
 #define MaxFreqHoldTime 3
 #define MinFreqHoldTime 2
 
-static int TimerReloadValue=999; //¶¨Ê±Æ÷ÖØ×°ÔØÖµ
+static int TimerReloadValue=999; //å®šæ—¶å™¨é‡è£…è½½å€¼
 static int IncreseValue=20;
 static char MaxFreqHoldTimer;
-static bool IncreseDirection=true; //·½Ïò¿ØÖÆ±äÁ¿
+static bool IncreseDirection=true; //æ–¹å‘æŽ§åˆ¶å˜é‡
 
-//ÏßÐÔÉÁ¸´Î»º¯Êý
+//çº¿æ€§é—ªå¤ä½å‡½æ•°
 void LinearFlashReset(void)
  {
- ModeConfStr *CurrentMode=GetCurrentModeConfig();//»ñÈ¡Ä¿Ç°µ²Î»ÐÅÏ¢
- if(CurrentMode!=NULL)//µ²Î»ÅäÖÃ²»ÎªNULL£¬Ö´ÐÐÅäÖÃ
-	 TimerReloadValue=(int)(10000/(CurrentMode->RandStrobeMinFreq*2))-1;//¼ÆËã¶¨Ê±Æ÷ÖØ×°Öµ
+ ModeConfStr *CurrentMode=GetCurrentModeConfig();//èŽ·å–ç›®å‰æŒ¡ä½ä¿¡æ¯
+ if(CurrentMode!=NULL)//æŒ¡ä½é…ç½®ä¸ä¸ºNULLï¼Œæ‰§è¡Œé…ç½®
+	 TimerReloadValue=(int)(10000/(CurrentMode->RandStrobeMinFreq*2))-1;//è®¡ç®—å®šæ—¶å™¨é‡è£…å€¼
  else
-	 TimerReloadValue=999; //Ëæ»úÌî¸öÖµ
+	 TimerReloadValue=999; //éšæœºå¡«ä¸ªå€¼
  IncreseDirection=true;
  IncreseValue=20;
  MaxFreqHoldTimer=0;
  }
 
-//ÏßÐÔÉÁ´¦Àíº¯Êý
+//çº¿æ€§é—ªå¤„ç†å‡½æ•°
 void LinearFlashHandler(void)
  {
  ModeConfStr *CurrentMode; 
  int maxreload,minreload;
- //»ñÈ¡µ²Î»ÅäÖÃ
- CurrentMode=GetCurrentModeConfig();//»ñÈ¡Ä¿Ç°µ²Î»ÐÅÏ¢
- if(CurrentMode==NULL)return; //×Ö·û´®ÎªNULL
+ //èŽ·å–æŒ¡ä½é…ç½®
+ CurrentMode=GetCurrentModeConfig();//èŽ·å–ç›®å‰æŒ¡ä½ä¿¡æ¯
+ if(CurrentMode==NULL)return; //å­—ç¬¦ä¸²ä¸ºNULL
  maxreload=(int)(10000/(CurrentMode->RandStrobeMaxFreq*2)); 
- minreload=(int)(10000/(CurrentMode->RandStrobeMinFreq*2)); //¼ÆËã×îµÍ¶¨Ê±Æ÷ÖØ×°Öµ
- //ÔÚÉÁË¸µÄÏûÒþ½×¶ÎÖð²½¼õÉÙÆµÂÊ
+ minreload=(int)(10000/(CurrentMode->RandStrobeMinFreq*2)); //è®¡ç®—æœ€ä½Žå®šæ—¶å™¨é‡è£…å€¼
+ //åœ¨é—ªçƒçš„æ¶ˆéšé˜¶æ®µé€æ­¥å‡å°‘é¢‘çŽ‡
  if(!SysPstatebuf.ToggledFlash)
    {
-	 if(MaxFreqHoldTimer>0)MaxFreqHoldTimer--; //×î¸ßÆµÂÊ¶¨Ê±Æ÷±£³Ö
-	 else if(!IncreseDirection)//ÆµÂÊÏòÏÂ¼õÉÙ(¶¨Ê±Æ÷ÖØ×°ÖµÔö¼Ó)
+	 if(MaxFreqHoldTimer>0)MaxFreqHoldTimer--; //æœ€é«˜é¢‘çŽ‡å®šæ—¶å™¨ä¿æŒ
+	 else if(!IncreseDirection)//é¢‘çŽ‡å‘ä¸‹å‡å°‘(å®šæ—¶å™¨é‡è£…å€¼å¢žåŠ )
 	   {
-		 if(TimerReloadValue==minreload) //ÒÑµ½ÆµÂÊÏÂÏÞ
+		 if(TimerReloadValue==minreload) //å·²åˆ°é¢‘çŽ‡ä¸‹é™
 		   {
 			 IncreseValue=30;
-			 MaxFreqHoldTimer=MinFreqHoldTime*CurrentMode->RandStrobeMinFreq;//¼ÆÊ±
+			 MaxFreqHoldTimer=MinFreqHoldTime*CurrentMode->RandStrobeMinFreq;//è®¡æ—¶
 		   IncreseDirection=true;
 			 }
-		 else if(TimerReloadValue>=minreload-IncreseValue) //¾àÀë¶¥²¿Öµ»¹Ê£ÏÂ30ÒÔÄÚ£¬¼ÓÉÏÊ£ÓàµÄÊýÖµ
+		 else if(TimerReloadValue>=minreload-IncreseValue) //è·ç¦»é¡¶éƒ¨å€¼è¿˜å‰©ä¸‹30ä»¥å†…ï¼ŒåŠ ä¸Šå‰©ä½™çš„æ•°å€¼
 		   TimerReloadValue+=minreload-TimerReloadValue;
-		 else //»¹ÓÐºÜ´óÊýÖµ£¬¼ÌÐø¼Ó30
+		 else //è¿˜æœ‰å¾ˆå¤§æ•°å€¼ï¼Œç»§ç»­åŠ 30
 		   TimerReloadValue+=IncreseValue;
-		 //Öð²½µÝ¼õincreaseÖµ
+		 //é€æ­¥é€’å‡increaseå€¼
 	   if(IncreseValue>20)IncreseValue-=4;
 		 else IncreseValue=20;
 		 }
-	 else //ÆµÂÊÏòÉÏÔö¼Ó(¶¨Ê±Æ÷ÖØ×°Öµ¼õÉÙ)
+	 else //é¢‘çŽ‡å‘ä¸Šå¢žåŠ (å®šæ—¶å™¨é‡è£…å€¼å‡å°‘)
 	   {
-		 if(TimerReloadValue==maxreload) //ÒÑµ½ÆµÂÊÉÏÏÞ
+		 if(TimerReloadValue==maxreload) //å·²åˆ°é¢‘çŽ‡ä¸Šé™
 			 {
 			 IncreseValue=30;
-			 MaxFreqHoldTimer=MaxFreqHoldTime*CurrentMode->RandStrobeMaxFreq;//¼ÆÊ±
+			 MaxFreqHoldTimer=MaxFreqHoldTime*CurrentMode->RandStrobeMaxFreq;//è®¡æ—¶
 		   IncreseDirection=false;
 			 }
-		 else if(TimerReloadValue<=maxreload+IncreseValue)//¾àÀë¶¥²¿Öµ»¹Ê£ÏÂ30ÒÔÄÚ£¬¼ÓÉÏÊ£ÓàµÄÊýÖµ
+		 else if(TimerReloadValue<=maxreload+IncreseValue)//è·ç¦»é¡¶éƒ¨å€¼è¿˜å‰©ä¸‹30ä»¥å†…ï¼ŒåŠ ä¸Šå‰©ä½™çš„æ•°å€¼
 		   TimerReloadValue-=TimerReloadValue-maxreload;
-		 else //»¹ÓÐºÜ´óÊýÖµ£¬¼ÌÐø-30
+		 else //è¿˜æœ‰å¾ˆå¤§æ•°å€¼ï¼Œç»§ç»­-30
 		   TimerReloadValue-=IncreseValue;	 
-		 //Öð²½µÝÔöincreaseÖµ
+		 //é€æ­¥é€’å¢žincreaseå€¼
 	   if(IncreseValue<100)IncreseValue+=4;
 		 else IncreseValue=100;
 		 }
-	 //Ð´GPTM¶¨Ê±Æ÷µÄ¼Ä´æÆ÷
+	 //å†™GPTMå®šæ—¶å™¨çš„å¯„å­˜å™¨
 	 HT_GPTM1->CRR=TimerReloadValue-1;
 	 }
- //¿ØÖÆÊä³ö
+ //æŽ§åˆ¶è¾“å‡º
  SysPstatebuf.ToggledFlash=SysPstatebuf.ToggledFlash?false:true;
  }

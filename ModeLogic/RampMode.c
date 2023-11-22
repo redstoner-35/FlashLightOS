@@ -14,6 +14,8 @@
 static bool IsKeyPressed=false;
 static char MinMaxBrightNessStrobeTimer=0;
 static bool IsEnabledLimitTimer=false;
+bool IsRampAdjusting=false; //外部引用，无极调光是否在调节
+bool IsMoonDimmingLocked=false; //外部引用用来判断月光档是否调节结束
 
 //强制重置当前挡位的函数
 bool ResetRampBrightness(void)
@@ -71,7 +73,10 @@ void RampModeHandler(void)
 	//亮度增减
 	if(IsKeyPressed)
 	  {
+		//计算步进值
 		incValue=(float)1/(BreathTIMFreq*CurrentMode->RampModeSpeed);//计算出单位的步进值
+		if(!IsMoonDimmingLocked)incValue/=10; //没有锁相期间调节量降低到额定的10%
+	  //根据方向增减亮度值
     if(RampConfig->RampModeDirection&&RampConfig->RampModeConf>0)			
 			RampConfig->RampModeConf-=incValue;
 		else if(!RampConfig->RampModeDirection&&RampConfig->RampModeConf<1.00)
@@ -81,8 +86,14 @@ void RampModeHandler(void)
 		if(RampConfig->RampModeConf>1.0)RampConfig->RampModeConf=1.0;//限幅
 		//如果亮度值没到0或者1.0则显示调整方向
 		if(CfgFile.IsNoteLEDEnabled&&RampConfig->RampModeConf>0&&RampConfig->RampModeConf<1.0)
-       LED_DisplayRampDir(RampConfig->RampModeDirection);
+		   {
+			 IsRampAdjusting=true; //指示正在调光
+		   if(IsMoonDimmingLocked)IsMoonDimmingLocked=false; //让月光档重新锁相
+			 LED_DisplayRampDir(RampConfig->RampModeDirection);
+			 }
+		else IsRampAdjusting=false; //调光结束
 		}
+	else IsRampAdjusting=false; //按键松开，调光结束开始进入缓慢锁相模式
 	//负责短时间熄灭LED指示已经到达地板或者天花板亮度
 	if(IsEnabledLimitTimer&&(RampConfig->RampModeConf==0||RampConfig->RampModeConf==1.0))
 	  {
@@ -95,7 +106,6 @@ void RampModeHandler(void)
 	else if(!RunLogEntry.Data.DataSec.IsLowVoltageAlert)
 	  SysPstatebuf.ToggledFlash=true; //时间到只有低压告警没发生的时候才重新打开LED
 	//生成最后的电流设置
-	
 	if(CurrentMode==NULL)return; //退出
 	incValue=CurrentMode->LEDCurrentHigh-CurrentMode->LEDCurrentLow;
 	BreathCurrent=CurrentMode->LEDCurrentLow<0.5?0.5:CurrentMode->LEDCurrentLow;//从低电流开始
