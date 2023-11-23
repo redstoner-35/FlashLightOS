@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "AES256.h"
+#include "selftestlogger.h"
 #include "FirmwareConf.h"
 #include "FRU.h"
 #include "ADC.h"

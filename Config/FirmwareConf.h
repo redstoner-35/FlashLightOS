@@ -29,8 +29,8 @@
 //#define SideKeyPolar_positive  //侧按的极性，保留此define表示侧按按键高有效，否则低有效
 
 //FRU中LED类型的配置
-#define CustomLEDName "昌达SFH55-3000K" //如果其他任意未指定型号的LED，则需要在此处填写LED名称
-#define CustomLEDCode 0x5AA5 //通用LED的类型代码
+#define CustomLEDName "昌达SFH55-3000K" //如果指定驱动使用其他任意未指定型号的LED，则需要在此处填写LED名称
+#define CustomLEDCode 0x5AA5 //如果指定驱动使用其他任意未指定型号的LED，则需要在此处填写该LED的类型代码
 
 //#define Using_SBT90Gen2_LED //使用SBT90.2
 //#define Using_SBT90R_LED //使用红色的SBT90
@@ -46,7 +46,7 @@
 #define EnableTurbo //出厂挡位组启用双击极亮挡位(此挡位按照100%电流输出)
 
 //EEPROM配置(用于存储配置信息)
-#define EnableSecureStor //对于FM24C512 系统会使用Security sector存储数据
+//#define EnableSecureStor //对于FM24C512 系统会使用Security sector存储FRU数据
 #define UsingEE_24C512 //使用24C512
 //#define UsingEE_24C256 //使用24C256
 

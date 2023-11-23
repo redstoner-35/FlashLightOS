@@ -89,7 +89,7 @@ char ReadFRU(FRUBlockUnion *FRU)
  {
  
  #ifndef EnableSecureStor
- if(M24C512_PageRead(FRU.FRUBUF,SelftestLogEnd,sizeof(FRUBlockUnion)))return 1;
+ if(M24C512_PageRead(FRU->FRUBUF,SelftestLogEnd,sizeof(FRUBlockUnion)))return 1;
  #else
  if(M24C512_ReadSecuSct(FRU->FRUBUF,0,sizeof(FRUBlockUnion)))return 1; 
  #endif	 
@@ -103,8 +103,8 @@ char ReadFRU(FRUBlockUnion *FRU)
 char WriteFRU(FRUBlockUnion *FRU)
  {
  #ifndef EnableSecureStor
- CalcFRUCRC(FRUBlockUnion *FRU);
- if(M24C512_PageWrite(FRU.FRUBUF,SelftestLogEnd,sizeof(FRUBlockUnion)))return 1; //计算校验和然后写入
+ if(!CalcFRUCRC(FRU))return 1;//CRC计算失败
+ if(M24C512_PageWrite(FRU->FRUBUF,SelftestLogEnd,sizeof(FRUBlockUnion)))return 1; //计算校验和然后写入
  #else
  if(!CalcFRUCRC(FRU))return 1;//CRC计算失败
  if(M24C512_WriteSecuSct(FRU->FRUBUF,0,sizeof(FRUBlockUnion)))return 1; //写入失败
@@ -119,9 +119,11 @@ char WriteFRU(FRUBlockUnion *FRU)
 bool CheckFRUInfoCRC(FRUBlockUnion *FRU)
  {
  unsigned int DATACRCResult;
- unsigned int UID;
- int i;
+ #ifdef EnableSecureStor
  char UIDbuf[4];
+ unsigned int UID;
+ #endif
+ int i;
  CKCU_PeripClockConfig_TypeDef CLKConfig={{0}};
  //初始化CRC32      
  CLKConfig.Bit.CRC = 1;
@@ -161,9 +163,11 @@ bool CheckFRUInfoCRC(FRUBlockUnion *FRU)
 bool CalcFRUCRC(FRUBlockUnion *FRU)
  {
  unsigned int DATACRCResult;
+ #ifdef EnableSecureStor
  unsigned int UID;
- int i;
  char UIDbuf[4];
+ #endif
+ int i;
  CKCU_PeripClockConfig_TypeDef CLKConfig={{0}};
  //初始化CRC32      
  CLKConfig.Bit.CRC = 1;
