@@ -75,15 +75,16 @@ void fruedithandler(void)
 			UARTPuts("\r\nLED类型 : ");
 			if(FRU.FRUBlock.Data.Data.FRUVersion[0]==0x03||FRU.FRUBlock.Data.Data.FRUVersion[0]==0x06)
         UARTPuts("(自定义)");
-			UARTPuts((char *)DisplayLEDType(&FRU)); //打印LED内容
-			UartPrintf("\r\n自定义LED标识码 : 0x%04X",FRU.FRUBlock.Data.Data.CustomLEDIDCode);
-			UartPrintf("\r\n最大LED电流 : %.2fA",FRU.FRUBlock.Data.Data.MaxLEDCurrent);
+			
+			UARTPuts((char *)DisplayLEDType(&FRU)); //打印LED内容					
 			UartPrintf((char *)TempOffsetstr,"LED基板",FRU.FRUBlock.Data.Data.NTCTrim);
 			UartPrintf((char *)TempOffsetstr,"驱动MOS",FRU.FRUBlock.Data.Data.SPSTrim);
-			UartPrintf("\r\nADC参考电压 : %.4fV",FRU.FRUBlock.Data.Data.ADCVREF);
-			UartPrintf("\r\n硬件版本 : V%d.%d",FRU.FRUBlock.Data.Data.FRUVersion[1],FRU.FRUBlock.Data.Data.FRUVersion[2]);
-			#ifdef FlashLightOS_Debug_Mode
+		  UartPrintf("\r\n最大LED电流 : %.2fA",FRU.FRUBlock.Data.Data.MaxLEDCurrent);
+		  UartPrintf("\r\n硬件版本 : V%d.%d",FRU.FRUBlock.Data.Data.FRUVersion[1],FRU.FRUBlock.Data.Data.FRUVersion[2]);
 			UartPrintf("\r\nNTC B值 : %d",FRU.FRUBlock.Data.Data.NTCBValue);
+			#ifdef FlashLightOS_Debug_Mode					
+			UartPrintf("\r\n自定义LED标识码 : 0x%04X",FRU.FRUBlock.Data.Data.CustomLEDIDCode);
+			UartPrintf("\r\nADC参考电压 : %.4fV",FRU.FRUBlock.Data.Data.ADCVREF);
 			#endif
 			}
 		}
@@ -370,7 +371,7 @@ void fruedithandler(void)
 		//写入数据
 		else
 		  {
-			FRU.FRUBlock.Data.Data.FRUVersion[1]=(char)len; //更新数据
+			FRU.FRUBlock.Data.Data.FRUVersion[2]=(char)len; //更新数据
 			if(!WriteFRU(&FRU))
 				UartPrintf("\r\n%s的硬件小版本号已被更新为%d.",frueditstr[3],len);
 			else

@@ -1,7 +1,9 @@
 #include "console.h"
 #include "CfgFile.h"
 
+//内部变量
 int IdleTimer=-1;
+bool IsForceStopByTimeOut=false;
 
 //Idle定时器callback
 void IdleTimerCallback(void)
@@ -34,6 +36,8 @@ void IdleTimerHandler(void)
 	 DisplayNoActTime();
 	 UARTPuts("内没有活动,已自动退出登录.");
 	 AccountState=Log_Perm_Guest;
+	 ConsoleStat=BUF_Force_Stop; //强制停止
+	 IsForceStopByTimeOut=true; //告诉强制停止函数是由于这里进行的操作
 	 PrintShellIcon(); 
 	 }
  }

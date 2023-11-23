@@ -7,6 +7,7 @@
 #include "LEDMgmt.h"
 #include "Xmodem.h"
 #include "FRU.h"
+#include "selftestlogger.h"
 
 ConfUnionDef CfgFileUnion;
 const char ZeroConstBuf[32]={0};
@@ -363,6 +364,14 @@ void PORConfHandler(void)
  {
  unsigned int MainCRC,BackupCRC;
  int checkresult,backupcheckresult;
+ #ifdef FlashLightOS_Debug_Mode
+ UartPost(Msg_info,EEPModName,"Config 1 Offset:0x%04X",CfgFileSize);	
+ UartPost(Msg_info,EEPModName,"Error log Offset:0x%04X",LoggerBase);	
+ UartPost(Msg_info,EEPModName,"Runtime log Offset:0x%04X",RunTimeLogBase);
+ UartPost(Msg_info,EEPModName,"Selftest log Offset:0x%04X",SelfTestLogBase);
+ UartPost(Msg_info,EEPModName,"FRU Offset:0x%04X",SelftestLogEnd);
+ UartPost(Msg_info,EEPModName,"Total ROM Spaces:%d Bytes",SelftestLogEnd+sizeof(LoggerDataUnion));
+ #endif
  UartPost(Msg_info,EEPModName,(char *)CheckingFileInt,"main");
  checkresult=CheckConfigurationInROM(Config_Main,&MainCRC);
  DisplayCheckResult(checkresult,false);

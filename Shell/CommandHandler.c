@@ -17,6 +17,9 @@ static CommandHandle LastCmdHandle=Command_None;//上一个命令句柄
 char *CmdParamBuf[20]={NULL};//命令各参数的指针
 int ArugmentCount=0;//命令的数目
 
+//外部变量
+extern bool IsForceStopByTimeOut;
+
 /*
  下面的函数分别是处理命令行各个事件的模块。
  分别处理普通输入回显和删除事件，tab和回车开始执行事件。
@@ -322,10 +325,10 @@ void CmdExecuteHandler(void)
 			//命令对于当前权限无效
 			else 
 			  {
-				UARTPuts("\r\n\r\n\033[40;31m对不起，您没有权限使用");
+				UARTPuts("\r\n\r\n\033[40;31m对不起,您没有权限使用");
 				UARTPuts("\"");	
 				UARTPuts(argv[0]);	
-        UARTPuts("\"命令。\033[0m");						
+        UARTPuts("\"命令.\033[0m");						
 				}
 			}
     //命令无效
@@ -334,7 +337,7 @@ void CmdExecuteHandler(void)
 			UARTPuts("\r\n\r\n\033[40;31m命令 ");
 			UARTPuts("\"");	
 			UARTPuts(argv[0]);	
-			UARTPuts("\" 无法识别。您可尝试使用'\033[40;32mhelp\033[40;31m'命令显示帮助.\033[0m");					
+			UARTPuts("\" 无法识别.您可尝试使用'\033[40;32mhelp\033[40;31m'命令显示帮助.\033[0m");					
 			}			
 		}
 	//命令执行过程中，不允许声明新的命令
@@ -357,8 +360,12 @@ void CtrlCHandler(void)
   //打断命令	
   ConsoleStat=BUF_Idle;//标记串口可以继续接收			
   ClearRecvBuffer();//清除接收缓冲	
-	UARTPuts("\r\n^C");	 
-	if(CmdHandle==Command_None)PrintShellIcon();//没有命令在执行，重新打印shell图标
+	if(!IsForceStopByTimeOut) //由于超时而被打断
+	  {
+	  UARTPuts("\r\n^C");	 
+	  if(CmdHandle==Command_None)PrintShellIcon();//没有命令在执行，重新打印shell图标
+		}
+	else IsForceStopByTimeOut=false;
 	CmdHandle=Command_None;	//停止当前命令
 	}
 //DMA缓冲区溢出事件处理函数
@@ -381,7 +388,9 @@ void TabHandler(void)
 	int paramcount,ParamUsagecount;
 	int CurrentMatchCMDlen,refmatchcmdcount;
 	bool ResendRxbuf;
-	if(ConsoleStat!=BUF_Tab_Req)return;
+	//判断tab生效条件
+	if(CmdHandle!=Command_None&&ConsoleStat==BUF_Tab_Req)ConsoleStat=BUF_Idle; //用户在命令执行期间按下tab，不生效
+	if(ConsoleStat!=BUF_Tab_Req)return; //用户没有按下Tab
 	//首先对命令参数进行解码
 	ResendRxbuf=false;//默认不需要送出内容
 	argc=Str2Argv(argv,RXBuffer,20);

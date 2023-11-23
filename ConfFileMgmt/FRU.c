@@ -281,7 +281,7 @@ void FirmwareVersionCheck(void)
 	 UartPost(Msg_critical,"FRUChk","This Firmware only works on V%d.%d hardware.",HardwareMajorVer,HardwareMinorVer);
 	 SelfTestErrorHandler();//FRU信息损坏
 	 #else
-	 WriteNewFRU("Hardware Mismatch");//重写FRU
+	 UartPost(Msg_warning,"FRUChk","FRU Information did not match this version of firmware.");
 	 #endif
 	 }
  //信息匹配，加载数据，显示信息

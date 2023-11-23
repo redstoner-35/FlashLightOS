@@ -2,8 +2,8 @@
 #define _FirmwareConf_
 
 //版本信息
-#define HardwareMajorVer 2
-#define HardwareMinorVer 0  //硬件版本号
+#define HardwareMajorVer 1
+#define HardwareMinorVer 1  //硬件版本号
 
 #define MajorVersion 1
 #define MinorVersion 8
@@ -32,11 +32,11 @@
 #define CustomLEDName "昌达SFH55-3000K" //如果指定驱动使用其他任意未指定型号的LED，则需要在此处填写LED名称
 #define CustomLEDCode 0x5AA5 //如果指定驱动使用其他任意未指定型号的LED，则需要在此处填写该LED的类型代码
 
-//#define Using_SBT90Gen2_LED //使用SBT90.2
+#define Using_SBT90Gen2_LED //使用SBT90.2
 //#define Using_SBT90R_LED //使用红色的SBT90
 //#define Using_SBT70G_LED //使用绿色的SBT70
 //#define Using_SBT70B_LED //使用蓝色的SBT70
-#define Using_Generic_3V_LED //使用其他任意未指定型号的3V LED
+//#define Using_Generic_3V_LED //使用其他任意未指定型号的3V LED
 //#define Using_Generic_6V_LED //使用其他任意未指定型号的6V LED
 
 //挡位和操作逻辑配置
@@ -46,7 +46,7 @@
 #define EnableTurbo //出厂挡位组启用双击极亮挡位(此挡位按照100%电流输出)
 
 //EEPROM配置(用于存储配置信息)
-//#define EnableSecureStor //对于FM24C512 系统会使用Security sector存储FRU数据
+#define EnableSecureStor //对于FM24C512 系统会使用Security sector存储FRU数据
 #define UsingEE_24C512 //使用24C512
 //#define UsingEE_24C256 //使用24C256
 

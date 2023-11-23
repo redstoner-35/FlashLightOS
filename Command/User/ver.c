@@ -64,18 +64,13 @@ void verHandler(void)
   else UartPrintf("%.1f'C",ADCO.LEDTemp);
   //打印硬件信息		 
 	UARTPuts("\r\n硬件平台:");
-  #ifndef EnableSecureStor
-  if(!M24C512_PageRead(FRU.FRUBUF,SelftestLogEnd,sizeof(FRUBlockUnion))&&CheckFRUInfoCRC(&FRU))
-  #else
-  if(!M24C512_ReadSecuSct(FRU.FRUBUF,0,sizeof(FRUBlockUnion))&&CheckFRUInfoCRC(&FRU)) //FRU读取成功
-  #endif	 
+  if(!ReadFRU(&FRU)&&CheckFRUInfoCRC(&FRU)) //FRU读取成功 
 	   {
      TextPtr=DisplayLEDType(&FRU);
 		 UartPrintf("%s V%d.%d for %s LED.",HardwarePlatformString,FRU.FRUBlock.Data.Data.FRUVersion[1],FRU.FRUBlock.Data.Data.FRUVersion[2],TextPtr);		 
 		 TextPtr=FRU.FRUBlock.Data.Data.SerialNumber;//获取序列号字符串
 		 }
-  else //读取失败，显示未知
-	   UARTPuts((char *)TextPtr);
+  else UARTPuts((char *)TextPtr);//读取失败，显示未知  
 	UartPrintf("\r\n产品序列号:%s",TextPtr);
 	switch(AccountState)//根据当前登录状态显示信息
 	   {
