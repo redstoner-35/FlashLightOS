@@ -84,7 +84,7 @@ void RunTimeDataLogging(void)
  //实现LED运行时间和库仑计积分的模块 
  if(SysPstatebuf.ToggledFlash)RunLogEntry.Data.DataSec.LEDRunTime+=0.125;//如果LED激活，则运行时间每次加1/8秒
  Buf=(double)RunTimeBattTelemResult.BusCurrent*(double)1000;//将A转换为mA方便积分
- Buf+=(PSUState!=0x8A)?50:17;//加上17mA(驱动处于灭灯状态)50mA(驱动处于开灯状态)的驱动本底消耗数值
+ Buf+=(PSUState!=(0x80|MainBuckOffTimeOut))?50:17;//加上17mA(驱动处于灭灯状态)50mA(驱动处于开灯状态)的驱动本底消耗数值
  Buf*=0.125;//将mA转换为mAS(每秒的毫安数，这里乘以0.125是因为每秒钟会积分8次)
  Buf/=(double)(60*60);//将mAS转换为mAH累加到缓冲区内
  UsedCapacity+=(float)Buf; //已用容量加上本次的结果

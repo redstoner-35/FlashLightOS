@@ -23,6 +23,7 @@ static float LEDIfFilter[14];
 static float CurrentSynthRatio=100;  //电流合成比例
 static char ShortCount=0;
 static bool IsDisableMoon; //是否关闭月光档
+bool IsDisableBattCheck; //是否关闭电池质量检测
 unsigned char PSUState=0x00; //辅助电源的状态
 
 //外部变量
@@ -213,6 +214,7 @@ void LinearDIM_POR(void)
  ***********************************************************************/
  SysPstatebuf.Duty=RunLogEntry.Data.DataSec.MoonPWMDuty;  //加载占空比
  LastAdjustDirection=true; //初始调节方向设置为反向
+ IsDisableBattCheck=false; //默认开启电池质量检测
  if(SysPstatebuf.Duty>100||SysPstatebuf.Duty<1) //占空比非法值，启动修正处理
   {
 	SysPstatebuf.Duty=40;
@@ -224,6 +226,7 @@ void LinearDIM_POR(void)
 void TurnLightOFFLogic(void)
  {
  TimerHasStarted=false;
+ IsDisableBattCheck=false; //每次关机都要复位电池检测禁用位
  ShortCount=0;//复位短路次数统计
  DisableFlashTimer();//关闭闪烁定时器
  SetPWMDuty(0);
@@ -306,9 +309,14 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
 	 return ADCO.SPSTMONState==SPS_TMON_Disconnect?Error_SPS_TMON_Offline:Error_SPS_CATERR;
  if(ADCO.SPSTMONState==SPS_TMON_OK&&ADCO.SPSTemp>CfgFile.MOSFETThermalTripTemp)
 	 return Error_SPS_ThermTrip;
- //检测LED基板温度,如果超过热跳闸温度则保护
- if(ADCO.NTCState==LED_NTC_OK&&ADCO.LEDTemp>CfgFile.LEDThermalTripTemp)
-	 return Error_LED_ThermTrip;
+ //检测LED基板温度,如果超过热跳闸温度则保护。同时检测SPS和电池温度来决定是否启用电池质量检测
+ if(ADCO.NTCState==LED_NTC_OK)
+   {
+	 //LED过热 
+	 if(ADCO.LEDTemp>CfgFile.LEDThermalTripTemp)return Error_LED_ThermTrip;
+	 //在低温下电池放电性能会锐减，因此我们需要在温度低于10度的时候关闭电池质量检测
+	 IsDisableBattCheck=fminf(ADCO.LEDTemp,ADCO.SPSTemp)<10?true:false;
+	 }
  //检查INA219读取到的电池电压确保电压合适
  if(BattOutput->BusVolt<=CfgFile.VoltageTrip||BattOutput->BusVolt>CfgFile.VoltageOverTrip) 
 	 return BattOutput->BusVolt>CfgFile.VoltageOverTrip?Error_Input_OVP:Error_Input_UVP;
@@ -451,7 +459,7 @@ void RuntimeModeCurrentHandler(void)
 	 PSUState|=0x80; //额定LED电流为0或者toggle模式需要关闭主灯,启动计时器
  else
 	 PSUState=0x00; //电源开启 
- SetAUXPWR((PSUState==0x8A)?false:true); //控制辅助电源引脚
+ SetAUXPWR((PSUState==(0x80|MainBuckOffTimeOut))?false:true); //控制辅助电源引脚
  /********************************************************
  运行时挡位处理的第五步,将计算出的电流通过PWM调光和DAC线
  性调光混合的方式把LED调节到目标的电流实现挡位控制（这是对

@@ -9,7 +9,9 @@
 unsigned int atoh(char *Text,bool *IsError);
 
 //常量字符串指针
+#ifdef FlashLightOS_Debug_Mode
 static const char *TempOffsetstr="\r\n%s温度修正值 : %.2f'C";
+#endif
 static const char *frueditstr[]=
  {
  "\r\n错误:系统尝试读取FRU时出现错误.", //0
@@ -74,15 +76,14 @@ void fruedithandler(void)
 			UartPrintf("\r\n序列号 : %s",FRU.FRUBlock.Data.Data.SerialNumber);
 			UARTPuts("\r\nLED类型 : ");
 			if(FRU.FRUBlock.Data.Data.FRUVersion[0]==0x03||FRU.FRUBlock.Data.Data.FRUVersion[0]==0x06)
-        UARTPuts("(自定义)");
-			
+        UARTPuts("(自定义)");		
 			UARTPuts((char *)DisplayLEDType(&FRU)); //打印LED内容					
-			UartPrintf((char *)TempOffsetstr,"LED基板",FRU.FRUBlock.Data.Data.NTCTrim);
-			UartPrintf((char *)TempOffsetstr,"驱动MOS",FRU.FRUBlock.Data.Data.SPSTrim);
+      UartPrintf("\r\n硬件版本 : V%d.%d",FRU.FRUBlock.Data.Data.FRUVersion[1],FRU.FRUBlock.Data.Data.FRUVersion[2]);
 		  UartPrintf("\r\n最大LED电流 : %.2fA",FRU.FRUBlock.Data.Data.MaxLEDCurrent);
-		  UartPrintf("\r\n硬件版本 : V%d.%d",FRU.FRUBlock.Data.Data.FRUVersion[1],FRU.FRUBlock.Data.Data.FRUVersion[2]);
-			UartPrintf("\r\nNTC B值 : %d",FRU.FRUBlock.Data.Data.NTCBValue);
-			#ifdef FlashLightOS_Debug_Mode					
+			#ifdef FlashLightOS_Debug_Mode				
+			UartPrintf((char *)TempOffsetstr,"LED基板",FRU.FRUBlock.Data.Data.NTCTrim);
+			UartPrintf((char *)TempOffsetstr,"驱动MOS",FRU.FRUBlock.Data.Data.SPSTrim);	 		
+			UartPrintf("\r\nNTC B值 : %d",FRU.FRUBlock.Data.Data.NTCBValue);			
 			UartPrintf("\r\n自定义LED标识码 : 0x%04X",FRU.FRUBlock.Data.Data.CustomLEDIDCode);
 			UartPrintf("\r\nADC参考电压 : %.4fV",FRU.FRUBlock.Data.Data.ADCVREF);
 			#endif

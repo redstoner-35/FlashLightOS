@@ -29,6 +29,8 @@
 #include "ht32.h"
 #include "LEDMgmt.h"
 #include "SideKey.h"
+#include "FirmwareConf.h"
+#include "Pindefs.h"
 
 /** @addtogroup HT32_Series_Peripheral_Examples HT32 Peripheral Examples
   * @{
@@ -41,7 +43,8 @@
 /** @addtogroup InputOutput
   * @{
   */
-
+/* Defines ------------------------------------------------------------------------------------------------*/
+#define HARDFaultLED_BASE STRCAT2(HT_GPIO,LED_Red_IOBank) //IO Bank
 
 /* Global functions ----------------------------------------------------------------------------------------*/
 /*********************************************************************************************************//**
@@ -58,8 +61,8 @@ void NMI_Handler(void)
  ************************************************************************************************************/
 void HardFault_Handler(void)
 {
-  #if 1
-
+  #ifdef FlashLightOS_Debug_Mode
+  
   static vu32 gIsContinue = 0;
   /*--------------------------------------------------------------------------------------------------------*/
   /* For development FW, MCU run into the while loop when the hardfault occurred.                           */
@@ -79,12 +82,19 @@ void HardFault_Handler(void)
   /*--------------------------------------------------------------------------------------------------------*/
 
   #else
-
+  
   /*--------------------------------------------------------------------------------------------------------*/
-  /* For production FW, you shall consider to reboot the system when hardfault occurred.                    */
+  /* For production FW, RED LED will flash at very fast speed to indicate hard fault occurred               */
   /*--------------------------------------------------------------------------------------------------------*/
-  NVIC_SystemReset();
-
+  static vu32 LEDTimer = 0;
+	
+	HARDFaultLED_BASE->DIRCR|=0x1<<LED_Red_IOPinNum; //设置对应的IO口为output
+	HARDFaultLED_BASE->DRVR|=0x3<<(2*LED_Red_IOPinNum); //设置值驱动电流16mA
+	while(1)
+	  {
+	  LEDTimer=(LEDTimer<239999)?LEDTimer+1:0;
+	  HARDFaultLED_BASE->SRR=0x01<<(LED_Red_IOPinNum+((LEDTimer<129999)?16:0)); //高速闪烁LED
+		}
   #endif
 }
 
@@ -187,7 +197,7 @@ void GPTM0_IRQHandler(void)
 		if(PSUState&0x80)	
 		  {
 			buf=PSUState&0x7F;
-			if(buf<0x0A)buf++;
+			if(buf<MainBuckOffTimeOut)buf++;
 		  PSUState&=0x80; 
 		  PSUState|=buf;  //计时器被使能，开始累加
 			}

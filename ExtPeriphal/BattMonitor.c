@@ -11,10 +11,12 @@
 
 //静态变量和函数声明
 int iroundf(float IN);
+float fminf(float x,float y);
 INADoutSreDef RunTimeBattTelemResult;
 float UsedCapacity=0;
 float UnLoadBattVoltage=12; //用于判断电池质量的电压变量
 static char LVFlashTimer=0;
+extern bool IsDisableBattCheck; //是否关闭电池质量警报
 
 //低压告警标记
 void WriteRunLogWithLVAlert(void)
@@ -127,19 +129,23 @@ void LowVoltageIndicate(void)
 //在手电筒运行期间测量电池参数的函数
 void RunTimeBatteryTelemetry(void)
  {
- float BatteryMidLevel,voltDiff,VoltAlert;
+ float BatteryMidLevel,voltDiff,VoltAlert,BatteryFullLevel;
  bool IsNeedToUpdateCapacity;
- //令INA219获取电池(输入电源)信息
+ ADCOutTypeDef ADCO;
+ //令INA219获取电池(输入电源)信息,同时令ADC获取温度信息
  if(SysPstatebuf.Pstate!=PState_LEDOn&&SysPstatebuf.Pstate!=PState_LEDOnNonHold)return;//LED没开启
  RunTimeBattTelemResult.TargetSensorADDR=INA219ADDR; //指定地址
- if(!INA219_GetBusInformation(&RunTimeBattTelemResult))
+ if(!ADC_GetResult(&ADCO)||!INA219_GetBusInformation(&RunTimeBattTelemResult))
      {
 		 //INA219转换失败,这是严重故障,立即写log并停止驱动运行
 		 RunTimeErrorReportHandler(Error_ADC_Logic);
 		 return;
 	   }
  //根据每次启动手电空载的电压判断电池质量的前置准备 
- BatteryMidLevel=((CfgFile.VoltageFull-CfgFile.VoltageAlert)*0.5)+CfgFile.VoltageAlert;//计算还有一半电量以上的电压
+ BatteryFullLevel=CfgFile.VoltageFull; //获取满电电压
+ if(fminf(ADCO.LEDTemp,ADCO.SPSTemp)<10)BatteryFullLevel-=0.5; //低温环境，满电电压-0.5
+ if((BatteryFullLevel-CfgFile.VoltageAlert)<0.3)BatteryFullLevel=CfgFile.VoltageAlert+0.3;//防止满电电压被减的过低	 
+ BatteryMidLevel=((BatteryFullLevel-CfgFile.VoltageAlert)*0.5)+CfgFile.VoltageAlert;//计算还有一半电量以上的电压
  voltDiff=UnLoadBattVoltage-RunTimeBattTelemResult.BusVolt;
  if(voltDiff<0)voltDiff=0;//计算负载条件下的电压差
  if(SysPstatebuf.TargetCurrent>=(0.6*FusedMaxCurrent))//如果开启极亮挡位，则下调低电压检测阈值电压避免一上来就黄灯
@@ -149,7 +155,8 @@ void RunTimeBatteryTelemetry(void)
 		}
  else VoltAlert=CfgFile.VoltageAlert; //正常执行
  //电池质量检测		
- if(UnLoadBattVoltage>(CfgFile.VoltageFull-0.5)&&voltDiff>=2.4) //在大电流输出下电压差大于2.5或者电压低于警告值，电池质量太次触发警告
+ if(IsDisableBattCheck)UnLoadBattVoltage=RunTimeBattTelemResult.BusVolt; //电池质量检测被关闭，不执行下面的所有判断逻辑（并且同步空载和当前电压信息）		
+ else if(UnLoadBattVoltage>(BatteryFullLevel-0.5)&&voltDiff>=2.4) //在大电流输出下电压差大于2.5或者电压低于警告值，电池质量太次触发警告
     {
     if(SysPstatebuf.TargetCurrent>=(0.6*FusedMaxCurrent))RunLogEntry.Data.DataSec.IsLowQualityBattAlert=true; 			
 		}

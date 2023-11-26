@@ -2,12 +2,12 @@
 #define _FirmwareConf_
 
 //版本信息
-#define HardwareMajorVer 1
-#define HardwareMinorVer 1  //硬件版本号
+#define HardwareMajorVer 2
+#define HardwareMinorVer 0  //硬件版本号
 
 #define MajorVersion 1
 #define MinorVersion 8
-#define HotfixVersion 1  //固件版本号
+#define HotfixVersion 2  //固件版本号
 
 //固件模式配置
 //#define Firmware_UV_Mode //适用于UV LED的特殊模式
@@ -18,6 +18,7 @@
 #define HardwarePlatformString "Xtern Ripper" //硬件平台字符串信息，可以任意修改
 
 //性能参数定义
+#define MainBuckOffTimeOut 6 //主Buck在LED熄灭命令之后的延时值,输入8表示1秒
 #define BreathTIMFreq 50 //负责生成平滑呼吸灯效果的定时器频率(单位Hz)，越高越平滑
 #define GammaCorrectionValue 2.45   //亮度拟合曲线的gamma修正，根据不同LED有所不同
 #define LVAlertCurrentLimit 8 //当低电压警告触发后，驱动最大的输出电流值(A)
@@ -32,11 +33,11 @@
 #define CustomLEDName "昌达SFH55-3000K" //如果指定驱动使用其他任意未指定型号的LED，则需要在此处填写LED名称
 #define CustomLEDCode 0x5AA5 //如果指定驱动使用其他任意未指定型号的LED，则需要在此处填写该LED的类型代码
 
-#define Using_SBT90Gen2_LED //使用SBT90.2
+//#define Using_SBT90Gen2_LED //使用SBT90.2
 //#define Using_SBT90R_LED //使用红色的SBT90
 //#define Using_SBT70G_LED //使用绿色的SBT70
 //#define Using_SBT70B_LED //使用蓝色的SBT70
-//#define Using_Generic_3V_LED //使用其他任意未指定型号的3V LED
+#define Using_Generic_3V_LED //使用其他任意未指定型号的3V LED
 //#define Using_Generic_6V_LED //使用其他任意未指定型号的6V LED
 
 //挡位和操作逻辑配置
