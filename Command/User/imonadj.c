@@ -8,6 +8,9 @@
 //参数帮助entry
 const char *imonadjArgument(int ArgCount)
   {
+	#ifndef FlashLightOS_Debug_Mode	
+	return "未知参数名称";	
+	#else	
 	switch(ArgCount)
 	 {
 		case 0:
@@ -20,6 +23,7 @@ const char *imonadjArgument(int ArgCount)
 		case 7:return "指定程序要设置的节点数值";
 	 }
 	return NULL;
+	#endif
 	}
 //命令处理
 void Imonadjhandler(void)

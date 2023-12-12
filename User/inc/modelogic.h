@@ -176,6 +176,7 @@ extern int DeepSleepTimer;//深度睡眠定时器
 extern float FusedMaxCurrent;//熔断的最大电流
 
 //函数
+void SystemRunLogProcessHandler(void); //处理运行日志写入的函数
 void DisplayBatteryValueHandler(void);//电池电量的显示
 void ResetPowerOffTimerForPoff(void);//挡位复位时自动重置定时器
 void AutoPowerOffTimerHandler(void);//自动关机计时器的处理

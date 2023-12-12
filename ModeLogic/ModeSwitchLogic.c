@@ -362,6 +362,7 @@ static void EnteredRegular(void)
 static void ModeSwitchGear(void)
   {
 	int i,j,maxmodecount;
+	ModeConfStr *Mode;
 	if(CurMode.ModeGrpSel==ModeGrp_Regular)
 	  {
 	  maxmodecount=8;
@@ -376,19 +377,37 @@ static void ModeSwitchGear(void)
 	for(i=0;i<(maxmodecount+1);i++)
     {
 		j=(j+1)%maxmodecount;//找下一个模式	
-		if(CurMode.ModeGrpSel==ModeGrp_Regular&&CfgFile.RegularMode[j].IsModeEnabled)//找到可用的普通模式
-			{
-			CurMode.RegularGrpMode=j;
-			break;
-			}
-		if(CurMode.ModeGrpSel!=ModeGrp_Regular&&CfgFile.SpecialMode[j].IsModeEnabled)//找到可用的特殊模式
-			{
-			CurMode.SpecialGrpMode=j;
-			break;
+	  if(CurMode.ModeGrpSel==ModeGrp_Regular)Mode=&CfgFile.RegularMode[j];
+	  else Mode=&CfgFile.SpecialMode[j];  //获取模式结构体的指针
+		if(Mode->IsModeEnabled) //该挡位已被启用	
+		  {
+			if(CurMode.ModeGrpSel==ModeGrp_Regular)CurMode.RegularGrpMode=j;//找到可用的普通模式
+			else CurMode.SpecialGrpMode=j;//找到可用的特殊模式
+		  break;
 			}
 		}
 	}
-//短按的挡位选择逻辑
+//在正常和特殊循环档内，判断是否需要实现循环换挡的操作
+static bool IsAllowToSwitchGear(void)
+  {
+	ModeConfStr *Mode;
+	int i,maxmodecount,enabledcount;
+  //当前用户位于双击功能组里面，不结束换挡操作
+	if(CurMode.ModeGrpSel==ModeGrp_DoubleClick)return false;
+	//开始获取该循环挡位组内的可用挡位数量
+	enabledcount=0;
+	if(CurMode.ModeGrpSel==ModeGrp_Regular)maxmodecount=8;
+	else maxmodecount=4;
+  for(i=0;i<maxmodecount;i++)
+	 {
+	 if(CurMode.ModeGrpSel==ModeGrp_Regular)Mode=&CfgFile.RegularMode[i];
+	 else Mode=&CfgFile.SpecialMode[i];  //获取模式结构体的指针
+	 if(Mode->IsModeEnabled)enabledcount++;//有额外可用的挡位，数目+1
+	 }
+	//返回结果 
+	return enabledcount>1?false:true; //当前挡位组数量大于1个挡位，可以换过去
+	}
+//换挡逻辑的处理实现函数
 void ModeSwitchLogicHandler(void)
   {
 	int keycount;
@@ -446,6 +465,7 @@ void ModeSwitchLogicHandler(void)
 	else IsNeedToSwitchGear=false;//不需要换挡
 	//处理换挡逻辑 
 	if(!IsNeedToSwitchGear&&(keycount<2||keycount>3))return;	//短按按键次数小于2次或者按了超过三次不处理
+  if(IsNeedToSwitchGear&&IsAllowToSwitchGear())return; 		//当前用户位于循环档的操作内
 	//检测到换挡操作时重置特殊功能的定时器和状态机
   ResetPowerOffTimerForPoff();//重置定时器
 	ResetBreathStateMachine();//重置呼吸闪状态机

@@ -34,8 +34,9 @@ void RunTimeDataLogging(void)
  float EffCalcBuf;
  int i;
  //logger没有激活或者当前手电筒不在运行，退出 
- if(SysPstatebuf.Pstate!=PState_LEDOn&&SysPstatebuf.Pstate!=PState_LEDOnNonHold)return;//LED没开启  
- if(!IsRunTimeLoggingEnabled)//logger被禁止，只采样平均SPS温度保障温控系统正常运作。
+ if(SysPstatebuf.Pstate!=PState_LEDOn&&SysPstatebuf.Pstate!=PState_LEDOnNonHold)return;//LED没开启   
+ //logger被禁止，只采样平均SPS温度保障温控系统正常运作。
+ if(!IsRunTimeLoggingEnabled)
    {
    if(RuntimeAverageCount==0)//第一次，载入旧数据
 	   {

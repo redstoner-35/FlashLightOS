@@ -71,8 +71,8 @@ int main(void)
 		 continue; //不处理下面任何内容
 		 }
 	 //处理shell事务(为了保证性能,在手电筒运行时会直接跳过所有的shell事务)	 
-   if(SysPstatebuf.Pstate!=PState_LEDOn&&SysPstatebuf.Pstate!=PState_LEDOnNonHold)
-		  ShellProcUtilHandler();
+   if(SysPstatebuf.Pstate!=PState_LEDOn&&SysPstatebuf.Pstate!=PState_LEDOnNonHold) 
+	   ShellProcUtilHandler();
    #ifndef FlashLightOS_Debug_Mode	 
 	 //处理手电筒自身的运行逻辑
 	 DisplayBatteryValueHandler();//处理显示电池电量操作的事务
@@ -85,9 +85,14 @@ int main(void)
 	 LEDShortCounter();//LED短路检测积分函数
 	 RunTimeBatteryTelemetry();//测量电池状态
 	 RunTimeDataLogging();//运行时的记录
-	 LoggerHeader_AutoUpdateHandler();//记录器自动更新头部数据
 	 LEDMgmt_CallBack();//LED管理器
-	 AutoPowerOffTimerHandler();//处理自动关机定时器
+	 //手电筒处于运行状态，跳过一些运行时不需要处理的浪费时间的函数
+   if(SysPstatebuf.Pstate!=PState_LEDOn&&SysPstatebuf.Pstate!=PState_LEDOnNonHold) 
+	    {
+      SystemRunLogProcessHandler(); //负责管理将日志写入到ROM的管理函数
+		  AutoPowerOffTimerHandler();//处理自动关机定时器
+			LoggerHeader_AutoUpdateHandler();//记录器自动更新头部数据
+			}		   
 	 SensorRefreshFlag=false;
 	 #endif
 	 }

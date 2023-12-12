@@ -53,7 +53,7 @@ const char AdminPassword[16]=
 0x8E,0xBF,0x67,0x0F,0x6B,0x09,0x4C,0xA3
 };	
 //加载默认的配置
-void LoadDefaultConf(void)
+void LoadDefaultConf(bool IsOverridePassword)
  {
  int i;
  #ifndef Firmware_UV_Mode		 
@@ -76,16 +76,23 @@ void LoadDefaultConf(void)
  CfgFile.PWMDIMFreq=20000;//20KHz调光频率
  CfgFile.DeepSleepTimeOut=8*DeepsleepDelay;//深度睡眠时间
  CfgFile.IdleTimeout=8*DefaultTimeOutSec; //定时器频率乘以超时时间得到超时值
- #ifdef EnableSideLocLED	 
- CfgFile.EnableLocatorLED=true;//启用侧按定位LED
+ #ifdef Firmware_UV_Mode
+ CfgFile.EnableLocatorLED=false;//UV固件模式，默认禁用侧按定位LED
  #else
- CfgFile.EnableLocatorLED=false;//禁用侧按定位LED
+   #ifdef EnableSideLocLED	 
+	 CfgFile.EnableLocatorLED=true;//启用侧按定位LED
+	 #else
+   CfgFile.EnableLocatorLED=false;//禁用侧按定位LED
+   #endif
  #endif
- strncpy(CfgFile.AdminAccountname,"ADMIN",20);
+ //恢复主机名和账户凭据
  strncpy(CfgFile.HostName,"Xtern-Ripper",20);
- /* 密码处理 */  	
- strncpy(CfgFile.RootAccountPassword,RootPassword,16);//root密码		 
- strncpy(CfgFile.AdminAccountPassword,AdminPassword,16);//管理员密码
+ if(IsOverridePassword)
+   {
+	 strncpy(CfgFile.AdminAccountname,"ADMIN",20); //管理员账户名
+   strncpy(CfgFile.RootAccountPassword,RootPassword,16);//root密码		 
+   strncpy(CfgFile.AdminAccountPassword,AdminPassword,16);//管理员密码
+	 }
  //恢复挡位配置	 
  RestoreFactoryModeCfg();	 
  //恢复电流矫正设置
@@ -409,7 +416,7 @@ void PORConfHandler(void)
  //全坏了
  else 
    {
-	 LoadDefaultConf();
+	 LoadDefaultConf(true);
 	 UartPost(Msg_critical,EEPModName,"No usable config found,driver will reverb to default.");
 	 UartPost(Msg_info,EEPModName,(char *)RestoreCfg,"Main");	 
 	 DisplayCheckResult(WriteConfigurationToROM(Config_Main),true);

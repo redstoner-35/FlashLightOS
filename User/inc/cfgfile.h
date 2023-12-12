@@ -75,7 +75,7 @@ extern ConfUnionDef CfgFileUnion;
 
 //函数
 void PORConfHandler(void);//上电初始化
-void LoadDefaultConf(void);//加载默认配置
+void LoadDefaultConf(bool IsOverridePassword);//加载默认配置
 int WriteConfigurationToROM(cfgfiletype cfgtyp);//写配置
 int CheckConfigurationInROM(cfgfiletype cfgtyp,unsigned int *CRCResultO);//检查ROM中的配置是否损毁
 int ReadConfigurationFromROM(cfgfiletype cfgtyp);//读取配置

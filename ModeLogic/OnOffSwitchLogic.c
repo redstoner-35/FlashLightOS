@@ -68,6 +68,26 @@ void SetAUXPWR(bool IsEnabled)
 	else GPIO_SetOutBits(AUXPWR_EN_IOG,AUXPWR_EN_IOP);
 	}
 /*
+在系统运行过程中，自动执行运行日志commit的处理函数	
+这个函数的目的是为了避免每次按开关都对ROM进行写入造成的额外磨损	
+*/
+static unsigned char OperationTimer=0; //定时器
+	
+void SystemRunLogProcessHandler(void)
+  {
+	//LED开启，重置定时器
+  if(SysPstatebuf.Pstate==PState_LEDOn||SysPstatebuf.Pstate==PState_LEDOnNonHold)
+		OperationTimer=0;
+	//定时器计时8秒时间到
+  else if(OperationTimer==80)
+	  {
+		OperationTimer=81; //只写一次日志然后进入暂停状态
+		WriteRuntimeLogToROM();//尝试将运行日志写入到ROM内
+		}
+	//LED熄灭且时间未到开始计时
+	else if(OperationTimer<80)OperationTimer++;
+	}
+/*
 系统运行时出现错误的报错函数，负责生成日志并向电
 源管理状态机提交错误代码和新的电源状态。
 */
@@ -130,7 +150,10 @@ void PStateStateMachine(void)
 			  CurrentLEDIndex=27;
 			//时间到，深度睡眠
 			else if(DeepSleepTimer==0)
+			  {
+				WriteRuntimeLogToROM();//尝试将运行日志写入到ROM内
 				SysPstatebuf.Pstate=PState_DeepSleep; 
+				}
 			//执行休眠定时器的判断
 			else 
 				DeepSleepTimerCallBack();
@@ -312,7 +335,6 @@ void PStateStateMachine(void)
 			 ResetRampMode();//重置无极调光模块
 			 ResetCustomFlashControl();//复位自定义闪控制
        MorseSenderReset();//关灯后重置呼吸和摩尔斯电码发送的状态机
-			 WriteRuntimeLogToROM();//尝试写ROM
 			 RunLogEntry.Data.DataSec.IsLowVoltageAlert=false;//清除低电压警报
 			 }				 
 			break;
@@ -334,7 +356,6 @@ void PStateStateMachine(void)
 			  ResetBreathStateMachine();
 				ResetCustomFlashControl();//复位自定义闪控制
         MorseSenderReset();//关灯后重置呼吸和摩尔斯电码发送的状态机
-			  WriteRuntimeLogToROM();//尝试写ROM
 				RunLogEntry.Data.DataSec.IsLowVoltageAlert=false;//清除低电压警报
 				}					
 			break;

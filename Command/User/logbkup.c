@@ -15,6 +15,7 @@ typedef enum
  }logbkupStatuDef;
 
 //变量和常量
+const char *LogRestoreResult="错误日志文件还原%s.";
 logbkupStatuDef logbkupcmdstate=logbkup_XmodemInit; 
 #ifndef Firmware_DIY_Mode
 void ExitRunLogCmdHandler(void);
@@ -56,7 +57,7 @@ void RestoreErrorLogFromXmodem(void)
 			UARTPuts("失败\r\n错误:您上传的错误日志文件无效,文件已损坏.");					 
 	else
 			{
-			UARTPuts("成功\r\n错误日志文件检查通过,正在搬运至ROM区域,请耐心等待...");
+			UARTPuts("成功\r\n错误日志文件检查通过.正在还原,请耐心等待...");
 			CarrySize=LoggerAreaSize;
 			Address=XmodemConfRecvBase;
 			WriteAddress=LoggerBase;
@@ -74,8 +75,7 @@ void RestoreErrorLogFromXmodem(void)
 			   Address+=RWSize;
 			   WriteAddress+=RWSize;
 			   }
-			if(CarrySize>0||!fetchloggerheader(&LoggerHdr))UARTPuts("\r\n在还原错误日志文件时出现了异常.");
-			else UARTPuts("\r\n错误日志文件已经还原成功.");
+			UartPrintf((char *)LogRestoreResult,(CarrySize>0||!fetchloggerheader(&LoggerHdr))?"失败":"成功");
 			}
 	logbkupCmdEndHandler();	 	
   }

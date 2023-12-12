@@ -18,6 +18,7 @@ CfgMgmtWriting,//正在写入中
 CfgMgmtRequestRead,//读取请求
 CfgMgmtReading,//正在验证中
 CfgMgmtRequstRestoreFactory,//请求恢复到工厂设置 
+CfgMgmtConfirmOverridePassword, //是否覆盖密码
 CfgMgmtRequestBackup,
 CfgMgmtWaitXmodemConfirm,
 CfgMgmtRequestRestore,
@@ -136,7 +137,7 @@ void CheckAndRestoreConfigFromXmodem(void)
 	else
 	  {
 		UartPrintf("成功\r\n您上传的配置文件已通过验证,该文件的CRC32为0x%08X.",CRC32Result);
-		UARTPuts("\r\n请耐心等待系统应用您上传的配置文件,这将会需要一些时间...");		
+		UARTPuts("\r\n请耐心等待系统对文件进行预处理...");		
     result=ReadConfigurationFromROM(Config_XmodemRX);
 		if(result)
 	    UartPrintf("错误:系统在尝试应用您的配置文件时出现问题,错误码:0x%02X",result);	
@@ -145,7 +146,7 @@ void CheckAndRestoreConfigFromXmodem(void)
       if(M24C512_Erase(XmodemConfRecvBase,CfgFileSize))
 				UARTPuts("错误:配置文件恢复成功,但是试图清除缓存时出现问题,请重试.");
 			else 
-				UARTPuts("\r\n配置文件已经恢复成功,如您需要保存至ROM,请使用'cfgmgmt -s <配置文件类型>'完成。");	
+				UARTPuts("\r\n配置文件恢复成功,请输入'cfgmgmt -s <配置文件类型>'进行固化.");	
 			}				
 	  }
 	cfgmgmtCmdXmodemErrorHandler();
@@ -358,17 +359,27 @@ void cfgmgmthandler(void)
 			}
 		break;
 		}
+	 case CfgMgmtConfirmOverridePassword:
+	  {
+		if(YConfirmState!=YConfirm_Error&&YConfirmState!=YConfirm_OK)break; //等待用户确认
+	  LoadDefaultConf(YConfirmState==YConfirm_OK?true:false);//加载默认配置
+		UARTPuts("\r\n当前配置已恢复为出厂默认值.");
+		CfgmgmtState=CfgMgmtNoneOp;
+		ClearRecvBuffer();//清除接收缓冲
+		CmdHandle=Command_None;//命令执行完毕
+		break;
+		}
 	 case CfgMgmtRequstRestoreFactory://处理恢复工厂设置
 	  {
 		//验证成功
 		if(YConfirmState==YConfirm_OK)
 		  {
-			LoadDefaultConf();//加载默认配置
-			UARTPuts("\r\n当前配置已恢复为出厂默认值。");
-			CfgmgmtState=CfgMgmtNoneOp;
+			CfgmgmtState=CfgMgmtConfirmOverridePassword; //等待用户告知是否需要覆盖密码			
+			UARTPuts("\r\n\r\n请确认是否重置系统的凭据.如输入'yes'则凭据将被重置.");
+			UARTPuts("\r\n? ");	
 			ClearRecvBuffer();//清除接收缓冲
-			CmdHandle=Command_None;//命令执行完毕
-			break;
+      YConfirmstr="yes"; 
+      YConfirmState=YConfirm_WaitInput;	
 			}
 		else if(YConfirmState==YConfirm_Error)
       OperationStopByUserInfo();//用户停止操作

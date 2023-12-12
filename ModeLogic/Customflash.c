@@ -8,6 +8,7 @@
 'B'表示随机决定是否继续执行后面的指令
 '-'表示让灯珠熄灭1个周期
 'R'表示让灯珠以随机的亮度点亮
+'S'表示让灯珠强制熄灭并且永久停止执行此序列，直到换挡
 'WXYZ'分别延时0.5-1秒-2秒,4秒
 'T'表示序列在奇数次执行时不执行后面的内容，偶数次则执行
 */
@@ -44,6 +45,7 @@ int CheckForCustomFlashStr(char *Str)
 	for(i=0;i<32;i++)
 		{
 		if(Str[i]=='U'||Str[i]=='B')result=true;
+		else if(Str[i]=='S')result=true;
 		else if(Str[i]=='R'||Str[i]=='T')result=true;
     else if(Str[i]=='A'||Str[i]=='-')result=true;
 		else if(Str[i]>='W'&&Str[i]<='Z')result=true;
@@ -113,17 +115,19 @@ void CustomFlashHandler(void)
 		case 'A':buf=100;break; //10-100%亮度控制
 		case 'R':buf=(float)((rand()%90)+10);break; //随机亮度
 		case '-':buf=0;break;  //熄灭
+		case 'S':buf=-2;break; //ADSR包络功能的停止符，此时手电执行到这里后将会停止
 		default:buf=-1;  //非法字符
 		}
 	//开始处理
 	if(buf==-1)StrPtr=0;//碰到非法字符，指针复位到第一个字符处循环
 	else //其余字符
 	  {
+		if(buf!=-2)StrPtr++;//指向下一个字符
+	  if(buf<0)buf=0; //限幅
 		SysPstatebuf.ToggledFlash=(buf>0)?true:false; //根据亮度控制是否点亮LED
 		buf/=(float)100;
 	  CurrentRatio=pow(buf,GammaCorrectionValue);//使用幂函数模拟人眼亮度曲线算出电流取值
 		CurrentRatio*=CurrentMode->LEDCurrentHigh;//算出最终的LED电流
 		BreathCurrent=CurrentRatio;//送出LED电流
-		StrPtr++;//指向下一个字符
 		}
 	}
