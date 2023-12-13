@@ -85,6 +85,7 @@ void LoadDefaultConf(bool IsOverridePassword)
    CfgFile.EnableLocatorLED=false;//禁用侧按定位LED
    #endif
  #endif
+ CfgFile.RevTactalSettings=RevTactical_Off; //默认情况下，反向战术模式将会把手电筒设置为关闭
  //恢复主机名和账户凭据
  strncpy(CfgFile.HostName,"Xtern-Ripper",20);
  if(IsOverridePassword)

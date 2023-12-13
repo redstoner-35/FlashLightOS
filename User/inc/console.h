@@ -102,7 +102,8 @@ typedef enum
 Log_Perm_Guest,
 Log_Perm_Admin,
 Log_Perm_Root,
-Log_Perm_End
+Log_Perm_End,
+Log_Perm_PlaceHolder //登陆权限置位符，使得任何人无权限执行该指令（用于被移除的命令）
 }Conso1eLoginState;//对于当前用户权限节点的枚举
 
 typedef enum
@@ -188,6 +189,7 @@ int UartPrintf(char *Format,...);
 
 //负责检查用户参数输入和权限验证的函数(内部使用的函数，切勿在除了命令执行后端的handler以外的任何其他地方引用)	
 bool IsCmdExecutable(int cmdindex);
+ReverseTacModeDef getReverseTacModeFromUserInput(char *Param);
 char *IsParameterExist(const char *TargetArgcList,int CmdIndex,char *Result);
 char CheckIfParamOnlyDigit(char *Param);	
 UserInputTrueFalseDef CheckUserInputIsTrue(char *Param);
@@ -199,6 +201,7 @@ userSelectConfigDef getCfgTypeFromUserInput(char *Param);//根据用户输入判
 	
 //负责输出特定错误提示信息和提示符的函数(内部使用的函数，切勿在除了命令执行后端的handler以外的任何其他地方引用)		
 void UartPrintCommandNoParam(int cmdindex);	
+void DisplayReverseTacModeName(char *ParamO,int size,ReverseTacModeDef ModeIn);//显示用户选择了哪个模式组
 void DisplayCorrectModeGroup(void);//输出正确的模式组的功能
 void DisplayIllegalParam(char *UserInput,int cmdindex,int optionIndex); //显示用户输入的非法参数
 void DisplayCorrectMode(void);//显示正确的挡位信息

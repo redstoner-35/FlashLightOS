@@ -8,6 +8,8 @@
 #include <string.h>
 
 //内部和外部变量
+int CurrentTactalDim; //反向战术模式设置亮度的变量
+bool ReverseTactalEnabled; //反向战术模式是否启用
 volatile SYSPStateStrDef SysPstatebuf;
 extern int AutoOffTimer;
 const char *ErrorStrDuringPost="上电自检时";
@@ -25,6 +27,8 @@ void PStateInit(void)
   GPIO_DirectionConfig(AUXPWR_EN_IOG,AUXPWR_EN_IOP,GPIO_DIR_OUT);//输出
   GPIO_ClearOutBits(AUXPWR_EN_IOG,AUXPWR_EN_IOP);//默认输出0
 	//初始化电源状态管理状态机的相关变量
+	CurrentTactalDim=100;//电流按照默认值跑
+	ReverseTactalEnabled=false;//默认关闭
 	SysPstatebuf.ErrorCode=Error_None;//无错误
 	SysPstatebuf.Pstate=CfgFile.IsDriverLockedAfterPOR?PState_Locked:PState_Standby;//根据配置文件配置为locked或者状态
   SysPstatebuf.ToggledFlash=true;//LED点亮
@@ -75,9 +79,8 @@ static unsigned char OperationTimer=0; //定时器
 	
 void SystemRunLogProcessHandler(void)
   {
-	//LED开启，重置定时器
-  if(SysPstatebuf.Pstate==PState_LEDOn||SysPstatebuf.Pstate==PState_LEDOnNonHold)
-		OperationTimer=0;
+	//定时器非法数值
+	if(OperationTimer>81)OperationTimer=81;
 	//定时器计时8秒时间到
   else if(OperationTimer==80)
 	  {
@@ -324,9 +327,31 @@ void PStateStateMachine(void)
 					ExtLEDIndex=&LEDModeStr[0];//传指针过去	
 					}
 				}
+			//按侧按4次，启用或者禁用反向战术模式
+			else if(ShortPress==4)
+			 {
+			 if(CfgFile.RevTactalSettings!=RevTactical_NoOperation)
+			   ReverseTactalEnabled=ReverseTactalEnabled?false:true; //翻转
+			 else
+				 ReverseTactalEnabled=false;
+			 }
+		  //反向战术模式启用并长按开关，执行对应的操作
+			else if(ReverseTactalEnabled)
+			 {
+			 if(!LongPressHold)CurrentTactalDim=100;//按钮松开，电流按照默认值跑
+			 else switch(CfgFile.RevTactalSettings)
+			   {
+				 case RevTactical_DimTo30:CurrentTactalDim=30;break;
+				 case RevTactical_DimTo50:CurrentTactalDim=50;break;
+				 case RevTactical_DimTo70:CurrentTactalDim=70;break;
+				 default : CurrentTactalDim=0; //其他情况手电关闭
+				 }
+			 }
 			//长按3秒或者定时器已经到时间了,关闭LED回到待机状态
 		  else if(LongPressOnce||AutoOffTimer==0)
 			 {
+			 CurrentTactalDim=100; //复位定时器
+			 OperationTimer=0; //复位定时器
 			 SysPstatebuf.Pstate=PState_Standby;//返回到待机状态
 			 TurnLightOFFLogic();
 			 ModeNoMemoryRollBackHandler();//关闭主灯后检查挡位是否带记忆，不带的就自动复位
@@ -349,6 +374,7 @@ void PStateStateMachine(void)
 			//当用户放开侧按或者定时器已经到时间后,回到战术模式的待机状态
 		  if(!LongPressHold||AutoOffTimer==0)
 			  {
+				OperationTimer=0; //复位定时器
 				SysPstatebuf.Pstate=PState_NonHoldStandBy;//回到战术模式的待机状态
 			  TurnLightOFFLogic();
 				ResetPowerOffTimerForPoff();//重置定时器

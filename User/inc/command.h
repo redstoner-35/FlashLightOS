@@ -111,9 +111,9 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		{
 		 {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//8
 		"misccfg",
-		"允许用户配置驱动的通用参数(CLI登录超时时间和波特率,省电睡眠超时时间和侧按开关的配置)",
-		"-it\0--idle_timeout\0-b\0--baud_rate\0-st\0--sleep_timeout\0-lled\0--locate_led\0-km\0--key_mode\0\n",
-		" <终端超时(秒)>\0 <终端超时(秒)>\0 <波特率(bps)>\0 <波特率(bps)>\0 <睡眠超时(秒)>\0 <睡眠超时(秒)>\0 <true或false>\0 <true或false>\0 <true或false>\0 <true或false>\0\n",
+		"允许用户配置驱动的通用参数(CLI登录超时,波特率,省电睡眠延迟和操作方式配置)",
+		"-it\0-b\0-st\0-lled\0-km\0-rtac\0\n",
+		" <终端超时(秒)>\0 <波特率(bps)>\0 <睡眠超时(秒)>\0 <true或false>\0 <true或false>\0 <模式字符串.>\0\n",
 		&termcfgArgument,
 		Command_termcfg,
 		NULL,
@@ -134,19 +134,20 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		},
 		{
 		#ifndef FlashLightOS_Debug_Mode  
-    {Log_Perm_Root,Log_Perm_End},//10
-		"nan",
-		"无描述",  
+    {Log_Perm_PlaceHolder,Log_Perm_End},//10
+		"n0",
+		"???",  
 		"\0\n",
     "\0\n",
+		NULL,
     #else		
-		{Log_Perm_Guest,Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//1
+		{Log_Perm_Guest,Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//10
 		"imonadj",
 		"允许厂家配置驱动输出电流测量模块的矫正参数.",  		 
 		"-v\0--view\0-g\0--gain\0-thr\0--threshold\0-n\0--node\0\n",
 		" \0 \0 <增益(0.5-1.5)>\0 <增益(0.5-1.5)>\0 <阈值电流(A)>\0 <阈值电流(A)>\0 <节点编号>\0 <节点编号>\0\n",
-		#endif
 		&imonadjArgument,
+		#endif
 		Command_imonadj,
 		NULL,
 		false,
@@ -231,7 +232,7 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		{
 		 {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//17
      "modeadvcfg",
-		 "允许用户编辑指定挡位的名称,挡位的运行模式(常亮/爆闪/SOS等)并且设定该挡位是否带记忆以及受温控逻辑影响,还可以设置低电流下的PWM调光频率.",
+		 "允许用户编辑指定挡位的名称,挡位的运行模式(常亮/爆闪/SOS等)并且设定该挡位是否带记忆以及受温控逻辑影响,还可以设置月光档的PWM调光频率.",
      "-rm\0--run_mode\0-n\0--name\0-mem\0--is_memory\0-ts\0--is_stepdown\0-df\0-dimming_freq\0\n",
 		 " <模式>\0 <模式>\0 <挡位名称>\0 <挡位名称>\0 <true或false>\0 <true或false>\0 <true或false>\0 <true或false>\0 <调光频率(Khz)>\0 <调光频率(Khz)>\0\n",
 		 &modeadvcfgArgument,
@@ -243,7 +244,7 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		{
 		 {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//18
      "modecurcfg",
-		 "允许用户编辑指定挡位的额定LED电流/亮度(同时作为无极调光和信标模式的天花板电流)和最小LED电流/亮度(作为无极调光和信标模式的地板电流)",
+		 "允许用户编辑指定挡位的额定LED电流/亮度(同时作为无极调光/信标模式的最高电流)和最小LED电流/亮度(作为无极调光/信标模式的最低电流)",
      "-imin\0--minimum_current\0-imax\0--maximum_current\0\n",
 		 " <最小电流(A)>\0 <最小电流(A)>\0 <额定电流(A)>\0 <额定电流(A)>\0\n",
 		 &modecurcfgArgument,
@@ -303,7 +304,7 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		{
 		 {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//23
      "modeporcfg",
-		 "指定驱动上电自检完毕以及不带记忆的挡位运行结束后回到的默认的挡位,以及设置驱动上电完毕后是否强制锁定.",
+		 "指定驱动上电自检完毕以及不带记忆的挡位运行结束后回到的默认挡位,以及设置驱动上电完毕后是否锁定.",
      "-ipl\0--is_por_lock\0\n",
 		 " <true或false>\0 <true或false>\0\n",
 		 &modeporcfgArgument,
@@ -339,7 +340,7 @@ const ComamandStringStr Commands[TotalCommandCount]=
 	  {
 		 {Log_Perm_Guest,Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//26
      "modeview",
-		 "允许用户查看目前驱动的挡位组设置和某一个特定挡位的详细信息.",
+		 "允许用户查看目前驱动的总体挡位和某一个特定挡位的详细信息.",
      "\0\n",
 		 "\0\n",
 		 &modeviewArgument,
@@ -351,38 +352,40 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		{
 		 #ifdef FlashLightOS_Debug_Mode	
 		 {Log_Perm_Guest,Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//27
-     #else
-     {Log_Perm_Root,Log_Perm_End},//27
-     #endif
 		 "fruedit",
-		 #ifdef FlashLightOS_Debug_Mode
 		 "允许厂家工程师查看和编辑驱动中的FRU信息并给FRU永久上锁.",
      "-v\0--view\0-sn\0-imax\0-p\0-l\0-ntcb\0-bptr\0-mstr\0-avref\0-ledid\0-majv\0-minv\0-ledn\0\n",
 		 " \0 \0 <序列号字符串>\0 <最大电流(A)>\0 <目标LED平台>\0 \0 <NTC B值>\0 <LED基板温度修正值'℃'>\0 <驱动MOS温度修正值'℃'>\0 <驱动ADC参考电压(V)>\0 <LED识别码(0x0-0xFFFE)>\0 <大版本号>\0 <小版本号>\0 <LED名称字符串>\0\n",
-		 #else
-		 "允许厂家工程师查看FRU信息.",
-     "-v\0--view\0\n",
-		 " \0 \0\n",		 	 
-		 #endif
 		 &frueditArgument,
+		 #else
+		 {Log_Perm_PlaceHolder,Log_Perm_End},//27
+		 "n2",
+     "?",
+		 "\0\n",	
+     "\0\n",		 
+     NULL,			
+		 #endif
 		 Command_fruedit,
 		 NULL,
 		 false,
      false			 
 		},
-		{
-		 {Log_Perm_Root,Log_Perm_End},//28
-     "thermaltripcfg",
+		{   
 		 #ifdef FlashLightOS_Debug_Mode
+     {Log_Perm_Root,Log_Perm_End},//28  
+		 "thermaltripcfg",
 		 "允许厂家工程师编辑驱动的过热关机温度阈值.",
      "-lmax\0--led_max_temp\0-smax\0--sps_max_temp\0\n",
 		 " <温度('C)>\0 <温度('C)>\0 <温度('C)>\0 <温度('C)>\0\n",
+		 &thremaltripcfgArgument,
 		 #else
-		 "仅debug可用",
+		 {Log_Perm_PlaceHolder,Log_Perm_End},//28
+		 "n3",
+		 "?",
      "\0\n",
 		 "\0\n",
 		 #endif
-		 &thremaltripcfgArgument,
+		 NULL,
 		 Command_thermaltripcfg,
 		 NULL,
 		 false,

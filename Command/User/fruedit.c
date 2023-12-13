@@ -11,27 +11,25 @@ unsigned int atoh(char *Text,bool *IsError);
 //常量字符串指针
 #ifdef FlashLightOS_Debug_Mode
 static const char *TempOffsetstr="\r\n%s温度修正值 : %.2f'C";
-#endif
+
 static const char *frueditstr[]=
  {
  "\r\n错误:系统尝试读取FRU时出现错误.", //0
- #ifdef FlashLightOS_Debug_Mode
  "\r\n错误:尝试更新FRU中%s时出现异常.",//1
  "\r\n错误:FRU存储区已被永久写保护.",//2
  "系统FRU中的",//3
  "\r\nFRU写保护",//4
- #endif
  };
-
+#endif
 
 //参数帮助entry
+#ifdef FlashLightOS_Debug_Mode
 const char *frueditArgument(int ArgCount)
   {
 	switch(ArgCount)
 	  {
 	  case 0:
-		case 1:return "查看驱动FRU信息.";	
-		#ifdef FlashLightOS_Debug_Mode
+		case 1:return "查看驱动FRU信息.";			
 		case 2:return "设置驱动FRU中的序列号字符串.";
 		case 3:return "设置驱动FRU中指定的最大输出电流.";		
 		case 4:return "设置驱动FRU中指定的LED平台.";
@@ -44,24 +42,24 @@ const char *frueditArgument(int ArgCount)
 		case 11:return "设置驱动的硬件大版本信息";
 		case 12:return "设置驱动的硬件小版本信息";
 	  case 13:return "当使用自定义LED时,设置LED的名称";
-		#endif
+		
 		}
 	return NULL;
 	} 
+#endif
 
 //命令主处理函数
 void fruedithandler(void)
   {
+	#ifdef FlashLightOS_Debug_Mode
 	bool IsCmdParamOK=false;
 	FRUBlockUnion FRU;
-	char ParamOK;
-	#ifdef FlashLightOS_Debug_Mode
+	char ParamOK;	
 	char *ParamPtr;
 	int len;
 	float buf;	
 	unsigned int hout;
 	bool IsError;
-	#endif
 	//查看内容
 	IsParameterExist("01",27,&ParamOK);
   if(ParamOK)
@@ -405,6 +403,7 @@ void fruedithandler(void)
 		}
 	#endif
 	if(!IsCmdParamOK)UartPrintCommandNoParam(27);//显示啥也没找到的信息 
+	#endif
 	//命令处理完毕
 	ClearRecvBuffer();//清除接收缓冲
   CmdHandle=Command_None;//命令执行完毕

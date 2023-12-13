@@ -59,6 +59,7 @@ char *ExtLEDIndex = NULL; //用于传入的外部序列
 static char *LastExtLEDIdx = NULL;
 static char LEDDelayTimer=0; //侧按LED等待
 bool IsRedLED=false;//对于SBT90-R，侧按会亮红灯
+extern bool ReverseTactalEnabled; //反向战术模式是否启用
  
 //在无极调光启动的时候显示方向
 void LED_DisplayRampDir(bool IsDirUp)
@@ -105,7 +106,7 @@ static bool CheckForLEDOnStatus(void)
   {
 	if(SysPstatebuf.Pstate!=PState_LEDOn&&SysPstatebuf.Pstate!=PState_LEDOnNonHold)return false;//LED熄灭
 	else if(LEDPattern[LastLEDIndex<LEDPatternSize?LastLEDIndex:0][ConstReadPtr]=='\0')return false;//目前已经运行到序列的末尾，不能熄灭
-	else if(SysPstatebuf.CurrentThrottleLevel<4&&!RunLogEntry.Data.DataSec.IsLowQualityBattAlert)return false;//温控和输入低电流警告未介入
+	else if(SysPstatebuf.CurrentThrottleLevel<4&&!RunLogEntry.Data.DataSec.IsLowQualityBattAlert&&!ReverseTactalEnabled)return false;//反向战术模式温控和输入低电流警告未介入
 	else if(LastExtLEDIdx!=NULL)return false;//外部指定了LED闪烁内容
 	else if(CurrentLEDIndex==2||CurrentLEDIndex==3)return true;
 	else if(CurrentLEDIndex==23)return true; //电量提示
@@ -184,7 +185,7 @@ void LEDMgmt_CallBack(void)
 	if(CheckForLEDOnStatus())	
 	  {
 		//根据温度控制指示
-		if(LEDThermalBlinkTimer==0||LEDThermalBlinkTimer==2)IsNeedToOffLED=true;
+		if(LEDThermalBlinkTimer==0||(LEDThermalBlinkTimer==2&&SysPstatebuf.CurrentThrottleLevel>=4))IsNeedToOffLED=true;
 		else if(SysPstatebuf.CurrentThrottleLevel>=4)IsNeedToOffLED=false; //如果温控指示灯触发则屏蔽后面的电池质量警告
 		else if(RunLogEntry.Data.DataSec.IsLowQualityBattAlert&&LEDThermalBlinkTimer==4)IsNeedToOffLED=true;
 		else IsNeedToOffLED=false;

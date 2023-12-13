@@ -68,7 +68,7 @@
 #define NTCTRIMValue 0.5 //温度修正值，单位℃
 #define NTCB 3950 //NTC热敏电阻的B值(V1.x 3450 V2.0 3950,注意:此处B值仅对debug模式下初始化FRU时有效，初始化后此处数值将被忽略)
 #define NTCT0 25 //NTC电阻的标定温度，一般是25℃
-#define SPSTRIMValue 0 //
+#define SPSTRIMValue 0 //DrMOS测温的修正值，单位为℃
 
 //ADC模拟电压参考电压
 #define ADC_VRef 3.2985 //实际的ADC电压参考值

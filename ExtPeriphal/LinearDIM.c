@@ -27,6 +27,7 @@ bool IsDisableBattCheck; //是否关闭电池质量检测
 unsigned char PSUState=0x00; //辅助电源的状态
 
 //外部变量
+extern int CurrentTactalDim; //反向战术模式设定亮度的变量
 extern bool IsMoonDimmingLocked; //反馈给无极调光模块，告诉调光模块电流是否调节完毕
 extern bool IsRampAdjusting; //外部调光是否在调节
 extern float UnLoadBattVoltage; //没有负载时的电池电压
@@ -441,6 +442,7 @@ void RuntimeModeCurrentHandler(void)
 	 Current=LVAlertCurrentLimit;//当低电压告警发生时限制输出电流 
  if(RunLogEntry.Data.DataSec.IsLowQualityBattAlert)
    Current=(CurrentMode->LEDCurrentHigh>(0.5*FusedMaxCurrent)) ?Current*0.6:Current;  //电池质量太次，限制电流
+ Current*=(float)CurrentTactalDim/(float)100; //设定亮度
  /* 如果当前的MOS管温度大于80度，月光档会出现问题（没有输出）
  所以需要限制最小电流，温度下去后才能恢复月光档的使用*/
  if(ADCO.SPSTMONState==SPS_TMON_OK) //检测MOS温度来控制是否允许月光档

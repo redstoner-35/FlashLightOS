@@ -4,6 +4,50 @@
 #include <string.h>
 #include "modelogic.h"
 
+//显示用户将反向战术模式配置为了什么
+//输入：字符串指针，打印的字符内存空间 输出：无
+void DisplayReverseTacModeName(char *ParamO,int size,ReverseTacModeDef ModeIn)
+  {
+  int BrightLevel;
+  memset(ParamO,0,size);
+	switch(ModeIn)
+	  {
+	  case RevTactical_NoOperation:strncpy(ParamO,"禁用",size);return;
+		case RevTactical_Off:strncpy(ParamO,"关闭手电",size);return;
+		case RevTactical_DimTo30:BrightLevel=30;break;
+		case RevTactical_DimTo50:BrightLevel=50;break;	
+		case RevTactical_DimTo70:BrightLevel=70;break; //调整亮度
+		default: return ;
+		}
+	snprintf(ParamO,size,"将手电亮度设置为%d%%",BrightLevel);
+	}
+
+//获取用户选择的反向战术模式的操作
+//输入：字符串指针 输出：枚举类型指示用户输入了什么
+ReverseTacModeDef getReverseTacModeFromUserInput(char *Param)
+  {
+	int InputLen,i,result;
+	if(Param==NULL)return RevTactical_InputError; //用户输入内容非法
+	//开始获取
+	InputLen=strlen(Param);
+	if(InputLen==3&&!strcmp("off",Param))return RevTactical_Off; //关闭手电
+	if(InputLen==7&&!strcmp("disable",Param))return RevTactical_NoOperation;//无动作
+	//调光到指定的亮度
+	if(InputLen==6&&!strncmp("dim",&Param[0],3))
+	  {
+		for(i=0;i<InputLen;i++)if(Param[i]=='%')Param[i]=0; //替换百分号
+		result=atoi(&Param[3]); //从数字这里开始识别
+		switch(result)
+		 {
+		 case 30:return RevTactical_DimTo30; //30%
+		 case 50:return RevTactical_DimTo50; //50%
+		 case 70:return RevTactical_DimTo70; //70%
+		 }
+		}
+	//没有解析到合法数值
+	return RevTactical_InputError;
+	}
+
 //获取用户选择的配置文件类型
 //输入：字符串指针 输出：枚举类型指示用户输入了什么
 const char *CfgFileTypeStr[]={"Main","Backup"};
@@ -26,7 +70,7 @@ userSelectConfigDef getCfgTypeFromUserInput(char *Param)
 //获取用户选择的FRU LED类型字符串
 //输入：字符串指针 输出：FRU的LED类型代码，具体请前往FRU.c内查看
 const char *LEDStr[]={"G3V","SBT90R","SBT70G","G6V","SBT70B","SBT90G2"};
-const char *LEDInfoStr[]={"不指定型号的3V","Luminus SBT-90-R","Luminus SBT-70-G","不指定型号的6V","Luminus SBT-70-B","Luminus SBT90.2"};
+const char *LEDInfoStr[]={"任意3V","Luminus SBT-90-R","Luminus SBT-70-G","任意6V","Luminus SBT-70-B","Luminus SBT90.2"};
 
 char GetLEDTypeFromUserInput(char *Param)
   {
@@ -101,9 +145,9 @@ static const char *ModeUsageString[9]=
  "一直保持点亮",
  "按照用户设置的爆闪频率闪烁",
  "按照随机的频率和占空比爆闪",
- "按照用户指定的速度发送SOS求救光学信号(... --- ...)",
+ "按照用户指定的速度发送SOS求救光学信号",
  "通过摩尔斯电码以光学方式发送用户设置的自定义字符串",
- "用户指定的参数平滑的增高亮度,等待一会后亮度平滑下跌,再度等待并反复循环模拟呼吸效果。",
+ "用户指定的参数平滑的增高亮度,等待一会后亮度平滑下跌,再度等待并反复循环模拟呼吸效果.",
  "保持点亮,用户可自由设定亮度.",
  "依据用户指定的字符串所指定的闪烁模式闪烁",
  "按照指定的爆闪速度从低频逐步升到高频爆闪然后再降回低频,反复循环"	 

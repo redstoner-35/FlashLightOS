@@ -40,6 +40,7 @@ typedef struct
  ModeConfStr SpecialMode[4];  //特殊功能挡位
  char BootupModeNum;  //不记忆的情况下默认的挡位
  ModeGrpSelDef BootupModeGroup;//不记忆的情况下默认选择的模式组
+ ReverseTacModeDef RevTactalSettings; //反向战术模式的Tac设置
  //温控设置
  char MOSFETThermalTripTemp;
  char LEDThermalTripTemp; //MOS管和LED的过热拉闸温度

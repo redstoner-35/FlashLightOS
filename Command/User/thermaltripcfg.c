@@ -4,26 +4,25 @@
 #include <stdlib.h>
 #include <string.h>
 
-//字符串
 #ifdef FlashLightOS_Debug_Mode
+//字符串
 static const char *IllegalTripTemperature="您设置的%s阈值不合法.合法的数值范围是%d-%d(摄氏度).";
 static const char *TripTemperatureHasSet="%s阈值已被成功更新为%d摄氏度.";
-#endif
 
 //参数帮助entry
 const char *thremaltripcfgArgument(int ArgCount)
   {
-	#ifdef FlashLightOS_Debug_Mode
+
 	switch(ArgCount)
 	  {
     case 0:
 		case 1:return "设置LED过热关机的极限温度.";
     case 2:
 		case 3:return "设置驱动MOS过热关机的极限温度";
-		}
-	#endif
+		}	
 	return NULL;
 	}
+#endif
 
 void thermaltripcfgHandler(void)
   {

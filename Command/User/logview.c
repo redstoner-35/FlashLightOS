@@ -22,7 +22,7 @@ static const char *LogVIewAlertStr[]=
 //参数帮助entry
 const char *logviewArgument(int ArgCount)
   {
-	return "查看错误日志的细节信息";
+	return "查看指定条目的详细数据";
 	}
 
 //显示遥测结果
@@ -81,7 +81,7 @@ void logviewhandler(void)
 		 }
     if(!FetchLoggerData(&LogData,i))
      {
-		 UARTPuts("\r\n错误:获取日志信息时发生错误,请重试.");
+		 UARTPuts("\r\n获取日志信息时发生错误,请重试.");
 		 ClearRecvBuffer();//清除接收缓冲
      CmdHandle=Command_None;//命令执行完毕	
 		 return;

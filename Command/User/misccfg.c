@@ -12,16 +12,12 @@ const char *termcfgArgument(int ArgCount)
  {
 	switch(ArgCount)
 	 {
-		case 0:
-		case 1:return "设置终端的超时时间(单位:秒),如果输入0则终端登录永不超时.";
-	  case 2:
-		case 3:return "设置终端的波特率(需要重启方可生效).";
-	  case 4:
-		case 5:return "设置驱动的自动省电睡眠延时(秒)";
-		case 6:
-		case 7:return "设置侧按的定位LED功能是否激活";
-		case 8:
-		case 9:return "设置手电筒的开机操作方式";
+		case 0:return "设置终端的超时时间(单位:秒)";	
+	  case 1:return "设置终端的波特率(bps)";
+		case 2:return "设置驱动的自动省电睡眠延时(秒)";
+		case 3:return "设置侧按的定位LED功能是否激活";
+		case 4:return "设置手电筒的开机操作方式";
+		case 5:return "设置反向战术功能的模式";
 	 }
  return NULL;
  }
@@ -31,10 +27,12 @@ void termcfgHandler(void)
  {
  bool IsParameterOK=false;
  char *Param;
+ char TacString[32];
  int Value;
  UserInputTrueFalseDef UserInput;
+ ReverseTacModeDef TacSettings;
  //更改超时时间
- Param=IsParameterExist("01",8,NULL);
+ Param=IsParameterExist("0",8,NULL);
  if(Param!=NULL)
    {
 	 Value=-1;
@@ -53,7 +51,7 @@ void termcfgHandler(void)
 			}
 	 }
  //更改波特率
- Param=IsParameterExist("23",8,NULL);
+ Param=IsParameterExist("1",8,NULL);
  if(Param!=NULL)
    {
 	 Value=-1;
@@ -61,7 +59,7 @@ void termcfgHandler(void)
 	 if(!CheckIfParamOnlyDigit(Param))Value=atoi(Param);
 	 if(CheckIfParamOnlyDigit(Param)||Value<9600||Value>576000)
 	    {
-      DisplayIllegalParam(Param,8,2);//显示用户输入了非法参数
+      DisplayIllegalParam(Param,8,1);//显示用户输入了非法参数
 			UartPrintf((char *)OptionsOnlyAcceptNumber,9600,57600,"bps","");
 			}
 	 else //更新数值
@@ -71,7 +69,7 @@ void termcfgHandler(void)
 			}
 	 }
  //更改睡眠时间
- Param=IsParameterExist("45",8,NULL);
+ Param=IsParameterExist("2",8,NULL);
  if(Param!=NULL)
    {
 	 Value=-1;	
@@ -79,7 +77,7 @@ void termcfgHandler(void)
 	 if(!CheckIfParamOnlyDigit(Param))Value=atoi(Param);
 	 if(CheckIfParamOnlyDigit(Param)||Value<0||Value>2040)
 	    {
-      DisplayIllegalParam(Param,8,4);//显示用户输入了非法参数
+      DisplayIllegalParam(Param,8,2);//显示用户输入了非法参数
       UartPrintf((char *)OptionsOnlyAcceptNumber,1,2040,"秒","驱动将永远保持在较高功耗的待机模式");
 			}
 	 else //更新数值
@@ -93,14 +91,14 @@ void termcfgHandler(void)
 			}
 	 }
  //更改侧按LED的定位灯
- Param=IsParameterExist("67",8,NULL);
+ Param=IsParameterExist("3",8,NULL);
  if(Param!=NULL)
    {
 	 UserInput=CheckUserInputIsTrue(Param);
 	 IsParameterOK=true; 
 	 if(UserInput==UserInput_Nothing)
 	    {
-      DisplayIllegalParam(Param,8,6);//显示用户输入了非法参数
+      DisplayIllegalParam(Param,8,3);//显示用户输入了非法参数
       UARTPuts("\r\n请输入'true'以启用侧按定位LED,'false'以禁用.");
 			}
 	 else
@@ -110,20 +108,37 @@ void termcfgHandler(void)
 			}
 	 }
  //设置开机模式
- Param=IsParameterExist("89",8,NULL);
+ Param=IsParameterExist("4",8,NULL);
  if(Param!=NULL)
    {
 	 UserInput=CheckUserInputIsTrue(Param);
 	 IsParameterOK=true; 
 	 if(UserInput==UserInput_Nothing)
 	    {
-      DisplayIllegalParam(Param,8,6);//显示用户输入了非法参数
+      DisplayIllegalParam(Param,8,4);//显示用户输入了非法参数
 			UARTPuts("\r\n输入'true'为长按开机,'false'为单击开机.");
 			}
 	 else
 	    {
 			CfgFile.IsHoldForPowerOn=(UserInput==UserInput_True)?true:false;
 			UartPrintf("\r\n手电筒已被设置为%s开机.",CfgFile.IsHoldForPowerOn?"长按":"单击");
+			}
+	 }
+ Param=IsParameterExist("5",8,NULL);
+ if(Param!=NULL)
+   {
+	 TacSettings=getReverseTacModeFromUserInput(Param);
+	 IsParameterOK=true; 
+	 if(TacSettings==RevTactical_InputError)
+	    {
+      DisplayIllegalParam(Param,8,5);//显示用户输入了非法参数
+			UARTPuts("\r\n'off'表示关闭手电,'dim30%','dim50%'和'dim70%'分别设置手电筒的亮度到当前的30,50以及70%,'disable'表示无动作.");
+			}
+	 else
+	    {
+			CfgFile.RevTactalSettings=TacSettings;
+			DisplayReverseTacModeName(TacString,32,TacSettings);
+			UartPrintf("\r\n手电筒的反向战术模式已更新为%s.",TacString);
 			}
 	 }
  //没有检测到处理函数执行了功能

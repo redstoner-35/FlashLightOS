@@ -6,13 +6,11 @@
 #include <stdlib.h>
 
 //参数帮助entry
+#ifdef FlashLightOS_Debug_Mode	
 const char *imonadjArgument(int ArgCount)
-  {
-	#ifndef FlashLightOS_Debug_Mode	
-	return "未知参数名称";	
-	#else	
+  {	
 	switch(ArgCount)
-	 {
+	  {
 		case 0:
 		case 1:return "查看当前LED电流探头的配置";
 	  case 2:
@@ -21,10 +19,10 @@ const char *imonadjArgument(int ArgCount)
 	  case 5:return "设置某一节点执行该节点补偿设置的阈值电流";
 		case 6:
 		case 7:return "指定程序要设置的节点数值";
-	 }
-	return NULL;
-	#endif
+	  }
+	return NULL;	
 	}
+#endif
 //命令处理
 void Imonadjhandler(void)
  {
@@ -112,8 +110,6 @@ void Imonadjhandler(void)
 	 } 
  //非法的参数
  if(!CommandParamOK)UartPrintCommandNoParam(10);//显示啥也没找到的信息 
- #else
- UARTPuts("\r\n编辑电流参数的功能已被正式版固件禁用.");
  #endif
  //命令完毕的回调处理	 
  ClearRecvBuffer();//清除接收缓冲

@@ -24,7 +24,7 @@ const char *battcfgArgument(int ArgCount)
 		case 2:
 		case 3:return "指定电池组的低电压保护电压(低于此电压后驱动自动关机以保护电池)";
     case 4:
-		case 5:return "设置电池组的满电电压(用于提高电量估算的精确度)";
+		case 5:return "设置电池组的满电电压(电池充满的额定电压)";
 		case 6:
 		case 7:return "设置电池输入的过压保护电压";
 		case 8:
@@ -36,7 +36,7 @@ const char *battcfgArgument(int ArgCount)
 	  case 14:
 		case 15:return "查看系统中电池的参数和库仑计的统计信息";
 		case 16:
-		case 17:return "设置电池组的过流保护电流阈值";
+		case 17:return "设置电池组的过流保护阈值";
 		}
 	return NULL;
 	}
