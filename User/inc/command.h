@@ -22,7 +22,8 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		 Command_help,
 		 NULL,
 		 false,
-		 false
+		 false,
+		 true
     },
     {
      {Log_Perm_Guest,Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//1
@@ -34,7 +35,8 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		 Command_login,
 		 &login_ctrlC_handler,
 		 true,
-		 false
+		 false,
+		 true
     },
     {
      {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//2
@@ -46,7 +48,8 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		 Command_logout,
 		 NULL,
 		 false,
-		 false
+		 false,
+		 true
     },
     {
      {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//3
@@ -58,7 +61,8 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		 Command_UserMod,
 		 &usrmod_ctrlC_handler,
 		 true,
-		 false
+		 false,
+		 true
     },
     {
 	   {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//4
@@ -70,7 +74,8 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		Command_cfgmgmt,
 		&cfgmgmt_ctrlc_handler,
 		true,
-	  false
+	  false,
+		true
 		},		
 		{
 		 {Log_Perm_Guest,Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//5
@@ -82,7 +87,8 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		Command_clear,
 		NULL,
 		false,
-    false			
+    false,
+		true			
 		},
 		{
 		 {Log_Perm_Guest,Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//6
@@ -94,7 +100,8 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		Command_ver,
 		NULL,
 		false,
-    false			
+    false,
+		true	
 		},
 		{
 		 {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//7
@@ -106,6 +113,7 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		Command_modepofcfg,
 		NULL,
 		false,
+		true,
 		true
 		},
 		{
@@ -118,7 +126,8 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		Command_termcfg,
 		NULL,
 		false,
-    false			
+    false,
+		false			
 		},
 		{
 		 {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//9
@@ -130,7 +139,8 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		Command_reboot,
 		&reboot_CtrlC_Handler,
 		false,
-    false			
+    false,
+		true			
 		},
 		{
 		#ifndef FlashLightOS_Debug_Mode  
@@ -151,7 +161,8 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		Command_imonadj,
 		NULL,
 		false,
-    false			
+    false,
+		true		
 		},
 		{
 		 {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//11
@@ -163,7 +174,8 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		 Command_logview,
 		 NULL,
 		 false,
-		 false
+		 false,
+		 true
     },
 		{
 		 #ifndef Firmware_DIY_Mode
@@ -179,7 +191,8 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		 Command_logclr,
 		 NULL,
 		 false,
-		 false
+		 false,
+		 true
     },
     {
 		 {Log_Perm_Guest,Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//13
@@ -191,7 +204,8 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		 Command_runlogview,
 		 NULL,
 		 false,
-		 false
+		 false,
+		 true
     },
     {
 		 {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//14
@@ -203,7 +217,8 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		 Command_runlogcfg,
 		 NULL,
 		 false,
-		 false
+		 false,
+		 true
     },
 		{
 		 {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//15
@@ -215,7 +230,8 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		 Command_logbkup,
 		 NULL,
 		 false,
-     false			 
+     false,
+		 true			 
 		},
 		{
 		 {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//16
@@ -227,7 +243,8 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		 Command_modeenacfg,
 		 NULL,
 		 false,
-     true			 
+     true,
+		 true			 
 		},
 		{
 		 {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//17
@@ -239,7 +256,8 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		 Command_modeadvcfg,
 		 NULL,
 		 false,
-     true			 
+     true,
+		 true			 
 		},
 		{
 		 {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//18
@@ -251,7 +269,8 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		 Command_modecurcfg,
 		 NULL,
 		 false,
-     true			 
+     true,
+		 true			 
 		},
 		{
 		 {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//19
@@ -263,7 +282,8 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		 Command_strobecfg,
 		 NULL,
 		 false,
-     true			 
+     true,
+		 true			 
 		},
 		{
 		 {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//20
@@ -275,7 +295,8 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		 Command_mostranscfg,
 		 NULL,
 		 false,
-     true			 
+     true,
+		 true			 
 		},
 	  {
 		 {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//21
@@ -287,7 +308,8 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		 Command_breathecfg,
 		 NULL,
 		 false,
-     true			 
+     true,
+		 true			 
 		},
 		{
 		 {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//22
@@ -299,7 +321,8 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		 Command_thermalcfg,
 		 NULL,
 		 false,
-     false		 
+     false,
+		 true		 
 		},
 		{
 		 {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//23
@@ -311,6 +334,7 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		 Command_modeporcfg,
 		 NULL,
 		 false,
+		 true,
 		 true	 
 		},
 		{
@@ -323,7 +347,8 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		 Command_battcfg,
 		 NULL,
 		 false,
-     false			 
+     false,
+		 true			 
 		},
 		{
 		 {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//25
@@ -335,7 +360,8 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		 Command_customflashcfg,
 		 NULL,
 		 false,
-     true			 
+     true,
+		 true			 
 		},
 	  {
 		 {Log_Perm_Guest,Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//26
@@ -347,7 +373,8 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		 Command_modeview,
 		 NULL,
 		 false,
-     true			 
+     true,
+		 true			 
 		},
 		{
 		 #ifdef FlashLightOS_Debug_Mode	
@@ -368,7 +395,8 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		 Command_fruedit,
 		 NULL,
 		 false,
-     false			 
+     false,
+		 false			 
 		},
 		{   
 		 #ifdef FlashLightOS_Debug_Mode
@@ -389,7 +417,8 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		 Command_thermaltripcfg,
 		 NULL,
 		 false,
-     false			 
+     false,
+		 true			 
 		},
 		{
 		 {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//29

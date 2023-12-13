@@ -12,6 +12,7 @@ int CurrentTactalDim; //反向战术模式设置亮度的变量
 bool ReverseTactalEnabled; //反向战术模式是否启用
 volatile SYSPStateStrDef SysPstatebuf;
 extern int AutoOffTimer;
+const char *ResetBrightLEDControlStr="0010202010DE";
 const char *ErrorStrDuringPost="上电自检时";
 
 /*  辅助电源引脚的自动define,不允许修改！  */
@@ -55,7 +56,7 @@ void DriverLockPOR(void)
 	if(CfgFile.IsDriverLockedAfterPOR)IsLightNeedtolock=true; 
 	else IsLightNeedtolock=RunLogEntry.Data.DataSec.IsFlashLightLocked; 
 	SysPstatebuf.Pstate=IsLightNeedtolock?PState_Locked:PState_Standby;//根据配置文件配置为locked或者状态
-	UartPost(Msg_info,"PORLock","Flash light has been set to %slocked state.",IsLightNeedtolock?"":"un");
+	UartPost(Msg_info,"PORLock","Flash light will set to %slocked state.",IsLightNeedtolock?"":"un");
 	//将变更后的手电锁定状态写入到ROM
 	if(!IsRunTimeLoggingEnabled)return;
 	if(IsRunTimeLoggingEnabled)CalcLastLogCRCBeforePO();//填写数据前更新运行log的CRC32
@@ -63,7 +64,6 @@ void DriverLockPOR(void)
 	RunLogEntry.CurrentDataCRC=CalcRunLogCRC32(&RunLogEntry.Data);//填写数据后更新CRC-32
 	WriteRuntimeLogToROM();//尝试写ROM
 	}
-	
 //控制驱动上的3.3V辅助电源(给电流检测和SPS供电)
 void SetAUXPWR(bool IsEnabled)
   {
@@ -101,6 +101,21 @@ void RunTimeErrorReportHandler(SystemErrorCodeDef ErrorCode)
 	SysPstatebuf.Pstate=PState_Error;
 	TurnLightOFFLogic();
 	return;
+	}
+//手电筒从LED点亮到关机时需要进行的处理函数
+void LEDPowerOffOperationHandler(void)
+  {
+	CurrentTactalDim=100; //复位定时器
+	OperationTimer=0; //复位定时器
+  SysPstatebuf.Pstate=PState_Standby;//返回到待机状态
+	TurnLightOFFLogic();
+  ModeNoMemoryRollBackHandler();//关闭主灯后检查挡位是否带记忆，不带的就自动复位
+  ResetPowerOffTimerForPoff();//重置定时器
+	ResetBreathStateMachine();
+	ResetRampMode();//重置无极调光模块
+	ResetCustomFlashControl();//复位自定义闪控制
+  MorseSenderReset();//关灯后重置呼吸和摩尔斯电码发送的状态机
+	RunLogEntry.Data.DataSec.IsLowVoltageAlert=false;//清除低电压警报
 	}
 /*
 系统的状态机处理函数。该函数主要负责根据用户操作
@@ -181,7 +196,7 @@ void PStateStateMachine(void)
 				  {
 					LED_Reset();//复位LED管理器
           memset(LEDModeStr,0,sizeof(LEDModeStr));//清空内存
-          strncat(LEDModeStr,"0010202010DE",sizeof(LEDModeStr)-1);//填充头部 
+          strncat(LEDModeStr,ResetBrightLEDControlStr,sizeof(LEDModeStr)-1);//填充头部 
 					ExtLEDIndex=&LEDModeStr[0];//传指针过去	
 					}
 				}
@@ -207,6 +222,8 @@ void PStateStateMachine(void)
 		  else if(ShortPress==4)
 			  {
 				CurrentLEDIndex=18;
+				CurrentTactalDim=100; //复位亮度设置
+				ReverseTactalEnabled=false; //正向战术模式和普通战术模式冲突，需要关闭
 				SysPstatebuf.Pstate=PState_NonHoldStandBy;
 				}
 			//时间到，深度睡眠
@@ -251,6 +268,7 @@ void PStateStateMachine(void)
 		  else if(ShortPress==4)
 			  {
 				CurrentLEDIndex=19;
+				CurrentTactalDim=100; //复位亮度设置
 			  SysPstatebuf.Pstate=PState_Standby;
 				}
 			//时间到，深度睡眠
@@ -323,7 +341,8 @@ void PStateStateMachine(void)
 				  {
 					LED_Reset();//复位LED管理器
           memset(LEDModeStr,0,sizeof(LEDModeStr));//清空内存
-          strncat(LEDModeStr,"D10202010DE",sizeof(LEDModeStr)-1);//填充头部 
+          strncat(LEDModeStr,"D",sizeof(LEDModeStr)-1);//填充结束符
+				  strncat(LEDModeStr,ResetBrightLEDControlStr,sizeof(LEDModeStr)-1);//填充头部 
 					ExtLEDIndex=&LEDModeStr[0];//传指针过去	
 					}
 				}
@@ -331,14 +350,22 @@ void PStateStateMachine(void)
 			else if(ShortPress==4)
 			 {
 			 if(CfgFile.RevTactalSettings!=RevTactical_NoOperation)
-			   ReverseTactalEnabled=ReverseTactalEnabled?false:true; //翻转
+			   {
+				 ReverseTactalEnabled=ReverseTactalEnabled?false:true; //对控制位进行取反
+			   memset(LEDModeStr,0,sizeof(LEDModeStr));//清空内存
+         strncat(LEDModeStr,"003030",sizeof(LEDModeStr)-1);//填充头部 
+				 strncat(LEDModeStr,ReverseTactalEnabled?"10":"20",sizeof(LEDModeStr)-1);//填充指示
+				 strncat(LEDModeStr,"DE",sizeof(LEDModeStr)-1);//填充结束符
+				 ExtLEDIndex=&LEDModeStr[0];//传指针过去	
+			   }
 			 else
 				 ReverseTactalEnabled=false;
 			 }
 		  //反向战术模式启用并长按开关，执行对应的操作
 			else if(ReverseTactalEnabled)
 			 {
-			 if(!LongPressHold)CurrentTactalDim=100;//按钮松开，电流按照默认值跑
+			 if(ShortPress==5)LEDPowerOffOperationHandler(); //连续按按键5次，执行关机任务	 
+			 else if(!LongPressHold)CurrentTactalDim=100;//按钮松开，电流按照默认值跑
 			 else switch(CfgFile.RevTactalSettings)
 			   {
 				 case RevTactical_DimTo30:CurrentTactalDim=30;break;
@@ -349,19 +376,7 @@ void PStateStateMachine(void)
 			 }
 			//长按3秒或者定时器已经到时间了,关闭LED回到待机状态
 		  else if(LongPressOnce||AutoOffTimer==0)
-			 {
-			 CurrentTactalDim=100; //复位定时器
-			 OperationTimer=0; //复位定时器
-			 SysPstatebuf.Pstate=PState_Standby;//返回到待机状态
-			 TurnLightOFFLogic();
-			 ModeNoMemoryRollBackHandler();//关闭主灯后检查挡位是否带记忆，不带的就自动复位
-			 ResetPowerOffTimerForPoff();//重置定时器
-		   ResetBreathStateMachine();
-			 ResetRampMode();//重置无极调光模块
-			 ResetCustomFlashControl();//复位自定义闪控制
-       MorseSenderReset();//关灯后重置呼吸和摩尔斯电码发送的状态机
-			 RunLogEntry.Data.DataSec.IsLowVoltageAlert=false;//清除低电压警报
-			 }				 
+       LEDPowerOffOperationHandler();			 
 			break;
 			}
 		/*******************************************************************************************
@@ -374,15 +389,8 @@ void PStateStateMachine(void)
 			//当用户放开侧按或者定时器已经到时间后,回到战术模式的待机状态
 		  if(!LongPressHold||AutoOffTimer==0)
 			  {
-				OperationTimer=0; //复位定时器
+				LEDPowerOffOperationHandler(); //执行关机任务
 				SysPstatebuf.Pstate=PState_NonHoldStandBy;//回到战术模式的待机状态
-			  TurnLightOFFLogic();
-				ResetPowerOffTimerForPoff();//重置定时器
-				ResetRampMode();//重置无极调光模块
-			  ResetBreathStateMachine();
-				ResetCustomFlashControl();//复位自定义闪控制
-        MorseSenderReset();//关灯后重置呼吸和摩尔斯电码发送的状态机
-				RunLogEntry.Data.DataSec.IsLowVoltageAlert=false;//清除低电压警报
 				}					
 			break;
 			}

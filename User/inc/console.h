@@ -177,6 +177,7 @@ typedef struct
 	void (*CtrlCProc)(void);//CtrlC处理的槽函数指针
 	const bool AllowInputDuringExecution;
 	const bool IsModeCommand;//是否是模式相关命令
+	const bool IsDoubleParameterCommand; //是否双参数命令
 	}ComamandStringStr;
 
 //负责发送内容的函数(内部使用的函数，切勿在除了命令执行后端的handler以外的任何其他地方引用)

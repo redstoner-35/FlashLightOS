@@ -105,10 +105,10 @@ bool GetUserModeNum(int cmdindex,ModeGrpSelDef *UserSelect,int *modenum)
 	*UserSelect=CheckUserInputForModeGroup(ParamPtr);
 	if(*UserSelect==ModeGrp_None)
 	  {
-	  ClearRecvBuffer();//清除接收缓冲
-    CmdHandle=Command_None;//命令执行完毕	
 	  DisplayIllegalParam(ParamPtr,cmdindex,0);//显示用户输入了非法参数
-	  DisplayCorrectModeGroup();//显示正确的模式组
+	  DisplayCorrectModeGroup();//显示正确的模式组	  
+		ClearRecvBuffer();//清除接收缓冲
+    CmdHandle=Command_None;//命令执行完毕	
 	  return false;
 		}
 	//识别用户输入的挡位编号
@@ -277,6 +277,8 @@ void DisplayIllegalParam(char *UserInput,int cmdindex,int optionIndex)
  if(optionIndex<0||optionIndex>argc-1)return;
  //显示
  UARTPuts("\r\n错误:'");
- if(UserInput!=NULL)UARTPuts(UserInput);		 
- UartPrintf("'参数对于'%s'或'%s'选项而言是非法的。",paramptr[optionIndex],paramptr[optionIndex+1]);
+ if(UserInput!=NULL)UARTPuts(UserInput);				
+ UartPrintf("'参数对于'%s'",paramptr[optionIndex]);
+ if(Commands[cmdindex].IsDoubleParameterCommand)UartPrintf("或'%s'",paramptr[optionIndex+1]);
+ UARTPuts("选项而言是非法的.");
  }

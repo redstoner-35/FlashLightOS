@@ -26,6 +26,7 @@ int UartPrintf(char *Format,...)
 	va_list arg;
 	int sptr=0,len=0,IgnoreLen=0;
   char SBUF[256]={0};
+  if(Format==NULL)return 0; //安全保护，传入的参数为NULL的时候不执行
   __va_start(arg,Format);
   vsnprintf(SBUF,256,Format,arg);
   __va_end(arg);
@@ -69,6 +70,7 @@ int UartPrintf(char *Format,...)
 void UARTPutd(char *Buf,int Len) 
  {
  int sptr=0;
+ if(Buf==NULL)return; //安全保护，传入的参数为NULL的时候不执行
  if(Len<1)return;//长度非法
  while(sptr<Len)
   {
@@ -105,6 +107,7 @@ void UARTPutc(char Data,int Len)
 void UARTPuts(char *string)
  {
  int sptr=0;
+ if(string==NULL)return; //安全保护，传入的参数为NULL的时候不执行
  while(string[sptr]!=0)
   {
 	if((QueueRear+1)%TxqueueLen==QueueFront)TXDMA_StartFirstTransfer();//队列已满
@@ -123,6 +126,7 @@ void UARTPutsAuto(char *string,int FirstlineLen,int OtherLineLen)
  int sptr=0,len=0,i=0;
  bool IsFirstLen=true;
  int IgnoreLen=0;
+ if(string==NULL)return; //安全保护，传入的参数为NULL的时候不执行
  while(string[sptr]!=0)
   {
 	if((QueueRear+1)%TxqueueLen==QueueFront)TXDMA_StartFirstTransfer();//队列已满
