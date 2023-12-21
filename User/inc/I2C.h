@@ -12,9 +12,14 @@
   #define MaxPageSize 128   //24C512 (64K)
 #endif
 
-#ifdef UsingEE_24C256
-  #define MaxByteRange 32767
-  #define MaxPageSize 64    //24C256 (32K)
+#ifdef UsingEE_24C1024
+  //24C1024没有支持安全扇区的功能因此要禁用安全扇区
+  #ifdef EnableSecureStor
+	  #error "Security Sector did not compatible with 24C1024 EEPROM!Remove 'EnableSecureStor' define in FirmwareConf.h file."
+	#endif
+	//设置地址范围和页大小
+  #define MaxByteRange 1048575
+  #define MaxPageSize 256    //24C1024 (128K)
 #endif
 
 //检测是否定义了EEPROM

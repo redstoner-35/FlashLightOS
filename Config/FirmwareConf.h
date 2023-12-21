@@ -2,8 +2,8 @@
 #define _FirmwareConf_
 
 //版本信息
-#define HardwareMajorVer 1
-#define HardwareMinorVer 1  //硬件版本号
+#define HardwareMajorVer 2
+#define HardwareMinorVer 0  //硬件版本号
 
 #define MajorVersion 1
 #define MinorVersion 8
@@ -47,9 +47,9 @@
 #define EnableTurbo //出厂挡位组启用双击极亮挡位(此挡位按照100%电流输出)
 
 //EEPROM配置(用于存储配置信息)
-//#define EnableSecureStor //对于FM24C512 系统会使用Security sector存储FRU数据
+#define EnableSecureStor //对于FM24C512 系统会使用Security sector存储FRU数据
 #define UsingEE_24C512 //使用24C512
-//#define UsingEE_24C256 //使用24C256
+//#define UsingEE_24C1024 //使用24C1024
 
 //自检运行参数
 #define StartupAUXPSUPGCount 4 //启动过程中等待电源PG的等待时间

@@ -139,6 +139,9 @@ char M24C512_ReadUID(char *Data,int len)
 char M24C512_PageWrite(char *Data,int StartAddr,int len)
  {
  int i,txlen,offset;
+ #ifdef UsingEE_24C1024
+ unsigned char DeviceAddr=M24C512ADDR;
+ #endif
  //判断参数
  if(StartAddr>MaxByteRange)return 1;	
  if(StartAddr+len>MaxByteRange)len=MaxByteRange-StartAddr;
@@ -149,10 +152,19 @@ char M24C512_PageWrite(char *Data,int StartAddr,int len)
 	 //计算欲发送的长度
 	 txlen=StartAddr%MaxPageSize; 
    txlen=MaxPageSize-txlen;
-	 if(txlen>len)txlen=len; 
-   //发送地址，目标要读写的位置
+	 if(txlen>len)txlen=len;
+   #ifdef UsingEE_24C1024		 
+	 //计算目标器件地址
+	 if((StartAddr>>16)&0x01)DeviceAddr|=0x02;
+	 else DeviceAddr&=0xFD; //当读写位置超过0xFFFF之后切换到Page 1
+   #endif
+	 //发送地址，目标要读写的位置
    IIC_Start();
-   IIC_Send_Byte(M24C512ADDR);
+   #ifdef UsingEE_24C1024	 
+	 IIC_Send_Byte(DeviceAddr);
+	 #else
+	 IIC_Send_Byte(M24C512ADDR); 
+	 #endif
    if(IIC_Wait_Ack())return 1;
    IIC_Send_Byte((StartAddr>>8)&0xFF);	 
    if(IIC_Wait_Ack())return 1;
@@ -192,6 +204,9 @@ char M24C512_PageWrite(char *Data,int StartAddr,int len)
 char M24C512_PageRead(char *Data,int StartAddr,int len)
  {
  int i,rxlen,offset;
+ #ifdef UsingEE_24C1024
+ unsigned char DeviceAddr=M24C512ADDR;
+ #endif
  //判断参数
  if(StartAddr>MaxByteRange)return 1;	
  if(StartAddr+len>MaxByteRange)len=MaxByteRange-StartAddr; 
@@ -203,9 +218,18 @@ char M24C512_PageRead(char *Data,int StartAddr,int len)
 	 rxlen=StartAddr%MaxPageSize; 
    rxlen=MaxPageSize-rxlen;
 	 if(rxlen>len)rxlen=len; 
+   #ifdef UsingEE_24C1024		 
+	 //计算目标器件地址
+	 if((StartAddr>>16)&0x01)DeviceAddr|=0x02;
+	 else DeviceAddr&=0xFD; //当读写位置超过0xFFFF之后切换到Page 1
+   #endif
 	 //发送地址，目标要读写的位置
    IIC_Start();
-   IIC_Send_Byte(M24C512ADDR);
+   #ifdef UsingEE_24C1024	 
+	 IIC_Send_Byte(DeviceAddr);
+	 #else
+	 IIC_Send_Byte(M24C512ADDR); 
+	 #endif
    if(IIC_Wait_Ack())return 1;
    IIC_Send_Byte((StartAddr>>8)&0xFF);	 
    if(IIC_Wait_Ack())return 1;
@@ -229,6 +253,9 @@ char M24C512_PageRead(char *Data,int StartAddr,int len)
 char M24C512_Erase(int StartAddr,int len)
  {
  int i,txlen,offset;
+ #ifdef UsingEE_24C1024
+ unsigned char DeviceAddr=M24C512ADDR;
+ #endif
  //判断参数
  if(StartAddr>MaxByteRange)return 1;	
  if(StartAddr+len>MaxByteRange)len=MaxByteRange-StartAddr;
@@ -240,9 +267,18 @@ char M24C512_Erase(int StartAddr,int len)
 	 txlen=StartAddr%MaxPageSize; 
    txlen=MaxPageSize-txlen;
 	 if(txlen>len)txlen=len; 
+   #ifdef UsingEE_24C1024		 
+	 //计算目标器件地址
+	 if((StartAddr>>16)&0x01)DeviceAddr|=0x02;
+	 else DeviceAddr&=0xFD; //当读写位置超过0xFFFF之后切换到Page 1
+   #endif
    //发送地址，目标要读写的位置
    IIC_Start();
-   IIC_Send_Byte(M24C512ADDR);
+   #ifdef UsingEE_24C1024	 
+	 IIC_Send_Byte(DeviceAddr);
+	 #else
+	 IIC_Send_Byte(M24C512ADDR); 
+	 #endif
    if(IIC_Wait_Ack())return 1;
    IIC_Send_Byte((StartAddr>>8)&0xFF);	 
    if(IIC_Wait_Ack())return 1;
