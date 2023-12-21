@@ -5,8 +5,34 @@
 #include <stdarg.h>
 #include "Xmodem.h" //这里主要是为了利用校验和函数
 
-bool IsSelftestLoggerReady=false;
+static bool IsSelftestLoggerReady=false;
 static char SelfTestLogEntry=0;
+
+//根据上次自检成功与否检查记录器是否启动（避免覆盖掉上次的错误日志）
+void CheckLastStartUpIsOK(void)
+  {
+  char Result;
+	//读取数据
+	if(M24C512_PageRead(&Result,SelftestLogControlByte,1))
+	  {
+		IsSelftestLoggerReady=false;
+		return; //EEPROM读取失败，关闭记录器
+		}
+	//读取出来的数据如果是0x0E则说明上次自检出现异常，关闭记录器
+	if(Result==0x0E)IsSelftestLoggerReady=false;
+	else IsSelftestLoggerReady=true; //默认打开记录器
+	}
+//当自检通过后重置记录器的使能位
+void ResetLogEnableAfterPOST(void)
+  {
+	char Result;
+	//读取数据
+	if(M24C512_PageRead(&Result,SelftestLogControlByte,1))return; //EEPROM读取失败
+	//判断数据是否为0x1A (是1A就跳过否则写ROM)
+	if(Result==0x1A)return;
+	Result=0x1A;
+	M24C512_PageWrite(&Result,SelftestLogControlByte,1);	//写入到EEPROM
+	}
 
 //显示本次启动的最后一条traceback信息
 bool DisplayLastTraceBackMessage(void)
@@ -109,6 +135,9 @@ void UartPost(Postmessagelevel msglvl,const char *Modules,char *Format,...)
 	LogEntry.Log.LogContentCheckByte=0x35;
 	LogEntry.Log.MessageCheckSum=(char)Checksum8(LogEntry.Log.Message,strlen(LogEntry.Log.Message));
 	LogEntry.Log.ModuleNameChecksum=(char)Checksum8(LogEntry.Log.ModuleName,strlen(LogEntry.Log.ModuleName));
+	//出现致命错误，写入到log记录器通知log记录未完成，关闭下次自检的输出
+  SBUF[0]=0x0E;
+	if(msglvl==Msg_critical)M24C512_PageWrite(&SBUF[0],SelftestLogControlByte,1);
 	//判断log是否需要写入
 	if(chkbyte!=0x35)IsLogNeedToWrite=true;//需要写入
 	else if(ModCheckSum!=LogEntry.Log.ModuleNameChecksum)IsLogNeedToWrite=true;

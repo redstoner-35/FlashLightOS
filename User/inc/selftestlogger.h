@@ -8,7 +8,8 @@
 //地址和log区域定义
 #define SelfTestLogBase RunTimeLogBase+(2*RunTimeLogSize)  //自检日志写入的基地址
 #define SelftestLogDepth 64 //64条收录深度
-#define SelftestLogEnd (sizeof(SelfTestLogEntryStr)*SelftestLogDepth)+SelfTestLogBase //自检日志存储空间结束点
+#define SelftestLogControlByte (sizeof(SelfTestLogEntryStr)*SelftestLogDepth)+SelfTestLogBase //自检日志控制位结束点
+#define SelftestLogEnd 1+(sizeof(SelfTestLogEntryStr)*SelftestLogDepth)+SelfTestLogBase //自检日志存储空间结束点
 //结构体定义
 typedef struct
 {
@@ -27,6 +28,8 @@ SelfTestLogEntryStr Log;
 char ByteBuf[sizeof(SelfTestLogEntryStr)];
 }SelfTestLogUnion;
 
+//函数
 bool DisplayLastTraceBackMessage(void);//显示最后的一条trace信息
-
+void CheckLastStartUpIsOK(void); //检查上次启动是否完成
+void ResetLogEnableAfterPOST(void); //当自检通过后重置记录器的使能位
 #endif

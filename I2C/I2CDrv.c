@@ -2,6 +2,7 @@
 #include "I2C.h"
 #include "delay.h"
 #include "console.h"
+#include "selftestlogger.h"
 #include "PMBUS.h"
 
 //I2C延时
@@ -12,8 +13,6 @@ static void IIC_delay(void)
 	}
 
 //SMBUS初始化
-extern bool IsSelftestLoggerReady;	
-	
 void SMBUS_Init(void)
   {
 	 unsigned char i,slavecount;
@@ -28,7 +27,7 @@ void SMBUS_Init(void)
    GPIO_SetOutBits(IIC_SDA_IOG,IIC_SDA_IOP);//输出设置为1	 
 	 GPIO_PullResistorConfig(IIC_SDA_IOG,IIC_SDA_IOP,GPIO_PR_UP);//启用上拉
 	 //配置完毕，启用logger然后开始扫描设备
-	 IsSelftestLoggerReady=true;
+	 CheckLastStartUpIsOK();
 	 delay_ms(10);
 	 //扫描设备
 	 UartPost(Msg_info,"SMBUSDrv","--- Enumerating all SMBUS slave devices ---\r\n");

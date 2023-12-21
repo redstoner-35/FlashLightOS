@@ -179,7 +179,7 @@ void INA219_POR(void)
 	}
  if(!INA219_GetBusInformation(&PORINADout))
   {
-	UartPost(Msg_critical,"INA21x","Failed to complete the first measurement of SMBUS Power Gauge.");
+	UartPost(Msg_critical,"INA21x","Measurement test did not complete.");
 	CurrentLEDIndex=5;//指示219初次测量异常
 	#ifndef FlashLightOS_Debug_Mode
 	SelfTestErrorHandler();
@@ -198,5 +198,5 @@ void INA219_POR(void)
 	#endif
 	}
  //正常显示
- UartPost(Msg_info,"INA21x","SMBUS Power Gauge has been started without error.");
+ UartPost(Msg_info,"INA21x","SMBUS Power Gauge has been started.");
  }
