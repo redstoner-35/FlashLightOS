@@ -13,7 +13,7 @@
 //声明一下函数
 float fmaxf(float x,float y);
 float fminf(float x,float y);
-float PIDThermalControl(ADCOutTypeDef *ADCResult);//PID温控
+float PIDThermalControl(void);//PID温控
 void FillThermalFilterBuf(ADCOutTypeDef *ADCResult);//填充温度stepdown的缓冲区
 
 //内部变量
@@ -416,7 +416,7 @@ void RuntimeModeCurrentHandler(void)
  ADC读取到的各组件温度计算出降档的幅度，并且最终汇总为一个
  降档系数用于限制电流
  ********************************************************/
- Throttle=PIDThermalControl(&ADCO);//执行PID温控
+ Throttle=PIDThermalControl();//执行PID温控
  if(Throttle>100)Throttle=100;
  if(Throttle<5)Throttle=5;//温度降档值限幅
  if(!CurrentMode->IsModeAffectedByStepDown)SysPstatebuf.CurrentThrottleLevel=0;

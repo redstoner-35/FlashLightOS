@@ -47,8 +47,8 @@ bool ADC_GetLEDIfPinVoltage(float *VOUT)
 		while(!ADCEOCFlag)
 		  {
 			retry++;//重试次数+1
-			delay_ms(1);
-			if(retry==400)return false;//转换超时
+			delay_us(2);
+			if(retry==ADCConvTimeOut)return false;//转换超时
 			}
 		//获取数据
 		ADCResult+=HT_ADC0->DR[0]&0x0FFF;//采集四个规则通道的结果		
@@ -81,8 +81,8 @@ bool ADC_GetResult(ADCOutTypeDef *ADCOut)
 		while(!ADCEOCFlag)
 		  {
 			retry++;//重试次数+1
-			delay_ms(1);
-			if(retry==400)return false;//转换超时
+			delay_us(2);
+			if(retry==ADCConvTimeOut)return false;//转换超时
 			}
 		//获取数据
 		for(i=0;i<4;i++)ADCResult[i]+=HT_ADC0->DR[i]&0x0FFF;//采集四个规则通道的结果		

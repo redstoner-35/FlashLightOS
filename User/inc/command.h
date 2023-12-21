@@ -411,9 +411,9 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		 "n3",
 		 "?",
      "\0\n",
-		 "\0\n",
-		 #endif
+		 "\0\n", 
 		 NULL,
+		 #endif
 		 Command_thermaltripcfg,
 		 NULL,
 		 false,

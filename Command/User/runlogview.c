@@ -84,8 +84,8 @@ void runlogviewHandler(void)
 	  else
 			UARTPuts((char *)Rlvstr[4]);
 		UartPrintf("%s平均/最高温度降档比例 : %.1f%% / %.1f%%",Rlvstr[1],RunLogEntry.Data.DataSec.ThermalStepDownValue,RunLogEntry.Data.DataSec.MaximumThermalStepDown);	
-	  UartPrintf("%s平均运行效率 : %.1f%%",Rlvstr[1],RunLogEntry.Data.DataSec.AverageDriverEfficiency);
-		UartPrintf("%s峰值运行效率 : %.1f%%",Rlvstr[1],RunLogEntry.Data.DataSec.MaximumEfficiency);
+		if((RunLogEntry.Data.DataSec.AverageLEDIf*RunLogEntry.Data.DataSec.AverageLEDVf)<RunLogEntry.Data.DataSec.AverageBatteryPower) //如果输入小于等于输出则驱动不显示功率
+		  UartPrintf("%s平均/峰值运行效率 : %.1f%% / %.1f%%",Rlvstr[1],RunLogEntry.Data.DataSec.AverageDriverEfficiency,RunLogEntry.Data.DataSec.MaximumEfficiency);
 		UartPrintf("%s强制极亮次数 : %d",Rlvstr[2],RunLogEntry.Data.DataSec.TotalMomtTurboCount);
 	  UartPrintf("%s是否锁定 : %s",Rlvstr[2],RunLogEntry.Data.DataSec.IsFlashLightLocked?"是":"否");
 		PrintStatuBar("电池输入");

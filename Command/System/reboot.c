@@ -42,10 +42,8 @@ void Reboothandler(void)
 	//等待操作
 	if(rebootstat==reboot_init)
 	  {
-		UARTPuts("\r\n警告:强制重启固件并重新初始化将会清除当前所有未保存的配置并引起");
-		UARTPuts("\r\n照明输出的中断.在固件初始化完成前,驱动将不会响应您的任何操作.");
-		UARTPuts("\r\n除非您有特殊需要或驱动指示您这么做,否则请勿随意重启.如您确定");
-		UARTPuts("\r\n需要重启.请在下方输入'我知道我在干什么,请继续'并按下回车.");
+		UARTPuts("\r\n警告:强制重启固件并重新初始化将会清除当前所有未保存的配置.如您确定");
+		UARTPuts("\r\n需要进行强制重启,请在下方输入'我知道我在干什么,请继续'并按下回车.");
     UARTPuts("\r\n\r\n?");
     ClearRecvBuffer();//清除接收缓冲
     YConfirmstr="我知道我在干什么,请继续";

@@ -127,9 +127,9 @@ void LoadDefaultConf(bool IsOverridePassword)
  CfgFile.PIDTargetTemp=55; //PID目标温度55度
  CfgFile.PIDRelease=50; //当温度低于50度时，PID不调节  
  #endif	 
- CfgFile.ThermalPIDKp=0.28;
- CfgFile.ThermalPIDKi=0.8;
- CfgFile.ThermalPIDKd=0.95; //PID温控的P I D
+ CfgFile.ThermalPIDKp=0.31;
+ CfgFile.ThermalPIDKi=0.81;
+ CfgFile.ThermalPIDKd=0.33; //PID温控的P I D
  CfgFile.LEDThermalWeight=60;//LED温度加权值
  //恢复电池设置
  CfgFile.VoltageFull=4.0*BatteryCellCount;

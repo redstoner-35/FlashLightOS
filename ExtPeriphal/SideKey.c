@@ -48,7 +48,7 @@ void SideKeyInit(void)
   {
 	CKCU_PeripClockConfig_TypeDef CLKConfig={{0}};
   EXTI_InitTypeDef EXTI_InitStruct;
-	UartPost(Msg_info,"SideKey","Configuring Key process routine...");
+	UartPost(Msg_info,"SideKey","Configuring E-switch Driver Module...");
   //配置时钟打开GPIOC AFIO和EXTI系统
 	CLKConfig.Bit.PC=1;
   CLKConfig.Bit.AFIO=1;
@@ -74,7 +74,7 @@ void SideKeyInit(void)
 	Keyevent.PressAndHoldEvent=false;
 	Keyevent.DoubleClickAndHoldEvent=false;
 	Keyevent.TripleClickAndHold=false;
-	UartPost(Msg_info,"SideKey","Key Process module has been started.");
+	UartPost(Msg_info,"SideKey","E-switch Driver Module verion %d.%d successfully installed.",1,0);
 	}
 
 //侧按键回调处理函数

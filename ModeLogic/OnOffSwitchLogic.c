@@ -75,7 +75,7 @@ void SetAUXPWR(bool IsEnabled)
 在系统运行过程中，自动执行运行日志commit的处理函数	
 这个函数的目的是为了避免每次按开关都对ROM进行写入造成的额外磨损	
 */
-static unsigned char OperationTimer=0; //定时器
+static unsigned char OperationTimer=81; //定时器（默认初始化为不需要写入）
 	
 void SystemRunLogProcessHandler(void)
   {
@@ -84,6 +84,12 @@ void SystemRunLogProcessHandler(void)
 	//定时器计时8秒时间到
   else if(OperationTimer==80)
 	  {
+		//显示log commit	
+	  LED_Reset();//复位LED管理器
+    memset(LEDModeStr,0,sizeof(LEDModeStr));//清空内存
+		strncat(LEDModeStr,"1133220E",sizeof(LEDModeStr)-1);//红黄绿快速过一遍闪一次
+    ExtLEDIndex=&LEDModeStr[0];//传指针过去		
+	  //启动commit过程
 		OperationTimer=81; //只写一次日志然后进入暂停状态
 		WriteRuntimeLogToROM();//尝试将运行日志写入到ROM内
 		}
@@ -115,7 +121,9 @@ void LEDPowerOffOperationHandler(void)
 	ResetRampMode();//重置无极调光模块
 	ResetCustomFlashControl();//复位自定义闪控制
   MorseSenderReset();//关灯后重置呼吸和摩尔斯电码发送的状态机
-	RunLogEntry.Data.DataSec.IsLowVoltageAlert=false;//清除低电压警报
+  RunLogEntry.Data.DataSec.IsRunlogHasContent=true;//标记运行日志已经有内容了
+  RunLogEntry.Data.DataSec.IsLowVoltageAlert=false;//清除低电压警报
+  RunLogEntry.CurrentDataCRC=CalcRunLogCRC32(&RunLogEntry.Data); //计算运行日志的CRC32
 	}
 /*
 系统的状态机处理函数。该函数主要负责根据用户操作

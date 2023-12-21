@@ -105,7 +105,7 @@ void DisplayBatteryCapacity(void)
  strncat(LEDModeStr,"E",sizeof(LEDModeStr)-1);//结束闪烁
  ExtLEDIndex=&LEDModeStr[0];//传指针过去	
 }
-//低电压警告(每6秒闪2次)
+//低电压警告(每6秒闪1次)
 void LowVoltageIndicate(void)
 {
  ModeConfStr *CurrentMode;

@@ -17,10 +17,49 @@ static short LVAlertReload; //低压警告模块的重载值
 static short LVAlertTimer; //低压警告计数器
 static LightModeDef TimerMode=LightMode_Flash;//用于快速查表的变量
 
+//在低压告警触发的时候，显示低压警告发生的函数
+static void DisplayLowVoltageAlert(void)
+ {
+ float OffTime,buf; //关闭的数值，单位秒	 
+ int ReloadValue,ResetValue; //计算缓存,用于计算软件定时器的重装值和输出翻转为高的配置值
+ //低压告警没有发生
+ if(!RunLogEntry.Data.DataSec.IsLowVoltageAlert)
+   {
+   LVAlertTimer=0;
+   return;
+	 }
+ //根据定时器模式获取闪烁定时器的配置值
+ switch(TimerMode)
+   {
+	 case LightMode_BreathFlash://线性变频闪模式 
+	 case LightMode_Flash: //变频闪模式
+	 case LightMode_RandomFlash:OffTime=0.8;break;//各种闪烁模式，此时中断输出0.8秒
+	 case LightMode_Ramp:OffTime=0.4;break;//无极调光模式,中断输出0.4秒
+	 default:return; //其余模式不需要操作
+	 }
+ buf=OffTime*(float)LVAlertReload/10; //将关闭时间乘以每秒的中断数得到总共的中断数
+ ReloadValue=(int)buf; //计算出软件定时器到指定的关闭时间的重装值
+ buf=(OffTime+6)*(float)LVAlertReload/10; //将关闭时间+重置时间乘以每秒的中断数得到总共的中断数
+ ResetValue=(int)buf-1;
+ //软件定时器的实现部分
+ if(LVAlertTimer>=ResetValue) //定时器自动重装载
+    LVAlertTimer=0;
+ else if(LVAlertTimer<ReloadValue)  //定时器小于装载值，强制将Flash设置为off使LED熄灭
+    {
+		SysPstatebuf.ToggledFlash=false;
+		LVAlertTimer++;
+		}
+ else if(LVAlertTimer==ReloadValue)
+    {
+		SysPstatebuf.ToggledFlash=true; //在等于重载值的时候重置一次然后
+		LVAlertTimer++;
+		}
+ else LVAlertTimer++;
+ }
+
 //定时器中断回调函数
 void FlashTimerCallbackRoutine(void)
  {
- bool IsProcessLVAlert;
  if(!TimerCanTrigger)return;//这里是为了确保主函数一定跑完再说
  switch(TimerMode)
    {
@@ -35,28 +74,7 @@ void FlashTimerCallbackRoutine(void)
 	 default:return;
 	 }
  //处理低压警告
- if(TimerMode==LightMode_MosTrans)IsProcessLVAlert=false;
- else if(TimerMode==LightMode_SOS)IsProcessLVAlert=false;
- else if(TimerMode==LightMode_CustomFlash)IsProcessLVAlert=false;
- else if(TimerMode==LightMode_Flash)IsProcessLVAlert=false;
- else if(TimerMode==LightMode_RandomFlash)IsProcessLVAlert=false;
- else IsProcessLVAlert=true; //除了无极调光和呼吸档会显示以外其他都不显示
- if(RunLogEntry.Data.DataSec.IsLowVoltageAlert&&IsProcessLVAlert)
-   {
-	 //计时器计满了
-	 if(LVAlertTimer==LVAlertReload)LVAlertTimer=0;
-	 //计时器在前面4个，翻转
-	 else if(LVAlertTimer<(LVAlertReload/32))
-	   {
-		 if(LVAlertTimer<(LVAlertReload/64))
-			 SysPstatebuf.ToggledFlash=false;
-		 else
-			 SysPstatebuf.ToggledFlash=true; //形成闪烁提示用户没电了
-		  LVAlertTimer++;
-		 }
-	 else LVAlertTimer++;
-	 }
- else LVAlertTimer=0;// 低压告警没发生
+ DisplayLowVoltageAlert();
  //定时器执行完毕，退出
  TimerCanTrigger=false;
  }
@@ -97,8 +115,8 @@ void FlashTimerInitHandler(void)
 	 case LightMode_MosTrans:Freq=(float)1/CurrentMode->MosTransferStep;break;//SOS和摩尔斯发送按照指定的每阶频率，求倒数
 	 default:TimerHasStarted=true; return;
 	 }
- //计算定时器内重载6秒的时间
- LVAlertReload=(short)(8*Freq); //计算定时器计时的重载值
+ //计算定时器内重载10秒的时间
+ LVAlertReload=(short)(10*Freq); //计算GPTM1定时器按照设定频率运行时每10秒所产生的中断数量
  TimerMode=CurrentMode->Mode;//取当前模式
  //开始设置
  TM_Cmd(HT_GPTM1, DISABLE);//短时间关闭一下定时器

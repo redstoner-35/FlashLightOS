@@ -15,8 +15,9 @@
 #define _LED_If_Ch STRCAT2(ADC_CH_,LED_If_Ch)
 #define _SPS_Temp_Ch STRCAT2(ADC_CH_,SPS_Temp_Ch)
 
-//ADC的平均次数
-#define ADCAvg 5  
+//ADC的配置参数
+#define ADCAvg 5  //ADC平均次数
+#define ADCConvTimeOut 2000 //ADC转换超时时间(单位2mS)
 
 //温度传感器状态Enum
 typedef enum

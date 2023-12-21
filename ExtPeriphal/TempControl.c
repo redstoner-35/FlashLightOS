@@ -6,109 +6,115 @@
 #include <string.h>
 #include "LEDMgmt.h"
 
-//ÉùÃ÷º¯Êı
+//å£°æ˜å‡½æ•°
 float fmaxf(float x,float y);
 float fminf(float x,float y);
 float LEDFilter(float DIN,float *BufIN,int bufsize);
 
-//È«¾Ö±äÁ¿
-static float err_last_temp = 0.0;	//ÉÏÒ»ÎÂ¶ÈÎó²î
-static float integral_temp = 0.0; //»ı·ÖºóµÄÎÂ¶ÈÎó²îÖµ
-static bool TempControlEnabled = false; //ÊÇ·ñ¼¤»îÎÂ¿Ø
-static bool DoubleClickPressed = false;//»º´æ£¬¼ÇÂ¼Ë«»÷+³¤°´ÊÇ·ñ°´ÏÂ
-float ThermalFilterBuf[12]={0}; //ÎÂ¶ÈÂË²¨Æ÷
-static char RemainingMomtBurstCount=0; //¶ÌÊ±¼ä¼¦Ñª¼¼ÄÜµÄÊ£Óà´ÎÊı
+//å…¨å±€å˜é‡
+static float err_last_temp = 0.0;	//ä¸Šä¸€æ¸©åº¦è¯¯å·®
+static float integral_temp = 0.0; //ç§¯åˆ†åçš„æ¸©åº¦è¯¯å·®å€¼
+static bool TempControlEnabled = false; //æ˜¯å¦æ¿€æ´»æ¸©æ§
+static bool CalculatePIDRequest = false; //PIDè®¡ç®—è¯·æ±‚
+static bool DoubleClickPressed = false;//ç¼“å­˜ï¼Œè®°å½•åŒå‡»+é•¿æŒ‰æ˜¯å¦æŒ‰ä¸‹
+float ThermalLowPassFilter[8*ThermalLPFTimeConstant]={0}; //ä½é€šæ»¤æ³¢å™¨
+static volatile float PIDInputTemp=25; //ä½é€šæ»¤æ³¢ç»“æœ
+static char RemainingMomtBurstCount=0; //çŸ­æ—¶é—´é¸¡è¡€æŠ€èƒ½çš„å‰©ä½™æ¬¡æ•°
 
-//ÏÔÊ¾ÒÑ¾­Ã»ÓĞ¼¦Ñª¼¼ÄÜÁË
+//æ˜¾ç¤ºå·²ç»æ²¡æœ‰é¸¡è¡€æŠ€èƒ½äº†
 void DisplayNoMomentTurbo(void)
   {
-  LED_Reset();//¸´Î»LED¹ÜÀíÆ÷
-  memset(LEDModeStr,0,sizeof(LEDModeStr));//Çå¿ÕÄÚ´æ
-  strncat(LEDModeStr,"0003020000E",sizeof(LEDModeStr)-1);//Ìî³äÖ¸Ê¾ÄÚÈİ	
-	ExtLEDIndex=&LEDModeStr[0];//´«Ö¸Õë¹ıÈ¥	
+  LED_Reset();//å¤ä½LEDç®¡ç†å™¨
+  memset(LEDModeStr,0,sizeof(LEDModeStr));//æ¸…ç©ºå†…å­˜
+  strncat(LEDModeStr,"D3020000E",sizeof(LEDModeStr)-1);//å¡«å……æŒ‡ç¤ºå†…å®¹	
+	ExtLEDIndex=&LEDModeStr[0];//ä¼ æŒ‡é’ˆè¿‡å»	
 	}
 
-//×Ô¼ìĞ­ÉÌÍê±ÏÖ®ºóÌî³äÎÂ¶È»º³å
+//æ ¹æ®å½“å‰æ¸©åº¦ä¼ æ„Ÿå™¨çš„é…ç½®è¿”å›å®é™…åŠ æƒä¹‹åè¾“å‡ºç»™æ¸©åº¦è®¡çš„æ¸©åº¦å€¼
+float GetActualTemp(ADCOutTypeDef *ADCResult)
+  {
+  float ActualTemp;
+  if(ADCResult->NTCState==LED_NTC_OK)//LEDæ¸©åº¦å°±ç»ªï¼Œå–SPSæ¸©åº¦
+	  { 
+		ActualTemp=ADCResult->LEDTemp*CfgFile.LEDThermalWeight/100;
+		if(ADCResult->SPSTMONState==SPS_TMON_OK) //ç°åœºæµ‹é‡å€¼æœ‰æ•ˆï¼Œå–ç°åœºæµ‹é‡å€¼
+		  ActualTemp+=ADCResult->SPSTemp*(100-CfgFile.LEDThermalWeight)/100;
+		else //å¦åˆ™å–è¿è¡Œæ—¥å¿—é‡Œé¢çš„å¹³å‡SPSæ¸©åº¦
+			ActualTemp+=RunLogEntry.Data.DataSec.AverageSPSTemp*(100-CfgFile.LEDThermalWeight)/100;
+		}
+	else //æ¸©åº¦å®Œå…¨ä½¿ç”¨é©±åŠ¨MOSæ¸©åº¦
+	  {
+		if(ADCResult->SPSTMONState==SPS_TMON_OK) //ç°åœºæµ‹é‡å€¼æœ‰æ•ˆï¼Œå–ç°åœºæµ‹é‡å€¼
+		  ActualTemp=ADCResult->SPSTemp;
+		else //å¦åˆ™å–è¿è¡Œæ—¥å¿—é‡Œé¢çš„å¹³å‡SPSæ¸©åº¦
+			ActualTemp=RunLogEntry.Data.DataSec.AverageSPSTemp;
+		}
+	return ActualTemp; //è¿”å›å®é™…æ¸©åº¦
+	}	
+//æ”¾åœ¨æ—¥å¿—è®°å½•å™¨é‡Œé¢è¿›è¡Œæ¸©åº¦å¸¸æ•°è®¡ç®—çš„å‡½æ•°
+void CalculatePIDTempInput(ADCOutTypeDef *ADCResult)
+  {
+  //å¦‚æœå½“å‰LEDç”µæµä¸º0ï¼Œåˆ™ä¸å…è®¸ç§¯åˆ†å™¨è¿›è¡Œç´¯åŠ 
+	if(!SysPstatebuf.ToggledFlash||SysPstatebuf.TargetCurrent<=0)return;	
+	//è¿è¡Œè¯»å–å‡½æ•°å¹¶èµ‹å€¼æœ€æ–°çš„PIDæ•°å€¼
+	PIDInputTemp=LEDFilter(GetActualTemp(ADCResult),ThermalLowPassFilter,8*ThermalLPFTimeConstant);
+	CalculatePIDRequest = true; //è¯·æ±‚PIDè®¡ç®—
+	}
+
+//è‡ªæ£€åå•†å®Œæ¯•ä¹‹åå¡«å……æ¸©åº¦æ»¤æ³¢å™¨
 void FillThermalFilterBuf(ADCOutTypeDef *ADCResult)
   {
 	int i;
-	float ActualTemp;
-	//»ñµÃÊµ¼ÊÎÂ¶È
-  if(ADCResult->NTCState==LED_NTC_OK)//LEDÎÂ¶È¾ÍĞ÷£¬È¡SPSÎÂ¶È
-	  { 
-		ActualTemp=ADCResult->LEDTemp*CfgFile.LEDThermalWeight/100;
-		if(ADCResult->SPSTMONState==SPS_TMON_OK) //ÏÖ³¡²âÁ¿ÖµÓĞĞ§£¬È¡ÏÖ³¡²âÁ¿Öµ
-		  ActualTemp+=ADCResult->SPSTemp*(100-CfgFile.LEDThermalWeight)/100;
-		else //·ñÔòÈ¡ÔËĞĞÈÕÖ¾ÀïÃæµÄÆ½¾ùSPSÎÂ¶È
-			ActualTemp+=RunLogEntry.Data.DataSec.AverageSPSTemp*(100-CfgFile.LEDThermalWeight)/100;
-		}
-	else //ÎÂ¶ÈÍêÈ«Ê¹ÓÃÇı¶¯MOSÎÂ¶È
-	  {
-		if(ADCResult->SPSTMONState==SPS_TMON_OK) //ÏÖ³¡²âÁ¿ÖµÓĞĞ§£¬È¡ÏÖ³¡²âÁ¿Öµ
-		  ActualTemp=ADCResult->SPSTemp;
-		else //·ñÔòÈ¡ÔËĞĞÈÕÖ¾ÀïÃæµÄÆ½¾ùSPSÎÂ¶È
-			ActualTemp=RunLogEntry.Data.DataSec.AverageSPSTemp;
-		}
-	//Ğ´»º³åÇø
-	for(i=0;i<12;i++)ThermalFilterBuf[i]=ActualTemp;
-	}
+	float Temp;
+	//å†™ç¼“å†²åŒº
+	Temp=GetActualTemp(ADCResult);
+	PIDInputTemp=Temp; //å­˜å‚¨æ¸©åº¦å€¼
+  for(i=0;i<(8*ThermalLPFTimeConstant);i++)ThermalLowPassFilter[i]=Temp;
+	}	
 
-//»ùÓÚPIDËã·¨µÄÎÂ¶È¿ØÖÆÄ£¿é
-float PIDThermalControl(ADCOutTypeDef *ADCResult)
+//åŸºäºPIDç®—æ³•çš„æ¸©åº¦æ§åˆ¶æ¨¡å—
+float PIDThermalControl(void)
   {
-	float ActualTemp,err_temp,AdjustValue;
+	float err_temp,AdjustValue;
 	bool result;
 	ModeConfStr *TargetMode=GetCurrentModeConfig();
-	//Èç¹ûµ±Ç°µ²Î»Ö§³Ö¼¦Ñª£¬ÇÒ×Ô¶¯¹Ø»ú¶¨Ê±Æ÷Ã»ÓĞÆôÓÃÔò½øĞĞÂß¼­¼ì²â
+	//å¦‚æœå½“å‰æŒ¡ä½æ”¯æŒé¸¡è¡€ï¼Œä¸”è‡ªåŠ¨å…³æœºå®šæ—¶å™¨æ²¡æœ‰å¯ç”¨åˆ™è¿›è¡Œé€»è¾‘æ£€æµ‹
 	if(TargetMode!=NULL&&TargetMode->MaxMomtTurboCount>0&&TargetMode->PowerOffTimer==0)
 	  {
-		result=getSideKeyDoubleClickAndHoldEvent();//»ñÈ¡ÓÃ»§ÊÇ·ñÊ¹ÄÜ²Ù×÷
+		result=getSideKeyDoubleClickAndHoldEvent();//è·å–ç”¨æˆ·æ˜¯å¦ä½¿èƒ½æ“ä½œ
 		if(DoubleClickPressed!=result)
 		  {
-			DoubleClickPressed=result;//Í¬²½½á¹ûÅĞ¶ÏÓÃ»§ÊÇ·ñ°´ÏÂ
-			if(DoubleClickPressed&&TempControlEnabled) //ÓÃ»§°´ÏÂ
+			DoubleClickPressed=result;//åŒæ­¥ç»“æœåˆ¤æ–­ç”¨æˆ·æ˜¯å¦æŒ‰ä¸‹
+			if(DoubleClickPressed&&TempControlEnabled) //ç”¨æˆ·æŒ‰ä¸‹
 			  {
 				if(RemainingMomtBurstCount>0)
 				  {
-					if(RunLogEntry.Data.DataSec.TotalMomtTurboCount<65534)RunLogEntry.Data.DataSec.TotalMomtTurboCount++; //¼¼ÄÜ´ÎÊı+1
+					if(RunLogEntry.Data.DataSec.TotalMomtTurboCount<65534)RunLogEntry.Data.DataSec.TotalMomtTurboCount++; //æŠ€èƒ½æ¬¡æ•°+1
 					RemainingMomtBurstCount--;
-					TempControlEnabled=false; //¼¼ÄÜ»¹ÓĞÊ£Óà´ÎÊı£¬·¢¶¯¼¼ÄÜ½ûÓÃÎÂ¿ØÇ¿ÖÆ×î¸ßÁÁ¶È
+					TempControlEnabled=false; //æŠ€èƒ½è¿˜æœ‰å‰©ä½™æ¬¡æ•°ï¼Œå‘åŠ¨æŠ€èƒ½ç¦ç”¨æ¸©æ§å¼ºåˆ¶æœ€é«˜äº®åº¦
 					}
-				else //¼¼ÄÜÒÑ¾­ÓÃ¹âÁËÎŞ·¨·¢¹¦,ÌáÊ¾ÓÃ»§
+				else //æŠ€èƒ½å·²ç»ç”¨å…‰äº†æ— æ³•å‘åŠŸ,æç¤ºç”¨æˆ·
 					DisplayNoMomentTurbo();
 				}			
 			}
 		}
-	//»ñµÃÊµ¼ÊÎÂ¶È
-  if(ADCResult->NTCState==LED_NTC_OK)//LEDÎÂ¶È¾ÍĞ÷£¬È¡SPSÎÂ¶È
-	  { 
-		ActualTemp=ADCResult->LEDTemp*CfgFile.LEDThermalWeight/100;
-		if(ADCResult->SPSTMONState==SPS_TMON_OK) //ÏÖ³¡²âÁ¿ÖµÓĞĞ§£¬È¡ÏÖ³¡²âÁ¿Öµ
-		  ActualTemp+=ADCResult->SPSTemp*(100-CfgFile.LEDThermalWeight)/100;
-		else //·ñÔòÈ¡ÔËĞĞÈÕÖ¾ÀïÃæµÄÆ½¾ùSPSÎÂ¶È
-			ActualTemp+=RunLogEntry.Data.DataSec.AverageSPSTemp*(100-CfgFile.LEDThermalWeight)/100;
-		}
-	else //ÎÂ¶ÈÍêÈ«Ê¹ÓÃÇı¶¯MOSÎÂ¶È
-	  {
-		if(ADCResult->SPSTMONState==SPS_TMON_OK) //ÏÖ³¡²âÁ¿ÖµÓĞĞ§£¬È¡ÏÖ³¡²âÁ¿Öµ
-		  ActualTemp=ADCResult->SPSTemp;
-		else //·ñÔòÈ¡ÔËĞĞÈÕÖ¾ÀïÃæµÄÆ½¾ùSPSÎÂ¶È
-			ActualTemp=RunLogEntry.Data.DataSec.AverageSPSTemp;
-		}
-	ActualTemp=LEDFilter(ActualTemp,ThermalFilterBuf,12); //Êµ¼ÊÎÂ¶ÈµÈÓÚÎÂ¶È½µµµÂË²¨Æ÷µÄ¾ù·ÖÊä³ö
-	if(TargetMode!=NULL&&ActualTemp<=CfgFile.PIDRelease)   //ÎÂ¿ØµÍÓÚreleaseµã£¬×°Ìî¼¦ÑªÉèÖÃ
+  //åˆ¤æ–­æ¸©æ§æ˜¯å¦è¾¾åˆ°releaseæˆ–è€…triggerç‚¹
+	if(TargetMode!=NULL&&PIDInputTemp<=CfgFile.PIDRelease)   //æ¸©æ§ä½äºreleaseç‚¹ï¼Œè£…å¡«é¸¡è¡€è®¾ç½®
 		RemainingMomtBurstCount=TargetMode->MaxMomtTurboCount;	
-	//ÅĞ¶ÏÎÂ¿ØÊÇ·ñ´ïµ½release»òÕßtriggerµã
-	if(!TempControlEnabled&&ActualTemp>=CfgFile.PIDTriggerTemp)TempControlEnabled=true;
-	else if(TempControlEnabled&&ActualTemp<=CfgFile.PIDRelease) TempControlEnabled=false;  //ÎÂ¿Ø½â³ı£¬»Ö¸´turbo´ÎÊı
-	//ÎÂ¿Ø²»ĞèÒª½ÓÈë»òÕßµ±Ç°LEDÊÇÏ¨Ãğ×´Ì¬£¬Ö±½Ó·µ»Ø100%
+	if(!TempControlEnabled&&PIDInputTemp>=CfgFile.PIDTriggerTemp)TempControlEnabled=true;
+	else if(TempControlEnabled&&PIDInputTemp<=CfgFile.PIDRelease)TempControlEnabled=false;  //æ¸©æ§è§£é™¤ï¼Œæ¢å¤turboæ¬¡æ•°
+	//æ¸©æ§ä¸éœ€è¦æ¥å…¥æˆ–è€…å½“å‰LEDæ˜¯ç†„ç­çŠ¶æ€ï¼Œç›´æ¥è¿”å›100%
 	if(!TempControlEnabled||!SysPstatebuf.ToggledFlash||SysPstatebuf.TargetCurrent==0)return 100;
-	//ÎÂ¿ØµÄPID²¿·Ö
-	err_temp=CfgFile.PIDTargetTemp-ActualTemp; //¼ÆËãÎó²îÖµ
-	integral_temp+=err_temp;
-	if(integral_temp>10)integral_temp=10;
-	if(integral_temp<-85)integral_temp=-85; //»ı·ÖºÍ»ı·ÖÏŞ·ù
-	AdjustValue=CfgFile.ThermalPIDKp*err_temp+CfgFile.ThermalPIDKi*integral_temp+CfgFile.ThermalPIDKd*(err_temp-err_last_temp); //PIDËã·¨Ëã³öµ÷½ÚÖµ
-	err_last_temp=err_temp;//¼ÇÂ¼ÉÏÒ»¸öÎó²îÖµ
-	return 90+AdjustValue; //·µ»ØbaseÖµ+µ÷½Úvalue
+	//æ¸©æ§çš„PIDéƒ¨åˆ†
+	err_temp=CfgFile.PIDTargetTemp-PIDInputTemp; //è®¡ç®—è¯¯å·®å€¼
+	if(CalculatePIDRequest)
+	  {
+		integral_temp+=(err_temp*((float)2/(float)ThermalLPFTimeConstant)); //ç§¯åˆ†é™å¹…(æ‹“å±•ç³»æ•°å–ä½é€šæ»¤æ³¢å™¨æ—¶é—´å¸¸æ•°çš„0.5å€)
+	  if(integral_temp>10)integral_temp=10;
+	  if(integral_temp<-85)integral_temp=-85; //ç§¯åˆ†å’Œç§¯åˆ†é™å¹…
+		CalculatePIDRequest=false; //ç§¯åˆ†ç»Ÿè®¡å®Œæˆ
+		}
+	AdjustValue=CfgFile.ThermalPIDKp*err_temp+CfgFile.ThermalPIDKi*integral_temp+CfgFile.ThermalPIDKd*(err_temp-err_last_temp); //PIDç®—æ³•ç®—å‡ºè°ƒèŠ‚å€¼
+	err_last_temp=err_temp;//è®°å½•ä¸Šä¸€ä¸ªè¯¯å·®å€¼
+	return 90+AdjustValue; //è¿”å›baseå€¼+è°ƒèŠ‚value
 	}

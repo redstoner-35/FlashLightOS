@@ -61,18 +61,20 @@ int main(void)
  //主循环
  while(1)
    {	 
-	 if(IsParameterAdjustMode) //调参模式下只处理shell事务
-		 {
-	   ShellProcUtilHandler();	//处理shell事务
-	   if(!SensorRefreshFlag)continue; //当前时间没到跳过下面的代码
-	   CurrentLEDIndex=29;//绿灯慢闪提示进入调参模式
-	   LEDMgmt_CallBack();//LED管理器
-	   SensorRefreshFlag=false;
-		 continue; //不处理下面任何内容
-		 }
 	 //处理shell事务(为了保证性能,在手电筒运行时会直接跳过所有的shell事务)	 
    if(SysPstatebuf.Pstate!=PState_LEDOn&&SysPstatebuf.Pstate!=PState_LEDOnNonHold) 
+	   {
 	   ShellProcUtilHandler();
+		 //调参模式启用，禁用手电筒的所有运行逻辑，绿灯慢闪
+	   if(IsParameterAdjustMode)
+		    {
+		    CurrentLEDIndex=29;//绿灯慢闪提示进入调参模式
+	      if(!SensorRefreshFlag)continue;
+				LEDMgmt_CallBack();//LED管理器
+			  SensorRefreshFlag=false;
+		    continue;
+				}
+		 }
    #ifndef FlashLightOS_Debug_Mode	 
 	 //处理手电筒自身的运行逻辑
 	 DisplayBatteryValueHandler();//处理显示电池电量操作的事务
@@ -80,20 +82,19 @@ int main(void)
 	 ModeSwitchLogicHandler();//按侧按按键换挡的事务
 	 PStateStateMachine();//处理电源状态切换的状态机 
    //传感器轮询模块
-	 if(!SensorRefreshFlag||IsParameterAdjustMode)continue; //当前时间没到或者进入调参模式跳过下面的代码
+	 if(!SensorRefreshFlag)continue; //当前时间没到跳过下面的代码
 	 LowVoltageIndicate();//低电压检测
 	 LEDShortCounter();//LED短路检测积分函数
 	 RunTimeBatteryTelemetry();//测量电池状态
 	 RunTimeDataLogging();//运行时的记录
 	 LEDMgmt_CallBack();//LED管理器
-	 //手电筒处于运行状态，跳过一些运行时不需要处理的浪费时间的函数
-   if(SysPstatebuf.Pstate!=PState_LEDOn&&SysPstatebuf.Pstate!=PState_LEDOnNonHold) 
-	    {
-      SystemRunLogProcessHandler(); //负责管理将日志写入到ROM的管理函数
-		  AutoPowerOffTimerHandler();//处理自动关机定时器
-			LoggerHeader_AutoUpdateHandler();//记录器自动更新头部数据
-			}		   
+	 //传感器轮询结束，手电如果正在运行则跳过不需要的代码
 	 SensorRefreshFlag=false;
+	 //手电筒处于运行状态，跳过一些运行时不需要处理的浪费时间的函数
+   if(SysPstatebuf.Pstate==PState_LEDOn||SysPstatebuf.Pstate==PState_LEDOnNonHold)continue;
+   SystemRunLogProcessHandler(); //负责管理将日志写入到ROM的管理函数
+	 AutoPowerOffTimerHandler();//处理自动关机定时器
+	 LoggerHeader_AutoUpdateHandler();//记录器自动更新头部数据	   	 
 	 #endif
 	 }
  return 0;

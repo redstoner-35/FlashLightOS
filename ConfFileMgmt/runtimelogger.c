@@ -7,9 +7,10 @@
 #include "runtimelogger.h"
 #include <math.h>
 
-//声明一下fmax和fmin的定义
+//函数声明
 float fmaxf(float x,float y);
 float fminf(float x,float y);
+void CalculatePIDTempInput(ADCOutTypeDef *ADCResult);
 
 //静态变量
 static char RuntimeAverageCount=0;
@@ -34,63 +35,15 @@ void RunTimeDataLogging(void)
  float EffCalcBuf;
  int i;
  //logger没有激活或者当前手电筒不在运行，退出 
- if(SysPstatebuf.Pstate!=PState_LEDOn&&SysPstatebuf.Pstate!=PState_LEDOnNonHold)return;//LED没开启   
- //logger被禁止，只采样平均SPS温度保障温控系统正常运作。
- if(!IsRunTimeLoggingEnabled)
-   {
-   if(RuntimeAverageCount==0)//第一次，载入旧数据
-	   {
-	   RuntimeAverageCount++;
-     AverageBuf[4]=RunLogEntry.Data.DataSec.AverageSPSTemp; //MOS温度
-		 }
-	 else if(RuntimeAverageCount==5)//平均完毕，输出结果后准备下一轮计算
-	   {
-		 RuntimeAverageCount=0;
-	   RunLogEntry.Data.DataSec.AverageSPSTemp=AverageBuf[4]/(float)5; //SPS温度
-		 AverageBuf[4]=0; //清除平均缓存
-     }
-	 else
-	   {
-		 if(ADCO.SPSTMONState==SPS_TMON_OK)AverageBuf[4]+=ADCO.SPSTemp;
-	   else AverageBuf[4]+=RunLogEntry.Data.DataSec.AverageSPSTemp;  //如果在本次平均的时候温度数据不可用则使用老数据
-	   RuntimeAverageCount++;
-		 }
-   return; 
-   }
+ if(SysPstatebuf.Pstate!=PState_LEDOn&&SysPstatebuf.Pstate!=PState_LEDOnNonHold)return;//LED没开启    
  //令ADC采样参数
  if(!ADC_GetResult(&ADCO))
     {
 		//ADC转换失败,这是严重故障,立即写log并停止驱动运行
 		RunTimeErrorReportHandler(Error_ADC_Logic);
 		return;
-	  }	
- //开始处理最大值最小值类的采样
- if(SysPstatebuf.ToggledFlash) //仅在LED正常运行得到时候采样数据
-    {
-		RunLogEntry.Data.DataSec.MaximumLEDIf=fmaxf(ADCO.LEDIf,RunLogEntry.Data.DataSec.MaximumLEDIf);
-    RunLogEntry.Data.DataSec.MaximumLEDVf=fmaxf(ADCO.LEDVf,RunLogEntry.Data.DataSec.MaximumLEDVf); //LED Vf If
-		}
- if(ADCO.NTCState==LED_NTC_OK) //LED温度
-    {
-    if(RunLogEntry.Data.DataSec.MaximumLEDTemp==NAN)RunLogEntry.Data.DataSec.MaximumLEDTemp=-127;
-	  RunLogEntry.Data.DataSec.MaximumLEDTemp=fmaxf(ADCO.LEDTemp,RunLogEntry.Data.DataSec.MaximumLEDTemp);//NTC正常，正常获取温度
-		}
- else RunLogEntry.Data.DataSec.MaximumLEDTemp=NAN;//温度为非法数值
- if(SysPstatebuf.ToggledFlash&&ADCO.SPSTMONState==SPS_TMON_OK) //LED开启且SPS温度反馈OK的情况下获取温度
-	  RunLogEntry.Data.DataSec.MaximumSPSTemp=fmaxf(ADCO.SPSTemp,RunLogEntry.Data.DataSec.MaximumSPSTemp);//驱动MOSFET(SPS)的温度
- RunLogEntry.Data.DataSec.MinimumBatteryVoltage=fminf(RunTimeBattTelemResult.BusVolt,RunLogEntry.Data.DataSec.MinimumBatteryVoltage);
- RunLogEntry.Data.DataSec.MaximumBatteryVoltage=fmaxf(RunTimeBattTelemResult.BusVolt,RunLogEntry.Data.DataSec.MaximumBatteryVoltage); //最大和最小电池电压
- RunLogEntry.Data.DataSec.MaximumBatteryCurrent=fmaxf(RunTimeBattTelemResult.BusCurrent,RunLogEntry.Data.DataSec.MaximumBatteryCurrent);
- RunLogEntry.Data.DataSec.MaximumBatteryPower=fmaxf(RunTimeBattTelemResult.BusPower,RunLogEntry.Data.DataSec.MaximumBatteryPower); //最大电池电流和功率
- //实现LED运行时间和库仑计积分的模块 
- if(SysPstatebuf.ToggledFlash)RunLogEntry.Data.DataSec.LEDRunTime+=0.125;//如果LED激活，则运行时间每次加1/8秒
- Buf=(double)RunTimeBattTelemResult.BusCurrent*(double)1000;//将A转换为mA方便积分
- Buf+=(PSUState!=(0x80|MainBuckOffTimeOut))?50:17;//加上17mA(驱动处于灭灯状态)50mA(驱动处于开灯状态)的驱动本底消耗数值
- Buf*=0.125;//将mA转换为mAS(每秒的毫安数，这里乘以0.125是因为每秒钟会积分8次)
- Buf/=(double)(60*60);//将mAS转换为mAH累加到缓冲区内
- UsedCapacity+=(float)Buf; //已用容量加上本次的结果
- RunLogEntry.Data.DataSec.TotalBatteryCapDischarged+=Buf;//加上本次放电的毫安数
- //其余平均值数据的积分模块
+	  }		
+ //求LED和MOSFET温度的平均值
  if(RuntimeAverageCount==0)//第一次，载入旧数据
    {
 	 AverageBuf[3]=RunLogEntry.Data.DataSec.AverageLEDTemp==NAN?0:RunLogEntry.Data.DataSec.AverageLEDTemp; //LED温度测量
@@ -111,7 +64,32 @@ void RunTimeDataLogging(void)
 	 if(ADCO.SPSTMONState==SPS_TMON_OK)AverageBuf[4]+=ADCO.SPSTemp;
 	 else AverageBuf[4]+=RunLogEntry.Data.DataSec.AverageSPSTemp;  //如果在本次平均的时候温度数据不可用则使用老数据
 	 RuntimeAverageCount++;
-	 }	 
+	 }
+ CalculatePIDTempInput(&ADCO);	//将ADC采集到的数据写入到滤波器内实现滤波
+ if(!IsRunTimeLoggingEnabled)return;//logger被禁止，不需要采集后面的日志数据只需要采集温度信息保障温控系统正常运作即可。
+ //开始处理最大值最小值类的采样
+ if(ADCO.NTCState==LED_NTC_OK) //LED温度
+    {
+    if(RunLogEntry.Data.DataSec.MaximumLEDTemp==NAN)RunLogEntry.Data.DataSec.MaximumLEDTemp=-127;
+	  RunLogEntry.Data.DataSec.MaximumLEDTemp=fmaxf(ADCO.LEDTemp,RunLogEntry.Data.DataSec.MaximumLEDTemp);//NTC正常，正常获取温度
+		}
+ else RunLogEntry.Data.DataSec.MaximumLEDTemp=NAN;//温度为非法数值
+ if(SysPstatebuf.ToggledFlash&&ADCO.SPSTMONState==SPS_TMON_OK) //LED开启且SPS温度反馈OK的情况下获取温度
+	  RunLogEntry.Data.DataSec.MaximumSPSTemp=fmaxf(ADCO.SPSTemp,RunLogEntry.Data.DataSec.MaximumSPSTemp);//驱动MOSFET(SPS)的温度		
+ RunLogEntry.Data.DataSec.MaximumLEDIf=fmaxf(ADCO.LEDIf,RunLogEntry.Data.DataSec.MaximumLEDIf);
+ RunLogEntry.Data.DataSec.MaximumLEDVf=fmaxf(ADCO.LEDVf,RunLogEntry.Data.DataSec.MaximumLEDVf); //LED Vf If
+ RunLogEntry.Data.DataSec.MinimumBatteryVoltage=fminf(RunTimeBattTelemResult.BusVolt,RunLogEntry.Data.DataSec.MinimumBatteryVoltage);
+ RunLogEntry.Data.DataSec.MaximumBatteryVoltage=fmaxf(RunTimeBattTelemResult.BusVolt,RunLogEntry.Data.DataSec.MaximumBatteryVoltage); //最大和最小电池电压
+ RunLogEntry.Data.DataSec.MaximumBatteryCurrent=fmaxf(RunTimeBattTelemResult.BusCurrent,RunLogEntry.Data.DataSec.MaximumBatteryCurrent);
+ RunLogEntry.Data.DataSec.MaximumBatteryPower=fmaxf(RunTimeBattTelemResult.BusPower,RunLogEntry.Data.DataSec.MaximumBatteryPower); //最大电池电流和功率
+ //实现LED运行时间和库仑计积分的模块 
+ if(SysPstatebuf.ToggledFlash)RunLogEntry.Data.DataSec.LEDRunTime+=0.125;//如果LED激活，则运行时间每次加1/8秒
+ Buf=(double)RunTimeBattTelemResult.BusCurrent*(double)1000;//将A转换为mA方便积分
+ Buf+=(PSUState!=(0x80|MainBuckOffTimeOut))?50:17;//加上17mA(驱动处于灭灯状态)50mA(驱动处于开灯状态)的驱动本底消耗数值
+ Buf*=0.125;//将mA转换为mAS(每秒的毫安数，这里乘以0.125是因为每秒钟会积分8次)
+ Buf/=(double)(60*60);//将mAS转换为mAH累加到缓冲区内
+ UsedCapacity+=(float)Buf; //已用容量加上本次的结果
+ RunLogEntry.Data.DataSec.TotalBatteryCapDischarged+=Buf;//加上本次放电的毫安数
  //LED和电池电压和电流的平均值数据积分模块
  if(LEDRuntimeAverageCount==0) //载入旧数据
    {
@@ -153,9 +131,9 @@ void RunTimeDataLogging(void)
 	 }
  else if(SysPstatebuf.ToggledFlash&&SysPstatebuf.TargetCurrent>0)//LED点亮运行时累加电压和电流数据进去
    {
-	 AverageBuf[0]+=RunTimeBattTelemResult.BusCurrent+(SysPstatebuf.ToggledFlash?0.05:0.017);	 
-	 AverageBuf[2]+=RunTimeBattTelemResult.BusVolt;//填写电池电压电流(需要加上驱动本底电流)
-	 AverageBuf[1]+=RunTimeBattTelemResult.BusCurrent*RunTimeBattTelemResult.BusVolt; //计算功率
+	 AverageBuf[0]+=RunTimeBattTelemResult.BusCurrent;	 
+	 AverageBuf[2]+=RunTimeBattTelemResult.BusVolt;//填写电池电压电流
+	 AverageBuf[1]+=RunTimeBattTelemResult.BusPower; //将平均功率写进去
 	 AverageBuf[5]+=ADCO.LEDVf;
 	 AverageBuf[6]+=ADCO.LEDIf;
 	 LEDRuntimeAverageCount++; 
@@ -163,9 +141,6 @@ void RunTimeDataLogging(void)
  //填写降档等级
  RunLogEntry.Data.DataSec.ThermalStepDownValue=SysPstatebuf.CurrentThrottleLevel;
  RunLogEntry.Data.DataSec.MaximumThermalStepDown=fmaxf(SysPstatebuf.CurrentThrottleLevel,RunLogEntry.Data.DataSec.MaximumThermalStepDown);
- //数据填写完毕，更新CRC32校验和
- RunLogEntry.Data.DataSec.IsRunlogHasContent=true;//运行日志已经有内容了
- RunLogEntry.CurrentDataCRC=CalcRunLogCRC32(&RunLogEntry.Data);
  }
 /*******************************************
 计算传入数据的CRC32校验和用以确认是否要写log
@@ -475,28 +450,28 @@ void RunLogModule_POR(void)
 	   {
 		 errorlog++;//标记损坏的log区域数目
 		 SelfIncBuf[i]=0;//该处因为已经损坏，读取到的自增码等于0
-		 UartPost(Msg_warning,"RTLogger","Find broken runtime error log entry #%d in ROM,overwriting...",i);
+		 UartPost(Msg_warning,"RTLogger","Find broken runtime log #%d in ROM,overwriting...",i);
 		 LogDataSectionInit(&Data);
 		 if(!SaveRunLogDataToROM(&Data,i))
-			 UartPost(msg_error,"RTLogger","Failed to overwrite broken runtime error log entry #%d in ROM.",i);
+			 UartPost(msg_error,"RTLogger","Failed to overwrite runtime log #%d in ROM.",i);
 		 continue;
 		 }
 	 //检查通过的entry，将自增码写入到缓冲区内
 	 SelfIncBuf[i]=Data.DataSec.LogIncrementCode;
 	 }
  //遍历完毕，查询自增码获得最新的log entry并计算CRC32
- UartPost(Msg_info,"RTLogger","Integritycheck completed,find %d broken runtime log entry in ROM.",errorlog);
+ UartPost(Msg_info,"RTLogger","Check completed,find %d broken runtime log entry in ROM.",errorlog);
  i=FindLatestEntryViaIncCode(SelfIncBuf);
  if(!LoadRunLogDataFromROM(&RunLogEntry.Data,i))//从ROM内读取选择的Entry作为目前数据的内容
     {
-	  UartPost(Msg_critical,"RTLogger","Failed to load runtime-logger data section #%d.",i);
+	  UartPost(Msg_critical,"RTLogger","Failed to load runtime log section #%d.",i);
 	  SelfTestErrorHandler();
 	  }
  IsLogEmpty=true;
  for(j=0;j<RunTimeLoggerDepth;j++)if(SelfIncBuf[j])IsLogEmpty=false; //检查entry是不是已经空了
  if(IsLogEmpty)RunLogEntry.ProgrammedEntry=0;//如果目前事件日志一组记录都没有，则从0开始记录
  else RunLogEntry.ProgrammedEntry=(i+1)%RunTimeLoggerDepth;//目前entry已经有数据了，从下一条entry开始
- UartPost(Msg_info,"RTLogger","Last Entry is #%d,Logger will start to log at entry #%d.",i,RunLogEntry.ProgrammedEntry);
+ UartPost(Msg_info,"RTLogger","Last Entry is #%d,Logger will log data to entry #%d.",i,RunLogEntry.ProgrammedEntry);
  CalcLastLogCRCBeforePO();
  RunLogEntry.Data.DataSec.IsLowVoltageAlert=false;//已经重启了需要重置低压警告不然用户会发现换了电池还是低压警告.
  RunLogEntry.CurrentDataCRC=CalcRunLogCRC32(&RunLogEntry.Data);//计算CRC-32
