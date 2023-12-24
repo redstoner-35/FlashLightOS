@@ -132,7 +132,10 @@ void termcfgHandler(void)
 	 if(TacSettings==RevTactical_InputError)
 	    {
       DisplayIllegalParam(Param,8,5);//显示用户输入了非法参数
-			UARTPuts("\r\n'off'表示关闭手电,'dim30%','dim50%'和'dim70%'分别设置手电筒的亮度到当前的30,50以及70%,'disable'表示无动作.");
+			UARTPuts("\r\n可用的参数如下:\r\n'turbo' : 瞬时极亮");
+			UARTPuts("\r\n'off' : 关闭手电");	
+			UARTPuts("\r\n'disable' : 无动作");	
+			for(Value=30;Value<=70;Value+=20)UartPrintf("\r\n'dim%d%%' : 设置亮度为%d%%",Value,Value);		
 			}
 	 else
 	    {

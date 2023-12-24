@@ -12,6 +12,7 @@ void DisplayReverseTacModeName(char *ParamO,int size,ReverseTacModeDef ModeIn)
   memset(ParamO,0,size);
 	switch(ModeIn)
 	  {
+		case RevTactical_InstantTurbo:strncpy(ParamO,"瞬时极亮",size);return;
 	  case RevTactical_NoOperation:strncpy(ParamO,"禁用",size);return;
 		case RevTactical_Off:strncpy(ParamO,"关闭手电",size);return;
 		case RevTactical_DimTo30:BrightLevel=30;break;
@@ -30,6 +31,7 @@ ReverseTacModeDef getReverseTacModeFromUserInput(char *Param)
 	if(Param==NULL)return RevTactical_InputError; //用户输入内容非法
 	//开始获取
 	InputLen=strlen(Param);
+  if(InputLen==5&&!strcmp("turbo",Param))return RevTactical_InstantTurbo; //瞬时极亮
 	if(InputLen==3&&!strcmp("off",Param))return RevTactical_Off; //关闭手电
 	if(InputLen==7&&!strcmp("disable",Param))return RevTactical_NoOperation;//无动作
 	//调光到指定的亮度

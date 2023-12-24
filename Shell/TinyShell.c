@@ -72,9 +72,8 @@ void SelfTestErrorHandler(void)
  XmodemTransferReset();//复位Xmodem状态机
  delay_Second(3);
  UARTPuts("\x0C\033[2J");
- UARTPuts("\r\n驱动在POST时发现了致命硬件错误.为了保证安全,自我保护模式已被激活.\r\n此模式在问题解决前会导致手电筒将不可用.");
- UARTPuts("\r\n对于消费者而言,您可准备好SecureCRT软件,连接到驱动后输入'X'然后选择文件->");
- UARTPuts("\r\n接收Xmodem选项接收自检日志,接着将收到的自检日志文件发送给商家以分析\r\n问题所在.");
+ UARTPuts("\r\n驱动在POST时发现了致命硬件错误.为了保证安全,自我保护模式已激活.\r\n此模式会导致手电处于不可用状态.");
+ UARTPuts("\r\n如您作为消费者看到此提示,请输入'X'下载日志并发给商家分析问题."); 
  for(i=0;i<6;i++)UARTPuts((char *)TinyShellText[i]);
  while(1)//主循环
   {

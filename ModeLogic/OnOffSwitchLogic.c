@@ -376,9 +376,10 @@ void PStateStateMachine(void)
 			 else if(!LongPressHold)CurrentTactalDim=100;//按钮松开，电流按照默认值跑
 			 else switch(CfgFile.RevTactalSettings)
 			   {
+				 case RevTactical_InstantTurbo:CurrentTactalDim=101;break; //瞬时极亮
 				 case RevTactical_DimTo30:CurrentTactalDim=30;break;
 				 case RevTactical_DimTo50:CurrentTactalDim=50;break;
-				 case RevTactical_DimTo70:CurrentTactalDim=70;break;
+				 case RevTactical_DimTo70:CurrentTactalDim=70;break; //调整亮度
 				 default : CurrentTactalDim=0; //其他情况手电关闭
 				 }
 			 }

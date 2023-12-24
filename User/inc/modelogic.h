@@ -18,6 +18,7 @@ typedef enum
  RevTactical_DimTo30, //将亮度减弱到原来的30%
  RevTactical_DimTo50, //将亮度减弱到原来的30%	 
  RevTactical_DimTo70,  //将亮度减弱为原来的70%
+ RevTactical_InstantTurbo, //瞬时极亮功能
  RevTactical_InputError // 占位符，实际上不会出现，用于指示用户输入出错
  }ReverseTacModeDef;
 

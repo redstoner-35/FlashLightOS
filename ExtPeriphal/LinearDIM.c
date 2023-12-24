@@ -419,7 +419,7 @@ void RuntimeModeCurrentHandler(void)
  Throttle=PIDThermalControl();//执行PID温控
  if(Throttle>100)Throttle=100;
  if(Throttle<5)Throttle=5;//温度降档值限幅
- if(!CurrentMode->IsModeAffectedByStepDown)SysPstatebuf.CurrentThrottleLevel=0;
+ if(!CurrentMode->IsModeAffectedByStepDown&&CurrentTactalDim!=101)SysPstatebuf.CurrentThrottleLevel=0;
  else SysPstatebuf.CurrentThrottleLevel=(float)100-Throttle;//将最后的降档系数记录下来用于事件日志使用
  /********************************************************
  运行时挡位处理的第三步.我们需要从当前用户选择的挡位设置
@@ -427,9 +427,9 @@ void RuntimeModeCurrentHandler(void)
  殊挡位功能的要求(比如说呼吸功能)对电流配置进行处理最后生成
  实际使用的电流
  ********************************************************/
- Current=CurrentMode->LEDCurrentHigh;//取出电流设置
- if(CurrentMode->IsModeAffectedByStepDown)
-	 Current*=Throttle/(float)100;//该挡位受降档影响，应用算出来的温控降档设置
+ Current=(CurrentTactalDim==101)?FusedMaxCurrent*0.95:CurrentMode->LEDCurrentHigh;//取出电流设置(如果瞬时极亮开启则按照0.95倍最大电流运行，否则按照挡位设置)
+ if(CurrentMode->IsModeAffectedByStepDown||CurrentTactalDim==101)
+	 Current*=Throttle/(float)100;//该挡位受降档影响或强制极亮开启，应用算出来的温控降档设置
  /* 判断算出的电流是否受控于特殊模式的操作*/
  if(CurrentMode->Mode==LightMode_Breath)IsCurrentControlledByMode=true;
  else if(CurrentMode->Mode==LightMode_Ramp)IsCurrentControlledByMode=true;
@@ -442,7 +442,7 @@ void RuntimeModeCurrentHandler(void)
 	 Current=LVAlertCurrentLimit;//当低电压告警发生时限制输出电流 
  if(RunLogEntry.Data.DataSec.IsLowQualityBattAlert)
    Current=(CurrentMode->LEDCurrentHigh>(0.5*FusedMaxCurrent)) ?Current*0.6:Current;  //电池质量太次，限制电流
- Current*=(float)CurrentTactalDim/(float)100; //设定亮度
+ Current*=(float)(CurrentTactalDim>100?100:CurrentTactalDim)/(float)100; //根据反向战术模式的设置取设定亮度
  /* 如果当前的MOS管温度大于80度，月光档会出现问题（没有输出）
  所以需要限制最小电流，温度下去后才能恢复月光档的使用*/
  if(ADCO.SPSTMONState==SPS_TMON_OK) //检测MOS温度来控制是否允许月光档
