@@ -25,15 +25,6 @@ static const char *RestoreCfg="Restoring %s config file...";
 extern int DeepSleepTimer;  //外部休眠定时器
 
 /*
-SPS电流检测的非线性矫正曲线。这部分数值会因为驱动的电路
-设计不同而变更，需要根据实物的误差情况进行调节。
-*/
-const float IMONGainSettings[SPSCompensateTableSize*2]=
-{
-     1,    2,    5,   8,10.037,   12,   16,   20,   25,33,
-0.8196,1.307,1.066,1.12,1.057 ,1.068,1.075,1.071,1.087,1.089	
-};
-/*
 被加密的管理员用户ADMIN和超级用户root的默认密码
 密码使用AES-256加密，可以通过'cptextgen'命令生成，
 然后替换掉下方数组的内容即可，密码长度需要小于或
@@ -96,12 +87,6 @@ void LoadDefaultConf(bool IsOverridePassword)
 	 }
  //恢复挡位配置	 
  RestoreFactoryModeCfg();	 
- //恢复电流矫正设置
- for(i=0;i<SPSCompensateTableSize;i++)
-	 {
-	 CfgFile.LEDIMONCalThreshold[i]=IMONGainSettings[i];
-	 CfgFile.LEDIMONCalGain[i]=IMONGainSettings[i+SPSCompensateTableSize];
-	 }
  //恢复无极调光设置
  for(i=0;i<13;i++)
 	 {

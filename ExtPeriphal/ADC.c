@@ -2,6 +2,7 @@
 #include "cfgfile.h"
 #include "delay.h"
 #include "ADC.h"
+#include "CurrentReadComp.h"
 #include "LEDMgmt.h"
 #include <math.h>
 
@@ -93,6 +94,14 @@ bool ADC_GetResult(ADCOutTypeDef *ADCOut)
 	buf=(float)ADCResult[LED_Vf_ADC_Ch]*(ADC_AVRef/(float)4096);//将AD值转换为电压
 	buf*=(float)3;//乘以分压比得到最终Vf
 	ADCOut->LEDVf=buf;
+  #ifdef FlashLightOS_Debug_Mode
+	//Debug模式，重定义温度引脚为校准电流输入
+	ADCOut->NTCState=LED_NTC_OK;
+	ADCOut->LEDTemp=35;  //LED温度部分被移除
+	buf=(float)ADCResult[NTC_ADC_Ch]*(ADC_AVRef/(float)4096);//将AD值转换为电压
+	buf=(buf*(float)1000)/(float)50;//首先乘以1000转换为mV除以INA199A1的增益系数得到电阻上的电压
+	ADCOut->LEDCalIf=buf; //校准套件的检流电阻是1mV/1A所以直接返回数值就可以。
+	#else
   //计算温度
 	buf=(float)ADCResult[NTC_ADC_Ch]*(ADC_AVRef/(float)4096);//将AD值转换为电压
 	Rt=((float)NTCUpperResValueK*buf)/(ADC_AVRef-buf);//得到NTC的电阻
@@ -109,17 +118,17 @@ bool ADC_GetResult(ADCOutTypeDef *ADCOut)
 	  ADCOut->NTCState=LED_NTC_OK;
 		ADCOut->LEDTemp=buf;
 		}
+	#endif
 	//计算LED输出电流
 	buf=(float)ADCResult[LED_If_Ch]*(ADC_AVRef/(float)4096);//将AD值转换为电压
 	buf=(buf*(float)1000)/(float)SPSIMONDiffOpGain;//将算出的电压转为mV单位，然后除以INA199放大器的增益值得到原始的电压
 	buf/=(float)SPSIMONShunt;//欧姆定律，I=U/R计算出SPS往外怼出来的电流（单位mA）
 	buf/=((float)SPSIMONScale/(float)1000);//将算出来的电流除以SPS的电流反馈系数（换算为mA/A）得到实际的电流值
+	#ifdef FlashLightOS_Debug_Mode
   ADCOut->LEDIfNonComp=buf;//将未补偿的LEDIf放置到结构体内
-	Comp=QueueLinearTable(SPSCompensateTableSize,buf,CfgFile.LEDIMONCalThreshold,CfgFile.LEDIMONCalGain);//查曲线得到矫正系数
+	#endif
+	Comp=QueueLinearTable(51,buf,CompData.CompDataEntry.CompData.Data.CurrentCompThershold,CompData.CompDataEntry.CompData.Data.CurrentCompValue);//查曲线得到矫正系数
 	if(Comp!=NAN)buf*=Comp;//如果补偿系数合法则得到最终结果
-	#ifdef Internal_Driver_Debug
-	UartPost(msg_error,"IntADC","Illegal SPS Current Compensation factor value.");
-  #endif
 	ADCOut->LEDIf=buf;//计算完毕返回结果
 	//计算SPS温度数值
 	buf=(float)ADCResult[SPS_Temp_Ch]*(ADC_AVRef/(float)4096);//将AD值转换为电压

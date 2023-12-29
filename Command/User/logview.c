@@ -74,14 +74,14 @@ void logviewhandler(void)
 		i=!CheckIfParamOnlyDigit(ParamPtr)?atoi(ParamPtr):-1;
 		if(i>MaximumLoggerDepth-1||i<0)
 		 {
-		 UartPrintf("\r\n错误:您指定的日志编号在系统中不存在!系统中包含的日志编号为0-%d.",MaximumLoggerDepth-1);
+		 UartPrintf("\r\n错误:您需要指定系统中包含的日志编号(0-%d)!",MaximumLoggerDepth-1);
 		 ClearRecvBuffer();//清除接收缓冲
      CmdHandle=Command_None;//命令执行完毕	
 		 return;
 		 }
     if(!FetchLoggerData(&LogData,i))
      {
-		 UARTPuts("\r\n获取日志信息时发生错误,请重试.");
+		 UARTPuts("\r\n获取日志信息时发生错误.");
 		 ClearRecvBuffer();//清除接收缓冲
      CmdHandle=Command_None;//命令执行完毕	
 		 return;

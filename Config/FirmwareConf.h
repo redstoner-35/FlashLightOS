@@ -2,17 +2,17 @@
 #define _FirmwareConf_
 
 //版本信息
-#define HardwareMajorVer 1
-#define HardwareMinorVer 1  //硬件版本号
+#define HardwareMajorVer 2
+#define HardwareMinorVer 0  //硬件版本号
 
 #define MajorVersion 1
-#define MinorVersion 8
-#define HotfixVersion 8  //固件版本号
+#define MinorVersion 9
+#define HotfixVersion 0  //固件版本号
 
 //固件模式配置
 //#define Firmware_UV_Mode //适用于UV LED的特殊模式
 #define Firmware_DIY_Mode //是否启用DIY高级用户模式，在此模式下驱动所有功能可以使用，否则温控调整和日志清除和恢复功能会被禁用。
-//#define FlashLightOS_Debug_Mode //是否启用debug模式，此时驱动将会禁用部分自检项目以及低电量关机功能，并且强制使用工厂配置
+#define FlashLightOS_Debug_Mode //是否启用debug模式，此时驱动将会禁用部分自检项目以及低电量关机功能，并且强制使用工厂配置
 //#define Internal_Driver_Debug //是否启用驱动内部设备驱动的额外信息输出。
 #define EnableFirmwareSecure //是否启用固件只读和CRC安全锁
 #define HardwarePlatformString "Xtern Ripper" //硬件平台字符串信息，可以任意修改
@@ -33,11 +33,11 @@
 #define CustomLEDName "昌达SFH55-3000K" //如果指定驱动使用其他任意未指定型号的LED，则需要在此处填写LED名称
 #define CustomLEDCode 0x5AA5 //如果指定驱动使用其他任意未指定型号的LED，则需要在此处填写该LED的类型代码
 
-#define Using_SBT90Gen2_LED //使用SBT90.2
+//#define Using_SBT90Gen2_LED //使用SBT90.2
 //#define Using_SBT90R_LED //使用红色的SBT90
 //#define Using_SBT70G_LED //使用绿色的SBT70
 //#define Using_SBT70B_LED //使用蓝色的SBT70
-//#define Using_Generic_3V_LED //使用其他任意未指定型号的3V LED
+#define Using_Generic_3V_LED //使用其他任意未指定型号的3V LED
 //#define Using_Generic_6V_LED //使用其他任意未指定型号的6V LED
 
 //挡位和操作逻辑配置
@@ -47,7 +47,7 @@
 #define EnableTurbo //出厂挡位组启用双击极亮挡位(此挡位按照100%电流输出)
 
 //EEPROM配置(用于存储配置信息)
-//#define EnableSecureStor //对于FM24C512 系统会使用Security sector存储FRU数据
+#define EnableSecureStor //对于FM24C512 系统会使用Security sector存储FRU数据
 #define UsingEE_24C512 //使用24C512
 //#define UsingEE_24C1024 //使用24C1024
 

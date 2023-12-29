@@ -7,7 +7,9 @@
 #include "runtimelogger.h"
 #include <string.h>
 
-CurrentModeStr CurMode;//当前模式的结构体
+
+//外部变量
+extern float CurrentSynthRatio;
 
 //常量
 #define MoresIDCode "Example"
@@ -29,6 +31,7 @@ int AutoOffTimer=-1; //定时关机延时器
 static bool DCPressstatebuf=false;
 unsigned char BlankTimer=0; //关闭手电时促使换挡模式消隐的定时器
 static bool DisplayBattBuf=false;
+CurrentModeStr CurMode;//当前模式的结构体
 
 //电池电量和温度的显示
 void DisplayBatteryValueHandler(void)
@@ -473,6 +476,7 @@ void ModeSwitchLogicHandler(void)
 	ResetRampMode();//重置无极调光模块
   ResetCustomFlashControl();//复位自定义闪控制
   TimerHasStarted=false;//更换挡位之后重配置定时器
+	CurrentSynthRatio=100;//复位调光比例
 	//挡位组选择逻辑状态机
   switch(CurMode.ModeGrpSel)	
 	  {

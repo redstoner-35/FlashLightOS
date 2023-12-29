@@ -737,6 +737,11 @@
               <FileType>1</FileType>
               <FilePath>.\ExtPeriphal\TempControl.c</FilePath>
             </File>
+            <File>
+              <FileName>CurrentReadComp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\ExtPeriphal\CurrentReadComp.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

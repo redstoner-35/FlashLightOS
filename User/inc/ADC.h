@@ -37,7 +37,10 @@ typedef struct
 {
 float LEDVf;
 float LEDIf;
+#ifdef FlashLightOS_Debug_Mode
+float LEDCalIf; //LED校准用的If	
 float LEDIfNonComp;//未补偿的LED If
+#endif
 float LEDTemp;//LED状态
 float SPSTemp;//SPS温度
 NTCSensorStatDef NTCState;//LED基板温度状态

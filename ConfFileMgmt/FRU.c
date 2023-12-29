@@ -1,7 +1,7 @@
 #include "I2C.h"
 #include "FirmwareConf.h"
 #include "FRU.h"
-#include "selftestlogger.h"
+#include "CurrentReadComp.h"
 #include "console.h"
 #include "Xmodem.h"
 #include "LEDMgmt.h"
@@ -89,7 +89,7 @@ char ReadFRU(FRUBlockUnion *FRU)
  {
  
  #ifndef EnableSecureStor
- if(M24C512_PageRead(FRU->FRUBUF,SelftestLogEnd,sizeof(FRUBlockUnion)))return 1;
+ if(M24C512_PageRead(FRU->FRUBUF,CalibrationRecordEnd,sizeof(FRUBlockUnion)))return 1;
  #else
  if(M24C512_ReadSecuSct(FRU->FRUBUF,0,sizeof(FRUBlockUnion)))return 1; 
  #endif	 
@@ -104,7 +104,7 @@ char WriteFRU(FRUBlockUnion *FRU)
  {
  #ifndef EnableSecureStor
  if(!CalcFRUCRC(FRU))return 1;//CRC计算失败
- if(M24C512_PageWrite(FRU->FRUBUF,SelftestLogEnd,sizeof(FRUBlockUnion)))return 1; //计算校验和然后写入
+ if(M24C512_PageWrite(FRU->FRUBUF,CalibrationRecordEnd,sizeof(FRUBlockUnion)))return 1; //计算校验和然后写入
  #else
  if(!CalcFRUCRC(FRU))return 1;//CRC计算失败
  if(M24C512_WriteSecuSct(FRU->FRUBUF,0,sizeof(FRUBlockUnion)))return 1; //写入失败
@@ -113,10 +113,9 @@ char WriteFRU(FRUBlockUnion *FRU)
  return 0;
  }
 /**************************************************************
-这个函数主要用于检查读出来的FRU数据是否匹配CRC32校验和。如果匹配
-则返回true 否则返回false
-**************************************************************/
-bool CheckFRUInfoCRC(FRUBlockUnion *FRU)
+这个函数主要用于计算FRU结构体的CRC数值并返回结果
+**************************************************************/ 
+static unsigned int CalcFRUCRC32Value(FRUBlockUnion *FRU)
  {
  unsigned int DATACRCResult;
  #ifdef EnableSecureStor
@@ -153,6 +152,16 @@ bool CheckFRUInfoCRC(FRUBlockUnion *FRU)
  DATACRCResult^=UID;
  DATACRCResult^=0x3C6AF8E5;
  #endif
+ return DATACRCResult;
+ }
+ 
+/**************************************************************
+这个函数主要用于检查读出来的FRU数据是否匹配CRC32校验和。如果匹配
+则返回true 否则返回false
+**************************************************************/
+bool CheckFRUInfoCRC(FRUBlockUnion *FRU)
+ {
+ unsigned int DATACRCResult=CalcFRUCRC32Value(FRU);
  if(DATACRCResult!=FRU->FRUBlock.CRC32Val)return false;
  return true;
  }
@@ -162,42 +171,7 @@ bool CheckFRUInfoCRC(FRUBlockUnion *FRU)
 **************************************************************/
 bool CalcFRUCRC(FRUBlockUnion *FRU)
  {
- unsigned int DATACRCResult;
- #ifdef EnableSecureStor
- unsigned int UID;
- char UIDbuf[4];
- #endif
- int i;
- CKCU_PeripClockConfig_TypeDef CLKConfig={{0}};
- //初始化CRC32      
- CLKConfig.Bit.CRC = 1;
- CKCU_PeripClockConfig(CLKConfig,ENABLE);//启用CRC-32时钟  
- CRC_DeInit(HT_CRC);//清除配置
- HT_CRC->SDR = 0x0;//CRC-32 poly: 0x04C11DB7  
- HT_CRC->CR = CRC_32_POLY | CRC_BIT_RVS_WR | CRC_BIT_RVS_SUM | CRC_BYTE_RVS_SUM | CRC_CMPL_SUM;
- //开始校验
- for(i=0;i<sizeof(FRUDataUnion);i++)
-	 wb(&HT_CRC->DR,FRU->FRUBlock.Data.FRUDbuf[i]);//将内容写入到CRC寄存器内
- //校验完毕计算结果
- DATACRCResult=HT_CRC->CSR;
- CRC_DeInit(HT_CRC);//清除CRC结果
- CLKConfig.Bit.CRC = 1;
- CKCU_PeripClockConfig(CLKConfig,DISABLE);//禁用CRC-32时钟节省电力
- //将CRC32值进行加盐
- #ifndef EnableSecureStor
- DATACRCResult^=0xAC672833;
- #else
- UID=0;
- if(M24C512_ReadUID(UIDbuf,4))return false; //读取失败
- for(i=0;i<4;i++)
-  {
-	UID<<=8;
-	UID|=UIDbuf[i];//将读取到的UID拼接一下
-	}
- DATACRCResult^=UID;
- DATACRCResult^=0x3C6AF8E5;
- #endif
- FRU->FRUBlock.CRC32Val=DATACRCResult;//填写一下
+ FRU->FRUBlock.CRC32Val=CalcFRUCRC32Value(FRU);//填写一下
  return true;
  }
 /**************************************************************

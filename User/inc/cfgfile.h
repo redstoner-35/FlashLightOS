@@ -5,9 +5,6 @@
 #include "modelogic.h"
 #include "FirmwareConf.h"
 
-//电流补偿曲线节点设置
-#define SPSCompensateTableSize 10 //SPS电流检测补偿表的节点数
-
 //配置文件类型
 typedef enum
 {
@@ -32,8 +29,6 @@ typedef struct
  bool EnableRunTimeLogging;//是否启用运行时记录
  unsigned short PWMDIMFreq;//PWM调光频率
  bool IsDriverLockedAfterPOR;//驱动上电后是否保持自锁
- float LEDIMONCalThreshold[SPSCompensateTableSize];
- float LEDIMONCalGain[SPSCompensateTableSize]; //LED电流测量补偿	
  //挡位组配置
  ModeConfStr RegularMode[8];  //普通挡位
  ModeConfStr DoubleClickMode; //双击挡位

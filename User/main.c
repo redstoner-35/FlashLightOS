@@ -13,6 +13,7 @@
 #include "logger.h"
 #include "selftestlogger.h"
 #include "runtimelogger.h"
+#include "CurrentReadComp.h"
 
 bool SensorRefreshFlag=false;
 bool EnteredMainApp=false;
@@ -48,6 +49,7 @@ int main(void)
  INA219_POR();//初始化INA219
  PORConfHandler();//初始化配置文件
  InternalADC_Init();//初始化内部ADC
+ LoadCalibrationConfig();//加载电流补偿设置
  SideKeyInit();//初始化侧按按钮
  ModeSwitchInit();//模式选择挡位的配置初始化
  PStateInit();//电源状态初始化
@@ -97,6 +99,12 @@ int main(void)
    SystemRunLogProcessHandler(); //负责管理将日志写入到ROM的管理函数
 	 AutoPowerOffTimerHandler();//处理自动关机定时器
 	 LoggerHeader_AutoUpdateHandler();//记录器自动更新头部数据	   	 
+	 #else
+	 SideKey_LogicHandler();//处理侧按按键事务
+	 DoSelfCalibration(); //处理按键自身的校准操作
+	 if(!SensorRefreshFlag)continue;
+	 LEDMgmt_CallBack();//LED管理器
+	 SensorRefreshFlag=false; //复位标志位
 	 #endif
 	 }
  return 0;

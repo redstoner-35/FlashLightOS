@@ -1,3 +1,4 @@
+#include "CurrentReadComp.h"
 #include "console.h"
 #include "CfgFile.h"
 #include "ADC.h"
@@ -5,22 +6,14 @@
 #include <string.h>
 #include <stdlib.h>
 
+//内部define
+#define SPSCompensateTableSize 51
+
 //参数帮助entry
 #ifdef FlashLightOS_Debug_Mode	
 const char *imonadjArgument(int ArgCount)
   {	
-	switch(ArgCount)
-	  {
-		case 0:
-		case 1:return "查看当前LED电流探头的配置";
-	  case 2:
-	  case 3:return "设置电流探头在某一结点的增益";
-		case 4:
-	  case 5:return "设置某一节点执行该节点补偿设置的阈值电流";
-		case 6:
-		case 7:return "指定程序要设置的节点数值";
-	  }
-	return NULL;	
+	return "";	
 	}
 #endif
 //命令处理
@@ -37,17 +30,24 @@ void Imonadjhandler(void)
  IsParameterExist("01",10,&paramok);
  if(paramok)
 	 {
-   UARTPuts("\r\n--------- 智能功率级LED电流探头补偿设置 ---------");
-	 UARTPuts("\r\nLED 电流点(A) | "); 
-	 for(i=0;i<SPSCompensateTableSize;i++)UartPrintf("%.3f | ",CfgFile.LEDIMONCalThreshold[i]);	 
-	 UARTPuts("\r\n电流补偿数值  | "); 	
-	 for(i=0;i<SPSCompensateTableSize;i++)UartPrintf("%.3f | ",CfgFile.LEDIMONCalGain[i]);
+   UARTPuts("\r\n--------------- 智能功率级LED电流探头补偿设置 --------------");
+	 UARTPuts("\r\nLED 目标电流(A) | 电流补偿数值  | 目标输出电流(A) | 补偿值 |"); 
+	 for(i=0;i<SPSCompensateTableSize;i++)
+		 {
+		 UartPrintf("\r\n%.3fA | ",CompData.CompDataEntry.CompData.Data.CurrentCompThershold[i]);
+     buf=CompData.CompDataEntry.CompData.Data.CurrentCompValue[i]*100;			 
+	   UartPrintf("%.3f(%.2f%%) | ",CompData.CompDataEntry.CompData.Data.CurrentCompValue[i],buf);
+		 UartPrintf("%.3fA | ",CompData.CompDataEntry.CompData.Data.DimmingCompThreshold[i]);
+     buf=CompData.CompDataEntry.CompData.Data.DimmingCompValue[i]*100;			 
+	   UartPrintf("%.3f(%.2f%%) | ",CompData.CompDataEntry.CompData.Data.DimmingCompValue[i],buf);		 
+		 }
 	 if(ADC_GetResult(&ADCO))
 	  {
 		UARTPuts("\r\n--------- 当前系统ADC读数 ---------");
     UartPrintf("\r\n当前LED电压 : %.2fV",ADCO.LEDVf);
 		UartPrintf("\r\n当前LED电流(原始值) : %.2fA",ADCO.LEDIfNonComp);
-		UartPrintf("\r\n当前补偿值 : %.3f",QueueLinearTable(SPSCompensateTableSize,ADCO.LEDIfNonComp,CfgFile.LEDIMONCalThreshold,CfgFile.LEDIMONCalGain));//显示补偿值
+		buf=QueueLinearTable(SPSCompensateTableSize,ADCO.LEDIfNonComp,CompData.CompDataEntry.CompData.Data.CurrentCompThershold,CompData.CompDataEntry.CompData.Data.CurrentCompValue);
+		UartPrintf("\r\n当前补偿值 : %.3f",buf);//计算并显示补偿值
 		UartPrintf("\r\n当前LED电流(补偿后) : %.2fA",ADCO.LEDIf);	
 		UartPrintf("\r\n当前驱动集成MOS温度 : %.2f'C",ADCO.SPSTemp);	
 	  UartPrintf("\r\nLED基板NTC电阻状态 : %s",NTCStateString[ADCO.NTCState]);
@@ -76,16 +76,19 @@ void Imonadjhandler(void)
 			 UartPrintf("\r\n错误:您指定的电流阈值无效！允许的电流阈值为0.5-%.1f(A).",(float)FusedMaxCurrent);
 		 else if(ParamPtr!=NULL&&buf>=0.5&&buf<=(float)FusedMaxCurrent)//传入的电流数值合法且存在
 		   {
-			 oldvalue=CfgFile.LEDIMONCalThreshold[i];//存下旧的数值
-			 CfgFile.LEDIMONCalThreshold[i]=buf;
-			 if(QueueLinearTable(SPSCompensateTableSize,1.2,CfgFile.LEDIMONCalThreshold,CfgFile.LEDIMONCalGain)==NAN)//替换并检查
+			 oldvalue=CompData.CompDataEntry.CompData.Data.CurrentCompThershold[i];//存下旧的数值
+			 CompData.CompDataEntry.CompData.Data.CurrentCompThershold[i]=buf;
+			 if(QueueLinearTable(SPSCompensateTableSize,1.2,CompData.CompDataEntry.CompData.Data.CurrentCompThershold,CompData.CompDataEntry.CompData.Data.CurrentCompValue)==NAN)//替换并检查
 		    {
 				UARTPuts("\r\n错误:您提供的阈值参数不合法,已恢复为原始数值.");
-			  CfgFile.LEDIMONCalThreshold[i]=oldvalue;
+			  CompData.CompDataEntry.CompData.Data.CurrentCompThershold[i]=oldvalue;
 			  }
 			 else //正常更新
 			  {
-			  UartPrintf("\r\n补偿曲线节点%d的电流阈值已更新为%.3fA.",i,CfgFile.LEDIMONCalThreshold[i]);
+				if(WriteCompDataToROM()) //将数值保存到ROM中
+					UARTPuts("\r\n保存校准数据时出现错误.");
+			  else 
+					UartPrintf("\r\n补偿曲线节点%d的电流阈值已更新为%.3fA.",i,CompData.CompDataEntry.CompData.Data.CurrentCompThershold[i]);
 			  CommandParamOK=true;
 				}
 			 }
@@ -96,8 +99,11 @@ void Imonadjhandler(void)
 			 UARTPuts("\r\n错误:您指定的电流补偿增益无效！允许的值为0.5-1.5.");
 		 else if(ParamPtr!=NULL&&buf>=0.5&&buf<=(float)FusedMaxCurrent)//传入的电流数值合法且存在
 		   {
-			 CfgFile.LEDIMONCalGain[i]=buf;
-			 UartPrintf("\r\n补偿曲线节点%d的电流补偿增益已更新为%.3f.",i,CfgFile.LEDIMONCalGain[i]);
+			 CompData.CompDataEntry.CompData.Data.CurrentCompValue[i]=buf;
+			 if(WriteCompDataToROM()) //将数值保存到ROM中
+				 UARTPuts("\r\n保存校准数据时出现错误.");
+			 else 
+			   UartPrintf("\r\n补偿曲线节点%d的电流补偿增益已更新为%.3f.",i,CompData.CompDataEntry.CompData.Data.CurrentCompValue[i]);
 			 CommandParamOK=true;
 			 }			 
 		 //显示结果

@@ -34,13 +34,21 @@ void DisplayNoMomentTurbo(void)
 float GetActualTemp(ADCOutTypeDef *ADCResult)
   {
   float ActualTemp;
+  float Weight;
+	//获取加权值
+  Weight=CfgFile.LEDThermalWeight;
+  if(ADCResult->SPSTMONState==SPS_TMON_OK&&ADCResult->SPSTemp>100)
+    Weight-=(ADCResult->SPSTemp-100); //当MOS过热后，减少LED热量的权重	
+	if(Weight>80)Weight=80;
+  if(Weight<5)Weight=5; //权重值限幅		
+	//计算温度	
   if(ADCResult->NTCState==LED_NTC_OK)//LED温度就绪，取SPS温度
 	  { 
-		ActualTemp=ADCResult->LEDTemp*CfgFile.LEDThermalWeight/100;
+		ActualTemp=ADCResult->LEDTemp*Weight/100;
 		if(ADCResult->SPSTMONState==SPS_TMON_OK) //现场测量值有效，取现场测量值
-		  ActualTemp+=ADCResult->SPSTemp*(100-CfgFile.LEDThermalWeight)/100;
+		  ActualTemp+=ADCResult->SPSTemp*(100-Weight)/100;
 		else //否则取运行日志里面的平均SPS温度
-			ActualTemp+=RunLogEntry.Data.DataSec.AverageSPSTemp*(100-CfgFile.LEDThermalWeight)/100;
+			ActualTemp+=RunLogEntry.Data.DataSec.AverageSPSTemp*(100-Weight)/100;
 		}
 	else //温度完全使用驱动MOS温度
 	  {

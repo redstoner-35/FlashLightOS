@@ -7,6 +7,7 @@
 #include "ADC.h"
 #include "cfgfile.h"
 #include "runtimelogger.h"
+#include "CurrentReadComp.h"
 #include <math.h>
 #include <stdlib.h>
 
@@ -20,7 +21,7 @@ void FillThermalFilterBuf(ADCOutTypeDef *ADCResult);//填充温度stepdown的缓
 static bool LastAdjustDirection; //存储上一次调节的方向
 static float LEDVfFilterBuf[12];
 static float LEDIfFilter[14];
-static float CurrentSynthRatio=100;  //电流合成比例
+float CurrentSynthRatio=100;  //电流合成比例
 static char ShortCount=0;
 static bool IsDisableMoon; //是否关闭月光档
 bool IsDisableBattCheck; //是否关闭电池质量检测
@@ -33,25 +34,6 @@ extern bool IsRampAdjusting; //外部调光是否在调节
 extern float UnLoadBattVoltage; //没有负载时的电池电压
 extern float LEDVfMin;
 extern float LEDVfMax; //LEDVf限制
-
-//外部调光参数
-#if (HardwareMinorVer == 2)
-//补偿硬件电流DAC调光偏差的offset (Ver 1.2) 0.05907 for 30A
-const float DimmingCompTable[]=
-{
-0.1,1.65,4.95,9.9,19.8,
-2.1,2.02,1.29,1.1966,1.05907
-};
-
-#else
-const float DimmingCompTable[]=
-
-{
-0.1,1.65,4.95,9.9,19.8,
-1.007,1.005,1.004,1.003,1.002
-};
-#endif
-
 
 //字符串
 const char *SPSFailure="SPS %sreports %s during init.";
@@ -150,7 +132,7 @@ void LinearDIM_POR(void)
  if(VGet>=0.05)
 	  {
 		//有超过0.05的电压,说明DAC有问题输出无法归零
-		UartPost(Msg_critical,"LineDIM","DAC output zero failure.");
+		UartPost(Msg_critical,"LineDIM","DAC output error.");
 	  CurrentLEDIndex=20;
 	  SelfTestErrorHandler();  		
 		}
@@ -170,7 +152,7 @@ void LinearDIM_POR(void)
 		if(ADCO.SPSTMONState==SPS_TMON_OK)
 		   {
 		   if(ADCO.LEDVf>=LEDVfMax)retry++;
-		   else if(ADCO.LEDIf>0.35)//电流检测正常，累加数值
+		   else if(ADCO.LEDIf>0.6)//电流检测正常，累加数值
 			   {
 				 IMONOKFlag=true;
 			   retry++; 
@@ -526,15 +508,14 @@ void RuntimeModeCurrentHandler(void)
  else
 	 {
 	 IsMoonDimmingLocked=true; //线性调光不需要锁相，直接置true
-   DACVID=Current*30;  //计算DAC的VID,公式为:VID=(30mV*offset*LEDIf(A))+23mV 
-	 DACVID/=QueueLinearTable(5,Current,(float *)&DimmingCompTable[0],(float *)&DimmingCompTable[5]);//除以补偿系数得到补偿后的VID
+   DACVID=Current*30;  //计算DAC的VID,公式为:VID=(30mV*offset*LEDIf(A))
 	 if(CurrentMode->Mode!=LightMode_On&&CurrentMode->Mode!=LightMode_Ramp)CurrentSynthRatio=100;//不是常亮和无极调光模式，不使用电流补偿
 	 else if(fabsf(Current-ADCO.LEDIf)>0.02) 
 	   { 
-	   if(Current>ADCO.LEDIf)CurrentSynthRatio=CurrentSynthRatio<110?CurrentSynthRatio+0.1:110; 
-	   else CurrentSynthRatio=CurrentSynthRatio>50?CurrentSynthRatio-0.1:50;
+	   if(Current>ADCO.LEDIf)CurrentSynthRatio=CurrentSynthRatio<150?CurrentSynthRatio+0.5:150; 
+	   else CurrentSynthRatio=CurrentSynthRatio>50?CurrentSynthRatio-0.5:50;
 		 }
-	 DACVID+=23;//加上23mV的offset 
+	 DACVID*=QueueLinearTable(50,Current,CompData.CompDataEntry.CompData.Data.DimmingCompThreshold,CompData.CompDataEntry.CompData.Data.DimmingCompValue); //从校准记录里面读取电流补偿值
 	 DACVID*=(CurrentSynthRatio/(float)100); //乘上自适应电流补偿系数
 	 DACVID/=1000;//mV转换为V
 	 SysPstatebuf.IsLinearDim=true;

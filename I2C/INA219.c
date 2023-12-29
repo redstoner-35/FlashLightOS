@@ -197,6 +197,4 @@ void INA219_POR(void)
 	return;
 	#endif
 	}
- //正常显示
- UartPost(Msg_info,"INA21x","SMBUS Power Gauge has been started.");
  }
