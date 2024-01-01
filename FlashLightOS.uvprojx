@@ -912,6 +912,11 @@
               <FileType>1</FileType>
               <FilePath>.\Command\User\rampcfg.c</FilePath>
             </File>
+            <File>
+              <FileName>eepedit.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Command\User\eepedit.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

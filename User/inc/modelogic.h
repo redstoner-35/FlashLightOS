@@ -70,7 +70,7 @@ typedef enum
  Error_PWM_Logic,  //PWM逻辑异常	 
  Error_DAC_Logic,  //DAC异常
  Error_ADC_Logic,  //ADC异常
- Error_Thremal_Logic,//温度控制逻辑异常
+ Error_Calibration_Data,//校准数据库异常
  Error_Input_OVP,  //输入过压保护
  Error_Input_UVP,  //输入欠压保护
  Error_Mode_Logic,  //挡位逻辑错误

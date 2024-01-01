@@ -16,6 +16,8 @@ float fmaxf(float x,float y);
 float fminf(float x,float y);
 float PIDThermalControl(void);//PID温控
 void FillThermalFilterBuf(ADCOutTypeDef *ADCResult);//填充温度stepdown的缓冲区
+bool CheckLinearTable(int TableSize,float *TableIn);//检查校准数据库的LUT
+bool CheckLinearTableValue(int TableSize,float *TableIn);//检查补偿数据库的数据域
 
 //内部变量
 static bool LastAdjustDirection; //存储上一次调节的方向
@@ -246,12 +248,19 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
  float VID,detectOKCurrent,VIDIncValue;
  int i,retry; 
  /********************************************************
- 我们首先需要检查传进来的模式组是否有效。
+ 我们首先需要检查传进来的模式组是否有效。然后检查校准数据库
+ 里面的数值是否有效。如果无效则报异常
  ********************************************************/
  CurrentMode=GetCurrentModeConfig();
  if(CurrentMode==NULL)return Error_Mode_Logic; //挡位逻辑异常
  detectOKCurrent=CurrentMode->LEDCurrentHigh;
  if(detectOKCurrent>0.5)detectOKCurrent=0.5;
+ Result[0]=CheckLinearTable(51,CompData.CompDataEntry.CompData.Data.CurrentCompThershold);
+ Result[1]=CheckLinearTable(50,CompData.CompDataEntry.CompData.Data.DimmingCompThreshold); //检查阈值区域
+ if(!Result[0]||!Result[1])return Error_Calibration_Data; //校准数据库错误
+ Result[0]=CheckLinearTableValue(51,CompData.CompDataEntry.CompData.Data.CurrentCompValue);
+ Result[1]=	CheckLinearTableValue(50,CompData.CompDataEntry.CompData.Data.DimmingCompValue); //检查数值域 
+ if(!Result[0]||!Result[1])return Error_Calibration_Data; //校准数据库错误
  /********************************************************
  首先我们需要将负责电池遥测的INA219功率级启动,然后先将DAC
  输出设置为0,PWM调光模块设置为100%,接着就可以送辅助电源然
@@ -353,7 +362,7 @@ void RuntimeModeCurrentHandler(void)
  {
  ModeConfStr *CurrentMode;
  ADCOutTypeDef ADCO;
- bool IsCurrentControlledByMode,CurrentAdjDirection;
+ bool IsCurrentControlledByMode,CurrentAdjDirection,IsResultOK;
  volatile bool IsMainLEDEnabled,IsNeedToEnableBuck;
  float Current,Throttle,DACVID,delta,corrvaule;
  /********************************************************
@@ -515,7 +524,13 @@ void RuntimeModeCurrentHandler(void)
 	   if(Current>ADCO.LEDIf)CurrentSynthRatio=CurrentSynthRatio<150?CurrentSynthRatio+0.5:150; 
 	   else CurrentSynthRatio=CurrentSynthRatio>50?CurrentSynthRatio-0.5:50;
 		 }
-	 DACVID*=QueueLinearTable(50,Current,CompData.CompDataEntry.CompData.Data.DimmingCompThreshold,CompData.CompDataEntry.CompData.Data.DimmingCompValue); //从校准记录里面读取电流补偿值
+	 DACVID*=QueueLinearTable(50,Current,CompData.CompDataEntry.CompData.Data.DimmingCompThreshold,CompData.CompDataEntry.CompData.Data.DimmingCompValue,&IsResultOK); //从校准记录里面读取电流补偿值
+	 if(!IsResultOK) //校准数据库异常，退出
+		 {
+		 //校准数据库异常，让驱动退出运行
+		 RunTimeErrorReportHandler(Error_Calibration_Data);
+		 return;
+	   }
 	 DACVID*=(CurrentSynthRatio/(float)100); //乘上自适应电流补偿系数
 	 DACVID/=1000;//mV转换为V
 	 SysPstatebuf.IsLinearDim=true;

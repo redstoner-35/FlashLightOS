@@ -431,6 +431,21 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		 NULL,
 		 false,
      true			 
+		},
+		#ifdef FlashLightOS_Debug_Mode 
+		{
+		{Log_Perm_Root,Log_Perm_End},//30  
+		 "eepedit",
+		 "允许厂家工程师直接对驱动的EEPROM进行读写操作.",
+     "-r\0--read\0-w\0--write\0\n",
+		 " \0 \0 \0 \0\n",
+		 &eepeditargument,
+     Command_eepedit,
+		 &eepedit_CtrlC_Handler,
+		 false,
+     false,
+		 true			 		
 		}
+		#endif
   };
 #endif

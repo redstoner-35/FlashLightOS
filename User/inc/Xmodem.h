@@ -66,6 +66,7 @@ typedef struct
  int ReadWriteBase;    //在EEPROM内读写的base
  char XmodemRXBuf[134]; //接收缓冲区
  char CurrentPacketNum; //当前的包数
+ int ROMPackNum; //ROM内总计的Pack大小
  short CurrentBUFRXPtr; //当前RX缓冲的指针
  XmodemTransferCtrlDef XmodemTransferMode; //Xmodem传输模式
  short RXTimer; //收取操作中需要延时的计时器

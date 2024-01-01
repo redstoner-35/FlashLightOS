@@ -48,7 +48,7 @@ SPSTMONStatDef SPSTMONState;//SPS温度状态
 }ADCOutTypeDef;//ADC
 
 //函数
-float QueueLinearTable(int TableSize,float Input,float *Thr,float *Value);//线性表插值
+float QueueLinearTable(int TableSize,float Input,float *Thr,float *Value,bool *IsResultOK);//线性表插值
 void InternalADC_Init(void);//初始化内部ADC
 bool ADC_GetLEDIfPinVoltage(float *VOUT);//ADC获取LED电流测量引脚的电压输入值
 bool ADC_GetResult(ADCOutTypeDef *ADCOut);//获取温度和LED Vf

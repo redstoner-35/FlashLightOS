@@ -93,21 +93,21 @@ void logviewhandler(void)
 		 //判断日志的参数
 		 switch(LogData.LoggerDateSection.ErrorCode)//根据错误代码显示的LED状态代码
 			  {
-			  case Error_Input_OVP:ErrorString="输入电压过高保护";break;//输入过压保护
-			  case Error_Thremal_Logic:ErrorString="内部温控降档逻辑异常(温控表阈值参数错误)"; //温控逻辑异常
-				case Error_PWM_Logic:ErrorString="内部PWM逻辑异常";  //PWM逻辑异常	
-				case Error_SPS_CATERR:ErrorString="智能功率级(驱动内部)灾难性故障";break; //智能功率级反馈灾难性错误
-				case Error_SPS_ThermTrip:ErrorString="智能功率级(驱动内部)过热保护";break; //智能功率级过热保护
+			  case Error_Input_OVP:ErrorString="输入过电压保护";break;//输入过压保护
+			  case Error_Calibration_Data:ErrorString="校准数据库"; //温控逻辑异常
+				case Error_PWM_Logic:ErrorString="内部PWM逻辑";  //PWM逻辑异常	
+				case Error_SPS_CATERR:ErrorString="智能功率级(驱动内部)灾难性";break; //智能功率级反馈灾难性错误
+				case Error_SPS_ThermTrip:ErrorString="智能功率级(驱动内部)过热";break; //智能功率级过热保护
 				case Error_LED_Open:ErrorString="LED灯珠压降过高或开路";break; //灯珠开路
 				case Error_LED_Short:ErrorString="LED灯珠短路";break; //灯珠短路
-				case Error_LED_OverCurrent:ErrorString="LED灯珠过流保护";break; //灯珠过流保护
-				case Error_LED_ThermTrip:ErrorString="LED灯珠严重过热保护";break; //灯珠过热保护
-				case Error_Input_UVP:ErrorString="输入电压过低,欠压保护";break; //输入欠压保护
-				case Error_DAC_Logic:ErrorString="内部线性调光DAC异常";break; //DAC异常
-				case Error_ADC_Logic:ErrorString="内部测量ADC异常";break; //ADC异常
-				case Error_Mode_Logic:ErrorString="驱动挡位配置异常";break; //驱动挡位配置异常
-				case Error_Input_OCP:ErrorString="输入电流超过允许值";break; //输入过流
-				case Error_SPS_TMON_Offline:ErrorString="智能功率级(驱动内部)温度反馈输出异常";break; //温度反馈异常
+				case Error_LED_OverCurrent:ErrorString="LED灯珠过流";break; //灯珠过流保护
+				case Error_LED_ThermTrip:ErrorString="LED灯珠严重过热";break; //灯珠过热保护
+				case Error_Input_UVP:ErrorString="输入欠压";break; //输入欠压保护
+				case Error_DAC_Logic:ErrorString="内部线性调光DAC";break; //DAC异常
+				case Error_ADC_Logic:ErrorString="内部测量ADC";break; //ADC异常
+				case Error_Mode_Logic:ErrorString="驱动挡位配置";break; //驱动挡位配置异常
+				case Error_Input_OCP:ErrorString="电源输入过流";break; //输入过流
+				case Error_SPS_TMON_Offline:ErrorString="智能功率级(驱动内部)温度反馈输出";break; //温度反馈异常
 				default:ErrorString=LogVIewAlertStr[5];
 				}	 
 		 switch(LogData.LoggerDateSection.SystemPstate)
@@ -133,7 +133,7 @@ void logviewhandler(void)
 		 //显示
 		 UartPrintf((char *)LogVIewAlertStr[6],"详细");
 		 UartPrintf("%s日志CRC32数值 : 0x%08X",LogVIewAlertStr[4],calculateLogEntryCRC32(&LogData));
-		 UartPrintf("%s错误类型 : %s",LogVIewAlertStr[4],ErrorString);
+		 UartPrintf("%s错误类型 : %s异常",LogVIewAlertStr[4],ErrorString);
 		 UartPrintf("%s错误位置 : %s",LogVIewAlertStr[4],LogData.LoggerDateSection.ErrorStageText);
 		 UartPrintf("%s------------  详细参数记录  ------------",LogVIewAlertStr[4]);
 		 UartPrintf("%s系统电源状态(P-State) : %s",LogVIewAlertStr[4],PstateString);

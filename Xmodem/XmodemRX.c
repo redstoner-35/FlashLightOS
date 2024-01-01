@@ -17,6 +17,7 @@ void XmodemTransferReset(void)
  XmodemTransferCtrl.CurrentPacketNum=1;
  XmodemTransferCtrl.CurrentBUFRXPtr=0;
  XmodemTransferCtrl.RxRetryCount=0;
+ XmodemTransferCtrl.ROMPackNum=0;
  XmodemTransferCtrl.RXTimer=0;
  XmodemTransferCtrl.XmodemTransferMode=Xmodem_Mode_NoTransfer;
  XmodemTransferCtrl.MaxTransferSize=0;
@@ -34,6 +35,7 @@ void XmodemInitRXModule(int MaximumRxSize,int ROMAddr)
  XmodemTransferCtrl.CurrentBUFRXPtr=0;
  XmodemTransferCtrl.RxRetryCount=0;
  XmodemTransferCtrl.RXTimer=0;
+ XmodemTransferCtrl.ROMPackNum=0;
  XmodemTransferCtrl.XmodemTransferMode=Xmodem_Mode_Rx;
  XmodemTransferCtrl.ReadWriteBase=ROMAddr;
  XmodemTransferCtrl.IsUseCRC16=false;
@@ -189,7 +191,7 @@ void XmodemRXStateMachine(void)
 	case Xmodem_SlaveProcessData:
 	  {
 		//将收到的数据写入EEPROM的cache area
-		ROMAddrBase=XmodemTransferCtrl.ReadWriteBase+((XmodemTransferCtrl.CurrentPacketNum-1)*128);
+		ROMAddrBase=XmodemTransferCtrl.ReadWriteBase+(XmodemTransferCtrl.ROMPackNum*128);
 		ROMWriteSize=XmodemTransferCtrl.MaxTransferSize>128?128:XmodemTransferCtrl.MaxTransferSize; //计算写入的地址offset和大小
 	  IsUsingOtherKeySet=false;
 		for(i=0;i<8;i++)AES_EncryptDecryptData(&XmodemTransferCtrl.XmodemRXBuf[3+(i*16)],0);
@@ -202,6 +204,7 @@ void XmodemRXStateMachine(void)
 		else 
 		  {
 			memset(XmodemTransferCtrl.XmodemRXBuf,0x00,sizeof(XmodemTransferCtrl.XmodemRXBuf));//清空RX缓冲区
+		  XmodemTransferCtrl.ROMPackNum++;
 			XmodemTransferCtrl.CurrentPacketNum++;  //处理完毕的数据包+1，此时可以接收下一个了
 			XmodemTransferCtrl.MaxTransferSize-=128;
 			if(XmodemTransferCtrl.MaxTransferSize<0)XmodemTransferCtrl.MaxTransferSize=0;//计算传输完毕后的大小

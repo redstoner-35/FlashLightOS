@@ -32,11 +32,13 @@ void modeviewhandler(void);
 void fruedithandler(void);
 void thermaltripcfgHandler(void);
 void rampcfghandler(void);
+void eepedithandler(void);
 
 //Ctrl+C force stop entry
 void cfgmgmt_ctrlc_handler(void);
 void usrmod_ctrlC_handler(void);
 void login_ctrlC_handler(void);
 void reboot_CtrlC_Handler(void);
+void eepedit_CtrlC_Handler(void);
 
 #endif

@@ -46,7 +46,7 @@ static int CalcCompCRC32(CompDataUnion *CompIN)
 	UID|=UIDbuf[i];//将读取到的UID拼接一下
 	}
  DATACRCResult^=UID;
- DATACRCResult^=0x3C6AF8E5;
+ DATACRCResult^=0x356AF8E5;
  #endif
  return DATACRCResult;
  }
@@ -78,6 +78,8 @@ void DoSelfCalibration(void)
  ADCOutTypeDef ADCO;
  int i,j;
  float DACVID;
+ bool resultOK;
+ int DimCalibrationFailCount=0;
  //按键没有按下，不执行
  if(!getSideKeyLongPressEvent())return; 
  CurrentLEDIndex=2; 
@@ -90,8 +92,11 @@ void DoSelfCalibration(void)
  AD5693R_SetOutput(0); //将DAC设置为0V输出，100%占空比
  delay_ms(10);
  SetAUXPWR(true);
- //开始第一次运行（对调光模块进行校准）
- for(i=0;i<50;i++)
+ #ifndef Skip_DimmingCalibration
+ while(DimCalibrationFailCount<5)
+  {
+  //开始第一组运行（对调光模块进行校准）
+  for(i=0;i<50;i++)
 	 {
 	 //计算DACVID
 	 DACVID=TargetCurrent*(float)30;//按照30mV 1A设置输出电流
@@ -111,16 +116,62 @@ void DoSelfCalibration(void)
 	 //电流加一点，开始继续计算
 	 TargetCurrent+=CurrentRatio;	 	 
 	 }
+  //清零输出，准备进行误差验证
+  TargetCurrent=1.0;
+  AD5693R_SetOutput(0); //将DAC设置为0V输出
+  //开始第二组运行（检查调光模块的电流误差范围是否达标）
+  for(i=0;i<50;i++)
+	 {
+	 //计算DACVID
+	 DACVID=TargetCurrent*(float)30;//按照30mV 1A设置输出电流
+	 DACVID*=QueueLinearTable(50,TargetCurrent,CompData.CompDataEntry.CompData.Data.DimmingCompThreshold,CompData.CompDataEntry.CompData.Data.DimmingCompValue); //从校准记录里面读取电流补偿值
+	 AD5693R_SetOutput(DACVID/(float)1000); //设置输出电流
+	 //读取电流
+	 ActualCurrent=0; //清零缓冲区
+	 for(j=0;j<10;j++)
+	   {
+	   delay_ms(5);
+	   ADC_GetResult(&ADCO); //读取数值
+	   ActualCurrent+=ADCO.LEDCalIf; //累加
+	   }
+	 ActualCurrent/=10; //求平均 
+   if(ActualCurrent>TargetCurrent*1.02||ActualCurrent<TargetCurrent*0.98)
+	    {
+			TargetCurrent=1.0;
+      AD5693R_SetOutput(0); //将DAC设置为0V输出
+			DimCalibrationFailCount++; //校准失败次数+1
+			continue; //误差超范围，重新校准
+		  }
+	 //电流加一点，开始继续检查
+	 TargetCurrent+=CurrentRatio;
+	 }
+	//校准结束
+  break;
+	}
  //清零输出，准备第二次输出
  TargetCurrent=1.0;
  AD5693R_SetOutput(0); //将DAC设置为0V输出
+ if(DimCalibrationFailCount==5)
+   {
+	 AD5693R_SetOutput(0); 
+   SetAUXPWR(false);
+	 CurrentLEDIndex=2; //输出电流误差超范围，按键红灯常亮提示出现错误
+	 return;
+	 }
  delay_ms(100);
+ #endif
  //开始第二次运行（对电流测量设备进行校准）
  for(i=1;i<51;i++)
 	 {
 	 //计算DACVID
 	 DACVID=TargetCurrent*(float)30;//按照30mV 1A设置输出电流
-	 DACVID*=QueueLinearTable(50,TargetCurrent,CompData.CompDataEntry.CompData.Data.DimmingCompThreshold,CompData.CompDataEntry.CompData.Data.DimmingCompValue); //从校准记录里面读取电流补偿值
+	 DACVID*=QueueLinearTable(50,TargetCurrent,CompData.CompDataEntry.CompData.Data.DimmingCompThreshold,CompData.CompDataEntry.CompData.Data.DimmingCompValue,&resultOK); //从校准记录里面读取电流补偿值
+	 if(!resultOK)
+	   {
+		 AD5693R_SetOutput(0); //将DAC设置为0V输出
+     SetAUXPWR(false); //关闭辅助电源
+		 CurrentLEDIndex=31; //提示用户校准数据库错误 
+		 }		 
 	 AD5693R_SetOutput(DACVID/(float)1000); //设置输出电流
 	 //读取电流
 	 ActualCurrent=0; //清零缓冲区
@@ -162,6 +213,9 @@ void LoadCalibrationConfig(void)
  {
  bool IsError=false,IsCRCError=false;
  int CRCResult;
+ #ifdef FlashLightOS_Debug_Mode	 
+ int i;
+ #endif	 
  //读取数据，计算CRC32	 
  if(!ReadCompDataFromROM(&CompData))
    {
@@ -174,12 +228,18 @@ void LoadCalibrationConfig(void)
  if(IsError)
  #ifndef FlashLightOS_Debug_Mode
    {
-	 CurrentLEDIndex=6;//EEPROM不工作
-	 UartPost(Msg_critical,"IComp","Failed to load Calibration Data,Error:%s",IsCRCError?"CRC32":"EEP");
+	 CurrentLEDIndex=31;//指示校准数据库异常
+	 UartPost(Msg_critical,"Comp","Compensation DB Error:%s",IsCRCError?"CRC32":"EEP");
 	 SelfTestErrorHandler();//EEPROM掉线
 	 }
  #else
-   UartPost(msg_error,"Comp","Failed to load Calibration Data.");
+   {
+   UartPost(msg_error,"Comp","Compensation DB Error:%s",IsCRCError?"CRC32":"EEP");
+	 for(i=0;i<50;i++)
+		 {
+		 CompData.CompDataEntry.CompData.Data.DimmingCompThreshold[i]=1.00+(((FusedMaxCurrent-1)/50)*(float)i);
+		 CompData.CompDataEntry.CompData.Data.DimmingCompValue[i]=1.00; //覆盖调光表
+		 }
+	 }
  #endif
- else UartPost(Msg_info,"Comp","Cal. data has loaded.");
  }

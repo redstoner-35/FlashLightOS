@@ -59,7 +59,7 @@ void mostranscfghandler(void)
 		else if(buf==NAN||buf<0.05||buf>2.0) //数值非法
 		  {
 			DisplayIllegalParam(ParamPtr,20,4);//显示用户输入了非法参数  
-			UARTPuts("\r\n您设定的摩尔斯代码中'.'的长度应当在0.05到2.0秒之间的正数,负数值和0均为非法值.");
+			UARTPuts("\r\n您设定的摩尔斯代码中'.'的长度应当在0.05到2.0秒之间.");
 			}
 		else //更改
 		  {

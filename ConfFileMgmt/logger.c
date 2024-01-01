@@ -69,7 +69,7 @@ void LoggerHeader_POR(void)
  bool IsEntryContainError;
  LoggerDataUnion LogData;
  //读取logger内容
- UartPost(Msg_info,"Logger","Start to init system error logger...");
+ UartPost(Msg_info,"Logger","System error logger Init start...");
  ResetLoggerHeader_AutoUpdateTIM();//复位TIM
  if(!fetchloggerheader(&LoggerHdr))
   {
@@ -79,7 +79,6 @@ void LoggerHeader_POR(void)
  //检查读出来的logger头部信息
  if(!strncmp(LoggerHdr.LoggerHeader.CheckKey,LoggerHeaderKey,5))//检查通过
   {
-	UartPost(Msg_info,"Logger","logger header has been loaded,check all log entry...");
 	faultentry=0;
 	for(i=0;i<MaximumLoggerDepth;i++)
 		{
@@ -114,7 +113,7 @@ void LoggerHeader_POR(void)
 			faultentry++;
 			}
 		}
-  UartPost(Msg_info,"Logger","all log entry has been checked,find %d problematic entry.",faultentry);
+  UartPost(Msg_info,"Logger","Error logger has been started with %d problematic log entry.",faultentry);
 	if(HeaderUpdated)//需要更新header
 	  {
 		UartPost(Msg_info,"Logger","Writing updated log-header...");

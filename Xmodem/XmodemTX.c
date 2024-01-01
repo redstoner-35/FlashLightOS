@@ -14,6 +14,7 @@ void XmodemInitTxModule(int MaximumTxSize,int ROMAddr)
  {
  memset(XmodemTransferCtrl.XmodemRXBuf,0x00,sizeof(XmodemTransferCtrl.XmodemRXBuf));
  XmodemTransferCtrl.CurrentPacketNum=1;
+ XmodemTransferCtrl.ROMPackNum=0;
  XmodemTransferCtrl.CurrentBUFRXPtr=0;
  XmodemTransferCtrl.RxRetryCount=0;
  XmodemTransferCtrl.RXTimer=0;
@@ -73,7 +74,7 @@ void XmodemTxStateMachine(void)
 		 XmodemTransferCtrl.CurrentBUFRXPtr=0; 
 		 //读取数据
 		 memset(&XmodemTransferCtrl.XmodemRXBuf[3],0x1A,128);//根据Xmodem的规范，不满128字节的数据包后面需要用0x1A填充
-		 ROMAddrBase=XmodemTransferCtrl.ReadWriteBase+((XmodemTransferCtrl.CurrentPacketNum-1)*128);
+		 ROMAddrBase=XmodemTransferCtrl.ReadWriteBase+(XmodemTransferCtrl.ROMPackNum*128);
 		 ROMReadSize=XmodemTransferCtrl.MaxTransferSize>128?128:XmodemTransferCtrl.MaxTransferSize; //计算写入的地址offset和大小
 		 if(M24C512_PageRead(&XmodemTransferCtrl.XmodemRXBuf[3],ROMAddrBase,ROMReadSize))
 		    {
@@ -118,6 +119,7 @@ void XmodemTxStateMachine(void)
 		 else if(XmodemTxCtrlByte==ACK) //收到了ACK,说明本次传输有效，此时可以计算新的传输大小和包数开始第二轮传输
 		   {
 		   memset(XmodemTransferCtrl.XmodemRXBuf,0x00,sizeof(XmodemTransferCtrl.XmodemRXBuf));//清空缓冲区
+			 XmodemTransferCtrl.ROMPackNum++;
 			 XmodemTransferCtrl.CurrentPacketNum++;  //处理完毕的数据包+1，此时可以接收下一个了
 			 XmodemTransferCtrl.MaxTransferSize-=128;
 			 if(XmodemTransferCtrl.MaxTransferSize<0)XmodemTransferCtrl.MaxTransferSize=0;//计算传输完毕后的大小

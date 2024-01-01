@@ -297,8 +297,8 @@ void PStateStateMachine(void)
 				case Error_Mode_Logic:CurrentLEDIndex=21;break;//内部模式逻辑错误
 			  case Error_Input_OVP:  CurrentLEDIndex=11;break;//输入过压保护
 				case Error_Input_OCP:  CurrentLEDIndex=22;break;//输入电流过流保护
-			  case Error_SPS_TMON_Offline:
-			  case Error_Thremal_Logic: //温控逻辑异常
+				case Error_Calibration_Data:CurrentLEDIndex=31;break;//校准数据库异常
+			  case Error_SPS_TMON_Offline: //智能功率级温度反馈异常
 				case Error_PWM_Logic:  CurrentLEDIndex=17;break;//PWM逻辑异常
 				case Error_SPS_CATERR:CurrentLEDIndex=24;break; //智能功率级反馈灾难性错误
 				case Error_SPS_ThermTrip:  CurrentLEDIndex=10;break; //智能功率级过热保护

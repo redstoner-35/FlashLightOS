@@ -25,7 +25,7 @@ void Imonadjhandler(void)
  char *ParamPtr;
  float buf,oldvalue;
  char paramok;
- bool CommandParamOK=false;
+ bool CommandParamOK=false,ResultOK;
  //--v参数
  IsParameterExist("01",10,&paramok);
  if(paramok)
@@ -37,18 +37,24 @@ void Imonadjhandler(void)
 		 UartPrintf("\r\n%.3fA | ",CompData.CompDataEntry.CompData.Data.CurrentCompThershold[i]);
      buf=CompData.CompDataEntry.CompData.Data.CurrentCompValue[i]*100;			 
 	   UartPrintf("%.3f(%.2f%%) | ",CompData.CompDataEntry.CompData.Data.CurrentCompValue[i],buf);
-		 UartPrintf("%.3fA | ",CompData.CompDataEntry.CompData.Data.DimmingCompThreshold[i]);
-     buf=CompData.CompDataEntry.CompData.Data.DimmingCompValue[i]*100;			 
-	   UartPrintf("%.3f(%.2f%%) | ",CompData.CompDataEntry.CompData.Data.DimmingCompValue[i],buf);		 
+		 if(i<50)
+		   {	 
+		   UartPrintf("%.3fA | ",CompData.CompDataEntry.CompData.Data.DimmingCompThreshold[i]);
+       buf=CompData.CompDataEntry.CompData.Data.DimmingCompValue[i]*100;			 
+	     UartPrintf("%.3f(%.2f%%) | ",CompData.CompDataEntry.CompData.Data.DimmingCompValue[i],buf);		 
+			 }
 		 }
 	 if(ADC_GetResult(&ADCO))
 	  {
 		UARTPuts("\r\n--------- 当前系统ADC读数 ---------");
     UartPrintf("\r\n当前LED电压 : %.2fV",ADCO.LEDVf);
 		UartPrintf("\r\n当前LED电流(原始值) : %.2fA",ADCO.LEDIfNonComp);
-		buf=QueueLinearTable(SPSCompensateTableSize,ADCO.LEDIfNonComp,CompData.CompDataEntry.CompData.Data.CurrentCompThershold,CompData.CompDataEntry.CompData.Data.CurrentCompValue);
-		UartPrintf("\r\n当前补偿值 : %.3f",buf);//计算并显示补偿值
-		UartPrintf("\r\n当前LED电流(补偿后) : %.2fA",ADCO.LEDIf);	
+		buf=QueueLinearTable(SPSCompensateTableSize,ADCO.LEDIfNonComp,CompData.CompDataEntry.CompData.Data.CurrentCompThershold,CompData.CompDataEntry.CompData.Data.CurrentCompValue,&ResultOK);
+	  if(ResultOK)
+		  {
+		  UartPrintf("\r\n当前补偿值 : %.3f",buf);//计算并显示补偿值
+		  UartPrintf("\r\n当前LED电流(补偿后) : %.2fA",ADCO.LEDIf);	
+			}
 		UartPrintf("\r\n当前驱动集成MOS温度 : %.2f'C",ADCO.SPSTemp);	
 	  UartPrintf("\r\nLED基板NTC电阻状态 : %s",NTCStateString[ADCO.NTCState]);
 	  if(ADCO.NTCState==LED_NTC_OK)UartPrintf("\r\nLED基板温度 : %.1f'C",ADCO.LEDTemp);
@@ -78,7 +84,8 @@ void Imonadjhandler(void)
 		   {
 			 oldvalue=CompData.CompDataEntry.CompData.Data.CurrentCompThershold[i];//存下旧的数值
 			 CompData.CompDataEntry.CompData.Data.CurrentCompThershold[i]=buf;
-			 if(QueueLinearTable(SPSCompensateTableSize,1.2,CompData.CompDataEntry.CompData.Data.CurrentCompThershold,CompData.CompDataEntry.CompData.Data.CurrentCompValue)==NAN)//替换并检查
+			 QueueLinearTable(SPSCompensateTableSize,1.2,CompData.CompDataEntry.CompData.Data.CurrentCompThershold,CompData.CompDataEntry.CompData.Data.CurrentCompValue,&ResultOK);//替换并检查
+			 if(!ResultOK) //出错了
 		    {
 				UARTPuts("\r\n错误:您提供的阈值参数不合法,已恢复为原始数值.");
 			  CompData.CompDataEntry.CompData.Data.CurrentCompThershold[i]=oldvalue;

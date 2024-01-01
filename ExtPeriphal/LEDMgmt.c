@@ -12,7 +12,7 @@
 2=红色  
 E=强制结束当前pattern
 */
-#define LEDPatternSize 32
+#define LEDPatternSize 33
 const char *LEDPattern[LEDPatternSize]=
  {
    "00",//LED熄灭 0
@@ -45,7 +45,8 @@ const char *LEDPattern[LEDPatternSize]=
 	 "202020E", //红灯快速闪三次表示手电被锁定 27
 	 "202002020020DDD",//红色灯快速闪烁5次，停3秒循环 指示LED基板NTC异常 28
 	 "1DD0DD", //绿灯慢闪表示进入调参模式 29
-	 "20202020DD202020DDD", //快速闪烁4次 暂停2秒,闪3次 PWM调光逻辑异常 30
+	 "20202020DD2020020DDD", //快速闪烁4次 暂停2秒,闪3次 PWM调光逻辑异常 30
+	 "20202020DD202002020DDD",//快速闪烁四次，暂停2秒,闪4次 校准数据库异常 31
 	 NULL//结束符
  };
 //变量

@@ -1,18 +1,24 @@
 #ifndef Console
 #define Console
 
+//内部包含
+#include "ht32.h"
+#include <stdbool.h>
+#include "modelogic.h"
+#include "FirmwareConf.h"
+
 //串口shell的一些定义
 #define BISTBaud 115200 //自检时串口的波特率
 #define CmdBufLen 134 //命令输入缓冲区的长度(字节)
 #define TxqueueLen 384 //发送缓冲区的长度(字节)
 #define RXDMAIdleCount 5 //RX DMA Idle trigger count
-#define TotalCommandCount 30  //总命令数
 #define DefaultTimeOutSec 90  //默认的命令行超时时间(秒)
 
-//内部包含
-#include "ht32.h"
-#include <stdbool.h>
-#include "modelogic.h"
+#ifndef FlashLightOS_Debug_Mode
+   #define TotalCommandCount 30  //非debug模式，总命令数30
+#else
+   #define TotalCommandCount 31  //debug模式，总命令数31
+#endif
 
 /* 负责处理外部按键锁存器的使能脚的自动define 不允许修改！*/
 #define ExtKey_EN_IOB STRCAT2(GPIO_P,ExtKeyLatch_IOBank)
@@ -82,7 +88,10 @@ Command_customflashcfg,
 Command_modeview,
 Command_fruedit,
 Command_thermaltripcfg,
-Command_rampcfg
+Command_rampcfg,
+#ifdef FlashLightOS_Debug_Mode
+Command_eepedit
+#endif
 }CommandHandle;
 
 /*******************************************
