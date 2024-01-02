@@ -71,6 +71,39 @@ char WriteCompDataToROM(void)
  return 0;
  }
 
+//用于让固件可以调出极亮，测量电流数据的函数
+void DoTurboRunTest(void)
+ {
+ float DACVID;
+ bool resultOK;
+ int i;
+ ADCOutTypeDef ADCO;
+ //按键没有双击，不执行
+ if(getSideKeyShortPressCount(true)<2)return; 
+ CurrentLEDIndex=2; 
+ LEDMgmt_CallBack();//LED管理器指示绿灯常亮	 
+ //启动LED输出
+ SetPWMDuty(100);
+ AD5693R_SetOutput(0); //将DAC设置为0V输出，100%占空比
+ delay_ms(10);
+ SetAUXPWR(true);
+ delay_ms(10);
+ //计算DACVID让LED以极亮电流运行
+ DACVID=FusedMaxCurrent*(float)30;//按照30mV 1A设置输出电流
+ DACVID*=QueueLinearTable(50,FusedMaxCurrent,CompData.CompDataEntry.CompData.Data.DimmingCompThreshold,CompData.CompDataEntry.CompData.Data.DimmingCompValue,&resultOK); //从校准记录里面读取电流补偿值
+ AD5693R_SetOutput(DACVID/(float)1000); //设置输出电流
+ if(resultOK)for(i=0;i<500;i++)
+	 {
+	 delay_ms(10);
+	 ADC_GetResult(&ADCO); //读取数值
+	 if(ADCO.SPSTMONState!=SPS_TMON_OK||ADCO.SPSTemp>=CfgFile.MOSFETThermalTripTemp)break; //驱动超温或者SPS报错，直接结束运行
+	 }
+ //运行结束，关闭输出
+ CurrentLEDIndex=0; 
+ AD5693R_SetOutput(0); //将DAC设置为0V输出
+ SetAUXPWR(false); //关闭辅助电源
+ }
+ 
 //自动进行电流回读的校准
 void DoSelfCalibration(void)
  {
@@ -124,7 +157,7 @@ void DoSelfCalibration(void)
 	 {
 	 //计算DACVID
 	 DACVID=TargetCurrent*(float)30;//按照30mV 1A设置输出电流
-	 DACVID*=QueueLinearTable(50,TargetCurrent,CompData.CompDataEntry.CompData.Data.DimmingCompThreshold,CompData.CompDataEntry.CompData.Data.DimmingCompValue); //从校准记录里面读取电流补偿值
+	 DACVID*=QueueLinearTable(50,TargetCurrent,CompData.CompDataEntry.CompData.Data.DimmingCompThreshold,CompData.CompDataEntry.CompData.Data.DimmingCompValue,&resultOK); //从校准记录里面读取电流补偿值
 	 AD5693R_SetOutput(DACVID/(float)1000); //设置输出电流
 	 //读取电流
 	 ActualCurrent=0; //清零缓冲区
@@ -145,8 +178,8 @@ void DoSelfCalibration(void)
 	 //电流加一点，开始继续检查
 	 TargetCurrent+=CurrentRatio;
 	 }
-	//校准结束
-  break;
+	//50个点的误差范围都小于标称值，校准结束
+  if(i==50)break;
 	}
  //清零输出，准备第二次输出
  TargetCurrent=1.0;
