@@ -13,7 +13,7 @@
 //#define Skip_DimmingCalibration //在debug固件中的自适应校准阶段跳过调光模块的校准，一般不用
 //#define Firmware_UV_Mode //适用于UV LED的特殊模式
 #define Firmware_DIY_Mode //是否启用DIY高级用户模式，在此模式下驱动所有功能可以使用，否则温控调整和日志清除和恢复功能会被禁用。
-#define FlashLightOS_Debug_Mode //是否启用debug模式，此时驱动将会禁用部分自检项目以及低电量关机功能，并且强制使用工厂配置
+//#define FlashLightOS_Debug_Mode //是否启用debug模式，此时驱动将会禁用部分自检项目以及低电量关机功能，并且强制使用工厂配置
 //#define Internal_Driver_Debug //是否启用驱动内部设备驱动的额外信息输出。
 #define EnableFirmwareSecure //是否启用固件只读和CRC安全锁
 #define HardwarePlatformString "Xtern Ripper" //硬件平台字符串信息，可以任意修改

@@ -7,6 +7,10 @@
 #include "modelogic.h"
 #include "SideKey.h"
 
+//外部函数
+bool CheckLinearTable(int TableSize,float *TableIn);//检查校准数据库的LUT
+bool CheckLinearTableValue(int TableSize,float *TableIn);//检查补偿数据库的数据域
+
 //全局变量
 CompDataStorUnion CompData; //全局补偿数据
 
@@ -240,34 +244,52 @@ void DoSelfCalibration(void)
  }	
 
 #endif
- 
+//校验校准数据库的CRC32结果以及数据域的内容
+bool CheckCompData(void)
+ {
+	int i,CRCResult;
+	bool Result[2];
+  for(i=0;i<2;i++)
+   {
+	 //数据匹配，退出
+	 CRCResult=CalcCompCRC32(&CompData.CompDataEntry.CompData);
+	 if(CRCResult==CompData.CompDataEntry.Checksum)break;
+	 //数据不匹配，重新从ROM里面读取,读取失败也直接报错
+	 if(ReadCompDataFromROM(&CompData))return false;
+	 }
+ if(i==2)return false;
+ //检查数据域和阈值是否合法
+ Result[0]=CheckLinearTable(51,CompData.CompDataEntry.CompData.Data.CurrentCompThershold);
+ Result[1]=CheckLinearTable(50,CompData.CompDataEntry.CompData.Data.DimmingCompThreshold); //检查阈值区域
+ if(!Result[0]||!Result[1])return false; 
+ Result[0]=CheckLinearTableValue(51,CompData.CompDataEntry.CompData.Data.CurrentCompValue);
+ Result[1]=	CheckLinearTableValue(50,CompData.CompDataEntry.CompData.Data.DimmingCompValue); //检查数值域 
+ if(!Result[0]||!Result[1])return false;
+ //检查通过
+ return true;
+ }
+
 //上电初始化的时候加载校准数据
 void LoadCalibrationConfig(void)
  {
- bool IsError=false,IsCRCError=false;
- int CRCResult;
+ bool IsError=false;
  #ifdef FlashLightOS_Debug_Mode	 
  int i;
  #endif	 
- //读取数据，计算CRC32	 
- if(!ReadCompDataFromROM(&CompData))
-   {
-	 CRCResult=CalcCompCRC32(&CompData.CompDataEntry.CompData); //计算数值
-	 IsError=(CRCResult==CompData.CompDataEntry.Checksum)?false:true; //检查是否出错
-	 if(IsError)IsCRCError=true;
-	 }
+ //读取数据，如果数据读取成功则计算CRC32检查数据	 
+ if(!ReadCompDataFromROM(&CompData))IsError=!CheckCompData();
  else IsError=true;
  //出现错误，显示校准数据损毁
  if(IsError)
  #ifndef FlashLightOS_Debug_Mode
    {
 	 CurrentLEDIndex=31;//指示校准数据库异常
-	 UartPost(Msg_critical,"Comp","Compensation DB Error:%s",IsCRCError?"CRC32":"EEP");
+	 UartPost(Msg_critical,"Comp","Compensation DB error.");
 	 SelfTestErrorHandler();//EEPROM掉线
 	 }
  #else
    {
-   UartPost(msg_error,"Comp","Compensation DB Error:%s",IsCRCError?"CRC32":"EEP");
+   UartPost(msg_error,"Comp","Compensation DB error.");
 	 for(i=0;i<50;i++)
 		 {
 		 CompData.CompDataEntry.CompData.Data.DimmingCompThreshold[i]=1.00+(((FusedMaxCurrent-1)/50)*(float)i);

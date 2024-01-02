@@ -30,7 +30,7 @@ const char *rampcfgArgument(int ArgCount)
 		case 10:
 	  case 11:return "设置该挡位的默认亮度等级";
 		case 12:
-		case 13:return "设置提示调光方向的LED是否启用";
+			case 13:return "设置调光方向提示是否启用";
 		}
 	return NULL;
 	}
@@ -61,13 +61,13 @@ void rampcfghandler(void)
 	   {
 		 IsCmdParamOK=true;
 		 DisplayIllegalParam(ParamPtr,29,6);//显示用户输入了非法参数
-			 UartPrintf((char *)FuncOperationError,"调光方向LED");
+			 UartPrintf((char *)FuncOperationError,"调光方向提示");
 		 }
 	  else  //用户内容正确
 	   {
 		 IsCmdParamOK=true;	 
 		 CfgFile.IsNoteLEDEnabled=IsUserWantToEnable;
-		 UartPrintf("调光方向LED已被成功%s.\r\n",IsUserWantToEnable?"启用":"禁用");
+		 UartPrintf("调光方向提示已被成功%s.\r\n",IsUserWantToEnable?"启用":"禁用");
 		 }	
 	  }
 	//检测后面的参数是否有被用到

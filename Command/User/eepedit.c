@@ -4,6 +4,9 @@
 #include "Xmodem.h"
 #include <string.h>
 #include "delay.h"
+
+#ifdef FlashLightOS_Debug_Mode
+
 //状态枚举
 typedef enum
  {
@@ -86,3 +89,4 @@ void eepedithandler(void)
 		  break;
 		}
 	}
+#endif
