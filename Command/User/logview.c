@@ -11,7 +11,7 @@ static const char *LogVIewAlertStr[]=
 	"\r\n  输入电压过低警告 : %s", //0
 	"\r\n  输入电压过低故障 : %s", //1
 	"\r\n  输入电压超压故障 : %s", //2
-	"\r\n  输入过流故障 : %s", //3
+	"\r\n  输入超负载故障 : %s", //3
   "\r\n   ", //4
   "未知", //5
   "\r\n----------- 系统错误日志查看器(%s视图) -----------\r\n",//6
@@ -93,7 +93,7 @@ void logviewhandler(void)
 		 //判断日志的参数
 		 switch(LogData.LoggerDateSection.ErrorCode)//根据错误代码显示的LED状态代码
 			  {
-			  case Error_Input_OVP:ErrorString="输入过电压保护";break;//输入过压保护
+			  case Error_Input_OVP:ErrorString="输入过电压";break;//输入过压保护
 			  case Error_Calibration_Data:ErrorString="校准数据库"; //温控逻辑异常
 				case Error_PWM_Logic:ErrorString="内部PWM逻辑";  //PWM逻辑异常	
 				case Error_SPS_CATERR:ErrorString="智能功率级(驱动内部)灾难性";break; //智能功率级反馈灾难性错误
@@ -106,7 +106,7 @@ void logviewhandler(void)
 				case Error_DAC_Logic:ErrorString="内部线性调光DAC";break; //DAC异常
 				case Error_ADC_Logic:ErrorString="内部测量ADC";break; //ADC异常
 				case Error_Mode_Logic:ErrorString="驱动挡位配置";break; //驱动挡位配置异常
-				case Error_Input_OCP:ErrorString="电源输入过流";break; //输入过流
+				case Error_Input_OCP:ErrorString="电源输入超载";break; //输入过载
 				case Error_SPS_TMON_Offline:ErrorString="智能功率级(驱动内部)温度反馈输出";break; //温度反馈异常
 				default:ErrorString=LogVIewAlertStr[5];
 				}	 

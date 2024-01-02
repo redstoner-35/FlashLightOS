@@ -49,11 +49,7 @@ void verHandler(void)
 		 UARTPuts((char *)FlashLightOSIcon[i]);
 		 }
 	#ifndef FlashLightOS_Debug_Mode
-	  #ifndef Firmware_UV_Mode
-	  UartPrintf("\r\n\r\nPowered by FlashLight OS version %d.%d.%d,终端波特率:%dbps",MajorVersion,MinorVersion,HotfixVersion,CfgFile.USART_Baud);
-		#else
-		UartPrintf("\r\n\r\nPowered by FlashLight OS(UV Special Edition)version %d.%d.%d,终端波特率:%dbps",MajorVersion,MinorVersion,HotfixVersion,CfgFile.USART_Baud); 
-		#endif
+	UartPrintf("\r\n\r\nPowered by FlashLight OS version %d.%d.%d,终端波特率:%dbps",MajorVersion,MinorVersion,HotfixVersion,CfgFile.USART_Baud);
 	#else
 	UartPrintf("\r\n\r\nPowered by FlashLight OS version(debug) %d.%d.%d,终端波特率:%dbps",MajorVersion,MinorVersion,HotfixVersion,CfgFile.USART_Baud);	 
 	#endif

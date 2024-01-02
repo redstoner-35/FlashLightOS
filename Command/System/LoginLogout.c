@@ -6,6 +6,7 @@
 unsigned int LogErrTimer=0;
 unsigned int PunishSec=80;
 extern int IdleTimer;
+extern float MaximumBatteryPower;
 
 //显示登录错误剩余时长
 void DisplayLoginDelayTime(void)
@@ -72,7 +73,7 @@ void LoginHandler(void)
 			if(RunLogEntry.Data.DataSec.IsLowQualityBattAlert) //电池质量警告生效
 			  {
 			  UARTPuts("\r\n\r\n警告:您使用的电池无法满足放电需求,为了保证电池和您的安全,手电筒的运行功率将");
-			  UartPrintf("\r\n会被暂时限制为60%%.请尽快更换放电能力大于%.2fA的高性能动力电池并\r\n使用'battcfg -crst'命令消除告警.\r\n",CfgFile.OverCurrentTrip*1.15);
+			  UartPrintf("\r\n会被暂时限制为60%%.请尽快更换放电能力大于%.2fW的高性能动力电池并\r\n使用'battcfg -crst'命令消除告警.\r\n",MaximumBatteryPower);
 				}
 	    if(CfgFile.IdleTimeout>0)IdleTimer=CfgFile.IdleTimeout;//重置登录超时计时器
 			TargetAccount=VerifyAccount_None;

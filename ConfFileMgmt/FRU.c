@@ -9,6 +9,7 @@
 
 //全局变量和常量
 float FusedMaxCurrent;//安全电流设置
+float MaximumBatteryPower; //最大电池输入功率
 float LEDVfMin;
 float LEDVfMax; //LEDVf限制
 const char FRUVersion[3]={FRUVer,HardwareMajorVer,HardwareMinorVer}; //版本信息
@@ -30,11 +31,7 @@ void SetLEDVfMinMax(FRUBlockUnion *FRU)
 		{
 		case 0x08:LEDVfMin=2.3;LEDVfMax=4.2;break; //SBT90.2
 		case 0x07:
-		#ifndef Firmware_UV_Mode
-		case 0x03:LEDVfMin=1.95;LEDVfMax=4.2;break; //通用3V LED、蓝色SBT70
-		#else
-    case 0x03:LEDVfMin=2.4;LEDVfMax=4.0;break; //使用8颗XM-L UV灯,Vf为2.4-4.0V
-    #endif	
+		case 0x03:LEDVfMin=1.95;LEDVfMax=4.2;break; //通用3V LED、蓝色SBT70	
 		case 0x04:LEDVfMin=1.4;LEDVfMax=3.2;;break;//红色SBT90
 		case 0x05:LEDVfMin=1.85;LEDVfMax=4.9;break; //绿色SBT70
 		case 0x06:LEDVfMin=4.5;LEDVfMax=6.8;break; //6V LED
@@ -187,12 +184,7 @@ static void WriteNewFRU(const char *reason)
  //生成新的FRU数据并写入到EEPROM
  UartPost(Msg_info,"FRUChk","Due to %s,old FRU record will overwrite with new data.",reason); 
  memcpy(FRU.FRUBlock.Data.Data.FRUVersion,FRUVersion,3);//复制FRU信息		
- #ifdef Firmware_UV_Mode
- FRU.FRUBlock.Data.Data.CustomLEDIDCode=0x3125; //载入自定义LED Code
- strncpy(FRU.FRUBlock.Data.Data.GeneralLEDString,"XM-L-UV365*8",16); //复制LED名称 
- FRU.FRUBlock.Data.Data.MaxLEDCurrent=30; //固定30A最大电流限制
- #else
- if(FRU.FRUBlock.Data.Data.FRUVersion[0]==0x03) //使用未指定型号的LED
+ if(FRU.FRUBlock.Data.Data.FRUVersion[0]==0x03||FRU.FRUBlock.Data.Data.FRUVersion[0]==0x06) //使用未指定型号的LED
    {
    FRU.FRUBlock.Data.Data.CustomLEDIDCode=CustomLEDCode; //载入自定义LED Code
    strncpy(FRU.FRUBlock.Data.Data.GeneralLEDString,CustomLEDName,32); //复制LED名称
@@ -202,8 +194,8 @@ static void WriteNewFRU(const char *reason)
    FRU.FRUBlock.Data.Data.CustomLEDIDCode=0xFFFF; //自定义LED Code保留数值
    strncpy(FRU.FRUBlock.Data.Data.GeneralLEDString,"Empty",32); //复制LED名称	 
 	 }
+ FRU.FRUBlock.Data.Data.MaximumBatteryPower=MaximumBatteryPowerAllowed; //目标的最大电池电流
  FRU.FRUBlock.Data.Data.MaxLEDCurrent=QueryMaximumCurrentLimit(&FRU);//设置电流信息
- #endif
  strncpy(FRU.FRUBlock.Data.Data.SerialNumber,"Serial Undefined",32);	//复制序列号信息
  FRU.FRUBlock.Data.Data.NTCBValue=NTCB; //将B值写入到内存里面去
  FRU.FRUBlock.Data.Data.NTCTrim=NTCTRIMValue;
@@ -267,6 +259,7 @@ void FirmwareVersionCheck(void)
 		NTCTRIM=FRU.FRUBlock.Data.Data.NTCTrim;
 	  SPSTRIM=FRU.FRUBlock.Data.Data.SPSTrim; //获取温度修正值
 		ADC_AVRef=FRU.FRUBlock.Data.Data.ADCVREF;//获取ADC的电压参考值
+	  MaximumBatteryPower=FRU.FRUBlock.Data.Data.MaximumBatteryPower;//获取最大电池功率
 		if(FRU.FRUBlock.Data.Data.FRUVersion[0]==0x04)IsRedLED=true; //如果FRU内LED型号是SBT90R,则休眠指示变为红色
 		if(FRU.FRUBlock.Data.Data.MaxLEDCurrent>QueryMaximumCurrentLimit(&FRU))//非法的电流设置
 		  {

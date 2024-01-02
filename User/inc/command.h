@@ -341,8 +341,8 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		 {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//24
      "battcfg",
 		 "允许系统管理员根据需要查看系统的电池状况信息,并配置库仑计和驱动相关的电池保护参数.",
-     "-uvalm\0--undervolt_alarm\0-uvlo\0--undervolt_lock\0-fv\0--full_volt\0-ovp\0--overvolt_protect\0-crln\0--coulomb_relearn\0-sbc\0--set_batt_capacity\0-crst\0--coulomb_reset\0-v\0--view\0-ocp\0--over_current_trip\0\n",
-		 " <低压警告电压(V)>\0 <低压警告电压(V)>\0 <低压保护电压(V)>\0 <低压保护电压(V)>\0 <满电电压(V)>\0 <满电电压(V)>\0 <过压保护电压(V)>\0 <过压保护电压(V)>\0 \0 \0 <电池容量(mAH)>\0 <电池容量(mAH)>\0 \0 \0 \0 \0 <过流保护值(A)>\0 <过流保护值(A)>\0\n",
+     "-uvalm\0--undervolt_alarm\0-uvlo\0--undervolt_lock\0-fv\0--full_volt\0-ovp\0--overvolt_protect\0-crln\0--coulomb_relearn\0-sbc\0--set_batt_capacity\0-crst\0--coulomb_reset\0-v\0--view\0\n",
+		 " <低压警告电压(V)>\0 <低压警告电压(V)>\0 <低压保护电压(V)>\0 <低压保护电压(V)>\0 <满电电压(V)>\0 <满电电压(V)>\0 <过压保护电压(V)>\0 <过压保护电压(V)>\0 \0 \0 <电池容量(mAH)>\0 <电池容量(mAH)>\0 \0 \0 \0\n",
 		 &battcfgArgument,
 		 Command_battcfg,
 		 NULL,
@@ -381,8 +381,8 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		 {Log_Perm_Guest,Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//27
 		 "fruedit",
 		 "允许厂家工程师查看和编辑驱动中的FRU信息并给FRU永久上锁.",
-     "-v\0--view\0-sn\0-imax\0-p\0-l\0-ntcb\0-bptr\0-mstr\0-avref\0-ledid\0-majv\0-minv\0-ledn\0\n",
-		 " \0 \0 <序列号字符串>\0 <最大电流(A)>\0 <目标LED平台>\0 \0 <NTC B值>\0 <LED基板温度修正值'℃'>\0 <驱动MOS温度修正值'℃'>\0 <驱动ADC参考电压(V)>\0 <LED识别码(0x0-0xFFFE)>\0 <大版本号>\0 <小版本号>\0 <LED名称字符串>\0\n",
+     "-v\0--view\0-sn\0-imax\0-p\0-l\0-ntcb\0-bptr\0-mstr\0-avref\0-ledid\0-majv\0-minv\0-ledn\0-inpl\0\n",
+		 " \0 \0 <序列号字符串>\0 <最大电流(A)>\0 <目标LED平台>\0 \0 <NTC B值>\0 <LED基板温度修正值'℃'>\0 <驱动MOS温度修正值'℃'>\0 <驱动ADC参考电压(V)>\0 <LED识别码(0x0-0xFFFE)>\0 <大版本号>\0 <小版本号>\0 <LED名称字符串>\0 <输入功率限制(W)>\0\n",
 		 &frueditArgument,
 		 #else
 		 {Log_Perm_PlaceHolder,Log_Perm_End},//27

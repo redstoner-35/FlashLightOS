@@ -4,51 +4,29 @@
 #include <stdbool.h>
 #include "FirmwareConf.h"
 
-//处理UV模式的自动define
-#ifdef Firmware_UV_Mode
- #define FRUVer 0x03 //使用通用的3V LED标准
-#endif
 
 //关于LED选择的自动define
 #ifdef Using_SBT90Gen2_LED
-  #ifdef Firmware_UV_Mode
-	#error "UV Mode is Not compatible with Normal LED Defines! Please Comment 'Using_SBT90Gen2_LED' define in FirmwareConf.h!"
-	#endif
 #define FRUVer 0x08
 #endif
 
 #ifdef Using_SBT90R_LED
 #define FRUVer 0x04
-  #ifdef Firmware_UV_Mode
-	#error "UV Mode is Not compatible with Normal LED Defines! Please Comment 'Using_SBT90R_LED' define in FirmwareConf.h!"
-	#endif
 #endif
 
 #ifdef Using_SBT70G_LED
-  #ifdef Firmware_UV_Mode
-	#error "UV Mode is Not compatible with Normal LED Defines! Please Comment 'Using_SBT70G_LED' define in FirmwareConf.h!"
-	#endif
 #define FRUVer 0x05
 #endif
 
 #ifdef Using_SBT70B_LED
-  #ifdef Firmware_UV_Mode
-	#error "UV Mode is Not compatible with Normal LED Defines! Please Comment 'Using_SBT70B_LED' define in FirmwareConf.h!"
-	#endif
 #define FRUVer 0x07
 #endif
 
 #ifdef Using_Generic_3V_LED
-  #ifdef Firmware_UV_Mode
-	#error "UV Mode is Not compatible with Normal LED Defines! Please Comment 'Using_Generic_3V_LED' define in FirmwareConf.h!"
-	#endif
 #define FRUVer 0x03
 #endif
 
 #ifdef Using_Generic_6V_LED
-  #ifdef Firmware_UV_Mode
-	#error "UV Mode is Not compatible with Normal LED Defines! Please Comment 'Using_Generic_6V_LED' define in FirmwareConf.h!"
-	#endif
 #define FRUVer 0x06
 #endif
 
@@ -76,8 +54,16 @@ typedef struct
  float NTCTrim;
  float SPSTrim;
  float ADCVREF;
+ float MaximumBatteryPower;
  char FRUVersion[3];
  }FRUDataSection;
+
+typedef struct
+ {
+ int PIDTriggerTemp;
+ int PIDMaintainTemp;
+ int MaxLEDTemp;
+ }LEDThermalConfStrDef;	
 
 typedef union
  {
@@ -104,5 +90,6 @@ char WriteFRU(FRUBlockUnion *FRU);
 char ReadFRU(FRUBlockUnion *FRU);//读写FRU 
 const char *DisplayLEDType(FRUBlockUnion *FRU);//识别LED类型并返回常量字符串
 float QueryMaximumCurrentLimit(FRUBlockUnion *FRU);//识别LED类型并返回最大电流2
+void QueueLEDThermalSettings(LEDThermalConfStrDef *ParamOut);//获取LED数据并反馈此类参数
  
 #endif

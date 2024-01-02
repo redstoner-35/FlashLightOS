@@ -241,10 +241,10 @@ void LEDShortCounter(void)
 SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
  {
  ADCOutTypeDef ADCO;
- bool Result[2];
+ bool Result;
  ModeConfStr *CurrentMode;
  float VID,detectOKCurrent,VIDIncValue;
- int i,retry; 
+ int i,retry,AuxPSURecycleCount; 
  /********************************************************
  我们首先需要检查传进来的模式组是否有效。然后检查校准数据库
  里面的数值和数据本身完整性是否有效。如果无效则报异常
@@ -253,7 +253,7 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
  if(CurrentMode==NULL)return Error_Mode_Logic; //挡位逻辑异常
  detectOKCurrent=CurrentMode->LEDCurrentHigh;
  if(detectOKCurrent>0.5)detectOKCurrent=0.5;
- if(!CheckCompData())return Error_Calibration_Data; //校准数据库错误
+ if(CheckCompData()!=Database_No_Error)return Error_Calibration_Data; //校准数据库错误
  /********************************************************
  首先我们需要将负责电池遥测的INA219功率级启动,然后先将DAC
  输出设置为0,PWM调光模块设置为100%,接着就可以送辅助电源然
@@ -267,31 +267,41 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
  delay_ms(1);
  SetPWMDuty(100);//自检过程中我们使用线性调光,因此PWM占空比设置为100%
  SetAUXPWR(true);
- retry=0;//清零等待标志位
- for(i=0;i<2000;i++)//等待辅助电源上电稳定
-		{
-	  delay_us(50);
-		Result[1]=ADC_GetResult(&ADCO);
-		if(!Result[1])//让ADC获取信息
-			return Error_ADC_Logic;
-		if(ADCO.SPSTMONState==SPS_TMON_OK)
-			retry++; //SPS正常运行，结果++
-		else 
-			retry=0; //SPS运行不正常
-		if(retry==StartupAUXPSUPGCount)break;
-		}
- if(i==2000)return Error_PWM_Logic;//启动超时		
+ AuxPSURecycleCount=0;
+ while(AuxPSURecycleCount<5) //送上辅助DCDC电源，开始进行SPS的检查
+   {
+   retry=0;//清零等待标志位
+   for(i=0;i<5000;i++)//等待辅助电源上电稳定
+		  {
+	    delay_us(50);
+		  Result=ADC_GetResult(&ADCO);
+		  if(!Result)return Error_ADC_Logic;//让ADC获取信息
+			retry=ADCO.SPSTMONState==SPS_TMON_OK?retry+1:0;
+		  if(retry>=StartupAUXPSUPGCount)break;
+		  }	 
+	 //启动成功，跳出循环
+	 if(i<5000)break;
+	 //本次启动失败，关闭辅助电源，100mS后重新打开并再次启动
+	 SetAUXPWR(false);
+	 delay_ms(100);
+	 SetAUXPWR(true);
+	 AuxPSURecycleCount++;//启动重试次数+1
+	 }
+ if(AuxPSURecycleCount==5)//启动重试次数到达限制
+   {
+   if(ADCO.SPSTMONState==SPS_TMON_Disconnect) //SPS的温度检测掉线
+			 return Error_SPS_TMON_Offline;
+	 else //SPS致命错误
+			 return Error_SPS_CATERR;
+	 }   	
  /********************************************************
  系统主电源启动完毕,开始通过片内ADC和INA219初步获取电池电压
  电流和LED以及MOS的温度,确保关键的传感器工作正常且电池没有
  过压或欠压
  ********************************************************/
- Result[0]=INA219_GetBusInformation(BattOutput);
- Result[1]=ADC_GetResult(&ADCO);
- if(!Result[0]||!Result[1])return Error_ADC_Logic;//ADC或INA219无法正确的获取数据,报错
- //智能功率级温度传感器断线和致命错误,以及智能功率级严重过热警告
- if(ADCO.SPSTMONState!=SPS_TMON_OK)
-	 return ADCO.SPSTMONState==SPS_TMON_Disconnect?Error_SPS_TMON_Offline:Error_SPS_CATERR;
+ Result=INA219_GetBusInformation(BattOutput);
+ if(!Result||!ADC_GetResult(&ADCO))return Error_ADC_Logic;//INA219或者ADC无法正确的获取数据,报错
+ //智能功率级严重过热警告
  if(ADCO.SPSTMONState==SPS_TMON_OK&&ADCO.SPSTemp>CfgFile.MOSFETThermalTripTemp)
 	 return Error_SPS_ThermTrip;
  //检测LED基板温度,如果超过热跳闸温度则保护。同时检测SPS和电池温度来决定是否启用电池质量检测

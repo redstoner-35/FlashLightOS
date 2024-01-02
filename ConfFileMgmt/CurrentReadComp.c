@@ -11,6 +11,9 @@
 bool CheckLinearTable(int TableSize,float *TableIn);//检查校准数据库的LUT
 bool CheckLinearTableValue(int TableSize,float *TableIn);//检查补偿数据库的数据域
 
+//字符串
+const char *DBErrorStr[]={"No Error","EEPROM_Re-Read_Error","DB_Integrity_Error","DB_Value_Invalid"};
+
 //全局变量
 CompDataStorUnion CompData; //全局补偿数据
 
@@ -115,8 +118,10 @@ void DoSelfCalibration(void)
  ADCOutTypeDef ADCO;
  int i,j;
  float DACVID;
+ #ifndef Skip_DimmingCalibration
  bool resultOK;
  int DimCalibrationFailCount=0;
+ #endif
  //按键没有按下，不执行
  if(!getSideKeyLongPressEvent())return; 
  CurrentLEDIndex=2; 
@@ -202,6 +207,7 @@ void DoSelfCalibration(void)
 	 {
 	 //计算DACVID
 	 DACVID=TargetCurrent*(float)30;//按照30mV 1A设置输出电流
+	 #ifndef Skip_DimmingCalibration
 	 DACVID*=QueueLinearTable(50,TargetCurrent,CompData.CompDataEntry.CompData.Data.DimmingCompThreshold,CompData.CompDataEntry.CompData.Data.DimmingCompValue,&resultOK); //从校准记录里面读取电流补偿值
 	 if(!resultOK)
 	   {
@@ -209,6 +215,7 @@ void DoSelfCalibration(void)
      SetAUXPWR(false); //关闭辅助电源
 		 CurrentLEDIndex=31; //提示用户校准数据库错误 
 		 }		 
+	 #endif
 	 AD5693R_SetOutput(DACVID/(float)1000); //设置输出电流
 	 //读取电流
 	 ActualCurrent=0; //清零缓冲区
@@ -245,7 +252,7 @@ void DoSelfCalibration(void)
 
 #endif
 //校验校准数据库的CRC32结果以及数据域的内容
-bool CheckCompData(void)
+CalibrationDBErrorDef CheckCompData(void)
  {
 	int i,CRCResult;
 	bool Result[2];
@@ -255,41 +262,46 @@ bool CheckCompData(void)
 	 CRCResult=CalcCompCRC32(&CompData.CompDataEntry.CompData);
 	 if(CRCResult==CompData.CompDataEntry.Checksum)break;
 	 //数据不匹配，重新从ROM里面读取,读取失败也直接报错
-	 if(ReadCompDataFromROM(&CompData))return false;
+	 if(ReadCompDataFromROM(&CompData))return Database_EEPROM_Read_Error;
 	 }
- if(i==2)return false;
+ if(i==2)return Database_Integrity_Error;
  //检查数据域和阈值是否合法
  Result[0]=CheckLinearTable(51,CompData.CompDataEntry.CompData.Data.CurrentCompThershold);
  Result[1]=CheckLinearTable(50,CompData.CompDataEntry.CompData.Data.DimmingCompThreshold); //检查阈值区域
- if(!Result[0]||!Result[1])return false; 
+ if(!Result[0]||!Result[1])return Database_Value_Error; 
  Result[0]=CheckLinearTableValue(51,CompData.CompDataEntry.CompData.Data.CurrentCompValue);
  Result[1]=	CheckLinearTableValue(50,CompData.CompDataEntry.CompData.Data.DimmingCompValue); //检查数值域 
- if(!Result[0]||!Result[1])return false;
+ if(!Result[0]||!Result[1])return Database_Value_Error;
  //检查通过
- return true;
+ return Database_No_Error;
  }
 
 //上电初始化的时候加载校准数据
 void LoadCalibrationConfig(void)
  {
  bool IsError=false;
+ CalibrationDBErrorDef DBResult;
  #ifdef FlashLightOS_Debug_Mode	 
  int i;
  #endif	 
  //读取数据，如果数据读取成功则计算CRC32检查数据	 
- if(!ReadCompDataFromROM(&CompData))IsError=!CheckCompData();
+ if(!ReadCompDataFromROM(&CompData))
+    {
+    DBResult=CheckCompData();//检查数据库
+    IsError=(DBResult==Database_No_Error)?false:true;
+		}
  else IsError=true;
  //出现错误，显示校准数据损毁
  if(IsError)
  #ifndef FlashLightOS_Debug_Mode
    {
 	 CurrentLEDIndex=31;//指示校准数据库异常
-	 UartPost(Msg_critical,"Comp","Compensation DB error.");
+	 UartPost(Msg_critical,"Comp","Compensation DB error detected,Error code:%s",DBErrorStr[(int)DBResult]);
 	 SelfTestErrorHandler();//EEPROM掉线
 	 }
  #else
    {
-   UartPost(msg_error,"Comp","Compensation DB error.");
+   UartPost(msg_error,"Comp","Compensation DB error detected,Error code:%s",DBErrorStr[(int)DBResult]);
 	 for(i=0;i<50;i++)
 		 {
 		 CompData.CompDataEntry.CompData.Data.DimmingCompThreshold[i]=1.00+(((FusedMaxCurrent-1)/50)*(float)i);

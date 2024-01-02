@@ -9,9 +9,10 @@
 #include "logger.h"
 #include <math.h>
 
-//静态变量声明
+//静态和外部变量声明
 LoggerHeaderUnion LoggerHdr;
 static unsigned char UpdateHeaderCounter;
+extern float MaximumBatteryPower;
 
 //复位logger定时器的函数
 void ResetLoggerHeader_AutoUpdateTIM(void)
@@ -179,7 +180,7 @@ void CollectLoginfo(const char *ErrorArea,INADoutSreDef *BattStat)
 	 LogData.LoggerDateSection.DriverTelem.BatteryVoltageOVLO=BattStat->BusVolt>CfgFile.VoltageOverTrip?true:false;
 	 LogData.LoggerDateSection.DriverTelem.BatteryVoltageUVLO=BattStat->BusVolt<CfgFile.VoltageTrip?true:false;
 	 LogData.LoggerDateSection.DriverTelem.BatteryVoltageAlert=BattStat->BusVolt<CfgFile.VoltageAlert?true:false;
-	 LogData.LoggerDateSection.DriverTelem.BatteryOverCurrent=BattStat->BusCurrent<CfgFile.OverCurrentTrip?false:true;
+	 LogData.LoggerDateSection.DriverTelem.BatteryOverCurrent=BattStat->BusPower<MaximumBatteryPower?false:true;
 	 }
  else
    {

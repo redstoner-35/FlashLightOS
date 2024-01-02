@@ -48,10 +48,7 @@ const char AdminPassword[16]=
 void LoadDefaultConf(bool IsOverridePassword)
  {
  int i;
- #ifndef Firmware_UV_Mode		 
- FRUBlockUnion FRU;
- bool IsUsingHighTemp;
- #endif
+ LEDThermalConfStrDef ParamOut;
  //系统基本设置
  CfgFile.USART_Baud=115200;
  CfgFile.EnableRunTimeLogging=true;
@@ -60,22 +57,14 @@ void LoadDefaultConf(bool IsOverridePassword)
  #else
  CfgFile.IsHoldForPowerOn=true;//使用默认的操控逻辑，长按开关机	 
  #endif
- #ifndef Firmware_UV_Mode	
  CfgFile.IsDriverLockedAfterPOR=false; //上电不自锁
- #else
- CfgFile.IsDriverLockedAfterPOR=true; //UV灯辐射功率很大，误开启会造成人眼灼伤，为了安全起见需要上电自锁	 
- #endif
  CfgFile.PWMDIMFreq=20000;//20KHz调光频率
  CfgFile.DeepSleepTimeOut=8*DeepsleepDelay;//深度睡眠时间
  CfgFile.IdleTimeout=8*DefaultTimeOutSec; //定时器频率乘以超时时间得到超时值
- #ifdef Firmware_UV_Mode
- CfgFile.EnableLocatorLED=false;//UV固件模式，默认禁用侧按定位LED
+ #ifdef EnableSideLocLED	 
+ CfgFile.EnableLocatorLED=true;//启用侧按定位LED
  #else
-   #ifdef EnableSideLocLED	 
-	 CfgFile.EnableLocatorLED=true;//启用侧按定位LED
-	 #else
-   CfgFile.EnableLocatorLED=false;//禁用侧按定位LED
-   #endif
+ CfgFile.EnableLocatorLED=false;//禁用侧按定位LED
  #endif
  CfgFile.RevTactalSettings=RevTactical_Off; //默认情况下，反向战术模式将会把手电筒设置为关闭
  //恢复主机名和账户凭据
@@ -96,23 +85,12 @@ void LoadDefaultConf(bool IsOverridePassword)
 	 }
  CfgFile.IsNoteLEDEnabled=true;// 启用无极调光的提示
  //恢复温控设置
+ QueueLEDThermalSettings(&ParamOut); //查表
  CfgFile.MOSFETThermalTripTemp=135; //MOS热跳闸为135度
- #ifndef Firmware_UV_Mode	
- CfgFile.LEDThermalTripTemp=80; //LED热跳闸80度
- if(ReadFRU(&FRU))IsUsingHighTemp=false;
- else if(!CheckFRUInfoCRC(&FRU))IsUsingHighTemp=false;
- else if(FRU.FRUBlock.Data.Data.FRUVersion[0]==0x03)IsUsingHighTemp=true; //通用3V高功率LED,使用较高温度设置
- else if(FRU.FRUBlock.Data.Data.FRUVersion[0]==0x08)IsUsingHighTemp=true; //SBT90.2 LED，使用较高温度墙
- else IsUsingHighTemp=false;	   
- CfgFile.PIDTriggerTemp=IsUsingHighTemp?70:65; //当MOS和LED的平均温度等于指定温度时温控接入
- CfgFile.PIDTargetTemp=IsUsingHighTemp?57:55; //PID目标温度
- CfgFile.PIDRelease=50; //当温度低于50度时，PID不调节 
- #else  //UV灯承受不了太高的温度所以需要下调温控设置
- CfgFile.LEDThermalTripTemp=70; //LED热跳闸70度
- CfgFile.PIDTriggerTemp=60; //当MOS和LED的平均温度等于60度时温控启动
- CfgFile.PIDTargetTemp=55; //PID目标温度55度
- CfgFile.PIDRelease=50; //当温度低于50度时，PID不调节  
- #endif	 
+ CfgFile.LEDThermalTripTemp=ParamOut.MaxLEDTemp; //设置LED热跳闸温度
+ CfgFile.PIDTriggerTemp=ParamOut.PIDTriggerTemp; //设置温控接入温度
+ CfgFile.PIDTargetTemp=ParamOut.PIDMaintainTemp; //PID目标温度
+ CfgFile.PIDRelease=ParamOut.PIDMaintainTemp-15; //PID停止调节温度为维持温度减去15度
  CfgFile.ThermalPIDKp=0.31;
  CfgFile.ThermalPIDKi=0.81;
  CfgFile.ThermalPIDKd=0.33; //PID温控的P I D
@@ -121,12 +99,7 @@ void LoadDefaultConf(bool IsOverridePassword)
  CfgFile.VoltageFull=4.0*BatteryCellCount;
  CfgFile.VoltageAlert=3.0*BatteryCellCount;
  CfgFile.VoltageTrip=2.8*BatteryCellCount;
- CfgFile.VoltageOverTrip=14.5;//过压保护值14.5V
- #ifndef Firmware_UV_Mode		 
- CfgFile.OverCurrentTrip=IsUsingHighTemp?20:15;// 如果是SBT90.2或者高功率LED，则使用20A否则15A的电池端过流保护值
- #else
- CfgFile.OverCurrentTrip=15; //UV模式，电池端电流限制15A
- #endif
+ CfgFile.VoltageOverTrip=14.5;//过压保护值14.5V 
  } 
 //检查ROM中的数据是否损坏
 int CheckConfigurationInROM(cfgfiletype cfgtyp,unsigned int *CRCResultO)

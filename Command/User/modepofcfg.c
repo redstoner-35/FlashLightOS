@@ -20,7 +20,7 @@ const char *modepofcfgArgument(int ArgCount)
 		case 4:
 		case 5:return "设置挡位的自动关机计时器时间(单位分钟),若输入0则该挡位的自动关机功能禁用.";	
 		case 6:
-		case 7:return "设置挡位的短时鸡血次数(鸡血指温控触发后强制关闭温控跑满挡位亮度,通过双击+长按触发).";
+		case 7:return "设置挡位的短时鸡血次数(鸡血指通过双击+长按无视温控降档强制跑满亮度)";
 	  }
 	return NULL;
 	}

@@ -17,6 +17,7 @@ float UsedCapacity=0;
 float UnLoadBattVoltage=12; //用于判断电池质量的电压变量
 static char LVFlashTimer=0;
 extern bool IsDisableBattCheck; //是否关闭电池质量警报
+extern float MaximumBatteryPower;//最大电池电流
 
 //低压告警标记
 void WriteRunLogWithLVAlert(void)
@@ -191,8 +192,8 @@ void RunTimeBatteryTelemetry(void)
  //电池电压和电流保护逻辑
  if(RunTimeBattTelemResult.BusVolt>CfgFile.VoltageOverTrip)
      RunTimeErrorReportHandler(Error_Input_OVP);//电池过压保护,这是严重故障,立即写log并停止驱动运行
- if(RunTimeBattTelemResult.BusCurrent>CfgFile.OverCurrentTrip)
-		 RunTimeErrorReportHandler(Error_Input_OCP);//电池过流保护,这是严重故障,立即写log并停止驱动运行
+ if(RunTimeBattTelemResult.BusPower>MaximumBatteryPower)
+		 RunTimeErrorReportHandler(Error_Input_OCP);//电池过功率保护,这是严重故障,立即写log并停止驱动运行
  #ifndef FlashLightOS_Debug_Mode
  //如果电压低于警告值则强制锁定驱动的输出电流为指定值
  if(RunTimeBattTelemResult.BusVolt<CfgFile.VoltageAlert)

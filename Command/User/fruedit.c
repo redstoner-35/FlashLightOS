@@ -42,7 +42,7 @@ const char *frueditArgument(int ArgCount)
 		case 11:return "设置驱动的硬件大版本信息";
 		case 12:return "设置驱动的硬件小版本信息";
 	  case 13:return "当使用自定义LED时,设置LED的名称";
-		
+		case 14:return "设置驱动电源输入的最大允许功率(W)";
 		}
 	return NULL;
 	} 
@@ -77,14 +77,13 @@ void fruedithandler(void)
         UARTPuts("(自定义)");		
 			UARTPuts((char *)DisplayLEDType(&FRU)); //打印LED内容					
       UartPrintf("\r\n硬件版本 : V%d.%d",FRU.FRUBlock.Data.Data.FRUVersion[1],FRU.FRUBlock.Data.Data.FRUVersion[2]);
-		  UartPrintf("\r\n最大LED电流 : %.2fA",FRU.FRUBlock.Data.Data.MaxLEDCurrent);
-			#ifdef FlashLightOS_Debug_Mode				
+		  UartPrintf("\r\n最大LED电流 : %.2fA",FRU.FRUBlock.Data.Data.MaxLEDCurrent);		
 			UartPrintf((char *)TempOffsetstr,"LED基板",FRU.FRUBlock.Data.Data.NTCTrim);
 			UartPrintf((char *)TempOffsetstr,"驱动MOS",FRU.FRUBlock.Data.Data.SPSTrim);	 		
 			UartPrintf("\r\nNTC B值 : %d",FRU.FRUBlock.Data.Data.NTCBValue);			
 			UartPrintf("\r\n自定义LED标识码 : 0x%04X",FRU.FRUBlock.Data.Data.CustomLEDIDCode);
 			UartPrintf("\r\nADC参考电压 : %.4fV",FRU.FRUBlock.Data.Data.ADCVREF);
-			#endif
+			UartPrintf("\r\n驱动最大输入功率 : %.2fW",FRU.FRUBlock.Data.Data.MaximumBatteryPower);
 			}
 		}
 	#ifdef FlashLightOS_Debug_Mode
@@ -400,6 +399,33 @@ void fruedithandler(void)
 			else
 				UartPrintf((char *)frueditstr[1],"LED名称");
 			}
+		}
+	//设置驱动的最大允许输入功率
+	ParamPtr=IsParameterExist("E",27,NULL);
+  if(ParamPtr!=NULL)
+	  {
+		IsCmdParamOK=true;
+		buf=atof(ParamPtr); //字符串转浮点
+		//读取失败
+	  if(ReadFRU(&FRU)||!CheckFRUInfoCRC(&FRU))
+			UARTPuts((char *)frueditstr[0]);
+	  //FRU被锁定
+		else if(M24C512_QuerySecuSetLockStat()!=LockState_Unlocked)
+			UARTPuts((char *)frueditstr[2]);
+		//用户输入的数值非法
+	  else if(buf==NAN||buf<50||buf>310)
+		  {
+			DisplayIllegalParam(ParamPtr,27,14);//显示用户输入了非法参数
+			UARTPuts("\r\n错误:您指定的输入功率限制应在50到310W之间.");
+			}
+		else //写入数据
+		  {
+			FRU.FRUBlock.Data.Data.MaximumBatteryPower=buf; //更新电流值条目
+			if(!WriteFRU(&FRU))
+				UartPrintf("\r\n%s的输入功率限制值已被更新为%.2fW.",frueditstr[3],buf);
+			else
+				UartPrintf((char *)frueditstr[1],"输入功率限制值");
+		  }
 		}
 	#endif
 	if(!IsCmdParamOK)UartPrintCommandNoParam(27);//显示啥也没找到的信息 

@@ -10,6 +10,7 @@ const char *IllegalVoltageConfig="\r\n您应当指定一个在%.1f-%.1f(V)之间
 const char *BatteryVoltagePoint="\r\n 电池%s电压 : %.2fV";
 const char *FailedToDoSthColumb="\r\n由于运行日志连带库仑计已被管理员禁用,因此您无法对库仑计进行%s操作.\r\n";
 extern float UsedCapacity;
+extern float MaximumBatteryPower;
 #ifndef Firmware_DIY_Mode
 extern const char *NeedRoot;
 #endif
@@ -35,8 +36,6 @@ const char *battcfgArgument(int ArgCount)
 		case 13:return "复位库仑计的电池统计和容量数据以及电池质量警告";
 	  case 14:
 		case 15:return "查看系统中电池的参数和库仑计的统计信息";
-		case 16:
-		case 17:return "设置电池组的过流保护阈值";
 		}
 	return NULL;
 	}
@@ -48,23 +47,6 @@ void battcfghandler(void)
 	char *Param;
 	char ParamOK;
 	float buf;
-	//设置电池组的过流保护值
-  Param=IsParameterExist("GH",24,&ParamOK);
-  if(Param!=NULL)
-	  {
-		buf=atof(Param);
-    if(buf==NAN||buf<10||buf>32)
-		  {
-			DisplayIllegalParam(Param,24,16);//显示用户输入了非法参数
-			UARTPuts("\r\n您应当指定一个在10-32(A)之间的数值作为电池的过流保护值.");
-			}
-		else
-		  {
-			CfgFile.OverCurrentTrip=buf;
-			UartPrintf("\r\n电池过流保护电流设置值已被更新为%.2fA.",CfgFile.OverCurrentTrip);
-			}
-		IsCmdParamOK=true;
-		}
 	//查看电池参数和库仑计状态(-v)
 	IsParameterExist("EF",24,&ParamOK);
 	if(ParamOK)
@@ -74,7 +56,7 @@ void battcfghandler(void)
 		UartPrintf((char *)BatteryVoltagePoint,"满电",CfgFile.VoltageFull);
 		UartPrintf((char *)BatteryVoltagePoint,"低电量警告",CfgFile.VoltageAlert);
 		UartPrintf((char *)BatteryVoltagePoint,"低电量保护",CfgFile.VoltageTrip);
-		UartPrintf("\r\n 电池过流保护电流 : %.2fA",CfgFile.OverCurrentTrip);
+		UartPrintf("\r\n 电池最高允许功率 : %.2fW",MaximumBatteryPower);
 		UARTPuts("\r\n   ------ 库仑计信息 ------\r\n");
 		if(!IsRunTimeLoggingEnabled)//日志被关闭
 		  UARTPuts("\r\n  由于运行日志已被禁用\r\n库仑计功能不可用.\r\n");

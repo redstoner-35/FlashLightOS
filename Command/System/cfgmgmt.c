@@ -362,6 +362,7 @@ void cfgmgmthandler(void)
 	 case CfgMgmtConfirmOverridePassword:
 	  {
 		if(YConfirmState!=YConfirm_Error&&YConfirmState!=YConfirm_OK)break; //等待用户确认
+	  UartPrintf("\r\n系统的凭据将被%s.\r\n",YConfirmState==YConfirm_OK?"重置":"保留");
 	  LoadDefaultConf(YConfirmState==YConfirm_OK?true:false);//加载默认配置
 		UARTPuts("\r\n当前配置已恢复为出厂默认值.");
 		CfgmgmtState=CfgMgmtNoneOp;
@@ -375,7 +376,7 @@ void cfgmgmthandler(void)
 		if(YConfirmState==YConfirm_OK)
 		  {
 			CfgmgmtState=CfgMgmtConfirmOverridePassword; //等待用户告知是否需要覆盖密码			
-			UARTPuts("\r\n\r\n请确认是否重置系统的凭据.如输入'yes'则凭据将被重置.");
+			UARTPuts("\r\n\r\n请确认是否重置系统的凭据.如输入'yes'则重置凭据.");
 			UARTPuts("\r\n? ");	
 			ClearRecvBuffer();//清除接收缓冲
       YConfirmstr="yes"; 

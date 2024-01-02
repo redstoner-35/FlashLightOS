@@ -617,6 +617,16 @@
               <FileType>1</FileType>
               <FilePath>.\ConfFileMgmt\FRU.c</FilePath>
             </File>
+            <File>
+              <FileName>CurrentReadComp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\ConfFileMgmt\CurrentReadComp.c</FilePath>
+            </File>
+            <File>
+              <FileName>FRULEDThermalTable.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\ConfFileMgmt\FRULEDThermalTable.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -736,11 +746,6 @@
               <FileName>TempControl.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\ExtPeriphal\TempControl.c</FilePath>
-            </File>
-            <File>
-              <FileName>CurrentReadComp.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\ExtPeriphal\CurrentReadComp.c</FilePath>
             </File>
           </Files>
         </Group>

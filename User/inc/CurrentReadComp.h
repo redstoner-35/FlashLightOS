@@ -4,6 +4,15 @@
 //内部包含
 #include "selftestlogger.h" //为了获取FRU的地址偏移
 
+//枚举定义
+typedef enum
+ {
+ Database_No_Error,
+ Database_EEPROM_Read_Error,
+ Database_Integrity_Error,
+ Database_Value_Error
+ }CalibrationDBErrorDef;
+
 //结构体定义
 typedef struct
  {
@@ -40,6 +49,6 @@ void LoadCalibrationConfig(void);//加载配置
 char WriteCompDataToROM(void); //保存配置
 void DoSelfCalibration(void); //自动校准
 void DoTurboRunTest(void);//调出极亮，测量电流数据
-bool CheckCompData(void);//计算校验和
+CalibrationDBErrorDef CheckCompData(void);//计算校验和
 
 #endif
