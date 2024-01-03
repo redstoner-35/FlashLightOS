@@ -85,8 +85,9 @@ void DoTurboRunTest(void)
  bool resultOK;
  int i;
  ADCOutTypeDef ADCO;
- //按键没有双击，不执行
- if(getSideKeyShortPressCount(true)<2)return; 
+ //按键没有双击或者数据库检查错误，不执行
+ if(getSideKeyShortPressCount(true)<2)return;
+ if(CheckCompData()!=Database_No_Error)return; 
  CurrentLEDIndex=2; 
  LEDMgmt_CallBack();//LED管理器指示绿灯常亮	 
  //启动LED输出

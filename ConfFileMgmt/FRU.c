@@ -221,6 +221,9 @@ static void WriteNewFRU(const char *reason)
 void FirmwareVersionCheck(void)
  {
  FRUBlockUnion FRU;
+ #ifdef FlashLightOS_Debug_Mode
+ LEDThermalConfStrDef ParamOut;
+ #endif
  //读取	 
  if(ReadFRU(&FRU))
  	 {
@@ -272,5 +275,13 @@ void FirmwareVersionCheck(void)
 		  if(!WriteFRU(&FRU))UartPost(Msg_info,"FRUChk","FRU Record has been corrected.");
 			}
 		else FusedMaxCurrent=FRU.FRUBlock.Data.Data.MaxLEDCurrent;//加载最大LED电流
-		}
+	  #ifdef FlashLightOS_Debug_Mode
+		if(FRU.FRUBlock.Data.Data.FRUVersion[0]==0x03||FRU.FRUBlock.Data.Data.FRUVersion[0]==0x06) //是通用3V/6V LED,进行LED OEMID检查
+			{
+			if(!CheckForOEMLEDTable(&ParamOut,&FRU))return; //调取查表函数,如果查表成功则退出。
+			UartPost(Msg_warning,"FRUChk","Custom LED-ID 0x%04X did not match any record inside VID list.",FRU.FRUBlock.Data.Data.CustomLEDIDCode);
+		  UartPost(Msg_warning,"FRUChk","You must register your OEM LED-ID into VID list and fill the thermal config.");				 
+			} 
+		#endif
+	  }
  }
