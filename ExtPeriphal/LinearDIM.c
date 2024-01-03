@@ -243,7 +243,7 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
  ADCOutTypeDef ADCO;
  bool Result;
  ModeConfStr *CurrentMode;
- float VID,detectOKCurrent,VIDIncValue;
+ float VID,VIDIncValue;
  int i,retry,AuxPSURecycleCount; 
  /********************************************************
  我们首先需要检查传进来的模式组是否有效。然后检查校准数据库
@@ -251,8 +251,6 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
  ********************************************************/
  CurrentMode=GetCurrentModeConfig();
  if(CurrentMode==NULL)return Error_Mode_Logic; //挡位逻辑异常
- detectOKCurrent=CurrentMode->LEDCurrentHigh;
- if(detectOKCurrent>0.5)detectOKCurrent=0.5;
  if(CheckCompData()!=Database_No_Error)return Error_Calibration_Data; //校准数据库错误
  /********************************************************
  首先我们需要将负责电池遥测的INA219功率级启动,然后先将DAC
@@ -323,12 +321,12 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
  ********************************************************/
  VID=StartUpInitialVID;
  VIDIncValue=0.5;
- while(VID<60)
+ while(VID<64)
 		 {
 		 if(!AD5693R_SetOutput(VID/(float)1000))return Error_DAC_Logic;
 		 ADC_GetResult(&ADCO);
-		 if(ADCO.LEDIf>=detectOKCurrent)break; //电流足够，退出
-		 VID+=VIDIncValue; //继续增加VID
+		 if(ADCO.LEDIf>=0.4)break; //电流足够0.4A，退出
+		 VID=((64-VID)<VIDIncValue)?VID+0.5:VID+VIDIncValue;//增加VID，如果快到上限就慢慢加，否则继续快速增加VID
 		 VIDIncValue+=StartupLEDVIDStep; //每次VID增加的数值
 		 }
  SysPstatebuf.CurrentDACVID=VID;
@@ -338,7 +336,7 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
  ********************************************************/
  if(!ADC_GetResult(&ADCO))return Error_ADC_Logic;
  //DAC的输出电压已经到了最高允许值,但是电流仍然未达标,这意味着LED可能短路或PWM逻辑异常
- if(VID>=60)return (ADCO.LEDVf>=LEDVfMax)?Error_LED_Open:Error_PWM_Logic;
+ if(VID>=64)return (ADCO.LEDVf>=LEDVfMax)?Error_LED_Open:Error_PWM_Logic;
  if(ADCO.LEDVf<LEDVfMin)return Error_LED_Short;		 //LEDVf过低,LED可能短路
  /********************************************************
  LED自检顺利结束,驱动硬件和负载工作正常,此时返回无错误代码
@@ -393,9 +391,9 @@ void RuntimeModeCurrentHandler(void)
 		 RunTimeErrorReportHandler(Error_LED_ThermTrip);
 		 return;
 	   }
- if(ADCO.LEDIf>1.2*FusedMaxCurrent)
+ if(ADCO.LEDIf>1.1*FusedMaxCurrent)
      {
-		 //在LED启用时，LED电流超过允许值(熔断电流限制的1.2倍),这是严重故障,立即写log并停止驱动运行
+		 //在LED启用时，LED电流超过允许值(熔断电流限制的1.1倍),这是严重故障,立即写log并停止驱动运行
 		 RunTimeErrorReportHandler(Error_LED_OverCurrent);
 		 return;
 	   }	 

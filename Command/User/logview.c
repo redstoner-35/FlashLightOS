@@ -94,8 +94,8 @@ void logviewhandler(void)
 		 switch(LogData.LoggerDateSection.ErrorCode)//根据错误代码显示的LED状态代码
 			  {
 			  case Error_Input_OVP:ErrorString="输入过电压";break;//输入过压保护
-			  case Error_Calibration_Data:ErrorString="校准数据库"; //温控逻辑异常
-				case Error_PWM_Logic:ErrorString="内部PWM逻辑";  //PWM逻辑异常	
+			  case Error_Calibration_Data:ErrorString="校准数据库";break; //温控逻辑异常
+				case Error_PWM_Logic:ErrorString="内部PWM逻辑";break;  //PWM逻辑异常	
 				case Error_SPS_CATERR:ErrorString="智能功率级(驱动内部)灾难性";break; //智能功率级反馈灾难性错误
 				case Error_SPS_ThermTrip:ErrorString="智能功率级(驱动内部)过热";break; //智能功率级过热保护
 				case Error_LED_Open:ErrorString="LED灯珠压降过高或开路";break; //灯珠开路
@@ -115,7 +115,7 @@ void logviewhandler(void)
 			  case PState_DeepSleep:PstateString="深度睡眠";break;
 				case PState_Error:PstateString="故障闭锁";break;
 				case PState_LEDOn:PstateString="正常工作";break;
-				case PState_LEDOnNonHold:PstateString="点射(战术模式)";break;
+				case PState_LEDOnNonHold:PstateString="战术点射中";break;
 				case PState_NonHoldStandBy:PstateString="战术模式(待机)";break;
 				case PState_Standby:PstateString="正常模式(待机)";break;
 			  case PState_Locked:PstateString="锁定状态";break;
@@ -123,9 +123,9 @@ void logviewhandler(void)
 				}
 		 switch(LogData.LoggerDateSection.CurrentModeSel.ModeGrpSel)
 		    {
-			  case ModeGrp_Regular:ModeGroupString="常规挡位组";break;
-				case ModeGrp_DoubleClick:ModeGroupString="双击功能挡位";break;
-				case ModeGrp_Special:ModeGroupString="特殊功能挡位组";break;
+			  case ModeGrp_Regular:ModeGroupString="常规";break;
+				case ModeGrp_DoubleClick:ModeGroupString="双击";break;
+				case ModeGrp_Special:ModeGroupString="特殊功能";break;
 				default:ModeGroupString=LogVIewAlertStr[5];
 				}
 		 errorcount=LoggerHdr.LoggerHeader.CurrentLoggerIndex-1;
@@ -148,7 +148,7 @@ void logviewhandler(void)
 		 else
 				 errorcount=LogData.LoggerDateSection.CurrentModeSel.SpecialGrpMode; //获取挡位数量
 		 if(LogData.LoggerDateSection.CurrentModeSel.ModeGrpSel!=ModeGrp_DoubleClick)
-			   UartPrintf("%s目标的挡位 : 第%d个挡位",LogVIewAlertStr[4],errorcount+1);
+			   UartPrintf("%s目标的挡位 : 第%d个",LogVIewAlertStr[4],errorcount+1);
      //显示遥测数据
      DisaplayTelemResult(LogData.LoggerDateSection.DriverTelem.LEDTemp,"'C","LED基板温度",true);			
 		 DisaplayTelemResult(LogData.LoggerDateSection.DriverTelem.LEDVf,"V","LED两端电压(驱动输出)",true);	

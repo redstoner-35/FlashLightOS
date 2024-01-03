@@ -12,7 +12,7 @@ bool CheckLinearTable(int TableSize,float *TableIn);//检查校准数据库的LU
 bool CheckLinearTableValue(int TableSize,float *TableIn);//检查补偿数据库的数据域
 
 //字符串
-const char *DBErrorStr[]={"No Error","EEPROM_Re-Read_Error","DB_Integrity_Error","DB_Value_Invalid"};
+const char *DBErrorStr[]={"","EEP_Reload","DB_Integrity","DB_Value_Invalid"};
 
 //全局变量
 CompDataStorUnion CompData; //全局补偿数据
