@@ -55,6 +55,7 @@ typedef struct
  float SPSTrim;
  float ADCVREF;
  float MaximumBatteryPower;
+ float INA219ShuntValue;
  char FRUVersion[3];
  }FRUDataSection;
 

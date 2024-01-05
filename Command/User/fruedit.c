@@ -43,6 +43,7 @@ const char *frueditArgument(int ArgCount)
 		case 12:return "设置驱动的硬件小版本信息";
 	  case 13:return "当使用自定义LED时,设置LED的名称";
 		case 14:return "设置驱动电源输入的最大允许功率(W)";
+		case 15:return "设置驱动电源输入的功率级的分流电阻阻值(mR)";
 		}
 	return NULL;
 	} 
@@ -74,7 +75,7 @@ void fruedithandler(void)
 			UartPrintf("\r\n序列号 : %s",FRU.FRUBlock.Data.Data.SerialNumber);
 			UARTPuts("\r\nLED类型 : ");
 			if(FRU.FRUBlock.Data.Data.FRUVersion[0]==0x03||FRU.FRUBlock.Data.Data.FRUVersion[0]==0x06)
-        UARTPuts("(自定义)");		
+        UartPrintf("(自定义,%dV)",FRU.FRUBlock.Data.Data.FRUVersion[0]);		
 			UARTPuts((char *)DisplayLEDType(&FRU)); //打印LED内容					
       UartPrintf("\r\n硬件版本 : V%d.%d",FRU.FRUBlock.Data.Data.FRUVersion[1],FRU.FRUBlock.Data.Data.FRUVersion[2]);
 		  UartPrintf("\r\n最大LED电流 : %.2fA",FRU.FRUBlock.Data.Data.MaxLEDCurrent);		
@@ -84,6 +85,7 @@ void fruedithandler(void)
 			UartPrintf("\r\n自定义LED标识码 : 0x%04X",FRU.FRUBlock.Data.Data.CustomLEDIDCode);
 			UartPrintf("\r\nADC参考电压 : %.4fV",FRU.FRUBlock.Data.Data.ADCVREF);
 			UartPrintf("\r\n驱动最大输入功率 : %.2fW",FRU.FRUBlock.Data.Data.MaximumBatteryPower);
+			UartPrintf("\r\n输入检流电阻阻值 : %.2fmΩ",FRU.FRUBlock.Data.Data.INA219ShuntValue);
 			}
 		}
 	#ifdef FlashLightOS_Debug_Mode
@@ -160,7 +162,7 @@ void fruedithandler(void)
 		else //正常写入
 		  {
       FRU.FRUBlock.Data.Data.FRUVersion[0]=ParamOK;
-			if(ParamOK==0x03||ParamOK==0x03)
+			if(ParamOK==0x03||ParamOK==0x06)
 			  {
 				UARTPuts("\r\n注意:您已将LED类型设置为通用LED,您需要指定LED识别码和名称!");
 				FRU.FRUBlock.Data.Data.CustomLEDIDCode=0x5AA5; //自定义LED Code保留数值
@@ -432,6 +434,33 @@ void fruedithandler(void)
 				UartPrintf((char *)frueditstr[1],"输入功率限制值");
 		  }
 		}
+	//设置驱动INA219功率计的分流电阻
+  ParamPtr=IsParameterExist("F",27,NULL);
+  if(ParamPtr!=NULL)
+	  {
+		IsCmdParamOK=true;
+		buf=atof(ParamPtr); //字符串转浮点
+		//读取失败
+	  if(ReadFRU(&FRU)||!CheckFRUInfoCRC(&FRU))
+			UARTPuts((char *)frueditstr[0]);
+	  //FRU被锁定
+		else if(M24C512_QuerySecuSetLockStat()!=LockState_Unlocked)
+			UARTPuts((char *)frueditstr[2]);
+		//用户输入的数值非法
+	  else if(buf==NAN||buf<0.1||buf>5)
+		  {
+			DisplayIllegalParam(ParamPtr,27,15);//显示用户输入了非法参数
+			UARTPuts("\r\n错误:您指定的输入检流电阻阻值应在0.1到5mΩ之间.");
+			}
+		else //写入数据
+		  {
+			FRU.FRUBlock.Data.Data.INA219ShuntValue=buf; //更新电流值条目
+			if(!WriteFRU(&FRU))
+				UartPrintf("\r\n%s的输入检流电阻阻值已被更新为%.2fmΩ.",frueditstr[3],buf);
+			else
+				UartPrintf((char *)frueditstr[1],"输入检流电阻阻值");
+		  }
+		}		
 	#endif
 	if(!IsCmdParamOK)UartPrintCommandNoParam(27);//显示啥也没找到的信息 
 	#endif

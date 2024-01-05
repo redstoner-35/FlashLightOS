@@ -201,6 +201,7 @@ static void WriteNewFRU(const char *reason)
  FRU.FRUBlock.Data.Data.NTCTrim=NTCTRIMValue;
  FRU.FRUBlock.Data.Data.SPSTrim=SPSTRIMValue; //将温度修正值写入到内存里面去
  FRU.FRUBlock.Data.Data.ADCVREF=ADC_VRef;//将ADC的电压参考值写入到内存里面去
+ FRU.FRUBlock.Data.Data.INA219ShuntValue=INA219ShuntOhm;//设置INA219的分流器阻值
  if(!WriteFRU(&FRU))
    {
 	 LEDStrPtr=DisplayLEDType(&FRU);

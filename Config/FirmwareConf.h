@@ -7,7 +7,7 @@
 
 #define MajorVersion 1
 #define MinorVersion 9
-#define HotfixVersion 4  //固件版本号
+#define HotfixVersion 6  //固件版本号
 
 //固件模式配置
 //#define Skip_DimmingCalibration //在debug固件中的自适应校准阶段跳过调光模块的校准，一般不用
@@ -38,8 +38,8 @@
 //#define Using_SBT90R_LED //使用红色的SBT90
 //#define Using_SBT70G_LED //使用绿色的SBT70
 //#define Using_SBT70B_LED //使用蓝色的SBT70
-//#define Using_Generic_3V_LED //使用其他任意未指定型号的3V LED
-#define Using_Generic_6V_LED //使用其他任意未指定型号的6V LED
+#define Using_Generic_3V_LED //使用其他任意未指定型号的3V LED
+//#define Using_Generic_6V_LED //使用其他任意未指定型号的6V LED
 
 //挡位和操作逻辑配置
 #define EnableSideLocLED //启用定位LED，在驱动休眠过程中，侧按指示灯会发出微弱的绿光指示手电开关的位置
@@ -69,9 +69,12 @@
 #define ThermalLPFTimeConstant 10 //温度低通滤波器的时间常数，单位秒
 #define NTCUpperResValueK 10 //NTC测温电路上面串联的电阻（单位KΩ）
 #define NTCTRIMValue 0.5 //温度修正值，单位℃
-#define NTCB 3450 //NTC热敏电阻的B值(V1.x 3450 V2.0 3950,注意:此处B值仅对debug模式下初始化FRU时有效，初始化后此处数值将被忽略)
+#define NTCB 3950 //NTC热敏电阻的B值(V1.x 3450 V2.0 3950,注意:此处B值仅对debug模式下初始化FRU时有效，初始化后此处数值将被忽略)
 #define NTCT0 25 //NTC电阻的标定温度，一般是25℃
 #define SPSTRIMValue 0 //DrMOS测温的修正值，单位为℃
+
+//电池功率计参数设置
+#define INA219ShuntOhm 1.0 //驱动的INA219功率级的分流电阻阻值
 
 //ADC模拟电压参考电压
 #define ADC_VRef 3.2985 //实际的ADC电压参考值

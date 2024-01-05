@@ -3,6 +3,7 @@
 #include "INA219.h"
 #include "LEDMgmt.h"
 #include "console.h"
+#include "FRU.h"
 
 //读取数值
 bool INA219_GetBusInformation(INADoutSreDef *INADout)
@@ -147,19 +148,23 @@ void INA219_POR(void)
  {
  INAinitStrdef PORINACfg;
  INADoutSreDef PORINADout;
+ FRUBlockUnion FRU;
  char Result;
+ //读取FRU获取分流电阻阻值	 
+ ReadFRU(&FRU); 
+ //开始配置
  UartPost(Msg_info,"INA21x","Configuring SMBUS Power Gauge for Battery...");
  PORINACfg.VoltageFullScale=16; //总线电压满量程16V
  PORINACfg.ADCAvrageCount=64; //平均次数64
  PORINADout.TargetSensorADDR=INA219ADDR;
  PORINACfg.TargetSensorADDR=INA219ADDR; //地址设置为目标值
- PORINACfg.ShuntValue=1.0; //分流电阻阻值设置为1mR
+ PORINACfg.ShuntValue=FRU.FRUBlock.Data.Data.INA219ShuntValue; //根据FRU设置
  PORINACfg.ConvMode=INA219_PowerDown;//配置为powerdown模式
  PORINACfg.ShuntVoltageFullScale=80;//分流电阻阻值满量程为80mV
  Result=INA219_INIT(&PORINACfg);
  if(Result)//尝试配置
   {
-	UartPost(Msg_critical,"INA21x","Failed to start SMBUS Power Gauge @0x%02X,Error:%d",INA219ADDR,Result);
+	UartPost(Msg_critical,"INA21x","Failed to configure SMBUS Power Gauge,Error code:0x%d",Result);
 	CurrentLEDIndex=4;//指示219初始化异常
 	#ifndef FlashLightOS_Debug_Mode
 	SelfTestErrorHandler();
