@@ -84,7 +84,7 @@ bool ADC_GetResult(ADCOutTypeDef *ADCOut)
 		  {
 			retry++;//重试次数+1
 			delay_us(2);
-			if(retry==ADCConvTimeOut)return false;//转换超时
+			if(retry>=ADCConvTimeOut)return false;//转换超时
 			}
 		//获取数据
 		for(i=0;i<4;i++)ADCResult[i]+=HT_ADC0->DR[i]&0x0FFF;//采集四个规则通道的结果		
@@ -168,9 +168,6 @@ bool ADC_GetResult(ADCOutTypeDef *ADCOut)
 	  ADCOut->SPSTMONState=SPS_TMON_OK;//温度正常
 		ADCOut->SPSTemp=0;//温度反馈为0度		
 		}		
-	#ifdef Internal_Driver_Debug
-	UartPost(Msg_info,"IntADC","SPS State=%d,Temp=%.2f'C",ADCOut->SPSTMONState,ADCOut->SPSTemp);
-	#endif
 	//计算完毕
 	return true;
 	}

@@ -303,11 +303,15 @@ void LoadCalibrationConfig(void)
  #else
    {
    UartPost(msg_error,"Comp","Compensation DB error detected,Error code:%s",DBErrorStr[(int)DBResult]);
-	 for(i=0;i<50;i++)
+	 for(i=0;i<50;i++)//加载补偿数据库的默认值，否则ADC自检会出意外。
 		 {
+		 CompData.CompDataEntry.CompData.Data.CurrentCompThershold[i+1]=1.00+(((FusedMaxCurrent-1)/50)*(float)i);
+		 CompData.CompDataEntry.CompData.Data.CurrentCompValue[i+1]=1.00; //覆盖调光表数值
 		 CompData.CompDataEntry.CompData.Data.DimmingCompThreshold[i]=1.00+(((FusedMaxCurrent-1)/50)*(float)i);
 		 CompData.CompDataEntry.CompData.Data.DimmingCompValue[i]=1.00; //覆盖调光表
 		 }
+	 CompData.CompDataEntry.CompData.Data.CurrentCompValue[0]=0.8196; //补偿值0.8196
+   CompData.CompDataEntry.CompData.Data.CurrentCompThershold[0]=0.7; //阈值0.7
 	 }
  #endif
  }
