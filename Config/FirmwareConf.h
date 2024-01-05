@@ -48,6 +48,7 @@
 #define EnableTurbo //出厂挡位组启用双击极亮挡位(此挡位按照100%电流输出)
 
 //EEPROM配置(用于存储配置信息)
+//#define Enable_Command_OTP_Lock  //是否启用系统对FRU区域进行永久写保护（OTP模式）的相关命令参数
 #define EnableSecureStor //对于FM24C512 系统会使用Security sector存储FRU数据
 #define UsingEE_24C512 //使用24C512
 //#define UsingEE_24C1024 //使用24C1024

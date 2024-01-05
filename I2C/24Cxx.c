@@ -27,6 +27,8 @@ SecuLockState M24C512_QuerySecuSetLockStat(void)
  return LockState_Unlocked;
  #endif
  }
+
+#ifdef Enable_Command_OTP_Lock
 //给安全存储区上锁
 char M24C512_LockSecuSct(void)
  {
@@ -46,6 +48,8 @@ char M24C512_LockSecuSct(void)
 	 }
  return 0;
  }
+#endif
+
 //写入FM24C512的Security Sector
 char M24C512_WriteSecuSct(char *Data,int StartAddr,int len)
  {

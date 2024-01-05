@@ -184,7 +184,10 @@ void fruedithandler(void)
 	  }
 	//锁定FRU
 	IsParameterExist("5",27,&ParamOK);
-  if(ParamOK)
+  #ifndef Enable_Command_OTP_Lock
+	if(ParamOK)UARTPuts("\r\n永久锁定FRU的功能已被固件编译配置禁止.");
+	#else
+	if(ParamOK)
 	  {
 		IsCmdParamOK=true;
 		#ifndef EnableSecureStor
@@ -195,6 +198,7 @@ void fruedithandler(void)
  		else //启用写保护
 		  {
 			M24C512_LockSecuSct();//上锁
+			delay_ms(500); //延时500mS
 			if(M24C512_QuerySecuSetLockStat()==LockState_Locked)
 			  UartPrintf("%s已被永久激活.",frueditstr[4]);
 			else
@@ -202,6 +206,7 @@ void fruedithandler(void)
 			}
 		#endif		
 		}
+  #endif
 	//设置NTC B值
 	ParamPtr=IsParameterExist("6",27,NULL);
   if(ParamPtr!=NULL)
