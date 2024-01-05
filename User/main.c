@@ -72,6 +72,10 @@ int main(void)
 		 //调参模式启用，禁用手电筒的所有运行逻辑，绿灯慢闪
 	   if(IsParameterAdjustMode)
 		    {
+				#ifdef FlashLightOS_Debug_Mode	
+				SideKey_LogicHandler();//处理侧按按键事务
+		    SideKeyTestDisplay();//侧按测试打印
+				#endif
 		    CurrentLEDIndex=29;//绿灯慢闪提示进入调参模式
 	      if(!SensorRefreshFlag)continue;
 				LEDMgmt_CallBack();//LED管理器

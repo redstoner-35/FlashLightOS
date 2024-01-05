@@ -41,5 +41,6 @@ bool getSideKeyTripleClickAndHoldEvent(void);//获取侧按按键是否有三击
 void SideKey_Callback(void);//中断回调处理
 void SideKey_TIM_Callback(void);//连按检测计时的回调处理
 void SideKey_LogicHandler(void);//逻辑处理
+void SideKeyTestDisplay(void); //侧按测试函数
 
 #endif

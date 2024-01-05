@@ -209,3 +209,31 @@ bool getSideKeyTripleClickAndHoldEvent(void)
   {
 	return Keyevent.TripleClickAndHold;
 	}
+#ifdef FlashLightOS_Debug_Mode
+int HoldCount=0;
+	
+//按键测试打印的函数	
+void SideKeyTestDisplay(void)
+  {
+	int KeyCount,CurrentHoldCount;
+	//显示短按
+	KeyCount=getSideKeyShortPressCount(true);
+	if(KeyCount>0)UartPrintf("\r\n[SideKeyTest]%d Click(%dC in Andruil) detected.",KeyCount,KeyCount);
+	//显示长按和双击并按住
+	if(getSideKeyLongPressEvent())CurrentHoldCount=1;
+  else if(getSideKeyClickAndHoldEvent())CurrentHoldCount=2;
+	else if(getSideKeyDoubleClickAndHoldEvent())CurrentHoldCount=3;
+	else if(getSideKeyTripleClickAndHoldEvent())CurrentHoldCount=4;
+	else CurrentHoldCount=0;
+	if(HoldCount==CurrentHoldCount)return;
+	HoldCount=CurrentHoldCount;//同步数值
+	switch(HoldCount)
+	   {
+			 case 1:UartPrintf("\r\n[SideKeyTest]Long-press(hold) Detected.");break;
+			 case 2:UartPrintf("\r\n[SideKeyTest]Click+Long-press(1H in Andruil) Detected.");break;
+			 case 3:UartPrintf("\r\n[SideKeyTest]Double Click+Long-press(2H in Andruil) Detected.");break;
+			 case 4:UartPrintf("\r\n[SideKeyTest]Triple Click+Long-press(3H in Andruil) Detected.");break;
+			 default:return;
+		 }
+	}
+#endif
