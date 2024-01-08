@@ -6,13 +6,15 @@
 #include "delay.h"
 #include "modelogic.h"
 #include "SideKey.h"
+#include <string.h>
 
 //外部函数
 bool CheckLinearTable(int TableSize,float *TableIn);//检查校准数据库的LUT
 bool CheckLinearTableValue(int TableSize,float *TableIn);//检查补偿数据库的数据域
 
-//字符串
+//字符串和常量
 const char *DBErrorStr[]={"","EEP_Reload","DB_Integrity","DB_Value_Invalid"};
+const float LowCurrentDimmingTable[]={1.45,1.4899,1.35,1.27,1.18,1.18,1.18,1.18,1.18,1.18,1.18,1.18}; //对于不进行自动校准情况下的修正值
 
 //全局变量
 CompDataStorUnion CompData; //全局补偿数据
@@ -115,12 +117,15 @@ void DoTurboRunTest(void)
 //自动进行电流回读的校准
 void DoSelfCalibration(void)
  {
- float TargetCurrent,CurrentRatio,ActualCurrent;
+ float TargetCurrent,CurrentRatio,ActualCurrent,EffCalcbuf;
  ADCOutTypeDef ADCO;
- int i,j;
+ INADoutSreDef BattStat;
+ int i,j,TargetLogAddr;
  float DACVID;
- #ifndef Skip_DimmingCalibration
  bool resultOK;
+ char CSVStrbuf[128]; //字符缓冲
+ #ifndef Skip_DimmingCalibration
+ 
  int DimCalibrationFailCount=0;
  #endif
  //按键没有按下，不执行
@@ -133,6 +138,7 @@ void DoSelfCalibration(void)
  //启动LED输出
  SetPWMDuty(100);
  AD5693R_SetOutput(0); //将DAC设置为0V输出，100%占空比
+ INA219_SetConvMode(INA219_Cont_Both,INA219ADDR); //启动INA219开始读取信息
  delay_ms(10);
  SetAUXPWR(true);
  #ifndef Skip_DimmingCalibration
@@ -196,27 +202,35 @@ void DoSelfCalibration(void)
  AD5693R_SetOutput(0); //将DAC设置为0V输出
  if(DimCalibrationFailCount==5)
    {
+	 INA219_SetConvMode(INA219_PowerDown,INA219ADDR);//关闭INA219
 	 AD5693R_SetOutput(0); 
    SetAUXPWR(false);
 	 CurrentLEDIndex=2; //输出电流误差超范围，按键红灯常亮提示出现错误
 	 return;
 	 }
  delay_ms(100);
+ #else //使用预编程的误差值
+  for(i=0;i<50;i++)
+	 {	 
+	 CompData.CompDataEntry.CompData.Data.DimmingCompValue[i]=TargetCurrent<3.43?LowCurrentDimmingTable[i]:1.18222; //填写补偿值
+	 CompData.CompDataEntry.CompData.Data.DimmingCompThreshold[i]=TargetCurrent; //当前目标电流 	 
+	 TargetCurrent+=CurrentRatio;
+	 }
+ TargetCurrent=1.0;
  #endif
  //开始第二次运行（对电流测量设备进行校准）
  for(i=1;i<51;i++)
 	 {
 	 //计算DACVID
 	 DACVID=TargetCurrent*(float)30;//按照30mV 1A设置输出电流
-	 #ifndef Skip_DimmingCalibration
 	 DACVID*=QueueLinearTable(50,TargetCurrent,CompData.CompDataEntry.CompData.Data.DimmingCompThreshold,CompData.CompDataEntry.CompData.Data.DimmingCompValue,&resultOK); //从校准记录里面读取电流补偿值
 	 if(!resultOK)
 	   {
+		 INA219_SetConvMode(INA219_PowerDown,INA219ADDR);//关闭INA219
 		 AD5693R_SetOutput(0); //将DAC设置为0V输出
      SetAUXPWR(false); //关闭辅助电源
 		 CurrentLEDIndex=31; //提示用户校准数据库错误 
 		 }		 
-	 #endif
 	 AD5693R_SetOutput(DACVID/(float)1000); //设置输出电流
 	 //读取电流
 	 ActualCurrent=0; //清零缓冲区
@@ -230,18 +244,82 @@ void DoSelfCalibration(void)
 	 //电流数值出现异常，退出
    if(ActualCurrent<0.03||ActualCurrent>65)		 
 	   {
+		 INA219_SetConvMode(INA219_PowerDown,INA219ADDR);//关闭INA219
 		 AD5693R_SetOutput(0); //将DAC设置为0V输出
      SetAUXPWR(false); //关闭辅助电源
 		 CurrentLEDIndex=13; //显示ADC错误
 		 return;
 		 }
 	 //计算补偿值
-	 CompData.CompDataEntry.CompData.Data.CurrentCompValue[i]=ActualCurrent/TargetCurrent; //填写补偿值
+	 CompData.CompDataEntry.CompData.Data.CurrentCompValue[i]=TargetCurrent/ActualCurrent; //填写补偿值
 	 CompData.CompDataEntry.CompData.Data.CurrentCompThershold[i]=TargetCurrent; //当前目标电流
 	 //电流加一点，开始继续计算
 	 TargetCurrent+=CurrentRatio;
 	 }
+ //准备第三次运行，取64个点采集效率信息
+ AD5693R_SetOutput(0); //将DAC设置为0V输出
+ TargetLogAddr=0xD6EE; //log起始点为D6EE
+ TargetCurrent=1.0;
+ CurrentRatio=(FusedMaxCurrent-1.0)/(float)70; //分为70份
+ memset(CSVStrbuf,0,sizeof(CSVStrbuf));
+ snprintf(CSVStrbuf,128,"Input Volt,Input Amp,Input PWR,LED If(Target),LED If(Actual),LED Vf,LED PWR,FET Tj,Efficiency,\r\n");
+ M24C512_PageWrite(CSVStrbuf,TargetLogAddr,strlen(CSVStrbuf)); //写入最开始的CSV文件头
+ TargetLogAddr+=strlen(CSVStrbuf);//加上长度
+ delay_ms(500);
+ //开始运行
+ for(i=0;i<70;i++)
+   {
+	 //计算DACVID
+	 DACVID=TargetCurrent*(float)30;//按照30mV 1A设置输出电流
+	 DACVID*=QueueLinearTable(50,TargetCurrent,CompData.CompDataEntry.CompData.Data.DimmingCompThreshold,CompData.CompDataEntry.CompData.Data.DimmingCompValue,&resultOK); //从校准记录里面读取电流补偿值
+	 if(!resultOK)
+	   {
+		 INA219_SetConvMode(INA219_PowerDown,INA219ADDR);//关闭INA219
+		 AD5693R_SetOutput(0); //将DAC设置为0V输出
+     SetAUXPWR(false); //关闭辅助电源
+		 CurrentLEDIndex=31; //提示用户校准数据库错误 
+		 }		 
+	 AD5693R_SetOutput(DACVID/(float)1000); //设置输出电流
+	 //读取电流
+	 ActualCurrent=0; //清零缓冲区
+	 for(j=0;j<10;j++)
+	   {
+	   delay_ms(5);
+	   ADC_GetResult(&ADCO); //读取数值
+	   ActualCurrent+=ADCO.LEDIf; //累加
+	   }
+	 ActualCurrent/=10; //求平均
+	 //读取INA219的数据
+	 BattStat.TargetSensorADDR=INA219ADDR; //设置地址
+	 if(!INA219_GetBusInformation(&BattStat))break;
+	 //开始commit CSV数据
+	 memset(CSVStrbuf,0,sizeof(CSVStrbuf));
+	 snprintf(CSVStrbuf,128,"%.2f,%.2f,%.2f,%.2f,",BattStat.BusVolt,BattStat.BusCurrent,BattStat.BusPower,TargetCurrent);
+	 j=strlen(CSVStrbuf);
+	 EffCalcbuf=100*((ADCO.LEDVf*ActualCurrent)/BattStat.BusPower); //计算效率
+	 if(EffCalcbuf<99.5&&EffCalcbuf>2)
+      snprintf(&CSVStrbuf[j],128-j,"%.2f,%.2f,%.2f,%.2fC,%.2f%%,\r\n",ActualCurrent,ADCO.LEDVf,ADCO.LEDVf*ActualCurrent,ADCO.SPSTemp,EffCalcbuf);	//写入电池电压信息	 
+	 else
+		  snprintf(&CSVStrbuf[j],128-j,"%.2f,%.2f,%.2f,%.2fC,No Info,\r\n",ActualCurrent,ADCO.LEDVf,ADCO.LEDVf*ActualCurrent,ADCO.SPSTemp);	//写入电池电压信息
+   M24C512_PageWrite(CSVStrbuf,TargetLogAddr,strlen(CSVStrbuf)); 
+   TargetLogAddr+=strlen(CSVStrbuf);//加上长度
+   //电流加一点，开始继续计算
+	 TargetCurrent+=CurrentRatio;
+	 } 	 
+ //输出log底部截止的信息
+ memset(CSVStrbuf,0,sizeof(CSVStrbuf));
+ snprintf(CSVStrbuf,128,"This is an automatically generated log file by FlashLight OS version %d.%d.%d At Debug mode,\r\n",MajorVersion,MinorVersion,HotfixVersion);
+ M24C512_PageWrite(CSVStrbuf,TargetLogAddr,strlen(CSVStrbuf)); 
+ TargetLogAddr+=strlen(CSVStrbuf);//写入版本信息
+ memset(CSVStrbuf,0,sizeof(CSVStrbuf));
+ snprintf(CSVStrbuf,128,"CopyRight to redstoner_35 @ 35's Embedded Systems Inc. JAN 2024,\r\n");
+ M24C512_PageWrite(CSVStrbuf,TargetLogAddr,strlen(CSVStrbuf)); 
+ TargetLogAddr+=strlen(CSVStrbuf);//写入版权数据
+ memset(CSVStrbuf,0,sizeof(CSVStrbuf));
+ snprintf(CSVStrbuf,128,"Firmware compilation timestamp: %s %s,\r\n\xFF",__DATE__,__TIME__);
+ M24C512_PageWrite(CSVStrbuf,TargetLogAddr,strlen(CSVStrbuf)); //写入固件编译时间戳
  //运行结束，关闭LED输出
+ INA219_SetConvMode(INA219_PowerDown,INA219ADDR);//关闭INA219
  AD5693R_SetOutput(0); //将DAC设置为0V输出
  SetAUXPWR(false); //关闭辅助电源
  CurrentLEDIndex=0; 
