@@ -106,7 +106,7 @@ void CheckForFlashLock(void)
 	 UartPost(msg_error,"FWSec","Option byte program failed.");
 	 return;
 	 }
- UartPost(Msg_info,"FWSec","Firmware security feature has been enabled.for normal operation,please power off the driver and power-on agin.");
+ UartPost(Msg_info,"FWSec","Firmware security feature has been enabled.System will restart now.");
  NVIC_SystemReset();  //刷完之后重启
  while(1);
  }

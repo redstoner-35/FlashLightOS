@@ -316,17 +316,17 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
  UnLoadBattVoltage=BattOutput->BusVolt;//存储空载时的电池电压
  /********************************************************
  电流协商开始,此时系统将会逐步增加DAC的输出值使得电流缓慢
- 爬升到0.5A的小电流.系统将会在协商结束后检测LED的If和Vf和
- DAC的VID判断是否短路
+ 爬升到驱动额定的最小电流.系统将会在协商结束后检测LED的If
+ 和Vf和DAC的VID判断是否短路
  ********************************************************/
  VID=StartUpInitialVID;
  VIDIncValue=0.5;
- while(VID<120)
+ while(VID<100)
 		 {
 		 if(!AD5693R_SetOutput(VID/(float)1000))return Error_DAC_Logic;
 		 ADC_GetResult(&ADCO);
-		 if(ADCO.LEDIf>=0.4)break; //电流足够0.4A，退出
-		 VID=((120-VID)<VIDIncValue)?VID+0.5:VID+VIDIncValue;//增加VID，如果快到上限就慢慢加，否则继续快速增加VID
+		 if(ADCO.LEDIf>=MinimumLEDCurrent&&ADCO.LEDVf>LEDVfMin)break; //电流足够且电压达标
+		 VID=((100-VID)<VIDIncValue)?VID+0.5:VID+VIDIncValue;//增加VID，如果快到上限就慢慢加，否则继续快速增加VID
 		 VIDIncValue+=StartupLEDVIDStep; //每次VID增加的数值
 		 }
  SysPstatebuf.CurrentDACVID=VID;
@@ -336,8 +336,16 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
  ********************************************************/
  if(!ADC_GetResult(&ADCO))return Error_ADC_Logic;
  //DAC的输出电压已经到了最高允许值,但是电流仍然未达标,这意味着LED可能短路或PWM逻辑异常
- if(VID>=64)return (ADCO.LEDVf>=LEDVfMax)?Error_LED_Open:Error_PWM_Logic;
- if(ADCO.LEDVf<LEDVfMin)return Error_LED_Short;		 //LEDVf过低,LED可能短路
+ if(VID>=100)return (ADCO.LEDVf>=LEDVfMax)?Error_LED_Open:Error_PWM_Logic;
+ i=0;
+ if(ADCO.LEDVf<LEDVfMin)while(i<10)//检测到LED疑似短路，再次进行确认来判断LED是否短路
+   {
+	 delay_ms(1);
+	 ADC_GetResult(&ADCO);
+	 if(ADCO.LEDVf>LEDVfMin)break;
+	 i++;
+	 }
+ if(i==10)return Error_LED_Short;		 //LEDVf过低持续10mS仍未改善,LED短路了
  /********************************************************
  LED自检顺利结束,驱动硬件和负载工作正常,此时返回无错误代码
  交由驱动的其余逻辑完成处理
@@ -348,7 +356,7 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
  for(i=0;i<12;i++)LEDVfFilterBuf[i]=ADCO.LEDVf;//填写LEDVf 
  for(i=0;i<14;i++)LEDIfFilter[i]=ADCO.LEDIf;
  CurrentSynthRatio=100; //默认合成比例设置为100%
- if(CurrentMode->LEDCurrentHigh<1)//电流小于1A设置DAC输出电压为0.08进入PWM调光
+ if(CurrentMode->LEDCurrentHigh<2)//电流小于1A设置DAC输出电压为0.08进入PWM调光
    {
 	 SetPWMDuty(SysPstatebuf.Duty); //设置占空比
 	 AD5693R_SetOutput(0.08);
@@ -563,7 +571,7 @@ void RuntimeModeCurrentHandler(void)
  if(IsMainLEDEnabled&&Current>0)//额定电流大于0且LED被启动才积分
      {
 		 if(ADCO.LEDIf<MinimumLEDCurrent)SysPstatebuf.IsLEDShorted=false;//当前LED没有电流，禁止检测	 
-     else if(LEDFilter(ADCO.LEDVf,LEDVfFilterBuf,12)>1.5)SysPstatebuf.IsLEDShorted=false; //LEDVf大于1.5，正常运行
+     else if(LEDFilter(ADCO.LEDVf,LEDVfFilterBuf,12)>LEDVfMin)SysPstatebuf.IsLEDShorted=false; //LEDVf大于1.5，正常运行
      else SysPstatebuf.IsLEDShorted=true;
      }
  }

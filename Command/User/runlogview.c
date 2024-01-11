@@ -15,7 +15,7 @@ static const char *Rlvstr[]=
 "\r\n  %s告警次数 : %d 次",//6
 "\r\n  运行日志", //7
 "\r\n  库仑计", //8
-"\r\n由于运行日志%s,因此无法查看.",//9
+"\r\n由于运行日志%s,故无法查看.",//9
 };
 
 void DisplayLampTime(double time)
@@ -52,7 +52,7 @@ void runlogviewHandler(void)
 		UARTPutc('-',11);
 		UartPrintf("\r\n%sCRC-32 : 0x%08X",Rlvstr[7],CalcRunLogCRC32(&RunLogEntry.Data));	
 		UartPrintf("%s总记录次数 : %d次",Rlvstr[7],RunLogEntry.Data.DataSec.TotalLogCount);	
-		UartPrintf("%s序列号 : #%d\r\n",Rlvstr[7],RunLogEntry.Data.DataSec.LogIncrementCode);	
+		UartPrintf("%s序号 : #%d\r\n",Rlvstr[7],RunLogEntry.Data.DataSec.LogIncrementCode);	
 		
 		PrintStatuBar("系统主LED");
 		UartPrintf("%s平均电流 : %.2fA",Rlvstr[0],RunLogEntry.Data.DataSec.AverageLEDIf);
