@@ -14,8 +14,8 @@ extern float CurrentSynthRatio;
 //常量
 #define MoresIDCode "Example"
 #ifndef DefaultRampMode
-const char *ModeConst[5]={"月光","低亮","中亮","中高亮","高亮"};
-const float regModeCurrent[4]={5,15,30,60};  //常规挡位电流百分比(100%为满量程)
+const char *ModeConst[5]={"极低亮","低亮","中亮","中高亮","高亮"};
+const float regModeCurrent[4]={12,23,35,50};  //常规挡位电流百分比(100%为满量程)
 #endif
 const LightModeDef ModeCfgConst[4]={LightMode_Flash,LightMode_SOS,LightMode_Breath,LightMode_MosTrans};
 const char *SpecModeConst[4]={"爆闪","SOS","信标","识别码发送"};
@@ -228,7 +228,7 @@ void RestoreFactoryModeCfg(void)
 	 memset(CfgFile.SpecialMode[i].CustomFlashStr,0x00,32);
    CfgFile.SpecialMode[i].IsModeHasMemory=false;//不记忆
 	 CfgFile.SpecialMode[i].MaxMomtTurboCount=0;//不支持鸡血
-	 CfgFile.SpecialMode[i].RandStrobeMaxFreq=16;
+	 CfgFile.SpecialMode[i].RandStrobeMaxFreq=10;
 	 CfgFile.SpecialMode[i].RandStrobeMinFreq=5;		//随机爆闪频率 
 	 CfgFile.SpecialMode[i].IsModeAffectedByStepDown=true;//受温控影响
 	 CfgFile.SpecialMode[i].LEDCurrentLow=0;//呼吸模式低电流为0A

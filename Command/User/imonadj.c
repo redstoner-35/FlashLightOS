@@ -78,9 +78,9 @@ void Imonadjhandler(void)
 		 //更新电流阈值
 		 ParamPtr=IsParameterExist("45",10,NULL);
 		 buf=ParamPtr!=NULL?atof(ParamPtr):-1;
-		 if(ParamPtr!=NULL&&(buf<0.5||buf>(float)FusedMaxCurrent))
-			 UartPrintf("\r\n错误:您指定的电流阈值无效！允许的电流阈值为0.5-%.1f(A).",(float)FusedMaxCurrent);
-		 else if(ParamPtr!=NULL&&buf>=0.5&&buf<=(float)FusedMaxCurrent)//传入的电流数值合法且存在
+		 if(ParamPtr!=NULL&&(buf<=0||buf>(float)FusedMaxCurrent))
+			 UartPrintf("\r\n错误:您指定的电流阈值无效！允许的电流阈值为大于0的数-%.1f(A).",(float)FusedMaxCurrent);
+		 else if(ParamPtr!=NULL&&buf>=0&&buf<=(float)FusedMaxCurrent)//传入的电流数值合法且存在
 		   {
 			 oldvalue=CompData.CompDataEntry.CompData.Data.CurrentCompThershold[i];//存下旧的数值
 			 CompData.CompDataEntry.CompData.Data.CurrentCompThershold[i]=buf;
@@ -102,8 +102,8 @@ void Imonadjhandler(void)
 		 //更新补偿增益
 		 ParamPtr=IsParameterExist("23",10,NULL);
 		 buf=ParamPtr!=NULL?atof(ParamPtr):-1;
-		 if(ParamPtr!=NULL&&(buf<0.5||buf>1.5))
-			 UARTPuts("\r\n错误:您指定的电流补偿增益无效！允许的值为0.5-1.5.");
+		 if(ParamPtr!=NULL&&(buf<0.5||buf>20))
+			 UARTPuts("\r\n错误:您指定的电流补偿增益无效！允许的值为0.5-20.");
 		 else if(ParamPtr!=NULL&&buf>=0.5&&buf<=(float)FusedMaxCurrent)//传入的电流数值合法且存在
 		   {
 			 CompData.CompDataEntry.CompData.Data.CurrentCompValue[i]=buf;

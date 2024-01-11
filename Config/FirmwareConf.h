@@ -3,14 +3,13 @@
 
 //版本信息
 #define HardwareMajorVer 2
-#define HardwareMinorVer 0  //硬件版本号
+#define HardwareMinorVer 1  //硬件版本号
 
 #define MajorVersion 1
 #define MinorVersion 9
-#define HotfixVersion 6  //固件版本号
+#define HotfixVersion 8  //固件版本号
 
 //固件模式配置
-//#define Skip_DimmingCalibration //在debug固件中的自适应校准阶段跳过调光模块的校准，一般不用
 #define Firmware_DIY_Mode //是否启用DIY高级用户模式，在此模式下驱动所有功能可以使用，否则温控调整和日志清除和恢复功能会被禁用。
 //#define FlashLightOS_Debug_Mode //是否启用debug模式，此时驱动将会禁用部分自检项目以及低电量关机功能，并且强制使用工厂配置
 //#define Internal_Driver_Debug //是否启用驱动内部设备驱动的额外信息输出。
@@ -24,7 +23,7 @@
 #define GammaCorrectionValue 2.45   //亮度拟合曲线的gamma修正，根据不同LED有所不同
 #define LVAlertCurrentLimit 8 //当低电压警告触发后，驱动最大的输出电流值(A)
 #define MaxAllowedLEDCurrent 48 //驱动硬件熔断的最大输出电流设置(测得电流超过此电流的1.2倍将触发保护)
-#define MinimumLEDCurrent 0.4 //最小的LED电流
+#define MinimumLEDCurrent 2.05 //最小的LED电流
 #define BatteryCellCount 3 //默认情况下驱动使用的电池组中锂电池的串数(按照三元锂电池计算)
 #define DeepsleepDelay 40 //驱动的出厂深度睡眠时间,40秒内没有操作则睡眠
 #define ForceRequireLEDNTC //驱动的LED NTC热敏电阻强制要求存在,如果检测不到热敏电阻则驱动将自检失败
@@ -55,7 +54,7 @@
 
 //自检运行参数
 #define StartupAUXPSUPGCount 4 //启动过程中等待电源PG的等待时间
-#define StartUpInitialVID 15 //启动过程中的初始VID值
+#define StartUpInitialVID 40 //启动过程中的初始VID值
 #define StartupLEDVIDStep 1.0 //启动过程中LED VID上升的速度
 
 //SPS功率级的温度和电流反馈参数配置

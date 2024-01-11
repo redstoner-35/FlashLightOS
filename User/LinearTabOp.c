@@ -28,7 +28,7 @@ bool CheckLinearTableValue(int TableSize,float *TableIn)
 	for(i=0;i<TableSize;i++)
 		{
 	  //数值不合法
-		if(TableIn[i]>2.00||TableIn<=0)return false;	
+		if(TableIn[i]>25||TableIn<=0)return false;	
 		//数值是无效值
 		if(TableIn[i]==NAN)return false;
 		}
@@ -83,7 +83,7 @@ bool CheckLinearTable(int TableSize,float *TableIn)
 float QueueLinearTable(int TableSize,float Input,float *Thr,float *Value,bool *IsResultOK)
   {
 	int i,upper,lower;
-  float max,min,buf;
+  volatile float max,min,buf;
   //检查传入的线性阈值表的内容
 	if(!CheckLinearTable(TableSize,Thr))
 	 {

@@ -117,7 +117,7 @@ void LinearDIM_POR(void)
  if(VGet>=0.05)
     {
 	  //有超过0.05的电压,说明PWM MUX无法切断电压.PWM相关电路有问题
-		UartPost(Msg_critical,"LineDIM","PWM Dimming MUX Error.");
+		UartPost(Msg_critical,"LineDIM","Dimming MUX Error.");
 	  CurrentLEDIndex=30;
 	  SelfTestErrorHandler();  		
 		}
@@ -132,7 +132,7 @@ void LinearDIM_POR(void)
  if(VGet>=0.05)
 	  {
 		//有超过0.05的电压,说明DAC有问题输出无法归零
-		UartPost(Msg_critical,"LineDIM","DAC output error.");
+		UartPost(Msg_critical,"LineDIM","DAC ZRST error.");
 	  CurrentLEDIndex=20;
 	  SelfTestErrorHandler();  		
 		}
@@ -321,12 +321,12 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
  ********************************************************/
  VID=StartUpInitialVID;
  VIDIncValue=0.5;
- while(VID<64)
+ while(VID<120)
 		 {
 		 if(!AD5693R_SetOutput(VID/(float)1000))return Error_DAC_Logic;
 		 ADC_GetResult(&ADCO);
 		 if(ADCO.LEDIf>=0.4)break; //电流足够0.4A，退出
-		 VID=((64-VID)<VIDIncValue)?VID+0.5:VID+VIDIncValue;//增加VID，如果快到上限就慢慢加，否则继续快速增加VID
+		 VID=((120-VID)<VIDIncValue)?VID+0.5:VID+VIDIncValue;//增加VID，如果快到上限就慢慢加，否则继续快速增加VID
 		 VIDIncValue+=StartupLEDVIDStep; //每次VID增加的数值
 		 }
  SysPstatebuf.CurrentDACVID=VID;
@@ -365,7 +365,7 @@ void RuntimeModeCurrentHandler(void)
  ADCOutTypeDef ADCO;
  bool IsCurrentControlledByMode,CurrentAdjDirection,IsResultOK;
  volatile bool IsMainLEDEnabled,IsNeedToEnableBuck;
- float Current,Throttle,DACVID,delta,corrvaule;
+ float Current,Throttle,DACVID,delta,corrvaule,Duty;
  /********************************************************
  运行时挡位处理的第一步.首先获取当前的挡位，然后我们使能ADC
  的转换负责获取LED的电流,温度和驱动功率管的温度,接下来就是
@@ -391,9 +391,9 @@ void RuntimeModeCurrentHandler(void)
 		 RunTimeErrorReportHandler(Error_LED_ThermTrip);
 		 return;
 	   }
- if(ADCO.LEDIf>1.1*FusedMaxCurrent)
+ if(ADCO.LEDIf>(1.5*FusedMaxCurrent))
      {
-		 //在LED启用时，LED电流超过允许值(熔断电流限制的1.1倍),这是严重故障,立即写log并停止驱动运行
+		 //在LED启用时，LED电流超过允许值(熔断电流限制的1.5倍),这是严重故障,立即写log并停止驱动运行
 		 RunTimeErrorReportHandler(Error_LED_OverCurrent);
 		 return;
 	   }	 
@@ -442,7 +442,7 @@ void RuntimeModeCurrentHandler(void)
    if(ADCO.SPSTemp>80)IsDisableMoon=true; //MOSFET温度过高关闭月光档
 	 else if(ADCO.SPSTemp<60)IsDisableMoon=false; //恢复月光档的使用
 	 }
- if(IsDisableMoon&&Current>0&&Current<2.1)Current=2.1;//MOSFET温度过高，限制月光档的使用
+ if(IsDisableMoon&&Current>0&&Current<3.5)Current=3.5;//MOSFET温度过高，限制月光档的使用
  /* 存储处理之后的目标电流 */
  SysPstatebuf.TargetCurrent=Current;//存储下目标设置的电流给短路保护模块用
  /********************************************************
@@ -465,8 +465,8 @@ void RuntimeModeCurrentHandler(void)
 	 SetPWMDuty(0); 
 	 DACVID=0; //令DAC的输出和PWM占空比都为0使主Buck停止输出
 	 }
- //小于等于1A电流,因为电流环路无法在小于此点的条件下稳定因此使用PWM方式调光(仅非呼吸模式)
- else if(Current<=1.00&&CurrentMode->Mode!=LightMode_Breath)
+ //小于等于2A电流,因为电流环路无法在小于此点的条件下稳定因此使用PWM方式调光(仅非呼吸模式)
+ else if(Current<=2.00&&CurrentMode->Mode!=LightMode_Breath)
    {
 	 if(Current<MinimumLEDCurrent)Current=MinimumLEDCurrent;//最小电流限制
    if(!ADC_GetResult(&ADCO))//令ADC得到电流
@@ -511,15 +511,17 @@ void RuntimeModeCurrentHandler(void)
 			 //占空比应用
 			 SetPWMDuty(SysPstatebuf.Duty); //设置占空比
 			 }
-	 DACVID=0.08;  //80mV
+	 DACVID=0.12;  //120mV
 	 SysPstatebuf.IsLinearDim=false;
 	 }
- //大于1A电流,使用纯线性调光实现无频闪
+ //大于2A电流使用纯线性调光实现无频闪
  else
 	 {
-	 IsMoonDimmingLocked=true; //线性调光不需要锁相，直接置true
-   DACVID=Current*30;  //计算DAC的VID,公式为:VID=(30mV*offset*LEDIf(A))
+	 IsMoonDimmingLocked=true; //线性调光不需要锁相，直接置true	 
+	 DACVID=Current>2?Current*30:60;  //计算DAC的VID,公式为:VID=(30mV*offset*LEDIf(A))
+	 DACVID+=40;//加上40mV的offset
 	 if(CurrentMode->Mode!=LightMode_On&&CurrentMode->Mode!=LightMode_Ramp)CurrentSynthRatio=100;//不是常亮和无极调光模式，不使用电流补偿
+	 else if(Current<10)CurrentSynthRatio=100; //电流小于10A范围，直接用补偿参数
 	 else if(fabsf(Current-ADCO.LEDIf)>0.02) 
 	   { 
 	   if(Current>ADCO.LEDIf)CurrentSynthRatio=CurrentSynthRatio<150?CurrentSynthRatio+0.5:150; 
@@ -534,8 +536,10 @@ void RuntimeModeCurrentHandler(void)
 	   }
 	 DACVID*=(CurrentSynthRatio/(float)100); //乘上自适应电流补偿系数
 	 DACVID/=1000;//mV转换为V
-	 SysPstatebuf.IsLinearDim=true;
-	 SetPWMDuty((IsMainLEDEnabled==false)?0:100); //纯线性调光,PWM占空比仅受特殊功能控制量在0-100之间转换
+	 if(Current>2)Duty=100; //大于2A纯线性调光
+	 else Duty=100*(Current/2); //进行PWM
+	 SysPstatebuf.IsLinearDim=Duty==100?true:false;
+	 SetPWMDuty((IsMainLEDEnabled==false)?0:Duty); //纯线性调光,PWM占空比仅受特殊功能控制量在0-100之间转换。
 	 }
  /*  根据目标的DAC VID(电压值) 发送指令控制DAC输出  */
  SysPstatebuf.CurrentDACVID=DACVID*1000;//将当前DAC的VID记录下来用于事件日志
@@ -559,7 +563,7 @@ void RuntimeModeCurrentHandler(void)
  if(IsMainLEDEnabled&&Current>0)//额定电流大于0且LED被启动才积分
      {
 		 if(ADCO.LEDIf<MinimumLEDCurrent)SysPstatebuf.IsLEDShorted=false;//当前LED没有电流，禁止检测	 
-     else if(LEDFilter(ADCO.LEDVf,LEDVfFilterBuf,12)>LEDVfMin)SysPstatebuf.IsLEDShorted=false; //LEDVf大于短路保护值，正常运行
+     else if(LEDFilter(ADCO.LEDVf,LEDVfFilterBuf,12)>1.5)SysPstatebuf.IsLEDShorted=false; //LEDVf大于1.5，正常运行
      else SysPstatebuf.IsLEDShorted=true;
      }
  }

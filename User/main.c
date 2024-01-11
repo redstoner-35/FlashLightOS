@@ -106,6 +106,7 @@ int main(void)
 	 #else
 	 SideKey_LogicHandler();//处理侧按按键事务
 	 DoTurboRunTest(); //进行极亮测试
+	 //DoDimmingCalibration();//进行调光模块的校准
 	 DoSelfCalibration(); //处理按键自身的校准操作
 	 if(!SensorRefreshFlag)continue;
 	 LEDMgmt_CallBack();//LED管理器

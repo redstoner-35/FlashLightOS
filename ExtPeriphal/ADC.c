@@ -129,7 +129,7 @@ bool ADC_GetResult(ADCOutTypeDef *ADCOut)
   ADCOut->LEDIfNonComp=buf;//将未补偿的LEDIf放置到结构体内
 	#endif
 	Comp=QueueLinearTable(51,buf,CompData.CompDataEntry.CompData.Data.CurrentCompThershold,CompData.CompDataEntry.CompData.Data.CurrentCompValue,&IsResultOK);//查曲线得到矫正系数
-	if(IsResultOK)buf*=Comp;//如果补偿系数合法则得到最终结果
+	if(IsResultOK&&Comp!=NAN)buf*=Comp;//如果补偿系数合法则得到最终结果
 	ADCOut->LEDIf=buf;//计算完毕返回结果
 	//计算SPS温度数值
 	buf=(float)ADCResult[SPS_Temp_Ch]*(ADC_AVRef/(float)4096);//将AD值转换为电压

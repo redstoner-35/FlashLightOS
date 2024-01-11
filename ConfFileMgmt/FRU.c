@@ -34,9 +34,9 @@ void SetLEDVfMinMax(FRUBlockUnion *FRU)
 		case 0x03:LEDVfMin=1.95;LEDVfMax=4.2;break; //通用3V LED、蓝色SBT70	
 		case 0x04:LEDVfMin=1.4;LEDVfMax=3.2;;break;//红色SBT90
 		case 0x05:LEDVfMin=1.85;LEDVfMax=4.9;break; //绿色SBT70
-		case 0x06:LEDVfMin=4.5;LEDVfMax=6.8;break; //6V LED
+		case 0x06:LEDVfMin=4.8;LEDVfMax=7.7;break; //6V LED
 	  //其他数值则使用默认值
-		default:LEDVfMin=1.0;LEDVfMax=6.8;
+		default:LEDVfMin=1.0;LEDVfMax=7.7;
 		}
 	}
 /**************************************************************
@@ -277,6 +277,7 @@ void FirmwareVersionCheck(void)
 			}
 		else FusedMaxCurrent=FRU.FRUBlock.Data.Data.MaxLEDCurrent;//加载最大LED电流
 	  #ifdef FlashLightOS_Debug_Mode
+		UartPost(Msg_info,"FRUChk","Maximum Current has been set to %.2fA.",FusedMaxCurrent);
 		if(FRU.FRUBlock.Data.Data.FRUVersion[0]==0x03||FRU.FRUBlock.Data.Data.FRUVersion[0]==0x06) //是通用3V/6V LED,进行LED OEMID检查
 			{
 			if(!CheckForOEMLEDTable(&ParamOut,&FRU))return; //调取查表函数,如果查表成功则退出。

@@ -21,7 +21,7 @@ const char *modecurcfgArgument(int ArgCount)
 		case 4:
 	  case 5:return "指定挡位的最小电流(作为无极调光和信标模式的地板电流)";
 		case 6:
-		case 7:return "指定挡位的额定电流(同时作为无极调光和信标模式的天花板电流)";
+		case 7:return "指定挡位的额定电流(作为无极调光和信标模式的天花板电流)";
 	  }
 	return NULL;
 	}
