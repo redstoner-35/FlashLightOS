@@ -320,7 +320,7 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
    }
  UnLoadBattVoltage=BattOutput->BusVolt;//存储空载时的电池电压
  //如果电压低于警告值则强制锁定驱动的输出电流为指定值
- if(RunTimeBattTelemResult.BusVolt<CfgFile.VoltageAlert)
+ if(BattOutput->BusVolt<CfgFile.VoltageAlert)
 		RunLogEntry.Data.DataSec.IsLowVoltageAlert=true;
  /********************************************************
  电流协商开始,此时系统将会逐步增加DAC的输出值使得电流缓慢
