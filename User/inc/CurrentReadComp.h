@@ -48,7 +48,6 @@ extern CompDataStorUnion CompData; //补偿数据
 void LoadCalibrationConfig(void);//加载配置
 char WriteCompDataToROM(void); //保存配置
 void DoSelfCalibration(void); //自动校准
-void DoTurboRunTest(void);//调出极亮，测量电流数据
 void DoDimmingCalibration(void);//做调光测量
 CalibrationDBErrorDef CheckCompData(void);//计算校验和
 

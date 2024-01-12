@@ -7,7 +7,7 @@
 
 #define MajorVersion 1
 #define MinorVersion 9
-#define HotfixVersion 8  //固件版本号
+#define HotfixVersion 10  //固件版本号
 
 //固件模式配置
 #define Firmware_DIY_Mode //是否启用DIY高级用户模式，在此模式下驱动所有功能可以使用，否则温控调整和日志清除和恢复功能会被禁用。
@@ -21,7 +21,8 @@
 #define MainBuckOffTimeOut 5 //主Buck在LED熄灭命令之后的延时值,输入8表示1秒
 #define BreathTIMFreq 50 //负责生成平滑呼吸灯效果的定时器频率(单位Hz)，越高越平滑
 #define GammaCorrectionValue 2.45   //亮度拟合曲线的gamma修正，根据不同LED有所不同
-#define LVAlertCurrentLimit 8 //当低电压警告触发后，驱动最大的输出电流值(A)
+#define LVAlertCurrentLimit 4.3 //当低电压警告触发后，驱动最大的输出电流值(A)
+#define ForceThermalControlCurrent 5.5 //当挡位的运行电流大于这个值时温控将会被强制启用不准关闭
 #define MaxAllowedLEDCurrent 48 //驱动硬件熔断的最大输出电流设置(测得电流超过此电流的1.2倍将触发保护)
 #define MinimumLEDCurrent 2.05 //最小的LED电流
 #define BatteryCellCount 3 //默认情况下驱动使用的电池组中锂电池的串数(按照三元锂电池计算)

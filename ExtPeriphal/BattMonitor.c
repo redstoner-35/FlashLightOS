@@ -7,6 +7,7 @@
 #include "LEDMgmt.h"
 #include "modelogic.h"
 #include "runtimelogger.h"
+#include "FRU.h"
 #include <string.h>
 
 //静态变量和函数声明
@@ -191,9 +192,15 @@ void RunTimeBatteryTelemetry(void)
 		}
  //电池电压和电流保护逻辑
  if(RunTimeBattTelemResult.BusVolt>CfgFile.VoltageOverTrip)
+     {
+	   ProgramWarrantySign(Void_BattOverVoltage); //电池输入超压，自动注销保修
      RunTimeErrorReportHandler(Error_Input_OVP);//电池过压保护,这是严重故障,立即写log并停止驱动运行
+		 }
  if(RunTimeBattTelemResult.BusPower>MaximumBatteryPower)
+     {
+	   ProgramWarrantySign(Void_BattOverPower); //电池输入超过驱动允许值，自动注销保修
 		 RunTimeErrorReportHandler(Error_Input_OCP);//电池过功率保护,这是严重故障,立即写log并停止驱动运行
+		 }
  #ifndef FlashLightOS_Debug_Mode
  //如果电压低于警告值则强制锁定驱动的输出电流为指定值
  if(RunTimeBattTelemResult.BusVolt<CfgFile.VoltageAlert)

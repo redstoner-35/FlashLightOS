@@ -6,6 +6,7 @@
 
 #define ProgramSize 0x1FBFF  //程序的大小
 #define CRCWordAddress 0x1FC00  //存储CRC字的存储器
+#define DisableFlashProgErrorInfo
 
 //计算主程序区域的CRC-32
 unsigned int MainProgramRegionCRC(void)
@@ -59,12 +60,14 @@ void CheckForFlashLock(void)
     ProgramAreaCRC=MainProgramRegionCRC();
 		if(*(u32 *)CRCWordAddress!=ProgramAreaCRC) //检查不通过
 	    {
-	    UartPost(Msg_critical,"FWSec","firmware code was corrupted or being modified by attackers,system halted!");
+	    UartPost(Msg_critical,"FWSec","firmware code corrupted,system halted!");
 	    SelfTestErrorHandler();
 	    }
     return;
     }
- UartPost(Msg_warning,"FWSec","Firmware security feature is not enabled.System will implement this feature for security reason.");
+ #ifndef DisableFlashProgErrorInfo
+ UartPost(Msg_warning,"FWSec","Firmware security is not enabled.Implementing firmware security lock...");
+ #endif
  //启用HSI(给flash设置option byte需要HSI启用)
  CKCU_HSICmd(ENABLE);
  while(CKCU_GetClockReadyStatus(CKCU_FLAG_HSIRDY) != SET)
@@ -75,27 +78,37 @@ void CheckForFlashLock(void)
 	 }
  if(i==50)
    {
+	 #ifndef DisableFlashProgErrorInfo
 	 UartPost(msg_error,"FMC","Failed to enable HSI for Flash Programming!");
+	 #endif
 	 return;
 	 }
  //编程程序的CRC32值
  ProgramAreaCRC=MainProgramRegionCRC();
  if(FLASH_ErasePage(CRCWordAddress)!=FLASH_COMPLETE)
 	 {
+	 #ifndef DisableFlashProgErrorInfo
 	 UartPost(msg_error,"FWSec","Flash erase failed when try to program checksum.");
+	 #endif
 	 return;
 	 }
  if(FLASH_ProgramWordData(CRCWordAddress, ProgramAreaCRC)!=FLASH_COMPLETE)
    {
+	 #ifndef DisableFlashProgErrorInfo
 	 UartPost(msg_error,"FWSec","Flash program failed when try to program checksum.");
+	 #endif
 	 return;
 	 }
  if(*((u32 *)CRCWordAddress)!=ProgramAreaCRC)
 	 {
+	 #ifndef DisableFlashProgErrorInfo
 	 UartPost(msg_error,"FWSec","Flash verify failed when try to program checksum.");
+	 #endif
 	 return;
 	 }
+ #ifndef DisableFlashProgErrorInfo
  UartPost(Msg_info,"FWSec","Firmware signature has been programmed,value is 0x%08X.",ProgramAreaCRC);
+ #endif
  //打开主安全功能
  Option.OptionProtect=1; //锁定选项byte
  Option.MainSecurity=1;  //打开ROP
@@ -103,10 +116,14 @@ void CheckForFlashLock(void)
  FLASH_EraseOptionByte();
  if(FLASH_ProgramOptionByte(&Option)!=FLASH_COMPLETE)
    {
+	 #ifndef DisableFlashProgErrorInfo
 	 UartPost(msg_error,"FWSec","Option byte program failed.");
+	 #endif
 	 return;
 	 }
+ #ifndef DisableFlashProgErrorInfo
  UartPost(Msg_info,"FWSec","Firmware security feature has been enabled.System will restart now.");
+ #endif
  NVIC_SystemReset();  //刷完之后重启
  while(1);
  }

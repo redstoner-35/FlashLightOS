@@ -42,6 +42,12 @@ void Reboothandler(void)
 	//等待操作
 	if(rebootstat==reboot_init)
 	  {
+	  if(AccountState==Log_Perm_Root)
+		  {
+			rebootstat=reboot_waitconfirm;
+			YConfirmState=YConfirm_OK;
+		  return; //如果是root则直接跳过确认
+			}
 		UARTPuts("\r\n警告:强制重启固件并重新初始化将会清除当前所有未保存的配置.如您确定");
 		UARTPuts("\r\n需要进行强制重启,请在下方输入'我知道我在干什么,请继续'并按下回车.");
     UARTPuts("\r\n\r\n?");

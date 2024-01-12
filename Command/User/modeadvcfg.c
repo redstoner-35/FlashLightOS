@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include "FRU.h"
 
 //外部字符串指针数组
 extern const char *ModeSelectStr[];
@@ -176,6 +177,12 @@ void modeadvcfgHandler(void)
 		 TargetMode=GetSelectedModeConfig(UserSelect,modenum);
 		 if(TargetMode==NULL)
 		   UARTPuts((char *)ModeSelectStr[4]);
+		 //非root登录状态下当挡位电流超过某个值时禁止温控被关闭
+		 else if(AccountState!=Log_Perm_Root&&TargetMode->LEDCurrentHigh>ForceThermalControlCurrent&&!IsUserWantToEnable)
+			 {
+			 DisplayWhichModeSelected(UserSelect,modenum);
+			 UARTPuts("的温控功能因为电流较高,不允许关闭!\r\n");
+			 }
 		 else if(TargetMode->IsModeAffectedByStepDown==IsUserWantToEnable)
 		   {
 			 DisplayWhichModeSelected(UserSelect,modenum);
@@ -183,6 +190,13 @@ void modeadvcfgHandler(void)
 			 }
 		 else
 		   {
+			 #ifndef FlashLightOS_Debug_Mode
+			 if(TargetMode->LEDCurrentHigh>ForceThermalControlCurrent&&!IsUserWantToEnable)
+			   {
+				 UARTPuts("\033[40;33m警告:通过超级用户权限强制关闭温度保护将会使此设备永久失去保修!\033[0m\r\n");
+				 ProgramWarrantySign(Void_ForceDisableThermalLimit); //用户通过root权限强制关闭温控,保修作废
+				 }
+			 #endif
 			 TargetMode->IsModeAffectedByStepDown=IsUserWantToEnable;
 			 DisplayWhichModeSelected(UserSelect,modenum);
 			 UartPrintf("的温控功能已被成功%s.\r\n",IsUserWantToEnable?"启用":"禁用");

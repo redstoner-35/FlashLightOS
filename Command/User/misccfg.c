@@ -41,7 +41,7 @@ void termcfgHandler(void)
 	 if(CheckIfParamOnlyDigit(Param)||Value<0||Value>2040)
 	    {
       DisplayIllegalParam(Param,8,0);//显示用户输入了非法参数
-			UartPrintf((char *)OptionsOnlyAcceptNumber,1,2040,"秒","如果该参数数值为0,则终端永不超时");
+			UartPrintf((char *)OptionsOnlyAcceptNumber,1,2040,"秒","为0则终端永不超时");
 			}
 	 else //更新数值
 	    {      
@@ -78,7 +78,7 @@ void termcfgHandler(void)
 	 if(CheckIfParamOnlyDigit(Param)||Value<0||Value>2040)
 	    {
       DisplayIllegalParam(Param,8,2);//显示用户输入了非法参数
-      UartPrintf((char *)OptionsOnlyAcceptNumber,1,2040,"秒","驱动将永远保持在较高功耗的待机模式");
+			UartPrintf((char *)OptionsOnlyAcceptNumber,1,2040,"秒","为0则驱动永不睡眠");
 			}
 	 else //更新数值
 	    {

@@ -83,6 +83,12 @@ void modecurcfghandler(void)
 			TargetMode->LEDCurrentHigh=buf;
 			DisplayWhichModeSelected(UserSelect,modenum);
 			UartPrintf((char *)CurrentHasChanged,"额定",TargetMode->LEDCurrentHigh);
+		  if(AccountState!=Log_Perm_Root&&buf>ForceThermalControlCurrent) //电流调整后进行计算
+			  {
+				DisplayWhichModeSelected(UserSelect,modenum);
+			  UARTPuts("的温控功能因为电流较高,为了保证手电安全已被强制启用.\r\n");
+				TargetMode->IsModeAffectedByStepDown=true;
+				}
 			}
 		IsCmdParamOK=true;
 		}		

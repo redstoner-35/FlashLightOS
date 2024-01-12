@@ -32,6 +32,9 @@ const char EncryptedCopyRight[48]=
 0x93,0xD9,0xE0,0x6C,0x4A,0x4C,0x13,0x4F,
 0xDD,0x74,0xF4,0x3F,0xF0,0x2F,0xF9,0x4B
 };
+
+const char *WarrantyVoidReason[]={"强制关闭温控","LED严重过热","驱动严重过热","输入过功率","输入过压","输出严重过流"};
+
 #pragma push
 #pragma Otime//优化该函数使用3级别优化
 #pragma O3
@@ -42,6 +45,7 @@ void verHandler(void)
   const char *TextPtr="未知";
 	FRUBlockUnion FRU;
 	ADCOutTypeDef ADCO;
+  WarrantyVoidReasonDef WarrState;
 	UARTPuts("\r\n");
 	for(i=0;i<7;i++)//打印logo
 		 {
@@ -51,8 +55,10 @@ void verHandler(void)
 
 	UartPrintf("\r\n\r\nPowered by FlashLight OS version %d.%d.%d,终端波特率:%dbps",MajorVersion,MinorVersion,HotfixVersion,CfgFile.USART_Baud);	
   #ifdef FlashLightOS_Debug_Mode
-	UARTPuts("\r\n\033[40;33m警告：此固件为Debug模式的测试固件。仅用于初始化用途！\033[0m");		 
+		 UARTPuts("\r\n\033[40;33m警告:此固件为Debug模式的测试固件。仅用于初始化用途！\033[0m");		 
 	#endif
+	if(ReadWarrantySign(&WarrState)&&WarrState!=Warranty_OK)
+		UartPrintf("\r\n\033[40;33m此设备因为%s已永久失去保修.\033[0m",WarrantyVoidReason[(int)WarrState-1]);
 	//打印温度
   ADC_GetResult(&ADCO);
 	UARTPuts("\r\n当前LED温度:");
@@ -88,8 +94,7 @@ void verHandler(void)
 	memset(EncryptBUF,0x00,48);//销毁原文
   IsUsingOtherKeySet=true;//重新使用第二组key
 	//显示其余内容
-	UARTPuts("       All rights reserved.\r\n警告:本驱动的硬件和固件(FlashLight OS)基于'CC-BY-SA-4.0'");
-		 UARTPuts("\r\n许可证发布并且受《著作权法》的保护.\r\n");
+	UARTPuts("       All rights reserved.\r\n");
 	ClearRecvBuffer();//清除接收缓冲
 	CmdHandle=Command_None;//命令执行完毕				
 	}

@@ -43,7 +43,7 @@ const char *frueditArgument(int ArgCount)
 		case 12:return "设置驱动的硬件小版本信息";
 	  case 13:return "当使用自定义LED时,设置LED的名称";
 		case 14:return "设置驱动电源输入的最大允许功率(W)";
-		case 15:return "设置驱动电源输入的功率级的分流电阻阻值(mR)";
+		case 15:return "设置驱动电源输入的分流电阻阻值(mR)";
 		}
 	return NULL;
 	} 

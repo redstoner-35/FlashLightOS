@@ -8,6 +8,7 @@
 #include "cfgfile.h"
 #include "runtimelogger.h"
 #include "CurrentReadComp.h"
+#include "FRU.h"
 #include <math.h>
 #include <stdlib.h>
 
@@ -301,19 +302,26 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
  if(!Result||!ADC_GetResult(&ADCO))return Error_ADC_Logic;//INA219或者ADC无法正确的获取数据,报错
  //智能功率级严重过热警告
  if(ADCO.SPSTMONState==SPS_TMON_OK&&ADCO.SPSTemp>CfgFile.MOSFETThermalTripTemp)
-	 return Error_SPS_ThermTrip;
+	 return ProgramWarrantySign(Void_DriverCriticalOverTemp)?Error_SPS_ThermTrip:Error_Mode_Logic;
  //检测LED基板温度,如果超过热跳闸温度则保护。同时检测SPS和电池温度来决定是否启用电池质量检测
  if(ADCO.NTCState==LED_NTC_OK)
    {
 	 //LED过热 
-	 if(ADCO.LEDTemp>CfgFile.LEDThermalTripTemp)return Error_LED_ThermTrip;
+	 if(ADCO.LEDTemp>CfgFile.LEDThermalTripTemp)
+		 return ProgramWarrantySign(Void_LEDCriticalOverTemp)?Error_LED_ThermTrip:Error_Mode_Logic;
 	 //在低温下电池放电性能会锐减，因此我们需要在温度低于10度的时候关闭电池质量检测
 	 IsDisableBattCheck=fminf(ADCO.LEDTemp,ADCO.SPSTemp)<10?true:false;
 	 }
  //检查INA219读取到的电池电压确保电压合适
  if(BattOutput->BusVolt<=CfgFile.VoltageTrip||BattOutput->BusVolt>CfgFile.VoltageOverTrip) 
+   {
+	 if(BattOutput->BusVolt>CfgFile.VoltageOverTrip)ProgramWarrantySign(Void_BattOverVoltage); //电池输入超压，自动注销保修
 	 return BattOutput->BusVolt>CfgFile.VoltageOverTrip?Error_Input_OVP:Error_Input_UVP;
+   }
  UnLoadBattVoltage=BattOutput->BusVolt;//存储空载时的电池电压
+ //如果电压低于警告值则强制锁定驱动的输出电流为指定值
+ if(RunTimeBattTelemResult.BusVolt<CfgFile.VoltageAlert)
+		RunLogEntry.Data.DataSec.IsLowVoltageAlert=true;
  /********************************************************
  电流协商开始,此时系统将会逐步增加DAC的输出值使得电流缓慢
  爬升到驱动额定的最小电流.系统将会在协商结束后检测LED的If
@@ -359,7 +367,7 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
  if(CurrentMode->LEDCurrentHigh<2)//电流小于1A设置DAC输出电压为0.08进入PWM调光
    {
 	 SetPWMDuty(SysPstatebuf.Duty); //设置占空比
-	 AD5693R_SetOutput(0.08);
+	 AD5693R_SetOutput(0.12);
    } 
  return Error_None;
  }
@@ -371,7 +379,7 @@ void RuntimeModeCurrentHandler(void)
  {
  ModeConfStr *CurrentMode;
  ADCOutTypeDef ADCO;
- bool IsCurrentControlledByMode,CurrentAdjDirection,IsResultOK;
+ bool IsCurrentControlledByMode,CurrentAdjDirection,IsResultOK,IsEnableStepDown;
  volatile bool IsMainLEDEnabled,IsNeedToEnableBuck;
  float Current,Throttle,DACVID,delta,corrvaule,Duty;
  /********************************************************
@@ -387,21 +395,30 @@ void RuntimeModeCurrentHandler(void)
 		 RunTimeErrorReportHandler(Error_ADC_Logic);
 		 return;
 	   }	
+ if(ADCO.SPSTMONState==SPS_TMON_CriticalFault)
+     {
+		 //SPS报告了CATERR，立即停止驱动的运行
+	   RunTimeErrorReportHandler(Error_SPS_CATERR);
+		 return;		 
+		 }
  if(ADCO.SPSTMONState==SPS_TMON_OK&&ADCO.SPSTemp>CfgFile.MOSFETThermalTripTemp)
 	   {		 
 		 //MOS温度到达过热跳闸点,这是严重故障,立即写log并停止驱动运行
+		 ProgramWarrantySign(Void_DriverCriticalOverTemp); //驱动严重过热，自动注销保修
 	   RunTimeErrorReportHandler(Error_SPS_ThermTrip);
 		 return;
 	   }
  if(ADCO.NTCState==LED_NTC_OK&&ADCO.LEDTemp>CfgFile.LEDThermalTripTemp)
 	 	 {
 		 //LED温度到达过热跳闸点,这是严重故障,立即写log并停止驱动运行
+		 ProgramWarrantySign(Void_LEDCriticalOverTemp); //LED严重过热，自动注销保修
 		 RunTimeErrorReportHandler(Error_LED_ThermTrip);
 		 return;
 	   }
  if(ADCO.LEDIf>(1.5*FusedMaxCurrent))
      {
 		 //在LED启用时，LED电流超过允许值(熔断电流限制的1.5倍),这是严重故障,立即写log并停止驱动运行
+		 ProgramWarrantySign(Void_OutputOCP); //输出电流过高，自动注销保修
 		 RunTimeErrorReportHandler(Error_LED_OverCurrent);
 		 return;
 	   }	 
@@ -416,20 +433,27 @@ void RuntimeModeCurrentHandler(void)
  ADC读取到的各组件温度计算出降档的幅度，并且最终汇总为一个
  降档系数用于限制电流
  ********************************************************/
- Throttle=PIDThermalControl();//执行PID温控
+ //判断是否需要应用降档设置 
+ if(CurrentMode->IsModeAffectedByStepDown)IsEnableStepDown=true;//挡位启用温控降档 		 
+ else if(CurrentTactalDim==101)IsEnableStepDown=true;//瞬时极亮启用，强制开启温控降档 		 
+ else if(ADCO.NTCState==LED_NTC_OK&&ADCO.LEDTemp>(CfgFile.LEDThermalTripTemp-5))IsEnableStepDown=true; //LED温度逼近临界值，立即启动降档
+ else if(ADCO.SPSTMONState==SPS_TMON_OK&&(ADCO.SPSTemp>CfgFile.MOSFETThermalTripTemp-10))IsEnableStepDown=true; //MOS温度逼近临界值，立即启动降档
+ else IsEnableStepDown=false; //不需要应用降档设置
+ //执行温控
+ if(IsEnableStepDown)Throttle=PIDThermalControl();//执行PID温控计算降档参数
+ else Throttle=100; //不需要降档
  if(Throttle>100)Throttle=100;
  if(Throttle<5)Throttle=5;//温度降档值限幅
- if(!CurrentMode->IsModeAffectedByStepDown&&CurrentTactalDim!=101)SysPstatebuf.CurrentThrottleLevel=0;
- else SysPstatebuf.CurrentThrottleLevel=(float)100-Throttle;//将最后的降档系数记录下来用于事件日志使用
+ SysPstatebuf.CurrentThrottleLevel=(float)100-Throttle;//将最后的降档系数记录下来用于事件日志使用
  /********************************************************
  运行时挡位处理的第三步.我们需要从当前用户选择的挡位设置
  里面取出电流配置，然后根据用户设置(是否受降档影响)以及特
  殊挡位功能的要求(比如说呼吸功能)对电流配置进行处理最后生成
  实际使用的电流
  ********************************************************/
- Current=(CurrentTactalDim==101)?FusedMaxCurrent*0.95:CurrentMode->LEDCurrentHigh;//取出电流设置(如果瞬时极亮开启则按照0.95倍最大电流运行，否则按照挡位设置)
- if(CurrentMode->IsModeAffectedByStepDown||CurrentTactalDim==101)
-	 Current*=Throttle/(float)100;//该挡位受降档影响或强制极亮开启，应用算出来的温控降档设置
+ //取出电流设置并应用降档参数
+ Current=(CurrentTactalDim==101)?FusedMaxCurrent*0.95:CurrentMode->LEDCurrentHigh;//取出电流设置(如果瞬时极亮开启则按照0.95倍最大电流运行，否则按照挡位设置)	 
+ Current*=Throttle/(float)100;//应用算出来的温控降档数值
  /* 判断算出的电流是否受控于特殊模式的操作*/
  if(CurrentMode->Mode==LightMode_Breath)IsCurrentControlledByMode=true;
  else if(CurrentMode->Mode==LightMode_Ramp)IsCurrentControlledByMode=true;
@@ -526,7 +550,7 @@ void RuntimeModeCurrentHandler(void)
  else
 	 {
 	 IsMoonDimmingLocked=true; //线性调光不需要锁相，直接置true	 
-	 DACVID=Current>2?Current*30:60;  //计算DAC的VID,公式为:VID=(30mV*offset*LEDIf(A))
+	 DACVID=Current>1?Current*30:30;  //计算DAC的VID,公式为:VID=(30mV*offset*LEDIf(A))
 	 DACVID+=40;//加上40mV的offset
 	 if(CurrentMode->Mode!=LightMode_On&&CurrentMode->Mode!=LightMode_Ramp)CurrentSynthRatio=100;//不是常亮和无极调光模式，不使用电流补偿
 	 else if(Current<10)CurrentSynthRatio=100; //电流小于10A范围，直接用补偿参数
@@ -544,8 +568,8 @@ void RuntimeModeCurrentHandler(void)
 	   }
 	 DACVID*=(CurrentSynthRatio/(float)100); //乘上自适应电流补偿系数
 	 DACVID/=1000;//mV转换为V
-	 if(Current>2)Duty=100; //大于2A纯线性调光
-	 else Duty=100*(Current/2); //进行PWM
+	 if(Current>1)Duty=100; //大于2A纯线性调光
+	 else Duty=100*Current; //进行PWM
 	 SysPstatebuf.IsLinearDim=Duty==100?true:false;
 	 SetPWMDuty((IsMainLEDEnabled==false)?0:Duty); //纯线性调光,PWM占空比仅受特殊功能控制量在0-100之间转换。
 	 }

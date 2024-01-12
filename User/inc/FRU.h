@@ -84,6 +84,18 @@ typedef union
  char FRUBUF[sizeof(FRUBlockStor)];
  }FRUBlockUnion;
 
+typedef enum
+ {
+ Warranty_OK,
+ Void_ForceDisableThermalLimit,
+ Void_LEDCriticalOverTemp,
+ Void_DriverCriticalOverTemp,
+ Void_BattOverPower,
+ Void_BattOverVoltage,
+ Void_OutputOCP,
+ }WarrantyVoidReasonDef;
+ 
+ 
 //函数
 bool CheckFRUInfoCRC(FRUBlockUnion *FRU);//检查FRU CRC
 bool CalcFRUCRC(FRUBlockUnion *FRU);//计算CRC
@@ -93,5 +105,7 @@ const char *DisplayLEDType(FRUBlockUnion *FRU);//识别LED类型并返回常量�
 float QueryMaximumCurrentLimit(FRUBlockUnion *FRU);//识别LED类型并返回最大电流2
 void QueueLEDThermalSettings(LEDThermalConfStrDef *ParamOut);//获取LED数据并反馈此类参数
 int CheckForOEMLEDTable(LEDThermalConfStrDef *ParamOut,FRUBlockUnion *FRU);//检查数值
+bool ProgramWarrantySign(WarrantyVoidReasonDef WarrState);//向EEPROM内写入保修标签
+bool ReadWarrantySign(WarrantyVoidReasonDef *WarrState); //读取保修标签
  
 #endif

@@ -105,6 +105,7 @@ char WriteFRU(FRUBlockUnion *FRU)
  #else
  if(!CalcFRUCRC(FRU))return 1;//CRC计算失败
  if(M24C512_WriteSecuSct(FRU->FRUBUF,0,sizeof(FRUBlockUnion)))return 1; //写入失败
+ if(!ProgramWarrantySign(Warranty_OK))return 1; //自动编程保修标签
  #endif
  //写入完毕，返回0
  return 0;
@@ -151,7 +152,62 @@ static unsigned int CalcFRUCRC32Value(FRUBlockUnion *FRU)
  #endif
  return DATACRCResult;
  }
- 
+
+/**************************************************************
+这个函数主要的目的是用于向EEPROM内写入保修标签。
+**************************************************************/ 
+bool ProgramWarrantySign(WarrantyVoidReasonDef WarrState)
+ {
+ FRUBlockUnion FRU;
+ unsigned int buf,sbuf;
+ int i;
+ char Dbuf[5],RDbuf[5];
+ if(ReadFRU(&FRU))return false;
+ buf=CalcFRUCRC32Value(&FRU); //计算FRU结果
+ buf^=WarrState==Warranty_OK?0xA578b4cd:0x35F7DEAD;//进行XOR
+ //开始编程
+ sbuf=buf; //载入数值
+ for(i=0;i<4;i++)
+	 {
+	 Dbuf[i]=sbuf&0xFF;
+	 Dbuf[i]^=(char)WarrState; //和保修报废原因进行XOR
+	 sbuf>>=8; //对unsigned int进行拆分拆成四个byte
+	 }
+ Dbuf[4]=(char)WarrState^0xAA; //最后一个字节存原因 
+ if(M24C512_PageRead(RDbuf,MaxByteRange-8,5))return false; //读取失败  
+ if(!memcmp(RDbuf,Dbuf,5))return true; //已写入，跳过避免重复写EEPROM	 
+ #ifdef FlashLightOS_Debug_Mode
+ UARTPuts("\r\n保修标签数据已更新.");
+ #endif
+ return !M24C512_PageWrite(Dbuf,MaxByteRange-8,5)?true:false; //返回写EEPROM的结果
+ }
+
+/**************************************************************
+这个函数主要用于检查保修状态并返回状态值
+**************************************************************/
+bool ReadWarrantySign(WarrantyVoidReasonDef *WarrState)
+  {
+	FRUBlockUnion FRU;
+  unsigned int buf,sbuf;
+  int i;
+  char Dbuf[5],RDbuf[5];
+	//读入EEPROM内容
+  if(M24C512_PageRead(RDbuf,MaxByteRange-8,5))return false; //读取失败  
+	RDbuf[4]^=0xAA;
+	*WarrState=(WarrantyVoidReasonDef)RDbuf[4]; //将最后一个字节存的原因取出来   
+	//读入FRU为验证做准备
+	if(ReadFRU(&FRU))return false;
+  buf=CalcFRUCRC32Value(&FRU); //计算FRU结果	
+	buf^=((WarrantyVoidReasonDef)RDbuf[4]==Warranty_OK)?0xA578b4cd:0x35F7DEAD;//进行XOR
+	sbuf=buf; //载入数值
+  for(i=0;i<4;i++)
+	   {
+	   Dbuf[i]=sbuf&0xFF;
+	   Dbuf[i]^=RDbuf[4]; //和保修报废原因进行XOR
+	   sbuf>>=8; //对unsigned int进行拆分拆成四个byte
+	   }
+	return !memcmp(RDbuf,Dbuf,4)?true:false; //比对剩下的校验数据
+	}
 /**************************************************************
 这个函数主要用于检查读出来的FRU数据是否匹配CRC32校验和。如果匹配
 则返回true 否则返回false
@@ -217,11 +273,12 @@ static void WriteNewFRU(const char *reason)
 
 /**************************************************************
 固件启动时加载EEPROM内的FRU信息,然后根据FRU信息加载熔断电流限制
-最低和最高Vf值等运行信息到RAM内。
+最低和最高Vf值等运行信息到RAM内,并且进行ROM内保修标签的检查
 **************************************************************/
 void FirmwareVersionCheck(void)
  {
  FRUBlockUnion FRU;
+ WarrantyVoidReasonDef WarrState;
  #ifdef FlashLightOS_Debug_Mode
  LEDThermalConfStrDef ParamOut;
  #endif
@@ -281,9 +338,21 @@ void FirmwareVersionCheck(void)
 		if(FRU.FRUBlock.Data.Data.FRUVersion[0]==0x03||FRU.FRUBlock.Data.Data.FRUVersion[0]==0x06) //是通用3V/6V LED,进行LED OEMID检查
 			{
 			if(!CheckForOEMLEDTable(&ParamOut,&FRU))return; //调取查表函数,如果查表成功则退出。
-			UartPost(Msg_warning,"FRUChk","Custom LED-ID 0x%04X did not match any record inside VID list.",FRU.FRUBlock.Data.Data.CustomLEDIDCode);
-		  UartPost(Msg_warning,"FRUChk","You must register your OEM LED-ID into VID list and fill the thermal config.");				 
+			UartPost(Msg_warning,"FRUChk","Custom LED-ID 0x%04X did not match any record inside VID list.",FRU.FRUBlock.Data.Data.CustomLEDIDCode);			 
 			} 
 		#endif
+	  if(!ReadWarrantySign(&WarrState))
+	  #ifndef FlashLightOS_Debug_Mode
+			{				
+	    CurrentLEDIndex=6;//EEPROM不工作
+	    UartPost(Msg_critical,"FRUChk","Warranty sign corrupted.");
+	    SelfTestErrorHandler();//EEPROM掉线
+	    }
+	  #else
+			{
+		  ProgramWarrantySign(Warranty_OK);
+		  UartPost(Msg_warning,"FRUChk","Warranty sign has been re-programmed.");
+			}
+		#endif			
 	  }
  }
