@@ -300,8 +300,6 @@ void LogDataSectionInit(RunLogDataUnionDef *DIN)
 	DIN->DataSec.MaximumLEDTemp=0;
 	DIN->DataSec.MaximumLEDVf=0;
   DIN->DataSec.MaximumSPSTemp=0;
-  DIN->DataSec.MoonCurrent=0;
-	DIN->DataSec.MoonPWMDuty=40;
 	DIN->DataSec.MinimumBatteryVoltage=CfgFile.VoltageOverTrip;
 	DIN->DataSec.TotalBatteryCapDischarged=0;
 	DIN->DataSec.ThermalStepDownValue=0;
@@ -423,8 +421,6 @@ void RunLogModule_POR(void)
 	 RunLogEntry.Data.DataSec.BattUsage.IsLearningEnabled=false;
 	 RunLogEntry.Data.DataSec.IsFlashLightLocked=false;
 	 RunLogEntry.Data.DataSec.TotalLogCount=0;
-	 RunLogEntry.Data.DataSec.MoonPWMDuty=40;
-	 RunLogEntry.Data.DataSec.MoonCurrent=0;  //PID复位
 	 RunLogEntry.Data.DataSec.IsLowVoltageAlert=false;
 	 RunLogEntry.Data.DataSec.AverageSPSTemp=20;//初始的平均SPS温度设置为20度
 	 RunLogEntry.Data.DataSec.TotalMomtTurboCount=0;//总共turbo次数为0

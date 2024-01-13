@@ -657,6 +657,11 @@
               <FileType>1</FileType>
               <FilePath>.\I2C\24Cxx.c</FilePath>
             </File>
+            <File>
+              <FileName>MCP3421.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\I2C\MCP3421.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -711,11 +716,6 @@
               <FileName>SideKey.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\ExtPeriphal\SideKey.c</FilePath>
-            </File>
-            <File>
-              <FileName>PWMDIM.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\ExtPeriphal\PWMDIM.c</FilePath>
             </File>
             <File>
               <FileName>LinearDIM.c</FileName>

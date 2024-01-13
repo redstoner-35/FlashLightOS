@@ -58,7 +58,6 @@ void LoadDefaultConf(bool IsOverridePassword)
  CfgFile.IsHoldForPowerOn=true;//使用默认的操控逻辑，长按开关机	 
  #endif
  CfgFile.IsDriverLockedAfterPOR=false; //上电不自锁
- CfgFile.PWMDIMFreq=20000;//20KHz调光频率
  CfgFile.DeepSleepTimeOut=8*DeepsleepDelay;//深度睡眠时间
  CfgFile.IdleTimeout=8*DefaultTimeOutSec; //定时器频率乘以超时时间得到超时值
  #ifdef EnableSideLocLED	 

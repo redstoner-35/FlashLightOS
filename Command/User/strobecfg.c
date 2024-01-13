@@ -5,6 +5,7 @@
 #include <string.h>
 #include <math.h>
 
+
 //外部字符串指针数组
 extern const char *ModeSelectStr[];
 static const char *RandStrobeString="\r\n您设定的%s%s频率应当在%.1fHz到%.1fHz之间的正数,负数值和0均为非法值.";
@@ -39,6 +40,7 @@ const char *strobecfgArgument(int ArgCount)
 
 void strobecfghandler(void)
  {
+	#ifndef FlashLightOS_Debug_Mode
   int modenum;
 	ModeGrpSelDef UserSelect;
 	ModeConfStr *TargetMode;
@@ -124,6 +126,7 @@ void strobecfghandler(void)
 			  UartPrintf((char *)ModeSelectStr[5],ConvertStrobeModeStr(TargetMode));
 			}
 		}
+	#endif
 	//命令处理完毕
 	ClearRecvBuffer();//清除接收缓冲
   CmdHandle=Command_None;//命令执行完毕	

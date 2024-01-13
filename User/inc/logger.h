@@ -35,7 +35,6 @@ typedef struct
  PStateDef SystemPstate;
  CurrentModeStr CurrentModeSel;
  bool IsBattTelemWorking;//电池的调光器是否运行
- bool IsLinearDim;//是否是线性调光
  float CurrentDACVID;//当前DAC的VID
  float CurrentThrottleLevel;//当前降档的级别
  NTCSensorStatDef LEDBaseNTCStatu;//LED基板NTC状态

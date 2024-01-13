@@ -17,7 +17,6 @@
 #include "runtimelogger.h"
 #include "cfgfile.h"
 #include "delay.h"
-#include "PWMDIM.h"
 #include <math.h>
 
 //状态机状态声明

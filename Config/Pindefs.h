@@ -29,9 +29,9 @@ PA14：预留给MCTM的PWM output channel
 #define IIC_SDA_IOBank B
 #define IIC_SDA_IOPinNum 11 //SDA Pin=PB11
 
-//基于定时器的PWM输出引脚(用于月光档PWM调光)
-#define PWMO_IOBank A
-#define PWMO_IOPinNum 14 //PWM Pin=PA14（MT-CH0）
+//用于实现爆闪之类挡位控制的输出引脚
+#define ToggleFlash_IOBank A
+#define ToggleFlash_IOPinNum 14 //FlashControl Pin=PA14（MT-CH0）
 
 //按键
 #define ExtKey_IOBank A

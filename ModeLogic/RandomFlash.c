@@ -6,7 +6,6 @@
 #include "modelogic.h"
 #include "cfgfile.h"
 #include "delay.h"
-#include "PWMDIM.h"
 #include <math.h>
 #include <stdlib.h>
 #include "runtimelogger.h"

@@ -3,6 +3,7 @@
 #include "cfgfile.h"
 #include "SideKey.h"
 #include "LEDMgmt.h"
+#include "LinearDIM.h"
 #include "logger.h"
 #include "runtimelogger.h"
 #include <string.h>
@@ -15,11 +16,6 @@ extern int AutoOffTimer;
 const char *ResetBrightLEDControlStr="0010202010DE";
 const char *ErrorStrDuringPost="上电自检时";
 
-/*  辅助电源引脚的自动define,不允许修改！  */
-#define AUXPWR_EN_IOB STRCAT2(GPIO_P,AUXPWR_EN_IOBank)
-#define AUXPWR_EN_IOG STRCAT2(HT_GPIO,AUXPWR_EN_IOBank)
-#define AUXPWR_EN_IOP STRCAT2(GPIO_PIN_,AUXPWR_EN_IOPinNum)
-
 //初始化系统的电源状态的状态机
 void PStateInit(void)
   {
@@ -31,10 +27,9 @@ void PStateInit(void)
 	CurrentTactalDim=100;//电流按照默认值跑
 	ReverseTactalEnabled=false;//默认关闭
 	SysPstatebuf.ErrorCode=Error_None;//无错误
+  SysPstatebuf.AuxBuckCurrent=0;//辅助buck没电流
 	SysPstatebuf.Pstate=CfgFile.IsDriverLockedAfterPOR?PState_Locked:PState_Standby;//根据配置文件配置为locked或者状态
   SysPstatebuf.ToggledFlash=true;//LED点亮
-	SysPstatebuf.Duty=30;//默认PWM模式占空比从30%开始
-  SysPstatebuf.IsLinearDim=true;//使用线性调光
 	SysPstatebuf.CurrentThrottleLevel=0;
   SysPstatebuf.CurrentDACVID=0;
   //初始化电池遥测模块

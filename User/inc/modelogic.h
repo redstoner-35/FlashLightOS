@@ -138,9 +138,8 @@ typedef struct
  PStateDef Pstate; //电源状态
  SystemErrorCodeDef ErrorCode; //错误代码
  bool ToggledFlash; //是否点亮主灯(由定时器控制)
- float Duty;//PWM调光模式的占空比
+ float AuxBuckCurrent;//辅助buck电流
  float TargetCurrent;//目标电流
- bool IsLinearDim;//是否用的线性调光
  bool IsLEDShorted;//LED是否短路
  float CurrentDACVID;//当前DAC的VID
  float CurrentThrottleLevel;//当前降频等级

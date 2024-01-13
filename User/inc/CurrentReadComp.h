@@ -16,10 +16,10 @@ typedef enum
 //结构体定义
 typedef struct
  {
- float CurrentCompThershold[51];
- float CurrentCompValue[51];
- float DimmingCompThreshold[50];
- float DimmingCompValue[50];
+ float CurrentCompThershold[70];
+ float CurrentCompValue[70];
+ float DimmingCompThreshold[70];
+ float DimmingCompValue[70];
  }CompDataStrDef; //补偿阈值和数据的结构体 
 
 typedef union
@@ -48,7 +48,6 @@ extern CompDataStorUnion CompData; //补偿数据
 void LoadCalibrationConfig(void);//加载配置
 char WriteCompDataToROM(void); //保存配置
 void DoSelfCalibration(void); //自动校准
-void DoDimmingCalibration(void);//做调光测量
 CalibrationDBErrorDef CheckCompData(void);//计算校验和
 
 #endif

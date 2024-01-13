@@ -2,12 +2,13 @@
 #include "AD5693R.h"
 #include "delay.h"
 #include "LEDMgmt.h"
-#include "PWMDIM.h"
 #include "INA219.h"
 #include "ADC.h"
 #include "cfgfile.h"
 #include "runtimelogger.h"
 #include "CurrentReadComp.h"
+#include "LinearDIM.h"
+#include "MCP3421.h"
 #include "FRU.h"
 #include <math.h>
 #include <stdlib.h>
@@ -19,14 +20,12 @@ float PIDThermalControl(void);//PID温控
 void FillThermalFilterBuf(ADCOutTypeDef *ADCResult);//填充温度stepdown的缓冲区
 
 //内部变量
-static bool LastAdjustDirection; //存储上一次调节的方向
 static float LEDVfFilterBuf[12];
-static float LEDIfFilter[14];
-float CurrentSynthRatio=100;  //电流合成比例
 static char ShortCount=0;
 static bool IsDisableMoon; //是否关闭月光档
 bool IsDisableBattCheck; //是否关闭电池质量检测
 unsigned char PSUState=0x00; //辅助电源的状态
+static bool BuckPowerState=false;//主副buck的电源状态
 
 //外部变量
 extern int CurrentTactalDim; //反向战术模式设定亮度的变量
@@ -37,6 +36,7 @@ extern float LEDVfMin;
 extern float LEDVfMax; //LEDVf限制
 
 //字符串
+const char *DACInitError="Failed to init %s DAC.";
 const char *SPSFailure="SPS %sreports %s during init.";
 const char *DidnotStr="did Not ";
 
@@ -63,6 +63,43 @@ float LEDFilter(float DIN,float *BufIN,int bufsize)
  return buf;
 }
 
+//检测主机USB是否连接(当主机连接时，PWM引脚会被主机的5V输入拉高,可以利用这个功能检测主机的存在)
+FlagStatus IsHostConnectedViaUSB(void)
+ {
+ FlagStatus result;
+ AFIO_GPxConfig(ToggleFlash_IOB,ToggleFlash_IOP, AFIO_FUN_GPIO);//GPIO功能
+ GPIO_DirectionConfig(ToggleFlash_IOG,ToggleFlash_IOP,GPIO_DIR_IN);//配置为输入
+ GPIO_InputConfig(ToggleFlash_IOG,ToggleFlash_IOP,ENABLE);//启用IDR 
+ delay_ms(1);
+ result=GPIO_ReadInBit(ToggleFlash_IOG,ToggleFlash_IOP); //读取结果完毕
+ if(!result) //输入为低，重新配置为输出
+   {
+	 GPIO_InputConfig(ToggleFlash_IOG,ToggleFlash_IOP,DISABLE);//禁用IDR 
+	 GPIO_DirectionConfig(ToggleFlash_IOG,ToggleFlash_IOP,GPIO_DIR_OUT);//配置为输出
+	 GPIO_ClearOutBits(ToggleFlash_IOG,ToggleFlash_IOP); //输出强制set0
+	 }
+ return result;
+ }
+
+//设置爆闪控制pin
+void SetTogglePin(bool IsPowerEnabled)
+ {
+ if(!IsPowerEnabled)GPIO_ClearOutBits(ToggleFlash_IOG,ToggleFlash_IOP); //输出强制set0
+ else GPIO_SetOutBits(ToggleFlash_IOG,ToggleFlash_IOP); //输出强制set0
+ }	
+
+static void DisableAuxBuckForFault(void)
+ {
+	DACInitStrDef DACInitStr;
+  SetTogglePin(false); //关闭PWM pin
+  DACInitStr.DACPState=DAC_Normal_Mode;
+  DACInitStr.DACRange=DAC_Output_REF;	
+	DACInitStr.IsOnchipRefEnabled=false; 
+	AD5693R_SetChipConfig(&DACInitStr,AuxBuckAD5693ADDR); //关闭基准
+  AD5693R_SetOutput(0,AuxBuckAD5693ADDR); //将DAC设置为初始输出
+	SelfTestErrorHandler();
+ }
+ 
 //线性调光模块相关的电路的上电自校准程序
 void LinearDIM_POR(void)
 {
@@ -75,16 +112,23 @@ void LinearDIM_POR(void)
  自检过程中的第1步：我们首先需要配置好AD5693R DAC,将DAC内置基准打开并转
  换为工作模式。
  ***********************************************************************/
- UartPost(Msg_info,"LineDIM","Checking Hybrid dim circult...");
+ UartPost(Msg_info,"LineDIM","Checking dimming circult...");
  DACInitStr.DACPState=DAC_Normal_Mode;
  DACInitStr.DACRange=DAC_Output_REF;
  DACInitStr.IsOnchipRefEnabled=true; 
- if(!AD5693R_SetChipConfig(&DACInitStr))
+ if(!AD5693R_SetChipConfig(&DACInitStr,MainBuckAD5693ADDR))
   { 
- 	UartPost(Msg_critical,"LineDIM","Failed to init DAC.");
+ 	UartPost(Msg_critical,"LineDIM",(char *)DACInitError,"master");
 	CurrentLEDIndex=20;//DAC无法启动,保护
 	SelfTestErrorHandler(); 
 	}
+ DACInitStr.IsOnchipRefEnabled=false; //初始化Slave DAC
+ if(!AD5693R_SetChipConfig(&DACInitStr,AuxBuckAD5693ADDR))
+   { 
+   UartPost(Msg_critical,"LineDIM",(char *)DACInitError,"aux");
+	 CurrentLEDIndex=20;//DAC无法启动,保护
+	 SelfTestErrorHandler(); 
+	 }	
  /**********************************************************************
  自检过程中的第2步：首先需要确保辅助电源处于关闭状态,然后我们将DAC输出的
  PWM Mux设置为常通(100%占空比)，然后通过电流反馈MUX将调光信号反馈给电流
@@ -92,16 +136,16 @@ void LinearDIM_POR(void)
  设置值是一致的
  ***********************************************************************/
  SetAUXPWR(false);
- SetPWMDuty(100.0);
+ SetTogglePin(true);
  delay_ms(2);
  i=1;
  for(VSet=0.5;VSet<=2.5;VSet+=0.5)
 	{
-	AD5693R_SetOutput(VSet);
+	AD5693R_SetOutput(VSet,MainBuckAD5693ADDR);
 	if(!ADC_GetLEDIfPinVoltage(&VGet))OnChipADC_FaultHandler();//ADC寮傚父
 	if(VGet<(VSet-0.05)||VGet>(VSet+0.05))
 	  {
-		UartPost(Msg_critical,"LineDIM","Expected DAC out %.2fV but get %.2fV.",VSet,VGet);
+		UartPost(Msg_critical,"LineDIM","Expected Master DAC out %.2fV but get %.2fV.",VSet,VGet);
 	  CurrentLEDIndex=30;//电压误差过大,说明PWM MUX或者电流反馈MUX相关的电流反馈电路有问题。
 	  SelfTestErrorHandler();  		
 		}
@@ -112,8 +156,8 @@ void LinearDIM_POR(void)
  出一个1.25V的电压并通过ADC测量DAC的输出.这一步是为了测试PWM调光的MUX和
  PWM调光电路能否正常运行并根据PWM信号切断LED电流控制输入.
  ***********************************************************************/
- SetPWMDuty(0);
- AD5693R_SetOutput(1.25);
+ SetTogglePin(false);
+ AD5693R_SetOutput(1.25,MainBuckAD5693ADDR);
  if(!ADC_GetLEDIfPinVoltage(&VGet))OnChipADC_FaultHandler();//令ADC采样电压
  if(VGet>=0.05)
     {
@@ -127,13 +171,13 @@ void LinearDIM_POR(void)
  输出0V的电压并通过ADC测量DAC的输出.这一步是为了测试DAC的输出能否正确的归
  零确保线性调光的准确性.
  ***********************************************************************/
- AD5693R_SetOutput(0);
- SetPWMDuty(100);		
+ AD5693R_SetOutput(0,MainBuckAD5693ADDR);
+ SetTogglePin(true);	
  if(!ADC_GetLEDIfPinVoltage(&VGet))OnChipADC_FaultHandler();//令ADC采样电压
  if(VGet>=0.05)
 	  {
 		//有超过0.05的电压,说明DAC有问题输出无法归零
-		UartPost(Msg_critical,"LineDIM","DAC ZRST error.");
+		UartPost(Msg_critical,"LineDIM","Master DAC ZRST error.");
 	  CurrentLEDIndex=20;
 	  SelfTestErrorHandler();  		
 		}
@@ -142,8 +186,8 @@ void LinearDIM_POR(void)
  器(MOSFET)是否运行正常。
  ***********************************************************************/
  VSet=0.01;
- SetPWMDuty(100);
- AD5693R_SetOutput(VSet); //将DAC设置为初始输出，100%占空比
+ SetTogglePin(true);
+ AD5693R_SetOutput(VSet,MainBuckAD5693ADDR); //将DAC设置为初始输出，100%占空比
  SetAUXPWR(true); 
  retry=0;//清零等待标志位
  for(i=0;i<200;i++)//等待辅助电源上电稳定检测电压
@@ -161,7 +205,7 @@ void LinearDIM_POR(void)
 		   else 
 			   {				 
 				 if(VSet<0.1)VSet+=0.01;  
-			   AD5693R_SetOutput(VSet); //设置DAC输出提高电压直到检测通过
+			   AD5693R_SetOutput(VSet,MainBuckAD5693ADDR); //设置DAC输出提高电压直到检测通过
 			   retry=0;
 				 }
 	     }
@@ -185,40 +229,79 @@ void LinearDIM_POR(void)
  if(ADCO.SPSTemp>85)IsDisableMoon=true; //MOSFET温度大于85度此时月光档会出现问题因此需要限制使用
  else IsDisableMoon=false;
  /**********************************************************************
- 自检成功完成,此时我们可以让辅助电源下电了。然后我们将DAC输出重置为0V并且
- 让PWM模块输出0%占空比使得不会有意外的电压信号进入主Buck的控制脚使得buck
- 在我们不想要的情况下意外启动。 
+ 主buck自检成功完成,此时我们可以让辅助电源下电了。然后我们将DAC输出重置为
+ 0V并且让PWM模块输出0%占空比使得不会有意外的电压信号进入主Buck的控制脚使
+ 得主buck不会在我们不想要的情况下意外启动。 
  ***********************************************************************/
+ SetTogglePin(false);
+ AD5693R_SetOutput(0,MainBuckAD5693ADDR);
  SetAUXPWR(false);
- delay_ms(1);
- AD5693R_SetOutput(0);
- SetPWMDuty(0);
+ delay_ms(50);
  /***********************************************************************
- 最后，我们还需要从运行日志里面取出月光档的额定PWM占空比。
+ 下一步，我们需要进行副buck相关电路的检查
+ ***********************************************************************/	 
+ VSet=0.25;//初始VID 0.25
+ VGet=0;//电流为0
+ if(!MCP3421_SetChip(PGA_Gain2to1,Sample_14bit_60SPS,false))
+   {
+	 UartPost(Msg_critical,"LineDIM","Aux Buck Isens ADC init error.");
+	 SelfTestErrorHandler();  
+	 }	 
+ DACInitStr.IsOnchipRefEnabled=true; 
+ AD5693R_SetChipConfig(&DACInitStr,AuxBuckAD5693ADDR); //启动基准使buck运行
+ AD5693R_SetOutput(VSet,AuxBuckAD5693ADDR); //将DAC设置为初始输出
+ SetTogglePin(true);
+ for(i=0;i<50;i++)//等待buck启动
+		{
+	  delay_ms(17);
+		if(!ADC_GetResult(&ADCO))OnChipADC_FaultHandler();//让ADC获取信息
+	  if(!MCP3421_ReadVoltage(&VGet))//读取电流
+		   {
+			 UartPost(Msg_critical,"LineDIM","Aux Buck Isens ADC no response.");
+			 DisableAuxBuckForFault();//关闭辅助buck并报错
+			 }
+		if(ADCO.LEDVf>=LEDVfMax)break; //电压超过VfMax
+	  if(((VGet*100)/25)>=MinimumLEDCurrent)break; //电流达标
+		}
+ if(i==50) //出错
+    {
+		UartPost(Msg_critical,"LineDIM","Failed to start Auxiliary Buck.");
+    DisableAuxBuckForFault(); //关闭辅助buck并报错
+		}
+ /***********************************************************************
+ 副buck自检成功结束，这个时候我们通过设置DAC基准强制关闭副buck并关闭ADC,
+ 进入低功耗休眠阶段。
  ***********************************************************************/
- SysPstatebuf.Duty=RunLogEntry.Data.DataSec.MoonPWMDuty;  //加载占空比
- LastAdjustDirection=true; //初始调节方向设置为反向
+ MCP3421_SetChip(PGA_Gain2to1,Sample_14bit_60SPS,true); //关闭ADC
+ SetTogglePin(false); //PWM pin关闭
+ AD5693R_SetOutput(0,AuxBuckAD5693ADDR); //将DAC设置为0V输出	
+ DACInitStr.IsOnchipRefEnabled=false; 
+ AD5693R_SetChipConfig(&DACInitStr,AuxBuckAD5693ADDR); //关闭基准使buck停止运行		
  IsDisableBattCheck=false; //默认开启电池质量检测
- if(SysPstatebuf.Duty>100||SysPstatebuf.Duty<1) //占空比非法值，启动修正处理
-  {
-	SysPstatebuf.Duty=40;
-	RunLogEntry.Data.DataSec.MoonPWMDuty=40; //修正错误的占空比设置
-	RunLogEntry.Data.DataSec.MoonCurrent=0; //占空比设置已经损坏，需要重新学习月光档的电流设置
-	}
 }
 //从开灯状态切换到关灯状态的逻辑
 void TurnLightOFFLogic(void)
  {
+ DACInitStrDef DACInitStr;
+//复位变量
  TimerHasStarted=false;
  IsDisableBattCheck=false; //每次关机都要复位电池检测禁用位
  ShortCount=0;//复位短路次数统计
+ PSUState=0x00;//关闭主电源控制的定时器
+ //关闭外设
  DisableFlashTimer();//关闭闪烁定时器
- SetPWMDuty(0);
- AD5693R_SetOutput(0); //将DAC输出和PWM调光模块都关闭
+ SetTogglePin(false);
+ DACInitStr.DACPState=DAC_Normal_Mode;
+ DACInitStr.DACRange=DAC_Output_REF;
+ DACInitStr.IsOnchipRefEnabled=false; //关闭副buck的基准电源  
+ AD5693R_SetOutput(0,AuxBuckAD5693ADDR);	
+ AD5693R_SetOutput(0,MainBuckAD5693ADDR); //将主buck和副buck的输出都set0
+ AD5693R_SetChipConfig(&DACInitStr,AuxBuckAD5693ADDR);//关闭基准，彻底让副buck下电
  INA219_SetConvMode(INA219_PowerDown,INA219ADDR);//关闭INA219功率计
+ MCP3421_SetChip(PGA_Gain2to1,Sample_14bit_60SPS,true);//关闭辅助buck的功率测量模块
  SetAUXPWR(false);//切断3.3V辅助电源
  CurrentLEDIndex=0;
- PSUState=0x00;//关闭主电源控制的定时器
+ 
  LED_Reset();//复位LED管理器
  RunLogEntry.CurrentDataCRC=CalcRunLogCRC32(&RunLogEntry.Data); //计算新的CRC-32
  } 
@@ -237,15 +320,123 @@ void LEDShortCounter(void)
 	  }
  else ShortCount++;//时间没到
  }
-
+/*
+这个函数会在I2C ADC正常运行(手电筒启动的阶段)每0.2秒采集一次
+辅助buck的电流信息然后将电流信息写入到参数里面去。
+*/ 
+void GetAuxBuckCurrent(void)
+ {
+ float result=3072;
+ if(SysPstatebuf.Pstate!=PState_LEDOn&&SysPstatebuf.Pstate!=PState_LEDOnNonHold)return;//主灯没启动
+ if(!MCP3421_ReadVoltage(&result))
+   {
+	 //ADC转换失败,这是严重故障,立即写log并停止驱动运行
+	 RunTimeErrorReportHandler(Error_ADC_Logic);
+	 return;
+	 }
+ //开始进行数据转换
+ if(result==3072)return; //DAC本次数据未更新，不赋值
+ result*=100; //将电压转换为mV并同时除以Sense Amp的倍率(10V/V)得到Shunt两端的电压
+ if(result<=0)SysPstatebuf.AuxBuckCurrent=0; //数值非法，输出0
+ else SysPstatebuf.AuxBuckCurrent=result/25; //检流电阻25mR故电流为25mV/1A
+ }
+/*
+这个函数负责接收手电运行的逻辑处理函数传入的LED是否启动和
+电流设置参数然后对主副buck进行控制得到需要的电流
+*/
+void DoLinearDimControl(float Current,bool IsMainLEDEnabled,bool IsUsingComp)
+ {
+ DACInitStrDef DACInitStr;
+ bool IsBuckPowerOff,resultOK=true; 
+ float DACVID,Comp;
+ /*********************************************************
+ 首先系统会根据传入的电流数值计算补偿参数，这个补偿参数用于
+ 处理LED电流的非线性特性。	 
+ *********************************************************/
+ if(IsUsingComp)
+	 Comp=QueueLinearTable(70,Current,CompData.CompDataEntry.CompData.Data.DimmingCompThreshold,CompData.CompDataEntry.CompData.Data.DimmingCompValue,&resultOK); //从校准记录里面读取电流补偿值
+ else //不读取补偿值
+	 Comp=1.00;
+ if(!resultOK) //校准数据库异常
+	 {
+	 RunTimeErrorReportHandler(Error_Calibration_Data);
+	 return;
+	 }
+ /*********************************************************
+ 为了节省电力，当主LED不需要运行的时候，经过0.5秒我们可以让
+ 主buck和副buck都下电来节省能量
+ *********************************************************/	  
+ if(Current==0||!IsMainLEDEnabled)	 
+	 PSUState|=0x80; //额定LED电流为0或者toggle模式需要关闭主灯,启动计时器
+ else
+	 PSUState=0x00; //电源开启 
+ IsBuckPowerOff=PSUState==(0x80|MainBuckOffTimeOut)?true:false; //检测主buck是否关闭
+ if(BuckPowerState!=IsBuckPowerOff) //设置电源
+   {
+	 BuckPowerState=IsBuckPowerOff; //同步参数
+	 AD5693R_SetOutput(0,AuxBuckAD5693ADDR);	//清除副buck的VID
+	 SetAUXPWR(false); //如果buck需要关机则关闭主buck电源
+	 DACInitStr.DACPState=DAC_Normal_Mode;
+   DACInitStr.DACRange=DAC_Output_REF;
+   DACInitStr.IsOnchipRefEnabled=!BuckPowerState; //关闭副buck的基准电源
+	 if(!AD5693R_SetChipConfig(&DACInitStr,AuxBuckAD5693ADDR))
+     {
+		 //DAC无响应,这是严重故障,立即写log并停止驱动运行
+	   RunTimeErrorReportHandler(Error_DAC_Logic);
+		 return;
+	   } 
+	 }
+ /*********************************************************
+ 当前LED电流为0，且主LED设置为关闭，因此设置PWMPin=0关闭输出
+ *********************************************************/	 
+ if(Current==0||!IsMainLEDEnabled)SetTogglePin(false);
+ /*********************************************************
+ 当前LED电流在0-3.9A的范围内，此时使用副buck作为输出，主buck
+ 设置为offline。
+ *********************************************************/	
+ else if(Current<3.9)
+   {
+	 DACVID=250+(Current*250); //LT3935 VIset=250mV(offset)+(250mv/A)
+	 DACVID*=Comp;//乘以补偿值
+	 DACVID/=1000; //mV转V
+	 SetAUXPWR(false); //关闭主buck电源,启用副buck
+	 if(!AD5693R_SetOutput(DACVID,AuxBuckAD5693ADDR)) //设置辅助Buck的VID
+     {
+		 //DAC无响应,这是严重故障,立即写log并停止驱动运行
+	   RunTimeErrorReportHandler(Error_DAC_Logic);
+		 return;
+	   }   
+   SetTogglePin(true); //使能buck		 
+	 }
+ /*********************************************************
+ 当前LED电流在3.9A以上的范围，此时使用主buck作为输出，副buck
+ 设置为offline。
+ *********************************************************/	 
+ else
+	 {
+	 DACVID=40+(Current*30); //主Buck VIset=40mV(offset)+(30mv/A)
+	 DACVID*=Comp;//乘以补偿值
+	 DACVID/=1000; //mV转V
+	 SetAUXPWR(true); //关闭副buck电源,启用主buck
+	 if(!AD5693R_SetOutput(DACVID,MainBuckAD5693ADDR)) //设置主Buck的VID
+     {
+		 //DAC无响应,这是严重故障,立即写log并停止驱动运行
+	   RunTimeErrorReportHandler(Error_DAC_Logic);
+		 return;
+	   }    
+	 SetTogglePin(true); //使能buck
+	 }
+ }	
+ 
 //从关灯状态转换到开灯状态,上电自检的逻辑
 SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
  {
  ADCOutTypeDef ADCO;
  bool Result;
  ModeConfStr *CurrentMode;
- float VID,VIDIncValue;
+ float VID,VIDIncValue,ILED;
  int i,retry,AuxPSURecycleCount; 
+ DACInitStrDef DACInitStr;
  /********************************************************
  我们首先需要检查传进来的模式组是否有效。然后检查校准数据库
  里面的数值和数据本身完整性是否有效。如果无效则报异常
@@ -261,10 +452,12 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
  BattOutput->TargetSensorADDR=INA219ADDR;
  if(!INA219_SetConvMode(INA219_Cont_Both,INA219ADDR))
 	 return Error_ADC_Logic;//设置INA219遥测的器件地址,然后让INA219进入工作模式
- if(!AD5693R_SetOutput(0))
+ if(!AD5693R_SetOutput(0,MainBuckAD5693ADDR))
 	 return Error_DAC_Logic;//将DAC输出设置为0V,确保送主电源时主Buck变换器不工作
+ if(!MCP3421_SetChip(PGA_Gain2to1,Sample_14bit_60SPS,false))
+	 return Error_ADC_Logic; //初始化ADC逻辑
  delay_ms(1);
- SetPWMDuty(100);//自检过程中我们使用线性调光,因此PWM占空比设置为100%
+ SetTogglePin(true);//控制引脚设置为常通
  SetAUXPWR(true);
  AuxPSURecycleCount=0;
  while(AuxPSURecycleCount<5) //送上辅助DCDC电源，开始进行SPS的检查
@@ -323,17 +516,23 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
  if(BattOutput->BusVolt<CfgFile.VoltageAlert)
 		RunLogEntry.Data.DataSec.IsLowVoltageAlert=true;
  /********************************************************
- 电流协商开始,此时系统将会逐步增加DAC的输出值使得电流缓慢
- 爬升到驱动额定的最小电流.系统将会在协商结束后检测LED的If
- 和Vf和DAC的VID判断是否短路
+ 电流协商开始,此时系统将会关闭主buck的电源，然后设置DAC启
+ 用基准来启动副buck，然后副buck开始向LED输出一个小电流，检
+ 查LED是否发生短路，以及副buck的输出线是否正确连接到基板
  ********************************************************/
  VID=StartUpInitialVID;
  VIDIncValue=0.5;
+ ILED=0;
+ SetAUXPWR(false); //关闭主buck
+ DACInitStr.DACPState=DAC_Normal_Mode;
+ DACInitStr.DACRange=DAC_Output_REF;
+ DACInitStr.IsOnchipRefEnabled=true; //启用副buck的基准电源
+ if(!AD5693R_SetChipConfig(&DACInitStr,AuxBuckAD5693ADDR))return Error_DAC_Logic;
  while(VID<100)
 		 {
-		 if(!AD5693R_SetOutput(VID/(float)1000))return Error_DAC_Logic;
-		 ADC_GetResult(&ADCO);
-		 if(ADCO.LEDIf>=MinimumLEDCurrent&&ADCO.LEDVf>LEDVfMin)break; //电流足够且电压达标
+		 if(!AD5693R_SetOutput((VID+250)/(float)1000,AuxBuckAD5693ADDR))return Error_DAC_Logic;
+		 if(!MCP3421_ReadVoltage(&ILED))return Error_ADC_Logic; //读取电流
+		 if(((ILED*100)/25)>=MinimumLEDCurrent&&ADCO.LEDVf>LEDVfMin)break; //电流足够且电压达标
 		 VID=((100-VID)<VIDIncValue)?VID+0.5:VID+VIDIncValue;//增加VID，如果快到上限就慢慢加，否则继续快速增加VID
 		 VIDIncValue+=StartupLEDVIDStep; //每次VID增加的数值
 		 }
@@ -360,15 +559,9 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
  ********************************************************/
  SysPstatebuf.IsLEDShorted=false;
  SysPstatebuf.ToggledFlash=true;// LED没有短路，上电点亮
+ SysPstatebuf.AuxBuckCurrent=(ILED*100)/25;//填写辅助buck的输出电流
  FillThermalFilterBuf(&ADCO); //填写温度信息
  for(i=0;i<12;i++)LEDVfFilterBuf[i]=ADCO.LEDVf;//填写LEDVf 
- for(i=0;i<14;i++)LEDIfFilter[i]=ADCO.LEDIf;
- CurrentSynthRatio=100; //默认合成比例设置为100%
- if(CurrentMode->LEDCurrentHigh<2)//电流小于1A设置DAC输出电压为0.08进入PWM调光
-   {
-	 SetPWMDuty(SysPstatebuf.Duty); //设置占空比
-	 AD5693R_SetOutput(0.12);
-   } 
  return Error_None;
  }
 /*
@@ -379,9 +572,9 @@ void RuntimeModeCurrentHandler(void)
  {
  ModeConfStr *CurrentMode;
  ADCOutTypeDef ADCO;
- bool IsCurrentControlledByMode,CurrentAdjDirection,IsResultOK,IsEnableStepDown;
+ bool IsCurrentControlledByMode,IsEnableStepDown;
  volatile bool IsMainLEDEnabled,IsNeedToEnableBuck;
- float Current,Throttle,DACVID,delta,corrvaule,Duty;
+ float Current,Throttle;
  /********************************************************
  运行时挡位处理的第一步.首先获取当前的挡位，然后我们使能ADC
  的转换负责获取LED的电流,温度和驱动功率管的温度,接下来就是
@@ -478,109 +671,10 @@ void RuntimeModeCurrentHandler(void)
  /* 存储处理之后的目标电流 */
  SysPstatebuf.TargetCurrent=Current;//存储下目标设置的电流给短路保护模块用
  /********************************************************
- 运行时挡位处理的第四步,如果目前LED电流为0，为了避免红色LED
- 鬼火，程序会把LED的主buck相关的电路关闭。
+ 运行时挡位处理的第四步,将算出来的主LED是否开启的参数放入
+ 电流控制函数里面去进行调整，控制主灯的电流输出
  ********************************************************/
- if(Current==0||!IsMainLEDEnabled)	 
-	 PSUState|=0x80; //额定LED电流为0或者toggle模式需要关闭主灯,启动计时器
- else
-	 PSUState=0x00; //电源开启 
- SetAUXPWR((PSUState==(0x80|MainBuckOffTimeOut))?false:true); //控制辅助电源引脚
- /********************************************************
- 运行时挡位处理的第五步,将计算出的电流通过PWM调光和DAC线
- 性调光混合的方式把LED调节到目标的电流实现挡位控制（这是对
- 于其他挡位来说的）
- ********************************************************/
- if(Current==0)//LED关闭
-   {
-	 SysPstatebuf.IsLinearDim=true;
-	 SetPWMDuty(0); 
-	 DACVID=0; //令DAC的输出和PWM占空比都为0使主Buck停止输出
-	 }
- //小于等于2A电流,因为电流环路无法在小于此点的条件下稳定因此使用PWM方式调光(仅非呼吸模式)
- else if(Current<=2.00&&CurrentMode->Mode!=LightMode_Breath)
-   {
-	 if(Current<MinimumLEDCurrent)Current=MinimumLEDCurrent;//最小电流限制
-   if(!ADC_GetResult(&ADCO))//令ADC得到电流
-       {
-			 //ADC转换失败,这是严重故障,立即写log并停止驱动运行
-		   RunTimeErrorReportHandler(Error_ADC_Logic);
-		   return;
-	     }
-   if(!IsMainLEDEnabled)//特殊功能控制量请求关闭LED,不执行电流控制输出	
-	   SetPWMDuty(0);		 
-	 else //正常求解
-		   {
-		   //当前月光档电流未锁相,对占空比进行控制以达到目标电流
-       if(Current!=RunLogEntry.Data.DataSec.MoonCurrent)
-			   {
-				 delta=Current-LEDFilter(ADCO.LEDIf,LEDIfFilter,14); //求误差
-			   if(fabsf(delta)>0.75)corrvaule=0.5;//电流误差严重过高，开始大幅度修正
-				 else if(fabsf(delta)>0.3)corrvaule=0.01;//电流误差过大，开始大幅度修正				 
-				 else if(fabsf(delta)>0.03)corrvaule=0.005;//电流误差未到额定值，继续小幅度修正
-				 else //电流到误差范围，锁定
-				   {
-					 corrvaule=0; //不需要修正
-					 RunLogEntry.Data.DataSec.MoonCurrent=Current;
-			     if(SysPstatebuf.Duty>100)SysPstatebuf.Duty=100;
-			     else if(SysPstatebuf.Duty<1)SysPstatebuf.Duty=1; //PWM占空比限幅
-				   RunLogEntry.Data.DataSec.MoonPWMDuty=SysPstatebuf.Duty; //存下已锁相的占空比和电流，关闭电流环路
-					 } 
-				 //如果是正在无极调光则占空比调整范围加大50倍来提高调节速率
-				 if(IsRampAdjusting)
-				    {
-						CurrentAdjDirection=(delta>=0)?true:false; //计算出当前的调节方向
-						corrvaule*=(float)50; //默认在无极调光模式下调节倍率为50倍
-				    if(LastAdjustDirection!=CurrentAdjDirection)corrvaule/=(float)5; //为了避免震荡，如果上一次的调节方向和本次不同则采用较小的调节倍率
-						LastAdjustDirection=CurrentAdjDirection;//存储上一次的调节方向
-						}
-				 //根据电流误差修正占空比并对占空比进行限幅
-				 SysPstatebuf.Duty+=(delta>=0)?corrvaule:-corrvaule; //电流过大减小占空比,电流过小增大占空比		 
-				 if(SysPstatebuf.Duty>100)SysPstatebuf.Duty=100;
-			   if(SysPstatebuf.Duty<1)SysPstatebuf.Duty=1; //占空比限幅
-				 }
-			 else IsMoonDimmingLocked=true; //月光档已经锁相
-			 //占空比应用
-			 SetPWMDuty(SysPstatebuf.Duty); //设置占空比
-			 }
-	 DACVID=0.12;  //120mV
-	 SysPstatebuf.IsLinearDim=false;
-	 }
- //大于2A电流使用纯线性调光实现无频闪
- else
-	 {
-	 IsMoonDimmingLocked=true; //线性调光不需要锁相，直接置true	 
-	 DACVID=Current>1?Current*30:30;  //计算DAC的VID,公式为:VID=(30mV*offset*LEDIf(A))
-	 DACVID+=40;//加上40mV的offset
-	 if(CurrentMode->Mode!=LightMode_On&&CurrentMode->Mode!=LightMode_Ramp)CurrentSynthRatio=100;//不是常亮和无极调光模式，不使用电流补偿
-	 else if(Current<10)CurrentSynthRatio=100; //电流小于10A范围，直接用补偿参数
-	 else if(fabsf(Current-ADCO.LEDIf)>0.02) 
-	   { 
-	   if(Current>ADCO.LEDIf)CurrentSynthRatio=CurrentSynthRatio<150?CurrentSynthRatio+0.5:150; 
-	   else CurrentSynthRatio=CurrentSynthRatio>50?CurrentSynthRatio-0.5:50;
-		 }
-	 DACVID*=QueueLinearTable(50,Current,CompData.CompDataEntry.CompData.Data.DimmingCompThreshold,CompData.CompDataEntry.CompData.Data.DimmingCompValue,&IsResultOK); //从校准记录里面读取电流补偿值
-	 if(!IsResultOK) //校准数据库异常，退出
-		 {
-		 //校准数据库异常，让驱动退出运行
-		 RunTimeErrorReportHandler(Error_Calibration_Data);
-		 return;
-	   }
-	 DACVID*=(CurrentSynthRatio/(float)100); //乘上自适应电流补偿系数
-	 DACVID/=1000;//mV转换为V
-	 if(Current>1)Duty=100; //大于2A纯线性调光
-	 else Duty=100*Current; //进行PWM
-	 SysPstatebuf.IsLinearDim=Duty==100?true:false;
-	 SetPWMDuty((IsMainLEDEnabled==false)?0:Duty); //纯线性调光,PWM占空比仅受特殊功能控制量在0-100之间转换。
-	 }
- /*  根据目标的DAC VID(电压值) 发送指令控制DAC输出  */
- SysPstatebuf.CurrentDACVID=DACVID*1000;//将当前DAC的VID记录下来用于事件日志
- if(!AD5693R_SetOutput(DACVID))
-   {
-	 //DAC对于发送的指令没有回应无法设置输出,这是严重故障,立即写log并停止驱动运行
-	 RunTimeErrorReportHandler(Error_DAC_Logic);
-	 return;
-	 }
+ DoLinearDimControl(Current,IsMainLEDEnabled,true);
  TimerCanTrigger=true;//允许GPTM1定时器执行特殊功能
  /***********************************************************
  最后一步，系统采样LED的Vf加入数字滤波器中用于判断是否发生短

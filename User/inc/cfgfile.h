@@ -27,7 +27,6 @@ typedef struct
  bool IsHoldForPowerOn; //选择是长按开机还是单击开机
  bool EnableLocatorLED;//是否启用侧按定位LED
  bool EnableRunTimeLogging;//是否启用运行时记录
- unsigned short PWMDIMFreq;//PWM调光频率
  bool IsDriverLockedAfterPOR;//驱动上电后是否保持自锁
  //挡位组配置
  ModeConfStr RegularMode[8];  //普通挡位

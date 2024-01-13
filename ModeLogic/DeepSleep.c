@@ -1,11 +1,10 @@
 #include "delay.h"
-#include "Pindefs.h"
+#include "LinearDIM.h"
 #include "modelogic.h"
 #include "console.h"
 #include "Cfgfile.h"
 #include "LEDMgmt.h"
 #include "AD5693R.h"
-#include "PWMDIM.h"
 #include "runtimelogger.h"
 #include "ADC.h"
 
@@ -37,7 +36,8 @@ void EnteredLowPowerMode(void)
   DACPoffStr.DACPState=DAC_Disable_HiZ;
 	DACPoffStr.DACRange=DAC_Output_REF;
 	DACPoffStr.IsOnchipRefEnabled=false; 
-	if(!AD5693R_SetChipConfig(&DACPoffStr))return;//让DAC输出高阻关闭基准电压，进入掉电状态
+	if(!AD5693R_SetChipConfig(&DACPoffStr,MainBuckAD5693ADDR))return;//让DAC输出高阻关闭基准电压，进入掉电状态
+	if(!AD5693R_SetChipConfig(&DACPoffStr,AuxBuckAD5693ADDR))return;
 	DisableHBTimer(); //关闭定时器
 	ADC_DeInit(HT_ADC0);//将ADC复位
 	USART_TxCmd(HT_USART1, DISABLE);
@@ -120,12 +120,19 @@ void ExitLowPowerMode(void)
   DACInitStr.DACPState=DAC_Normal_Mode;
   DACInitStr.DACRange=DAC_Output_REF;
   DACInitStr.IsOnchipRefEnabled=true; //正常运行，基准启动
-	if(!AD5693R_SetChipConfig(&DACInitStr))//重新初始化DAC
+	if(!AD5693R_SetChipConfig(&DACInitStr,MainBuckAD5693ADDR))//重新初始化DAC
 	  {
 		SysPstatebuf.Pstate=PState_Error;
 		SysPstatebuf.ErrorCode=Error_DAC_Logic;//出错了
 		return;
 		}
+  DACInitStr.IsOnchipRefEnabled=false; //对于辅助buck来说，基准需要关闭
+	if(!AD5693R_SetChipConfig(&DACInitStr,AuxBuckAD5693ADDR))
+	  {
+		SysPstatebuf.Pstate=PState_Error;
+		SysPstatebuf.ErrorCode=Error_DAC_Logic;//出错了
+		return;
+		}  
 	//启动完毕，检查是否进入调参模式，否则回到待机模式
 	if(IsHostConnectedViaUSB())IsParameterAdjustMode=true;
 	if(RunLogEntry.Data.DataSec.IsFlashLightLocked)SysPstatebuf.Pstate=PState_Locked;//如果睡眠前手电筒被上锁则恢复到锁定模式

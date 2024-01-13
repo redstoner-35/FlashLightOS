@@ -16,7 +16,6 @@
 #include "modelogic.h"
 #include "cfgfile.h"
 #include "delay.h"
-#include "PWMDIM.h"
 #include "runtimelogger.h"
 #include "console.h"
 #include <math.h>

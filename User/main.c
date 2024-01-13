@@ -8,7 +8,7 @@
 #include "LEDMgmt.h"
 #include "ADC.h"
 #include "modelogic.h"
-#include "PWMDIM.h"
+#include "LinearDIM.h"
 #include "AD5693R.h"
 #include "logger.h"
 #include "selftestlogger.h"
@@ -53,7 +53,7 @@ int main(void)
  SideKeyInit();//初始化侧按按钮
  ModeSwitchInit();//模式选择挡位的配置初始化
  PStateInit();//电源状态初始化
- PWMTimerInit();//PWM调光器初始化
+ IsParameterAdjustMode=IsHostConnectedViaUSB();//检测电脑是否连接
  if(!IsParameterAdjustMode)LinearDIM_POR();//DAC校准(仅在正常运行模式下启动)
  LoggerHeader_POR();//事件日志记录器初始化
  RunLogModule_POR();//运行日志模块POR
@@ -91,6 +91,7 @@ int main(void)
 	 PStateStateMachine();//处理电源状态切换的状态机 
    //传感器轮询模块
 	 if(!SensorRefreshFlag)continue; //当前时间没到跳过下面的代码
+	 GetAuxBuckCurrent();//获取辅助buck的电流
 	 LowVoltageIndicate();//低电压检测
 	 LEDShortCounter();//LED短路检测积分函数
 	 RunTimeBatteryTelemetry();//测量电池状态
@@ -105,7 +106,6 @@ int main(void)
 	 LoggerHeader_AutoUpdateHandler();//记录器自动更新头部数据	   	 
 	 #else
 	 SideKey_LogicHandler();//处理侧按按键事务
-	 //DoDimmingCalibration();//进行调光模块的校准
 	 DoSelfCalibration(); //处理按键自身的校准操作
 	 if(!SensorRefreshFlag)continue;
 	 LEDMgmt_CallBack();//LED管理器

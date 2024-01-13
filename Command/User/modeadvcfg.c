@@ -37,42 +37,12 @@ const char *modeadvcfgArgument(int ArgCount)
 void modeadvcfgHandler(void)
   {
   int modenum;	
-	char ParamO;
   ModeGrpSelDef UserSelect;
 	ModeConfStr *TargetMode;
 	char *ParamPtr;
 	bool IsCmdParamOK=false;
-	float buf;
 	LightModeDef LightMode;
 	bool IsUserWantToEnable,UserInputOK;
-  //处理PWM调光频率的调整
-	ParamPtr=IsParameterExist("CD",17,NULL); 
-	if(ParamPtr!=NULL)  
-		{
-		IsCmdParamOK=true;
-		buf=atof(ParamPtr);
-		if(buf==NAN||buf<5||buf>20) //数值非法
-		  {
-			DisplayIllegalParam(ParamPtr,17,12);//显示用户输入了非法参数  
-			UARTPuts("PWM调光的频率应在5-20(Khz)范围内.\r\n");
-			}
-		else //更改
-		  {
-			CfgFile.PWMDIMFreq=(unsigned short)(buf*1000);
-			UartPrintf("\r\n驱动的PWM调光频率已被设置为%.2fKHz.",buf);
-			UARTPuts("\r\n注意:此设定需要重启驱动后方可生效.请通过'cfgmgmt -s'命令保存配置后手动重启驱动.");
-			}
-		}
-	//检测后面的参数是否有被用到
-	IsParameterExist("456789AB",17,&ParamO);
-	if(!ParamO)
-	  {
-		if(!IsCmdParamOK)UartPrintCommandNoParam(17);//显示啥也没找到的信息 
-	  //命令处理完毕
-	  ClearRecvBuffer();//清除接收缓冲
-    CmdHandle=Command_None;//命令执行完毕	
-		return;
-		}
 	//识别用户输入的模式组
   if(!GetUserModeNum(17,&UserSelect,&modenum))return;		
 	//处理挡位类型识别

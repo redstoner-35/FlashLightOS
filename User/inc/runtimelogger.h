@@ -36,8 +36,6 @@ typedef struct
  float MaximumBatteryPower;  //平均和最大电池输出功率
  float AverageDriverEfficiency;  //平均驱动运行效率
  float MaximumEfficiency;//峰值效率
- float MoonCurrent; //月光档的电流值
- float MoonPWMDuty; //月光档的PWM占空比
  double TotalBatteryCapDischarged;  //总共电池放电的mAH数
  RampModeStaticStorDef RampModeStor[13]; //存储无极调光设置的存储器
  bool IsFlashLightLocked; //手电筒是否锁定

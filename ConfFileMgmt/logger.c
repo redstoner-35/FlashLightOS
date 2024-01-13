@@ -142,7 +142,6 @@ void CollectLoginfo(const char *ErrorArea,INADoutSreDef *BattStat)
  strncpy(LogData.LoggerDateSection.ErrorStageText,ErrorArea,32);//错误日志输入
  LogData.LoggerDateSection.SystemPstate=SysPstatebuf.Pstate;
  LogData.LoggerDateSection.ErrorCode=SysPstatebuf.ErrorCode;
- LogData.LoggerDateSection.IsLinearDim=SysPstatebuf.IsLinearDim;
  LogData.LoggerDateSection.CurrentDACVID=SysPstatebuf.CurrentDACVID;
  if(SysPstatebuf.CurrentThrottleLevel<0)SysPstatebuf.CurrentThrottleLevel=0;
  if(SysPstatebuf.CurrentThrottleLevel>100)SysPstatebuf.CurrentThrottleLevel=100;
@@ -253,7 +252,6 @@ bool ReInitLogArea(void)
 void PushDefaultInfoInsideLog(LoggerDataUnion *LogDataIN)
  {
  //基本信息
- LogDataIN->LoggerDateSection.IsLinearDim=false;
  strncpy(LogDataIN->LoggerDateSection.ErrorStageText,"Unknown",32);
  LogDataIN->LoggerDateSection.SystemPstate=PState_Standby;
  LogDataIN->LoggerDateSection.ErrorCode=Error_None;

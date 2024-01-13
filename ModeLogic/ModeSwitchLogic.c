@@ -7,10 +7,6 @@
 #include "runtimelogger.h"
 #include <string.h>
 
-
-//外部变量
-extern float CurrentSynthRatio;
-
 //常量
 #define MoresIDCode "Example"
 #ifndef DefaultRampMode
@@ -476,7 +472,6 @@ void ModeSwitchLogicHandler(void)
 	ResetRampMode();//重置无极调光模块
   ResetCustomFlashControl();//复位自定义闪控制
   TimerHasStarted=false;//更换挡位之后重配置定时器
-	CurrentSynthRatio=100;//复位调光比例
 	//挡位组选择逻辑状态机
   switch(CurMode.ModeGrpSel)	
 	  {

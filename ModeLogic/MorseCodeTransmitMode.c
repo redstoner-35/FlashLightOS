@@ -11,7 +11,6 @@
 #include "modelogic.h"
 #include "cfgfile.h"
 #include "delay.h"
-#include "PWMDIM.h"
 #include "console.h"
 
 //常量，SOS字符串用于发送

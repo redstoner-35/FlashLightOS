@@ -137,7 +137,6 @@ void logviewhandler(void)
 		 UartPrintf("%s错误位置 : %s",LogVIewAlertStr[4],LogData.LoggerDateSection.ErrorStageText);
 		 UartPrintf("%s------------  详细参数记录  ------------",LogVIewAlertStr[4]);
 		 UartPrintf("%s系统电源状态(P-State) : %s",LogVIewAlertStr[4],PstateString);
-		 UartPrintf("%s调光模式 : %s",LogVIewAlertStr[4],LogData.LoggerDateSection.IsLinearDim?"线性":"PWM");
      UartPrintf("%s温度降档幅度 : %.2f%%",LogVIewAlertStr[4],LogData.LoggerDateSection.CurrentThrottleLevel);	
      UartPrintf("%s线性调光DAC输出 : %.1fmV",LogVIewAlertStr[4],LogData.LoggerDateSection.CurrentDACVID);			 
 		 UartPrintf("%sLED基板NTC温度检测状态 : %s",LogVIewAlertStr[4],NTCStateString[LogData.LoggerDateSection.LEDBaseNTCStatu]);

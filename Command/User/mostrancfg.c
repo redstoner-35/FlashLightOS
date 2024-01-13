@@ -28,6 +28,7 @@ const char *mostranscfgArgument(int ArgCount)
 //命令处理函数	
 void mostranscfghandler(void)
  {
+	#ifndef FlashLightOS_Debug_Mode
   int modenum,strresult;
 	ModeGrpSelDef UserSelect;
 	ModeConfStr *TargetMode;
@@ -96,6 +97,7 @@ void mostranscfghandler(void)
 			}
 		}
   if(!IsCmdParamOK)UartPrintCommandNoParam(20);//显示啥也没找到的信息 
+	#endif
  	//命令处理完毕
 	ClearRecvBuffer();//清除接收缓冲
   CmdHandle=Command_None;//命令执行完毕

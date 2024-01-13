@@ -30,11 +30,8 @@ typedef struct
 #define DACBit 16 //DAC位数，对于AD5693R而言是16bit
  
 //函数
-bool AD5693R_Detect(void);//检测DAC是否就绪,true表示就绪
-bool AD5693R_SetChipConfig(DACInitStrDef *DACInitStruct);//根据传入的结构体配置DAC的参数	
-bool AD5693R_SetOutput(float VOUT);//设置DAC的输出电压 
-
-//上电自校准
-void LinearDIM_POR(void);
+bool AD5693R_Detect(char ADDR);//检测DAC是否就绪,true表示就绪
+bool AD5693R_SetChipConfig(DACInitStrDef *DACInitStruct,char ADDR);//根据传入的结构体配置DAC的参数	
+bool AD5693R_SetOutput(float VOUT,char ADDR);//设置DAC的输出电压 
  
 #endif
