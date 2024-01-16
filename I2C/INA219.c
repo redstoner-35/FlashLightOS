@@ -50,8 +50,8 @@ bool INA219_GetBusInformation(INADoutSreDef *INADout)
  }
 
 //初始化INA219
-//0表示完成，1表示失败 2表示参数错误
-char INA219_INIT(INAinitStrdef * INAConf)
+//返回枚举类型
+INA219InitStatDef INA219_INIT(INAinitStrdef * INAConf)
  {
   unsigned int ConfREG=0x0000;//默认寄存器为0
 	double shuntResValue;//浮点数，表示检流电阻的阻值
@@ -71,13 +71,13 @@ char INA219_INIT(INAinitStrdef * INAConf)
 		 if(buf==0x399F)break;//验证通过
 	  }while(Retrycount<5);	 
   //校验复位是否成功
-  if(Retrycount>=5)return 1;//如果尝试了很多次复位还是失败则退出
+  if(Retrycount>=5)return A219_Error_SMBUS_NACK;//如果尝试了很多次复位还是失败则退出
   //首先写入DC母线的电压满量程
 	switch(INAConf->VoltageFullScale)
    {
 	  case 16:{ConfREG=ConfREG&0xDFFF;break;}//满量程16V，配置寄存器第13位写0
 	  case 32:{ConfREG=ConfREG|0x2000;break;}//满量程32V，配置寄存器第13位写1
-	  default:{return 2;}//其他无效值则函数结束
+	  default:{return A219_Error_BusVoltScaleConfig;}//其他无效值则函数结束
 	 }
   //第二步，设置分流器电压的满量程（单位mV）
   switch(INAConf->ShuntVoltageFullScale)
@@ -86,7 +86,7 @@ char INA219_INIT(INAinitStrdef * INAConf)
 	  case 80:{ConfREG=ConfREG|0x0800;break;}//满量程80mV，PGA配置01
 	  case 160:{ConfREG=ConfREG|0x1000;break;}//满量程160mV，PGA配置10
 		case 320:{ConfREG=ConfREG|0x1800;break;}//满量程320mV，PGA配置11
-		default:{return 2;}//其他无效值则函数结束
+		default:{return A219_Error_ShuntPGAConfig;}//其他无效值则函数结束
 	 }
   //第三步，设置ADC的采样次数用于得到更精确的结果（同时影响总线和分流器）
 	//注：这里为了精度默认就使用了12bit模式
@@ -100,7 +100,7 @@ char INA219_INIT(INAinitStrdef * INAConf)
 		case 32:{ConfREG=ConfREG|0x06E8;break;}//采样32次求平均
 		case 64:{ConfREG=ConfREG|0x0770;break;}//采样64次求平均
 		case 128:{ConfREG=ConfREG|0x07F8;break;}//采样128次求平均
-		default:{return 2;}//其他无效值则函数结束
+		default:{return A219_Error_ADCAvgConfig;}//其他无效值则函数结束
 	 }
 	 //最后一步，写入模式配置bit
 	 ConfREG&=0xFFF8;
@@ -110,7 +110,7 @@ char INA219_INIT(INAinitStrdef * INAConf)
 	 delay_ms(1);
 	 buf=0;
 	 PMBUS_WordReadWrite(true,false,&buf,INAConf->TargetSensorADDR,0);
-	 if(buf!=ConfREG)return 1;//校验，如果写进去不对则报错
+	 if(buf!=ConfREG)return A219_Error_ProgramReg;//校验，如果写进去不对则报错
    //计算出校准寄存器的值
 	 shuntResValue=(double)(INAConf->ShuntValue)/(double)500;//将电阻值单位从毫欧转换为欧
 	 shuntResValue=(double)0.04096/(CurrentLSB*shuntResValue);//计算出校准寄存器的内容并且强制取整
@@ -119,16 +119,16 @@ char INA219_INIT(INAinitStrdef * INAConf)
 	 #ifdef Internal_Driver_Debug
 	 UartPost(Msg_info,"INA21x","Calibration Reg Value:%d",CalREG);
 	 #endif
-	 if(CalREG&0x8000)return 3;//检查最高位是否有数据，如果有则返回计算值
+	 if(CalREG&0x8000)return A219_Error_CalibrationReg;//检查最高位是否有数据，如果有则返回错误类型
 	 CalREG<<=1;//把全部数据往左移一位，因为第一个bit必须得是空的
 	 //把校准数据写进INA219
 	 PMBUS_WordReadWrite(true,true,&CalREG,INAConf->TargetSensorADDR,0x5);//写入
 	 delay_ms(1);
 	 buf=0;
 	 PMBUS_WordReadWrite(true,false,&buf,INAConf->TargetSensorADDR,5);
-	 if(buf!=CalREG)return 1;//校验，如果写进去不对则报错
-   //这些步骤全部完成，函数结束返回0表示完成
-	 return 0;
+	 if(buf!=CalREG)return A219_Error_ProgramReg;//校验，如果写进去不对则报错
+   //这些步骤全部完成，函数结束
+	 return A219_Init_OK;
  }
 //设置INA219的转换模式
 bool INA219_SetConvMode(INA219ModeDef ConvMode,char SensorADDR)
@@ -149,7 +149,7 @@ void INA219_POR(void)
  INAinitStrdef PORINACfg;
  INADoutSreDef PORINADout;
  FRUBlockUnion FRU;
- char Result;
+ INA219InitStatDef Result;
  //读取FRU获取分流电阻阻值	 
  ReadFRU(&FRU); 
  //开始配置
@@ -162,9 +162,9 @@ void INA219_POR(void)
  PORINACfg.ConvMode=INA219_PowerDown;//配置为powerdown模式
  PORINACfg.ShuntVoltageFullScale=80;//分流电阻阻值满量程为80mV
  Result=INA219_INIT(&PORINACfg);
- if(Result)//尝试配置
+ if(Result!=A219_Init_OK)//尝试配置
   {
-	UartPost(Msg_critical,"INA21x","Failed to configure SMBUS Power Gauge,Error code:0x%d",Result);
+	UartPost(Msg_critical,"INA21x","Failed to configure SMBUS Power Gauge,Error:0x%d",Result);
 	CurrentLEDIndex=4;//指示219初始化异常
 	#ifndef FlashLightOS_Debug_Mode
 	SelfTestErrorHandler();

@@ -8,6 +8,7 @@
 //外部变量
 extern const char *ModeSelectStr[];
 static const char *ModeInfoStr="\r\n  挡位";
+static const char *ModeViewStr=" 挡位信息查看器(%s视图) ";
 
 //外部函数
 const char *ConvertStrobeModeStr(ModeConfStr *TargetMode);
@@ -63,13 +64,14 @@ void modeviewhandler(void)
 		  //显示数据
 			UARTPuts("\r\n");
 			UARTPutc('-',8);
-			UARTPuts(" 挡位信息查看器(详细视图) ");
+			UartPrintf((char *)ModeViewStr,"详细");
 			UARTPutc('-',8);
 			UARTPuts("\r\n");
 			UartPrintf("%s名称 : %s",(char *)ModeInfoStr,TargetMode->ModeName);
 			UartPrintf("%s是否启用 : %s",(char *)ModeInfoStr,TargetMode->IsModeEnabled?"是":"否");
 			UartPrintf("%s是否带记忆功能 : %s",(char *)ModeInfoStr,TargetMode->IsModeHasMemory?"是":"否");
 			UartPrintf("%s是否带温控功能 : %s",(char *)ModeInfoStr,TargetMode->IsModeAffectedByStepDown?"是":"否");
+			UartPrintf("%s温控值偏移 : -%.2fC",(char *)ModeInfoStr,TargetMode->ThermalControlOffset);
 			if(TargetMode->MaxMomtTurboCount>0)
 			  UartPrintf("%s鸡血最大次数 : %d",(char *)ModeInfoStr,TargetMode->MaxMomtTurboCount);
 			UARTPuts("\r\n  定时关机 : ");
@@ -128,7 +130,7 @@ void modeviewhandler(void)
 	  {
 		UARTPuts("\r\n");
 		UARTPutc('-',8);
-		UARTPuts(" 挡位信息查看器(简略视图) ");
+		UartPrintf((char *)ModeViewStr,"概览");
 		UARTPutc('-',8);
 		UARTPuts("\r\n");
 		//统计常规功能挡位组内的挡位数量

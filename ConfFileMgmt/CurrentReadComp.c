@@ -172,14 +172,17 @@ void DoSelfCalibration(void)
  for(i=0;i<70;i++)
    {
 	 //设置电流
-   DoLinearDimControl(MinimumLEDCurrent+(((FusedMaxCurrent-MinimumLEDCurrent)/70)*(float)i),true,true);//控制主buck设置电流		 
+   DoLinearDimControl(MinimumLEDCurrent+(((FusedMaxCurrent-MinimumLEDCurrent)/70)*(float)i),true);//控制主buck设置电流		 
 	 INA219_SetConvMode(INA219_Cont_Both,INA219ADDR); //启动INA219开始读取信息
 	 //读取电流
 	 ActualCurrent=0; //清零缓冲区
+	 delta=0; //默认电流反馈=0
 	 for(j=0;j<10;j++)
 	   {
 	   delay_ms(20);
-	   ADC_GetResult(&ADCO); //读取数值
+		 MCP3421_ReadVoltage(&delta);
+		 SysPstatebuf.AuxBuckCurrent=(delta*100)/25; //读取ADC检测到的电流输入并且进行换算
+		 ADC_GetResult(&ADCO); //读取数值
 	   ActualCurrent+=ADCO.LEDIf; //累加
 	   }
 	 ActualCurrent/=10; //求平均
@@ -224,9 +227,11 @@ void DoSelfCalibration(void)
 #endif
 //校验校准数据库的CRC32结果以及数据域的内容
 CalibrationDBErrorDef CheckCompData(void)
- {
-	int i,CRCResult;
+  {
+	int CRCResult;
 	bool Result[2];
+  #ifndef FlashLightOS_Debug_Mode
+	int i;
   for(i=0;i<2;i++)
    {
 	 //数据匹配，退出
@@ -236,6 +241,10 @@ CalibrationDBErrorDef CheckCompData(void)
 	 if(ReadCompDataFromROM(&CompData))return Database_EEPROM_Read_Error;
 	 }
  if(i==2)return Database_Integrity_Error;
+ #else //debug模式下不会自动重新读取RAM的内容而是直接报错
+ CRCResult=CalcCompCRC32(&CompData.CompDataEntry.CompData);
+ if(CRCResult==CompData.CompDataEntry.Checksum)return Database_Integrity_Error; 	 	 
+ #endif
  //检查数据域和阈值是否合法
  Result[0]=CheckLinearTable(70,CompData.CompDataEntry.CompData.Data.CurrentCompThershold);
  Result[1]=CheckLinearTable(70,CompData.CompDataEntry.CompData.Data.DimmingCompThreshold); //检查阈值区域

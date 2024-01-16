@@ -249,9 +249,9 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		{
 		 {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//17
      "modeadvcfg",
-		 "允许用户编辑指定挡位的名称,挡位的运行模式(常亮/爆闪/SOS等)并且设定该挡位是否带记忆以及受温控逻辑影响.",
-     "-rm\0--run_mode\0-n\0--name\0-mem\0--is_memory\0-ts\0--is_stepdown\0\n",
-		 " <模式>\0 <模式>\0 <挡位名称>\0 <挡位名称>\0 <true或false>\0 <true或false>\0 <true或false>\0 <true或false>\0\n",
+		 "允许用户编辑指定挡位的名称,挡位的运行模式(常亮/爆闪/SOS等)并且设定该挡位是否带记忆以及温控的个性化参数.",
+     "-rm\0--run_mode\0-n\0--name\0-mem\0--is_memory\0-ts\0--is_stepdown\0-tofs\0--thermal_offset\0\n",
+		 " <模式>\0 <模式>\0 <挡位名称>\0 <挡位名称>\0 <true或false>\0 <true或false>\0 <true或false>\0 <true或false>\0 <温度负偏移(℃)>\0 <温度负偏移(℃)>\0\n",
 		 &modeadvcfgArgument,
 		 Command_modeadvcfg,
 		 NULL,

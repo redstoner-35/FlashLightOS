@@ -85,6 +85,7 @@ float PIDThermalControl(void)
   {
 	float err_temp,AdjustValue;
 	bool result;
+  float TriggerTemp,MaintainTemp,ReleaseTemp;
 	ModeConfStr *TargetMode=GetCurrentModeConfig();
 	//如果当前挡位支持鸡血，且自动关机定时器没有启用则进行逻辑检测
 	if(TargetMode!=NULL&&TargetMode->MaxMomtTurboCount>0&&TargetMode->PowerOffTimer==0)
@@ -106,15 +107,28 @@ float PIDThermalControl(void)
 				}			
 			}
 		}
+	//从温控设置里面取出温度点
+	if(TargetMode!=NULL) //挡位组设置不为空，取出温度设置之后减去offset
+	  {
+    TriggerTemp=CfgFile.PIDTriggerTemp-TargetMode->ThermalControlOffset;
+    ReleaseTemp=CfgFile.PIDRelease-TargetMode->ThermalControlOffset;
+    MaintainTemp=CfgFile.PIDTargetTemp-TargetMode->ThermalControlOffset;
+		}
+	else //挡位组数据为空，按照配置文件里面的温度来
+	  {
+		TriggerTemp=CfgFile.PIDTriggerTemp;
+		ReleaseTemp=CfgFile.PIDRelease;
+		MaintainTemp=CfgFile.PIDTargetTemp;
+		}
   //判断温控是否达到release或者trigger点
-	if(TargetMode!=NULL&&PIDInputTemp<=CfgFile.PIDRelease)   //温控低于release点，装填鸡血设置
+	if(TargetMode!=NULL&&PIDInputTemp<=ReleaseTemp)   //温控低于release点，装填鸡血设置
 		RemainingMomtBurstCount=TargetMode->MaxMomtTurboCount;	
-	if(!TempControlEnabled&&PIDInputTemp>=CfgFile.PIDTriggerTemp)TempControlEnabled=true;
-	else if(TempControlEnabled&&PIDInputTemp<=CfgFile.PIDRelease)TempControlEnabled=false;  //温控解除，恢复turbo次数
+	if(!TempControlEnabled&&PIDInputTemp>=TriggerTemp)TempControlEnabled=true;
+	else if(TempControlEnabled&&PIDInputTemp<=ReleaseTemp)TempControlEnabled=false;  //温控解除，恢复turbo次数
 	//温控不需要接入或者当前LED是熄灭状态，直接返回100%
 	if(!TempControlEnabled||!SysPstatebuf.ToggledFlash||SysPstatebuf.TargetCurrent==0)return 100;
 	//温控的PID部分
-	err_temp=CfgFile.PIDTargetTemp-PIDInputTemp; //计算误差值
+	err_temp=MaintainTemp-PIDInputTemp; //计算误差值
 	if(CalculatePIDRequest)
 	  {
 		integral_temp+=(err_temp*((float)2/(float)ThermalLPFTimeConstant)); //积分限幅(拓展系数取低通滤波器时间常数的0.5倍)

@@ -22,9 +22,9 @@ void FillThermalFilterBuf(ADCOutTypeDef *ADCResult);//填充温度stepdown的缓
 //内部变量
 static float LEDVfFilterBuf[12];
 static char ShortCount=0;
-static bool IsDisableMoon; //是否关闭月光档
 bool IsDisableBattCheck; //是否关闭电池质量检测
 unsigned char PSUState=0x00; //辅助电源的状态
+unsigned char NotifyUserTIM=0; //软件计时器，用于提示用户挡位发生了较小的改动
 static bool BuckPowerState=false;//主副buck的电源状态
 
 //外部变量
@@ -40,6 +40,13 @@ const char *DACInitError="Failed to init %s DAC.";
 const char *SPSFailure="SPS %sreports %s during init.";
 const char *DidnotStr="did Not ";
 
+//在挡位电流变化小于35%的情况下指示用户的处理函数
+void NotifyUserForGearChgHandler(void)	
+  {
+	//计时器递减
+	if(NotifyUserTIM>0)NotifyUserTIM--;
+	}
+	
 //LED短路,温度检测和电流合成环检测部分的简易数字滤波器（避免PWM调光时某一瞬间的波动）
 float LEDFilter(float DIN,float *BufIN,int bufsize)
 {
@@ -226,8 +233,6 @@ void LinearDIM_POR(void)
 	 SetAUXPWR(false);
 	 SelfTestErrorHandler();  
 	 }
- if(ADCO.SPSTemp>85)IsDisableMoon=true; //MOSFET温度大于85度此时月光档会出现问题因此需要限制使用
- else IsDisableMoon=false;
  /**********************************************************************
  主buck自检成功完成,此时我们可以让辅助电源下电了。然后我们将DAC输出重置为
  0V并且让PWM模块输出0%占空比使得不会有意外的电压信号进入主Buck的控制脚使
@@ -240,7 +245,7 @@ void LinearDIM_POR(void)
  /***********************************************************************
  下一步，我们需要进行副buck相关电路的检查
  ***********************************************************************/	 
- VSet=0.25;//初始VID 0.25
+ VSet=0.4;//初始VID 0.4
  VGet=0;//电流为0
  if(!MCP3421_SetChip(PGA_Gain2to1,Sample_14bit_60SPS,false))
    {
@@ -262,10 +267,13 @@ void LinearDIM_POR(void)
 			 }
 		if(ADCO.LEDVf>=LEDVfMax)break; //电压超过VfMax
 	  if(((VGet*100)/25)>=MinimumLEDCurrent)break; //电流达标
+		//VID加一点,设置输出之后继续尝试
+		if(VSet<0.8)VSet+=0.05;  
+		AD5693R_SetOutput(VSet,AuxBuckAD5693ADDR); //将DAC设置为初始输出
 		}
  if(i==50) //出错
     {
-		UartPost(Msg_critical,"LineDIM","Failed to start Auxiliary Buck.");
+		UartPost(Msg_critical,"LineDIM","Failed to start Aux Buck.");
     DisableAuxBuckForFault(); //关闭辅助buck并报错
 		}
  /***********************************************************************
@@ -300,8 +308,8 @@ void TurnLightOFFLogic(void)
  INA219_SetConvMode(INA219_PowerDown,INA219ADDR);//关闭INA219功率计
  MCP3421_SetChip(PGA_Gain2to1,Sample_14bit_60SPS,true);//关闭辅助buck的功率测量模块
  SetAUXPWR(false);//切断3.3V辅助电源
+ //复位侧按LED管理器并计算运行日志的CRC32
  CurrentLEDIndex=0;
- 
  LED_Reset();//复位LED管理器
  RunLogEntry.CurrentDataCRC=CalcRunLogCRC32(&RunLogEntry.Data); //计算新的CRC-32
  } 
@@ -344,24 +352,32 @@ void GetAuxBuckCurrent(void)
 这个函数负责接收手电运行的逻辑处理函数传入的LED是否启动和
 电流设置参数然后对主副buck进行控制得到需要的电流
 */
-void DoLinearDimControl(float Current,bool IsMainLEDEnabled,bool IsUsingComp)
+void DoLinearDimControl(float Current,bool IsMainLEDEnabled)
  {
  DACInitStrDef DACInitStr;
  bool IsBuckPowerOff,resultOK=true; 
  float DACVID,Comp;
  /*********************************************************
  首先系统会根据传入的电流数值计算补偿参数，这个补偿参数用于
- 处理LED电流的非线性特性。	 
+ 处理LED电流的非线性特性。然后对传入的电流参数进行控制。	 
  *********************************************************/
- if(IsUsingComp)
+ #ifdef FlashLightOS_Debug_Mode
+ if(CheckCompData()!=Database_No_Error) //debug模式下如果补偿数据库未就绪则不取补偿数据库
+   Comp=1.00;
+ else 
 	 Comp=QueueLinearTable(70,Current,CompData.CompDataEntry.CompData.Data.DimmingCompThreshold,CompData.CompDataEntry.CompData.Data.DimmingCompValue,&resultOK); //从校准记录里面读取电流补偿值
- else //不读取补偿值
-	 Comp=1.00;
+ #else	 
+ Comp=QueueLinearTable(70,Current,CompData.CompDataEntry.CompData.Data.DimmingCompThreshold,CompData.CompDataEntry.CompData.Data.DimmingCompValue,&resultOK); //从校准记录里面读取电流补偿值
  if(!resultOK) //校准数据库异常
 	 {
 	 RunTimeErrorReportHandler(Error_Calibration_Data);
 	 return;
 	 }
+ #endif  
+ if(Current<0)Current=0;
+ if(Current>FusedMaxCurrent)Current=FusedMaxCurrent;//限制传入的电流值范围为0-熔断限制值
+ if(NotifyUserTIM>0)Current*=0.5; //如果用户挡位发生了较小的变动则让电流短时间减低到原始值的50%
+ if(Current>0&&Current<MinimumLEDCurrent)Current=MinimumLEDCurrent; //电流不是0且低于最低允许值，强制设为最低值
  /*********************************************************
  为了节省电力，当主LED不需要运行的时候，经过0.5秒我们可以让
  主buck和副buck都下电来节省能量
@@ -387,44 +403,28 @@ void DoLinearDimControl(float Current,bool IsMainLEDEnabled,bool IsUsingComp)
 	   } 
 	 }
  /*********************************************************
- 当前LED电流为0，且主LED设置为关闭，因此设置PWMPin=0关闭输出
+ 当前LED电流为0，且主LED设置为关闭，因此设置PWMPin=0使得两
+ 个buck全部关闭输出令LED熄灭
  *********************************************************/	 
  if(Current==0||!IsMainLEDEnabled)SetTogglePin(false);
  /*********************************************************
- 当前LED电流在0-3.9A的范围内，此时使用副buck作为输出，主buck
- 设置为offline。
+ 当前LED处于运行状态，根据输入的电流指令进行主副buck和DAC的
+ VID控制，以及toggle引脚的控制
  *********************************************************/	
- else if(Current<3.9)
+ else 
    {
-	 DACVID=250+(Current*250); //LT3935 VIset=250mV(offset)+(250mv/A)
-	 DACVID*=Comp;//乘以补偿值
+	 if(Current<3.9)DACVID=250+(Current*250); //LT3935 VIset=250mV(offset)+(250mv/A)
+	 else DACVID=40+(Current*30); //主Buck VIset=40mV(offset)+(30mv/A)
+	 DACVID*=Comp; //乘以查表得到的补偿系数
 	 DACVID/=1000; //mV转V
-	 SetAUXPWR(false); //关闭主buck电源,启用副buck
-	 if(!AD5693R_SetOutput(DACVID,AuxBuckAD5693ADDR)) //设置辅助Buck的VID
-     {
-		 //DAC无响应,这是严重故障,立即写log并停止驱动运行
-	   RunTimeErrorReportHandler(Error_DAC_Logic);
-		 return;
-	   }   
-   SetTogglePin(true); //使能buck		 
-	 }
- /*********************************************************
- 当前LED电流在3.9A以上的范围，此时使用主buck作为输出，副buck
- 设置为offline。
- *********************************************************/	 
- else
-	 {
-	 DACVID=40+(Current*30); //主Buck VIset=40mV(offset)+(30mv/A)
-	 DACVID*=Comp;//乘以补偿值
-	 DACVID/=1000; //mV转V
-	 SetAUXPWR(true); //关闭副buck电源,启用主buck
-	 if(!AD5693R_SetOutput(DACVID,MainBuckAD5693ADDR)) //设置主Buck的VID
+	 if(!AD5693R_SetOutput(DACVID,Current<3.9?AuxBuckAD5693ADDR:MainBuckAD5693ADDR)) //设置主buck或者副buck的VID
      {
 		 //DAC无响应,这是严重故障,立即写log并停止驱动运行
 	   RunTimeErrorReportHandler(Error_DAC_Logic);
 		 return;
 	   }    
-	 SetTogglePin(true); //使能buck
+	 SetAUXPWR(Current<3.9?false:true); //电流小于3.9切换到副buck,否则使用主buck
+	 SetTogglePin(true); //将两个buck的总使能信号设置为1		 
 	 }
  }	
  
@@ -653,28 +653,18 @@ void RuntimeModeCurrentHandler(void)
  else if(CurrentMode->Mode==LightMode_CustomFlash)IsCurrentControlledByMode=true;
  else IsCurrentControlledByMode=false;
  if(IsCurrentControlledByMode&&Current>BreathCurrent)Current=BreathCurrent;//最高电流和对应模式的计算值同步
- if(Current<0)Current=0;
- if(Current>FusedMaxCurrent)Current=FusedMaxCurrent;//限制算出的电流值,最小=0,最大为熔断限制值
  if(RunLogEntry.Data.DataSec.IsLowVoltageAlert&&Current>LVAlertCurrentLimit)
 	 Current=LVAlertCurrentLimit;//当低电压告警发生时限制输出电流 
  if(RunLogEntry.Data.DataSec.IsLowQualityBattAlert)
    Current=(CurrentMode->LEDCurrentHigh>(0.5*FusedMaxCurrent)) ?Current*0.6:Current;  //电池质量太次，限制电流
  Current*=(float)(CurrentTactalDim>100?100:CurrentTactalDim)/(float)100; //根据反向战术模式的设置取设定亮度
- /* 如果当前的MOS管温度大于80度，月光档会出现问题（没有输出）
- 所以需要限制最小电流，温度下去后才能恢复月光档的使用*/
- if(ADCO.SPSTMONState==SPS_TMON_OK) //检测MOS温度来控制是否允许月光档
-   {
-   if(ADCO.SPSTemp>80)IsDisableMoon=true; //MOSFET温度过高关闭月光档
-	 else if(ADCO.SPSTemp<60)IsDisableMoon=false; //恢复月光档的使用
-	 }
- if(IsDisableMoon&&Current>0&&Current<3.5)Current=3.5;//MOSFET温度过高，限制月光档的使用
  /* 存储处理之后的目标电流 */
  SysPstatebuf.TargetCurrent=Current;//存储下目标设置的电流给短路保护模块用
  /********************************************************
  运行时挡位处理的第四步,将算出来的主LED是否开启的参数放入
  电流控制函数里面去进行调整，控制主灯的电流输出
  ********************************************************/
- DoLinearDimControl(Current,IsMainLEDEnabled,true);
+ DoLinearDimControl(Current,IsMainLEDEnabled);
  TimerCanTrigger=true;//允许GPTM1定时器执行特殊功能
  /***********************************************************
  最后一步，系统采样LED的Vf加入数字滤波器中用于判断是否发生短

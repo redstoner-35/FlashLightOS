@@ -29,7 +29,7 @@ const char *modeadvcfgArgument(int ArgCount)
 		case 10:
 		case 11:return "指定挡位是否带过热降档功能";		
 	  case 12:
-		case 13:return "调整驱动在月光档时所使用的PWM调光频率";
+		case 13:return "指定此挡位温控设置相对于默认温控参数的负偏移.";
 		}
 	return NULL;
 	}
@@ -40,6 +40,7 @@ void modeadvcfgHandler(void)
   ModeGrpSelDef UserSelect;
 	ModeConfStr *TargetMode;
 	char *ParamPtr;
+  float Buf;
 	bool IsCmdParamOK=false;
 	LightModeDef LightMode;
 	bool IsUserWantToEnable,UserInputOK;
@@ -173,6 +174,27 @@ void modeadvcfgHandler(void)
 			 }
 		 }
 	  }
+	//处理温度偏移
+  ParamPtr=IsParameterExist("CD",17,NULL);
+	if(ParamPtr!=NULL)
+	  {
+		Buf=atof(ParamPtr);
+	  TargetMode=GetSelectedModeConfig(UserSelect,modenum);
+		if(TargetMode==NULL)
+		   UARTPuts((char *)ModeSelectStr[4]);
+		else if(Buf==NAN||Buf<0||Buf>20)
+			UARTPuts("\r\n您输入的温度负偏移数值无效.允许的输入范围为0-20℃.");
+		else
+		  {			
+		  TargetMode->ThermalControlOffset=Buf;
+			DisplayWhichModeSelected(UserSelect,modenum);
+			UartPrintf("的温控负偏移已被设置为%.2f℃.\r\n\r\n此挡位的温控设置如下:",Buf);
+			UartPrintf("\r\n启动温度:%.2f℃",CfgFile.PIDTriggerTemp-TargetMode->ThermalControlOffset);
+			UartPrintf("\r\n目标维持温度:%.2f℃",CfgFile.PIDTargetTemp-TargetMode->ThermalControlOffset);
+			UartPrintf("\r\n释放温度:%.2f℃\r\n",CfgFile.PIDRelease-TargetMode->ThermalControlOffset);
+			}
+		IsCmdParamOK=true;
+		}				
 	if(!IsCmdParamOK)UartPrintCommandNoParam(17);//显示啥也没找到的信息 
 	//命令处理完毕
 	ClearRecvBuffer();//清除接收缓冲

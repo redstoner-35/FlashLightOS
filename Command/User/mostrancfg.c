@@ -5,9 +5,12 @@
 #include <string.h>
 #include <math.h>
 
+
 //外部字符串指针数组
 extern const char *ModeSelectStr[];
+#ifndef FlashLightOS_Debug_Mode
 static const char *IllegalMosStr="\r\n错误:自定义摩尔斯码发送的字符串内容%s.\r\n";
+#endif
 
 //参数帮助entry
 const char *mostranscfgArgument(int ArgCount)

@@ -41,7 +41,7 @@ bool MCP3421_ReadVoltage(float *VOUT)
 	//判断参数	
   if(DBUF&0x8000) //最高位为1，代表负数
 	  {
-		Isneg=true; //是正数
+		Isneg=true; 
 		DBUF=~DBUF;//按位取反
 		}
 	switch((conf>>2)&0x03)//获取ADC位数去除符号位
@@ -52,6 +52,7 @@ bool MCP3421_ReadVoltage(float *VOUT)
 		default:return false;
 		}
 	//转换数据
+  if(Isneg)DBUF+=1; //取反+去除符号位之后还需要+1才是源码
   result=4.096/PMBUS_2NPowCalc((int)bitcount); //LSB=2*2.048V/2^位数
   result*=(float)DBUF; //LSB*code得到电压
 	if(Isneg)result*=-1;//是负数，乘上-1

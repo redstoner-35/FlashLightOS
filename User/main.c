@@ -97,6 +97,7 @@ int main(void)
 	 RunTimeBatteryTelemetry();//测量电池状态
 	 RunTimeDataLogging();//运行时的记录
 	 LEDMgmt_CallBack();//LED管理器
+	 NotifyUserForGearChgHandler();//指示用户挡位发生小幅度变动的函数
 	 //传感器轮询结束，手电如果正在运行则跳过不需要的代码
 	 SensorRefreshFlag=false;
 	 //手电筒处于运行状态，跳过一些运行时不需要处理的浪费时间的函数

@@ -9,6 +9,18 @@
 
 #include <stdbool.h>
 
+//初始化自检结构体
+typedef enum
+{
+A219_Init_OK,
+A219_Error_SMBUS_NACK,
+A219_Error_BusVoltScaleConfig,
+A219_Error_ShuntPGAConfig,	
+A219_Error_ADCAvgConfig,
+A219_Error_CalibrationReg,
+A219_Error_ProgramReg
+}INA219InitStatDef;
+
 //模式枚举
 typedef enum
 {
@@ -41,7 +53,7 @@ INA219ModeDef ConvMode;//转换模式
 }INAinitStrdef;
 
 //可用函数
-char INA219_INIT(INAinitStrdef * INAConf);//初始化
+INA219InitStatDef INA219_INIT(INAinitStrdef * INAConf);//初始化
 bool INA219_GetBusInformation(INADoutSreDef *INADout);//读取数值
 bool INA219_SetConvMode(INA219ModeDef ConvMode,char SensorADDR);//设置转换模式
 void INA219_POR(void);//上电初始化

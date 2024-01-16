@@ -324,13 +324,13 @@ void FirmwareVersionCheck(void)
 		if(FRU.FRUBlock.Data.Data.FRUVersion[0]==0x04)IsRedLED=true; //如果FRU内LED型号是SBT90R,则休眠指示变为红色
 		if(FRU.FRUBlock.Data.Data.MaxLEDCurrent>QueryMaximumCurrentLimit(&FRU))//非法的电流设置
 		  {
-			UartPost(msg_error,"FRUChk","Maximum Current %.2fA is illegal for %s LED and will be trim to %.2fA.",
+			UartPost(msg_error,"FRUChk","Illegal Max current(%.2fA)for %s LED which will be trimed to %.2fA.",
 			  FRU.FRUBlock.Data.Data.MaxLEDCurrent,
 			  DisplayLEDType(&FRU),
 			  QueryMaximumCurrentLimit(&FRU));
 			FusedMaxCurrent=QueryMaximumCurrentLimit(&FRU);
 			FRU.FRUBlock.Data.Data.MaxLEDCurrent=FusedMaxCurrent;//修正数值
-		  if(!WriteFRU(&FRU))UartPost(Msg_info,"FRUChk","FRU Record has been corrected.");
+		  if(!WriteFRU(&FRU))UartPost(Msg_info,"FRUChk","FRU has been corrected.");
 			}
 		else FusedMaxCurrent=FRU.FRUBlock.Data.Data.MaxLEDCurrent;//加载最大LED电流
 	  #ifdef FlashLightOS_Debug_Mode

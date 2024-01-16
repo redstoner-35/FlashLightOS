@@ -95,6 +95,7 @@ typedef struct
  float RandStrobeMaxFreq;
  float RandStrobeMinFreq; //随机爆闪的上限和下限
  float CustomFlashSpeed;//自定义闪速度
+ float ThermalControlOffset; //此挡位的温度控制偏移量，单位为负数
  short PowerOffTimer;//定时关机计时器
  char MaxMomtTurboCount;//最大的短时鸡血模式次数（温控降档触发之后，通过双击+长按可以强制关闭温控，直到手电筒温度重新达到温控触发点）
  bool IsModeEnabled;//挡位是否启用

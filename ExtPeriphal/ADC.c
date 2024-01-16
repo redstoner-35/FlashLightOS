@@ -124,7 +124,7 @@ bool ADC_GetResult(ADCOutTypeDef *ADCOut)
 		}
 	#endif
 	//计算LED输出电流
-	if(GPIO_ReadOutBit(AUXPWR_EN_IOG,AUXPWR_EN_IOP))
+	if(GPIO_ReadOutBit(AUXPWR_EN_IOG,AUXPWR_EN_IOP)) //主buck启动，从SPS的IMON读取电流
 	  {
 	  buf=(float)ADCResult[LED_If_Ch]*(ADC_AVRef/(float)4096);//将AD值转换为电压
 	  buf=(buf*(float)1000)/(float)SPSIMONDiffOpGain;//将算出的电压转为mV单位，然后除以INA199放大器的增益值得到原始的电压
@@ -132,7 +132,7 @@ bool ADC_GetResult(ADCOutTypeDef *ADCOut)
 	  buf/=((float)SPSIMONScale/(float)1000);//将算出来的电流除以SPS的电流反馈系数（换算为mA/A）得到实际的电流值
     }
 	else
-	  buf=SysPstatebuf.AuxBuckCurrent; //如果当前主buck处于关闭状态则直接无视ADC结果从buf里面取
+	  buf=SysPstatebuf.AuxBuckCurrent; //如果当前主buck处于关闭状态则直接无视ADC结果从副buck的电流参数里面取
 	#ifdef FlashLightOS_Debug_Mode
   ADCOut->LEDIfNonComp=buf;//将未补偿的LEDIf放置到结构体内
 	#endif

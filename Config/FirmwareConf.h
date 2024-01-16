@@ -5,9 +5,9 @@
 #define HardwareMajorVer 2
 #define HardwareMinorVer 1  //硬件版本号
 
-#define MajorVersion 1
-#define MinorVersion 9
-#define HotfixVersion 10  //固件版本号
+#define MajorVersion 2
+#define MinorVersion 0
+#define HotfixVersion 1  //固件版本号
 
 //固件模式配置
 #define Firmware_DIY_Mode //是否启用DIY高级用户模式，在此模式下驱动所有功能可以使用，否则温控调整和日志清除和恢复功能会被禁用。
@@ -23,7 +23,7 @@
 #define GammaCorrectionValue 2.45   //亮度拟合曲线的gamma修正，根据不同LED有所不同
 #define LVAlertCurrentLimit 4.3 //当低电压警告触发后，驱动最大的输出电流值(A)
 #define ForceThermalControlCurrent 5.5 //当挡位的运行电流大于这个值时温控将会被强制启用不准关闭
-#define MaxAllowedLEDCurrent 48 //驱动硬件熔断的最大输出电流设置(测得电流超过此电流的1.2倍将触发保护)
+#define MaxAllowedLEDCurrent 32 //驱动硬件熔断的最大输出电流设置(测得电流超过此电流的1.2倍将触发保护)
 #define MinimumLEDCurrent 0.1 //最小的LED电流
 #define BatteryCellCount 3 //默认情况下驱动使用的电池组中锂电池的串数(按照三元锂电池计算)
 #define DeepsleepDelay 40 //驱动的出厂深度睡眠时间,40秒内没有操作则睡眠
@@ -31,15 +31,15 @@
 //#define SideKeyPolar_positive  //侧按的极性，保留此define表示侧按按键高有效，否则低有效
 
 //FRU中LED类型的配置
-#define CustomLEDName "昌达SFH55-3000K" //如果指定驱动使用其他任意未指定型号的LED，则需要在此处填写LED名称
-#define CustomLEDCode 0x5AA5 //如果指定驱动使用其他任意未指定型号的LED，则需要在此处填写该LED的类型代码
+#define CustomLEDName "XHP70.3HI-4500K*3" //如果指定驱动使用其他任意未指定型号的LED，则需要在此处填写LED名称
+#define CustomLEDCode 0x7002 //如果指定驱动使用其他任意未指定型号的LED，则需要在此处填写该LED的类型代码
 
 //#define Using_SBT90Gen2_LED //使用SBT90.2
 //#define Using_SBT90R_LED //使用红色的SBT90
 //#define Using_SBT70G_LED //使用绿色的SBT70
 //#define Using_SBT70B_LED //使用蓝色的SBT70
-#define Using_Generic_3V_LED //使用其他任意未指定型号的3V LED
-//#define Using_Generic_6V_LED //使用其他任意未指定型号的6V LED
+//#define Using_Generic_3V_LED //使用其他任意未指定型号的3V LED
+#define Using_Generic_6V_LED //使用其他任意未指定型号的6V LED
 
 //挡位和操作逻辑配置
 #define EnableSideLocLED //启用定位LED，在驱动休眠过程中，侧按指示灯会发出微弱的绿光指示手电开关的位置
@@ -74,9 +74,9 @@
 #define SPSTRIMValue 0 //DrMOS测温的修正值，单位为℃
 
 //电池功率计参数设置
-#define INA219ShuntOhm 1.0 //驱动的INA219功率级的分流电阻阻值
+#define INA219ShuntOhm 0.5 //驱动的INA219功率级的分流电阻阻值
 
 //ADC模拟电压参考电压
-#define ADC_VRef 3.2985 //实际的ADC电压参考值
+#define ADC_VRef 3.2990 //实际的ADC电压参考值
 
 #endif

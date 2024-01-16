@@ -6,6 +6,7 @@
 #include "logger.h"
 #include "runtimelogger.h"
 #include <string.h>
+#include <math.h>
 
 //常量
 #define MoresIDCode "Example"
@@ -27,6 +28,7 @@ int AutoOffTimer=-1; //定时关机延时器
 static bool DCPressstatebuf=false;
 unsigned char BlankTimer=0; //关闭手电时促使换挡模式消隐的定时器
 static bool DisplayBattBuf=false;
+extern unsigned char NotifyUserTIM; //指示定时器
 CurrentModeStr CurMode;//当前模式的结构体
 
 //电池电量和温度的显示
@@ -76,7 +78,7 @@ void ResetPowerOffTimerForPoff(void)
 	else
 		AutoOffTimer=-1;//否则定时器关闭
 	}
-	
+
 //写主配置文件的函数
 static void SaveMainConfig(void)
   {
@@ -112,6 +114,7 @@ void RestoreFactoryModeCfg(void)
 	 CfgFile.RegularMode[i].Mode=LightMode_On;//正常挡位全是常亮档
 	 CfgFile.RegularMode[i].StrobeFrequency=10;//默认爆闪频率为10Hz
 	 CfgFile.RegularMode[i].RandStrobeMaxFreq=16;
+	 CfgFile.RegularMode[i].ThermalControlOffset=10; //温度向下偏移10摄氏度
 	 CfgFile.RegularMode[i].RandStrobeMinFreq=5;		//随机爆闪频率 
 	 CfgFile.RegularMode[i].MosTransferStep=0.5;//摩尔斯码发送的step为0.5秒1阶		 
 	 CfgFile.RegularMode[i].RampModeSpeed=2.5; //无极调光模式下电流上升下降的速度(2.5秒1循环)
@@ -135,6 +138,7 @@ void RestoreFactoryModeCfg(void)
 	CfgFile.RegularMode[0].LEDCurrentHigh=(FusedMaxCurrent*80)/(float)100;//编程电流(百分比)
 	CfgFile.RegularMode[0].Mode=LightMode_Ramp;//无极调光模式
 	CfgFile.RegularMode[0].StrobeFrequency=10;//默认爆闪频率为10Hz
+	CfgFile.RegularMode[0].ThermalControlOffset=10; //温度向下偏移10摄氏度
 	CfgFile.RegularMode[0].MosTransferStep=0.5;//摩尔斯码发送的step为0.5秒1阶		 
 	CfgFile.RegularMode[0].RampModeSpeed=2.5; //无极调光模式下电流上升下降的速度(多少秒1循环)
 	CfgFile.RegularMode[0].MaxCurrentHoldTime=1;
@@ -161,6 +165,7 @@ void RestoreFactoryModeCfg(void)
    CfgFile.RegularMode[i].Mode=LightMode_On;//正常挡位全是常亮档
 	 CfgFile.RegularMode[i].StrobeFrequency=10;//默认爆闪频率为10Hz
 	 CfgFile.RegularMode[i].MosTransferStep=0.1;//摩尔斯码发送的step为0.1秒1阶	 
+	 CfgFile.RegularMode[i].ThermalControlOffset=10; //温度向下偏移10摄氏度
 	 CfgFile.RegularMode[i].RandStrobeMaxFreq=16;
 	 CfgFile.RegularMode[i].RandStrobeMinFreq=5;		//随机爆闪频率 
 	 CfgFile.RegularMode[i].MaxCurrentHoldTime=1;
@@ -183,6 +188,7 @@ void RestoreFactoryModeCfg(void)
 	CfgFile.DoubleClickMode.LEDCurrentHigh=FusedMaxCurrent;//编程电流(配置为驱动允许的最大电流)
   CfgFile.DoubleClickMode.Mode=LightMode_On;//双击极亮也是常亮档
 	CfgFile.DoubleClickMode.RandStrobeMaxFreq=16;
+	CfgFile.DoubleClickMode.ThermalControlOffset=0; //极亮按照满血温控跑
 	CfgFile.DoubleClickMode.RandStrobeMinFreq=5;		//随机爆闪频率
   CfgFile.DoubleClickMode.MaxMomtTurboCount=4;//支持4次鸡血模式	 
 	CfgFile.DoubleClickMode.MosTransferStep=0.1;//摩尔斯码发送的step为0.1秒1阶		 
@@ -204,6 +210,7 @@ void RestoreFactoryModeCfg(void)
 	CfgFile.DoubleClickMode.LEDCurrentLow=0;//呼吸模式低电流为0
 	CfgFile.DoubleClickMode.LEDCurrentHigh=10;//编程电流
   CfgFile.DoubleClickMode.Mode=LightMode_On;//常亮
+	CfgFile.DoubleClickMode.ThermalControlOffset=0; //极亮按照满血温控跑
   CfgFile.DoubleClickMode.RandStrobeMaxFreq=16;
 	CfgFile.DoubleClickMode.RandStrobeMinFreq=5;		//随机爆闪频率 
 	CfgFile.DoubleClickMode.StrobeFrequency=10;//默认爆闪频率为10Hz
@@ -226,6 +233,7 @@ void RestoreFactoryModeCfg(void)
 	 CfgFile.SpecialMode[i].MaxMomtTurboCount=0;//不支持鸡血
 	 CfgFile.SpecialMode[i].RandStrobeMaxFreq=10;
 	 CfgFile.SpecialMode[i].RandStrobeMinFreq=5;		//随机爆闪频率 
+	 CfgFile.SpecialMode[i].ThermalControlOffset=0; //极亮按照满血温控跑
 	 CfgFile.SpecialMode[i].IsModeAffectedByStepDown=true;//受温控影响
 	 CfgFile.SpecialMode[i].LEDCurrentLow=0;//呼吸模式低电流为0A
 	 CfgFile.SpecialMode[i].LEDCurrentHigh=i==0?FusedMaxCurrent:FusedMaxCurrent*0.9;//编程电流(除了爆闪100%，其他90%)
@@ -411,6 +419,7 @@ void ModeSwitchLogicHandler(void)
   {
 	int keycount;
 	ModeConfStr *CurrentMode;
+  float CurrentModeILED;
   bool DoubleClickHoldDetected,IsNeedToSwitchGear;
 	if(SysPstatebuf.Pstate==PState_Locked||SysPstatebuf.Pstate==PState_Error)return;//处于锁定或者错误状态，此时不处理
 	//获取按键次数
@@ -464,8 +473,13 @@ void ModeSwitchLogicHandler(void)
 	else IsNeedToSwitchGear=false;//不需要换挡
 	//处理换挡逻辑 
 	if(!IsNeedToSwitchGear&&(keycount<2||keycount>3))return;	//短按按键次数小于2次或者按了超过三次不处理
-  if(IsNeedToSwitchGear&&IsAllowToSwitchGear())return; 		//当前用户位于循环档的操作内
-	//检测到换挡操作时重置特殊功能的定时器和状态机
+  if(IsNeedToSwitchGear&&IsAllowToSwitchGear())return; 		//如果当前用户操作需要换挡，则根据当前用户位于的挡位组进行判断是否允许换挡
+	CurrentMode=GetCurrentModeConfig();//换挡前获取目前挡位的逻辑
+	if(CurrentMode!=NULL&&CurrentMode->Mode==LightMode_On)
+     CurrentModeILED=CurrentMode->LEDCurrentHigh; //取出当前挡位的电流
+  else
+		 CurrentModeILED=-1; //该挡位不满足判断条件不进行判断		
+  //检测到换挡操作时重置特殊功能的定时器和状态机
   ResetPowerOffTimerForPoff();//重置定时器
 	ResetBreathStateMachine();//重置呼吸闪状态机
   MorseSenderReset();//重置摩尔斯代码的状态机
@@ -509,7 +523,13 @@ void ModeSwitchLogicHandler(void)
 		}
 	//操作侧按LED提示当前生成的挡位
 	if(SysPstatebuf.Pstate==PState_LEDOn||SysPstatebuf.Pstate==PState_LEDOnNonHold)
-	  SetAUXPWR(true); //换挡的时候,如果LED是启动的，那就需要重新使能辅助电源否则会出现信标模式无光的问题
+	  { 
+		//主LED启动，如果当前挡位的电流变换不大则生成提示信息提示用户
+	  if(CurrentModeILED==-1)return; //不满足执行条件，直接退出
+		CurrentMode=GetCurrentModeConfig();//换挡后获取目前挡位
+	  CurrentModeILED=fabsf(1-(CurrentMode->LEDCurrentHigh/CurrentModeILED)); //计算两个挡位之间的电流变化百分比
+	  if(CurrentModeILED<=0.20)NotifyUserTIM=6; //挡位电流变化小于20%，指示用户
+    }
 	else
 	  SideLED_GenerateModeInfoPattern(false); //手电筒处于关机状态，显示挡位数据
 	}
