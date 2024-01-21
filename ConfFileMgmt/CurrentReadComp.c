@@ -86,7 +86,7 @@ char WriteCompDataToROM(void)
 //运行主LED并处理校准功能的函数
 void RunMainLEDHandler(bool IsMainBuck,int Pass)
  {
- float TargetCurrent,ActualCurrent;
+ float TargetCurrent,ActualCurrent,CurrentREF;
  float DimValue,IMONValue;
  ADCOutTypeDef ADCO;
  float DACVID,delta;
@@ -131,6 +131,7 @@ void RunMainLEDHandler(bool IsMainBuck,int Pass)
 		 }
 	 //然后使能ADC进行电流采集
    ActualCurrent=0;
+	 CurrentREF=0;
 	 delta=0; //默认电流反馈=0
    for(j=0;j<10;j++)
      {
@@ -139,10 +140,12 @@ void RunMainLEDHandler(bool IsMainBuck,int Pass)
 		 MCP3421_ReadVoltage(&delta);
 		 if(!IsMainBuck)ActualCurrent+=(delta*100)/25;
 		 else ActualCurrent+=ADCO.LEDIfNonComp; //读取电流设置
+		 CurrentREF+=ADCO.LEDCalIf;
 		 }
-   ActualCurrent/=10;		 
+	 CurrentREF/=10; 
+   ActualCurrent/=10; //对实际测量到的电流和预估电流求平均值		 
 	 //填写电流读取补偿值
-	 IMONValue=ADCO.LEDCalIf/ActualCurrent; //将实际电流和设置值的差距填进去
+	 IMONValue=CurrentREF/ActualCurrent; //将实际电流和设置值的差距填进去
 	 if(IsMainBuck)
 	   {	 
 	   CompData.CompDataEntry.CompData.Data.MainBuckIFBValue[Pass]=IMONValue; 
@@ -153,8 +156,8 @@ void RunMainLEDHandler(bool IsMainBuck,int Pass)
 	   CompData.CompDataEntry.CompData.Data.AuxBuckIFBValue[Pass]=IMONValue; 
 	   CompData.CompDataEntry.CompData.Data.AuxBuckIFBThreshold[Pass]=ActualCurrent; //阈值写目标电流		 		 
 		 }
-	 UartPrintf("\r\n[Calibration]%s Buck Pass #%d complete.Target LEDIf=%.2fA,Adjusted Actual LEDIf=%.2fA.",IsMainBuck?"Main":"Aux",Pass,TargetCurrent,ActualCurrent);	
-	 UartPrintf("\r\n[Calibration]Dimming Comp Value=%.3f,IMON CompValue=%.3f,LEDIf Error=%.2f%%\r\n",DimValue,IMONValue,((ActualCurrent/TargetCurrent)*100)-100);	 
+	 UartPrintf("\r\n[Calibration]%s Buck Pass #%d complete.Target LEDIf=%.2fA,Adjusted Actual LEDIf=%.2fA.",IsMainBuck?"Main":"Aux",Pass,TargetCurrent,CurrentREF);	
+	 UartPrintf("\r\n[Calibration]Dimming Comp Value=%.3f,IMON CompValue=%.3f,LEDIf Error=%.2f%%,RAW IMON=%.2fA\r\n",DimValue,IMONValue,((CurrentREF/TargetCurrent)*100)-100,ActualCurrent);	 
  }
 //自动进行电流回读的校准
 void DoSelfCalibration(void)
