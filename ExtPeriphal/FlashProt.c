@@ -56,7 +56,7 @@ void CheckForFlashLock(void)
  FLASH_GetOptionByteStatus(&Option);
  if(Option.MainSecurity != 0)
     {
-    UartPost(Msg_info,"FWSec","Checking firmware code integrity before launching...");
+    UartPost(Msg_info,"FWSec","Checking firmware code integrity...");
     ProgramAreaCRC=MainProgramRegionCRC();
 		if(*(u32 *)CRCWordAddress!=ProgramAreaCRC) //检查不通过
 	    {

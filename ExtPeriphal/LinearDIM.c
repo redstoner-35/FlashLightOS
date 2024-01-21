@@ -22,10 +22,13 @@ void FillThermalFilterBuf(ADCOutTypeDef *ADCResult);//填充温度stepdown的缓
 //内部变量
 static float LEDVfFilterBuf[12];
 static char ShortCount=0;
+static char MainAuxBuckCDTimer=0;
 bool IsDisableBattCheck; //是否关闭电池质量检测
 unsigned char PSUState=0x00; //辅助电源的状态
 unsigned char NotifyUserTIM=0; //软件计时器，用于提示用户挡位发生了较小的改动
 static bool BuckPowerState=false;//主副buck的电源状态
+static bool MainAuxBuckSwitchState=false; //主副buck的电源使能切换状态，false=副buck开启
+static float LastEdgeSswitchCurrent=0; //上次边沿切换的电流
 
 //外部变量
 extern int CurrentTactalDim; //反向战术模式设定亮度的变量
@@ -44,6 +47,7 @@ const char *DidnotStr="did Not ";
 void NotifyUserForGearChgHandler(void)	
   {
 	//计时器递减
+  if(MainAuxBuckCDTimer>0)MainAuxBuckCDTimer--;
 	if(NotifyUserTIM>0)NotifyUserTIM--;
 	}
 	
@@ -387,7 +391,6 @@ void DoLinearDimControl(float Current,bool IsMainLEDEnabled)
 	 return;
 	 }
  #endif  
-
  /*********************************************************
  为了节省电力，当主LED不需要运行的时候，经过0.5秒我们可以让
  主buck和副buck都下电来节省能量
@@ -572,6 +575,7 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
  SysPstatebuf.AuxBuckCurrent=(ILED*100)/25;//填写辅助buck的输出电流
  FillThermalFilterBuf(&ADCO); //填写温度信息
  for(i=0;i<12;i++)LEDVfFilterBuf[i]=ADCO.LEDVf;//填写LEDVf 
+ MainAuxBuckSwitchState=false; //自检结束后默认是以副buck运行，复位该标志位
  return Error_None;
  }
 /*
@@ -583,8 +587,8 @@ void RuntimeModeCurrentHandler(void)
  ModeConfStr *CurrentMode;
  ADCOutTypeDef ADCO;
  bool IsCurrentControlledByMode,IsEnableStepDown;
- volatile bool IsMainLEDEnabled,IsNeedToEnableBuck;
- float Current,Throttle;
+ volatile bool IsMainLEDEnabled,CurrentMainBuckState;
+ float Current,Throttle,ThermalUnLimCurrent;
  /********************************************************
  运行时挡位处理的第一步.首先获取当前的挡位，然后我们使能ADC
  的转换负责获取LED的电流,温度和驱动功率管的温度,接下来就是
@@ -643,8 +647,7 @@ void RuntimeModeCurrentHandler(void)
  else if(ADCO.SPSTMONState==SPS_TMON_OK&&(ADCO.SPSTemp>CfgFile.MOSFETThermalTripTemp-10))IsEnableStepDown=true; //MOS温度逼近临界值，立即启动降档
  else IsEnableStepDown=false; //不需要应用降档设置
  //执行温控
- if(IsEnableStepDown)Throttle=PIDThermalControl();//执行PID温控计算降档参数
- else Throttle=100; //不需要降档
+ Throttle=IsEnableStepDown?PIDThermalControl():100;//根据是否降档来执行PID温控计算降档参数
  if(Throttle>100)Throttle=100;
  if(Throttle<5)Throttle=5;//温度降档值限幅
  SysPstatebuf.CurrentThrottleLevel=(float)100-Throttle;//将最后的降档系数记录下来用于事件日志使用
@@ -654,10 +657,7 @@ void RuntimeModeCurrentHandler(void)
  殊挡位功能的要求(比如说呼吸功能)对电流配置进行处理最后生成
  实际使用的电流
  ********************************************************/
- //取出电流设置并应用降档参数
  Current=(CurrentTactalDim==101)?FusedMaxCurrent*0.95:CurrentMode->LEDCurrentHigh;//取出电流设置(如果瞬时极亮开启则按照0.95倍最大电流运行，否则按照挡位设置)	 
- Current*=Throttle/(float)100;//应用算出来的温控降档数值
- /* 判断算出的电流是否受控于特殊模式的操作*/
  if(CurrentMode->Mode==LightMode_Breath)IsCurrentControlledByMode=true;
  else if(CurrentMode->Mode==LightMode_Ramp)IsCurrentControlledByMode=true;
  else if(CurrentMode->Mode==LightMode_CustomFlash)IsCurrentControlledByMode=true;
@@ -666,14 +666,49 @@ void RuntimeModeCurrentHandler(void)
  if(RunLogEntry.Data.DataSec.IsLowVoltageAlert&&Current>LVAlertCurrentLimit)
 	 Current=LVAlertCurrentLimit;//当低电压告警发生时限制输出电流 
  if(RunLogEntry.Data.DataSec.IsLowQualityBattAlert)
-   Current=(CurrentMode->LEDCurrentHigh>(0.5*FusedMaxCurrent)) ?Current*0.6:Current;  //电池质量太次，限制电流
+ Current=(CurrentMode->LEDCurrentHigh>(0.5*FusedMaxCurrent)) ?Current*0.6:Current;  //电池质量太次，限制电流
  Current*=(float)(CurrentTactalDim>100?100:CurrentTactalDim)/(float)100; //根据反向战术模式的设置取设定亮度
+ /* 应用温度控制设置算出来的电流 */
+ if(Throttle<100) //PID调节值低于100，温控启动
+   {
+	 ThermalUnLimCurrent=Current; //存储未设置温控之前的挡位电流
+	 Current*=Throttle/(float)100;//应用算出来的温控降档数值
+	 /*
+	 保护措施，如果经过PID调节器之前的电流大于
+	 主buck运行阈值，且经过温控之后的电流小于阈值，
+	 则强制使输送到调光函数里面的电流值为3.9A。这
+	 个保护措施是为了避免温控动作后主灯电流频繁在
+	 3.9A左右跳跃造成主副buck频繁切换启动引起炸机。
+	 */
+	 if(ThermalUnLimCurrent>=3.9&&Current<3.9)Current=3.9;
+	 }
  /* 存储处理之后的目标电流 */
  SysPstatebuf.TargetCurrent=Current;//存储下目标设置的电流给短路保护模块用
  /********************************************************
  运行时挡位处理的第四步,将算出来的主LED是否开启的参数放入
- 电流控制函数里面去进行调整，控制主灯的电流输出
+ 电流控制函数里面去进行调整，控制主灯的电流输出。在控制主
+ 灯前，电流函数还会进入一个限制器，确保电流参数不会让主副
+ buck频繁的切换状态来避免炸机。 
  ********************************************************/
+ CurrentMainBuckState=Current<3.9?false:true; //判断主副buck的状态
+ if(CurrentMainBuckState!=MainAuxBuckSwitchState) //主副buck发生状态交换
+   {
+	 //时间未到，对电流值进行限制阻止主副buck频繁开关
+	 if(MainAuxBuckCDTimer>0)
+	   {
+		 if(!MainAuxBuckSwitchState) //副buck开启，如果当前电流数值大于副buck切换到主buck的阈值则限制电流避免切换
+		   Current=Current>=LastEdgeSswitchCurrent?LastEdgeSswitchCurrent:Current;
+		 else //主buck开启，如果电流值小于等于主buck切换到副buck的阈值则限制电流避免切换
+			 Current=Current<=LastEdgeSswitchCurrent?LastEdgeSswitchCurrent:Current;
+		 }
+	 //时间到，允许边沿切换
+	 else
+	   {
+		 MainAuxBuckSwitchState=CurrentMainBuckState; //同步边沿状态
+		 LastEdgeSswitchCurrent=Current;//存储下目标的边沿切换值
+		 MainAuxBuckCDTimer=2; //设置计时器，0.4秒内不允许切换
+		 }
+	 }
  DoLinearDimControl(Current,IsMainLEDEnabled);
  TimerCanTrigger=true;//允许GPTM1定时器执行特殊功能
  /***********************************************************

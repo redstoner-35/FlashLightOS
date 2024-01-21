@@ -8,6 +8,17 @@
 static bool IsSelftestLoggerReady=false;
 static char SelfTestLogEntry=0;
 
+//根据日志消息类型打印对应的信息
+static const char *GetHeaderFromLevel(Postmessagelevel Level)
+  {
+  switch(Level) //根据消息类型选择对应的输出
+	  {
+		case Msg_critical:return "\033[40;31m[FATAL]";
+		case Msg_warning:return "\033[40;33m[WARN]";
+		case msg_error:return "\033[40;35m[ERROR]";
+		default:return "\033[40;32m[INFO]";
+    }
+	}
 //根据上次自检成功与否检查记录器是否启动（避免覆盖掉上次的错误日志）
 void CheckLastStartUpIsOK(void)
   {
@@ -54,13 +65,7 @@ bool DisplayLastTraceBackMessage(void)
 	if(Msgchecksum!=LogEntry.Log.MessageCheckSum)return false; //消息校验和错误
 	//打印内容
 	strncat(SBUF,"\r\n",32);
-	switch(LogEntry.Log.Level) //根据消息类型选择对应的输出
-	  {
-		case Msg_critical:Msg="\033[40;31m[FATAL]";break;
-		case Msg_warning:Msg="\033[40;33m[WARN]";break;
-		case msg_error:Msg="\033[40;35m[ERROR]";break;
-		default:Msg="\033[40;32m[INFO]";
-    }
+	Msg=GetHeaderFromLevel(LogEntry.Log.Level);
 	strncat(SBUF,Msg,32-strlen(SBUF));
 	strncat(SBUF,"\033[0m",32-strlen(SBUF));
 	strncat(SBUF,LogEntry.Log.ModuleName,32-strlen(SBUF));
@@ -97,13 +102,7 @@ void UartPost(Postmessagelevel msglvl,const char *Modules,char *Format,...)
 	bool IsLogNeedToWrite;
 	//打印前面的提示信息
 	strncat(SBUF,"\r\n",32);
-	switch(msglvl) //根据消息类型选择对应的输出
-	  {
-		case Msg_critical:Msg="\033[40;31m[FATAL]";break;
-		case Msg_warning:Msg="\033[40;33m[WARN]";break;
-		case msg_error:Msg="\033[40;35m[ERROR]";break;
-		default:Msg="\033[40;32m[INFO]";
-    }
+	Msg=GetHeaderFromLevel(msglvl);
 	strncat(SBUF,Msg,32-strlen(SBUF));
 	strncat(SBUF,"\033[0m",32-strlen(SBUF));
 	strncat(SBUF,Modules,32-strlen(SBUF));

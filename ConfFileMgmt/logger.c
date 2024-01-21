@@ -126,10 +126,7 @@ void LoggerHeader_POR(void)
  else
   {
 	UartPost(msg_error,"Logger","Logger header has been broken,system will re-initialize log area...");
-	if(!ReInitLogArea())
-		UartPost(msg_error,"Logger","Failed to re-initialize log area.");
-	else
-		UartPost(Msg_info,"Logger","Log area has been re-initialized.");
+	if(!ReInitLogArea())UartPost(msg_error,"Logger","Failed to re-initialize log area."); //重新初始化	
   NVIC_SystemReset();//reboot
 	}
  }
