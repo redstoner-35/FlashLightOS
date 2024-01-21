@@ -358,26 +358,36 @@ void DoLinearDimControl(float Current,bool IsMainLEDEnabled)
  bool IsBuckPowerOff,resultOK=true; 
  float DACVID,Comp;
  /*********************************************************
- 首先系统会根据传入的电流数值计算补偿参数，这个补偿参数用于
- 处理LED电流的非线性特性。然后对传入的电流参数进行控制。	 
+ 首先系统会对传入的电流参数进行控制和限幅，然后系统会根据处
+ 理完毕的电流数值计算补偿参数，这个补偿参数用于处理LED电流
+ 的非线性特性。	 
  *********************************************************/
+ if(Current<0)Current=0;
+ if(Current>FusedMaxCurrent)Current=FusedMaxCurrent;//限制传入的电流值范围为0-熔断限制值
+ if(NotifyUserTIM>0)Current*=0.5; //如果用户挡位发生了较小的变动则让电流短时间减低到原始值的50%
+ if(Current>0&&Current<MinimumLEDCurrent)Current=MinimumLEDCurrent; //电流不是0且低于最低允许值，强制设为最低值 
  #ifdef FlashLightOS_Debug_Mode
  if(CheckCompData()!=Database_No_Error) //debug模式下如果补偿数据库未就绪则不取补偿数据库
    Comp=1.00;
- else 
-	 Comp=QueueLinearTable(70,Current,CompData.CompDataEntry.CompData.Data.DimmingCompThreshold,CompData.CompDataEntry.CompData.Data.DimmingCompValue,&resultOK); //从校准记录里面读取电流补偿值
+ else //正常读取数据
+   {
+	 if(Current<3.9) //辅助Buck
+		 Comp=QueueLinearTable(50,Current,CompData.CompDataEntry.CompData.Data.AuxBuckDimmingThreshold,CompData.CompDataEntry.CompData.Data.AuxBuckDimmingValue,&resultOK); 
+	 else //主Buck
+		 Comp=QueueLinearTable(50,Current,CompData.CompDataEntry.CompData.Data.MainBuckDimmingThreshold,CompData.CompDataEntry.CompData.Data.MainBuckDimmingValue,&resultOK); 
+	 }
  #else	 
- Comp=QueueLinearTable(70,Current,CompData.CompDataEntry.CompData.Data.DimmingCompThreshold,CompData.CompDataEntry.CompData.Data.DimmingCompValue,&resultOK); //从校准记录里面读取电流补偿值
+ if(Current<3.9) //辅助Buck
+	 Comp=QueueLinearTable(50,Current,CompData.CompDataEntry.CompData.Data.AuxBuckDimmingThreshold,CompData.CompDataEntry.CompData.Data.AuxBuckDimmingValue,&resultOK); 
+ else //主Buck
+	 Comp=QueueLinearTable(50,Current,CompData.CompDataEntry.CompData.Data.MainBuckDimmingThreshold,CompData.CompDataEntry.CompData.Data.MainBuckDimmingValue,&resultOK); 
  if(!resultOK) //校准数据库异常
 	 {
 	 RunTimeErrorReportHandler(Error_Calibration_Data);
 	 return;
 	 }
  #endif  
- if(Current<0)Current=0;
- if(Current>FusedMaxCurrent)Current=FusedMaxCurrent;//限制传入的电流值范围为0-熔断限制值
- if(NotifyUserTIM>0)Current*=0.5; //如果用户挡位发生了较小的变动则让电流短时间减低到原始值的50%
- if(Current>0&&Current<MinimumLEDCurrent)Current=MinimumLEDCurrent; //电流不是0且低于最低允许值，强制设为最低值
+
  /*********************************************************
  为了节省电力，当主LED不需要运行的时候，经过0.5秒我们可以让
  主buck和副buck都下电来节省能量

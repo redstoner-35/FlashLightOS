@@ -130,13 +130,16 @@ bool ADC_GetResult(ADCOutTypeDef *ADCOut)
 	  buf=(buf*(float)1000)/(float)SPSIMONDiffOpGain;//将算出的电压转为mV单位，然后除以INA199放大器的增益值得到原始的电压
 	  buf/=(float)SPSIMONShunt;//欧姆定律，I=U/R计算出SPS往外怼出来的电流（单位mA）
 	  buf/=((float)SPSIMONScale/(float)1000);//将算出来的电流除以SPS的电流反馈系数（换算为mA/A）得到实际的电流值
+	  Comp=QueueLinearTable(50,buf,CompData.CompDataEntry.CompData.Data.MainBuckIFBThreshold,CompData.CompDataEntry.CompData.Data.MainBuckIFBValue,&IsResultOK);//查曲线得到矫正系数
     }
 	else
-	  buf=SysPstatebuf.AuxBuckCurrent; //如果当前主buck处于关闭状态则直接无视ADC结果从副buck的电流参数里面取
+	  { 	
+		buf=SysPstatebuf.AuxBuckCurrent; //如果当前主buck处于关闭状态则直接无视ADC结果从副buck的电流参数里面取
+	  Comp=QueueLinearTable(50,buf,CompData.CompDataEntry.CompData.Data.AuxBuckIFBThreshold,CompData.CompDataEntry.CompData.Data.AuxBuckIFBValue,&IsResultOK);//查曲线得到矫正系数
+		}
 	#ifdef FlashLightOS_Debug_Mode
   ADCOut->LEDIfNonComp=buf;//将未补偿的LEDIf放置到结构体内
-	#endif
-	Comp=QueueLinearTable(40,buf,CompData.CompDataEntry.CompData.Data.CurrentCompThershold,CompData.CompDataEntry.CompData.Data.CurrentCompValue,&IsResultOK);//查曲线得到矫正系数
+	#endif	
 	if(IsResultOK&&Comp!=NAN)buf*=Comp;//如果补偿系数合法则得到最终结果
   ADCOut->LEDIf=buf;//计算完毕返回结果
 	//计算SPS温度数值

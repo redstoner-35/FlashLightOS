@@ -16,10 +16,18 @@ typedef enum
 //结构体定义
 typedef struct
  {
- float CurrentCompThershold[70];
- float CurrentCompValue[70];
- float DimmingCompThreshold[70];
- float DimmingCompValue[70];
+ //辅助Buck调光参数
+ float AuxBuckDimmingThreshold[50];
+ float AuxBuckDimmingValue[50]; 
+ //主Buck调光参数
+ float MainBuckDimmingThreshold[50];  
+ float MainBuckDimmingValue[50]; 
+ //辅助Buck电流反馈参数
+ float AuxBuckIFBThreshold[50];
+ float AuxBuckIFBValue[50];
+ //主Buck电流反馈参数
+ float MainBuckIFBThreshold[50];
+ float MainBuckIFBValue[50]; 
  }CompDataStrDef; //补偿阈值和数据的结构体 
 
 typedef union

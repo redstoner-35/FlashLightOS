@@ -31,7 +31,7 @@ bool MCP3421_ReadVoltage(float *VOUT)
 	bool Isneg=false;
 	//读参数
 	IIC_Start();
-  IIC_Send_Byte(MCP3421ADDR); //送出地址
+  IIC_Send_Byte(MCP3421ADDR+1); //送出地址
   if(IIC_Wait_Ack())return false;
 	DBUF=(unsigned short)IIC_Read_Byte(1)<<8;
 	DBUF&=0xFF00;

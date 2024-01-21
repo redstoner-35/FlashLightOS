@@ -2,8 +2,8 @@
 #define _FirmwareConf_
 
 //版本信息
-#define HardwareMajorVer 2
-#define HardwareMinorVer 1  //硬件版本号
+#define HardwareMajorVer 3
+#define HardwareMinorVer 0  //硬件版本号
 
 #define MajorVersion 2
 #define MinorVersion 0

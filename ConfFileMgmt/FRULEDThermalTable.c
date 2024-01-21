@@ -27,6 +27,8 @@ int CheckForOEMLEDTable(LEDThermalConfStrDef *ParamOut,FRUBlockUnion *FRU)
 		   ParamOut->PIDTriggerTemp=65;
 		   ParamOut->PIDMaintainTemp=55;			
 		   break;
+		//3颗CREE XHP70.3HI 6500K P2光效
+		case 0x7003:
 		//3颗CREE XHP70.3HI 4500K 90CRI
 		case 0x7002:   
 		//3颗CREE XHP70.3HI 5700K 90CRI

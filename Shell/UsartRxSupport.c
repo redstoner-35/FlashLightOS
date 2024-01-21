@@ -7,6 +7,10 @@
 #include "AES256.h"
 #include "Xmodem.h"
 
+//版本定义
+#define BootstrapMajorVer 1
+#define BootstrapMinorVer 0
+
 //变量
 UARTBUFState ConsoleStat;
 ConsoleOperateFelid CurCmdField;
@@ -90,8 +94,7 @@ void ConsoleInit(void)
 	CurCmdField=TextField;//默认为文本模式
 	//console启动，输出自检信息
 	InitHistoryBuf();//初始化历史缓存
-	UARTPuts("\x0C\033[2JWelcome to Project:Diff-Torch Extreme Smart Driver for DDH-D8B.");
-	UartPrintf("\r\nPowered by FlashLight OS version-%d.%d.%d,BIST Baudrate:%dbps\r\n",MajorVersion,MinorVersion,HotfixVersion,BISTBaud);
+	UartPrintf("\x0C\033[2J%s BootStrap ROM V%d.%d. BIST Baudrate:%dbps\r\n",HardwarePlatformString,BootstrapMajorVer,BootstrapMinorVer,BISTBaud);
 	//安全操作区，解密原文，显示之后销毁
   IsUsingOtherKeySet=false;//处理密文的时候使用第一组key
 	memcpy(EncryptBUF,EncryptedCopyRight,48);//将密文复制进来	
@@ -102,13 +105,12 @@ void ConsoleInit(void)
 	memset(EncryptBUF,0x00,48);//销毁原文
   IsUsingOtherKeySet=true;//重新使用第二组key
 	//显示其余内容
-	UARTPuts("   All rights reserved.\r\n");
+	UARTPuts("   All rights reserved.\r\n\r\n");
 	#ifdef FlashLightOS_Debug_Mode
 	UARTPuts("\r\n\r\nWarning:Debug mode has been enabled during FlashLight OS firmware compilation!");
 	UARTPuts("\r\nThis is a special mode only for internal development and SHOULD BE DISABLED in");
 	UARTPuts("\r\nproduction firmware! For developer, remove 'FlashLightOS_Debug_Mode' global\r\ndefinition in firmware project settings to disable it.\r\n");
 	#endif
-	UARTPuts("\r\nPlease wait for Smart Driver to perfrom power-on selftest...\r\n\r\n");
 	XmodemTransferReset();//复位Xmodem模块
 	}
 //RX PDMA配置

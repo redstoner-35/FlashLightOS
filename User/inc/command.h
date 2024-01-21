@@ -153,9 +153,9 @@ const ComamandStringStr Commands[TotalCommandCount]=
     #else		
 		{Log_Perm_Guest,Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//10
 		"imonadj",
-		"允许厂家配置驱动输出电流测量模块的矫正参数.",  		 
-		"-v\0--view\0-g\0--gain\0-thr\0--threshold\0-n\0--node\0\n",
-		" \0 \0 <增益(0.5-20)>\0 <增益(0.5-20)>\0 <阈值电流(A)>\0 <阈值电流(A)>\0 <节点编号>\0 <节点编号>\0\n",
+		"允许厂家查看驱动模块的校准数据库状态.",  		 
+		"-vmb\0--view_mainbuck\0-vab\0--view_auxbuck\0\n",
+		" \0 \0 \0 \0\n",
 		&imonadjArgument,
 		#endif
 		Command_imonadj,
