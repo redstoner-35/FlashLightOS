@@ -87,10 +87,12 @@ char WriteCompDataToROM(void)
 void RunMainLEDHandler(bool IsMainBuck,int Pass)
  {
  float TargetCurrent,ActualCurrent;
+ float DimValue,IMONValue;
  ADCOutTypeDef ADCO;
  float DACVID,delta;
  int j=0;
  //计算目标电流和DACVID
+ UartPrintf("\r\n[Calibration]%s Buck Pass #%d begin.",IsMainBuck?"Main":"Aux",Pass);
  if(!IsMainBuck)TargetCurrent=MinimumLEDCurrent+(((3.9-MinimumLEDCurrent)/50)*(float)Pass); 
  else TargetCurrent=3.9+(((FusedMaxCurrent-3.9)/50)*(float)Pass); //计算目标电流
  if(!IsMainBuck)DACVID=250+(TargetCurrent*250); //LT3935 VIset=250mV(offset)+(250mv/A)
@@ -98,6 +100,7 @@ void RunMainLEDHandler(bool IsMainBuck,int Pass)
  //设置AUX PowerPIN
  SetAUXPWR(IsMainBuck);
  AD5693R_SetOutput(DACVID/(float)1000,!IsMainBuck?AuxBuckAD5693ADDR:MainBuckAD5693ADDR); //设置电压
+ UartPrintf("\r\n[Calibration]VID has been programmed,initial VID=%.2fmV.",DACVID);
  //开始对比VID修正电流误差
  ActualCurrent=0;
  while(j<6)
@@ -113,15 +116,17 @@ void RunMainLEDHandler(bool IsMainBuck,int Pass)
     else j=j>0?j-1:j; //如果误差修正OK则退出
     }
 	 //误差修正完毕，首先填写调光误差
+	 UartPrintf("\r\n[Calibration]VID Adjust completed,Adjusted VID=%.2fmV.",DACVID);
 	 delta=!IsMainBuck?250+(TargetCurrent*250):40+(TargetCurrent*30);
+	 DimValue=DACVID/delta; //计算出预期的VID偏差之后算出补偿值
 	 if(IsMainBuck)
 	   {
-		 CompData.CompDataEntry.CompData.Data.MainBuckDimmingValue[Pass]=DACVID/delta; //计算出预期的VID偏差之后算出补偿值
+		 CompData.CompDataEntry.CompData.Data.MainBuckDimmingValue[Pass]=DimValue;
      CompData.CompDataEntry.CompData.Data.MainBuckDimmingThreshold[Pass]=TargetCurrent; //填写目标电流  
 		 }
 	 else
 	   {
-		 CompData.CompDataEntry.CompData.Data.AuxBuckDimmingValue[Pass]=DACVID/delta; //计算出预期的VID偏差之后算出补偿值
+		 CompData.CompDataEntry.CompData.Data.AuxBuckDimmingValue[Pass]=DimValue; 
      CompData.CompDataEntry.CompData.Data.AuxBuckDimmingThreshold[Pass]=TargetCurrent; //填写目标电流  		 		 
 		 }
 	 //然后使能ADC进行电流采集
@@ -137,19 +142,20 @@ void RunMainLEDHandler(bool IsMainBuck,int Pass)
 		 }
    ActualCurrent/=10;		 
 	 //填写电流读取补偿值
+	 IMONValue=ADCO.LEDCalIf/ActualCurrent; //将实际电流和设置值的差距填进去
 	 if(IsMainBuck)
 	   {	 
-	   CompData.CompDataEntry.CompData.Data.MainBuckIFBValue[Pass]=ADCO.LEDCalIf/ActualCurrent; //将实际电流和设置值的差距填进去
+	   CompData.CompDataEntry.CompData.Data.MainBuckIFBValue[Pass]=IMONValue; 
 	   CompData.CompDataEntry.CompData.Data.MainBuckIFBThreshold[Pass]=ActualCurrent; //阈值写目标电流
 		 }
 	 else
 	   {
-	   CompData.CompDataEntry.CompData.Data.AuxBuckIFBValue[Pass]=ADCO.LEDCalIf/ActualCurrent; //将实际电流和设置值的差距填进去
+	   CompData.CompDataEntry.CompData.Data.AuxBuckIFBValue[Pass]=IMONValue; 
 	   CompData.CompDataEntry.CompData.Data.AuxBuckIFBThreshold[Pass]=ActualCurrent; //阈值写目标电流		 		 
 		 }
-	 UartPrintf("\r\n[Calibration]%s Buck Pass #%d complete.Actual LEDIf=%.2fA,UnCompIf=%.2fA.",IsMainBuck?"Main":"Aux",Pass,ActualCurrent,TargetCurrent);		 	  
+	 UartPrintf("\r\n[Calibration]%s Buck Pass #%d complete.Target LEDIf=%.2fA,Adjusted Actual LEDIf=%.2fA.",IsMainBuck?"Main":"Aux",Pass,TargetCurrent,ActualCurrent);	
+	 UartPrintf("\r\n[Calibration]Dimming Comp Value=%.3f,IMON CompValue=%.3f,LEDIf Error=%.2f%%\r\n",DimValue,IMONValue,((ActualCurrent/TargetCurrent)*100)-100);	 
  }
- 
 //自动进行电流回读的校准
 void DoSelfCalibration(void)
  {
