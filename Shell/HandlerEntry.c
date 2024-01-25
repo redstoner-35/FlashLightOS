@@ -41,6 +41,7 @@ void CommandHandler(void)
 		case Command_rampcfg:rampcfghandler();break; //rampcfg
 		#ifdef FlashLightOS_Debug_Mode
 		case Command_eepedit:eepedithandler();break;//eepedit
+		case Command_hwdiag:hwdiaghandler();break;//hwdiag
 		#endif
 		//其余情况，显示错误或者直接退出
     default:

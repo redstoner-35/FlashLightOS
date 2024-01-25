@@ -445,7 +445,20 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		 false,
      false,
 		 true			 		
-		}
+		},
+    {
+		 {Log_Perm_Guest,Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//31
+     "hwdiag",
+		 "允许厂家对驱动的硬件进行测试.",
+     "\0\n",
+		 "\0\n",
+		 NULL,
+		 Command_hwdiag,
+		 NULL,
+		 false,
+     false,
+		 true			 
+		},			
 		#endif
   };
 #endif

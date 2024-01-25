@@ -922,6 +922,11 @@
               <FileType>1</FileType>
               <FilePath>.\Command\User\eepedit.c</FilePath>
             </File>
+            <File>
+              <FileName>hwdiag.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Command\User\hwdiag.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

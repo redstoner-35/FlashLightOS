@@ -17,7 +17,7 @@
 #ifndef FlashLightOS_Debug_Mode
    #define TotalCommandCount 30  //非debug模式，总命令数30
 #else
-   #define TotalCommandCount 31  //debug模式，总命令数31
+   #define TotalCommandCount 32  //debug模式，总命令数32
 #endif
 
 /* 负责处理外部按键锁存器的使能脚的自动define 不允许修改！*/
@@ -90,7 +90,8 @@ Command_fruedit,
 Command_thermaltripcfg,
 Command_rampcfg,
 #ifdef FlashLightOS_Debug_Mode
-Command_eepedit
+Command_eepedit,
+Command_hwdiag
 #endif
 }CommandHandle;
 

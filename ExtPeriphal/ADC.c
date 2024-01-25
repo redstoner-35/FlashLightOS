@@ -38,7 +38,7 @@ float ConvertAuxBuckIsense(float VIN)
   {
 	VIN*=100; //将电压转换为mV并同时除以Sense Amp的倍率(10V/V)得到Shunt两端的电压
   if(VIN<=0)return 0; //数值非法，输出0
-  else return VIN/AuxBuckIsensemOhm; //将mV电压值除以检流电阻的mΩ值得到电流
+  else return VIN/AuxBuckIsensemOhm; //将mV电压值除以检流电阻的mΩ值得到电流(A)
 	}
 //ADC获取LED电流测量引脚的电压输入值
 bool ADC_GetLEDIfPinVoltage(float *VOUT)

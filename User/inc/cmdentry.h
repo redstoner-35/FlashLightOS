@@ -33,6 +33,7 @@ void fruedithandler(void);
 void thermaltripcfgHandler(void);
 void rampcfghandler(void);
 void eepedithandler(void);
+void hwdiaghandler(void);
 
 //Ctrl+C force stop entry
 void cfgmgmt_ctrlc_handler(void);

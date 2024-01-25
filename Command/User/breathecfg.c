@@ -33,6 +33,7 @@ const char *breathecfgArgument(int ArgCount)
 //命令处理主函数
 void breathecfghandler(void)
   {
+	#ifndef FlashLightOS_Debug_Mode
 	int modenum;
 	ModeGrpSelDef UserSelect;
 	ModeConfStr *TargetMode;
@@ -145,6 +146,7 @@ void breathecfghandler(void)
 			}
 		}
 	if(!IsCmdParamOK)UartPrintCommandNoParam(21);//显示啥也没找到的信息 
+	#endif
 	//命令处理完毕
 	ClearRecvBuffer();//清除接收缓冲
   CmdHandle=Command_None;//命令执行完毕
