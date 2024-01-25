@@ -247,7 +247,8 @@ void LinearDIM_POR(void)
  SetAUXPWR(false);
  delay_ms(50);
  /***********************************************************************
- 下一步，我们需要进行副buck相关电路的检查
+ 下一步，我们需要进行副buck相关电路的检查。首先我们配置好读取电流的MCP3421
+ ADC，然后启用辅助buck DAC的基准使辅助buck运行，然后检查读回的电流是否正常
  ***********************************************************************/	 
  VSet=0.4;//初始VID 0.4
  VGet=0;//电流为0
@@ -270,7 +271,7 @@ void LinearDIM_POR(void)
 			 DisableAuxBuckForFault();//关闭辅助buck并报错
 			 }
 		if(ADCO.LEDVf>=LEDVfMax)break; //电压超过VfMax
-	  if(((VGet*100)/25)>=MinimumLEDCurrent)break; //电流达标
+	  if(ConvertAuxBuckIsense(VGet)>=MinimumLEDCurrent)break; //电流达标
 		//VID加一点,设置输出之后继续尝试
 		if(VSet<0.8)VSet+=0.05;  
 		AD5693R_SetOutput(VSet,AuxBuckAD5693ADDR); //将DAC设置为初始输出
@@ -348,9 +349,7 @@ void GetAuxBuckCurrent(void)
 	 }
  //开始进行数据转换
  if(result==3072)return; //DAC本次数据未更新，不赋值
- result*=100; //将电压转换为mV并同时除以Sense Amp的倍率(10V/V)得到Shunt两端的电压
- if(result<=0)SysPstatebuf.AuxBuckCurrent=0; //数值非法，输出0
- else SysPstatebuf.AuxBuckCurrent=result/25; //检流电阻25mR故电流为25mV/1A
+ SysPstatebuf.AuxBuckCurrent=ConvertAuxBuckIsense(result); //数值已更新，计算参数
  }
 /*
 这个函数负责接收手电运行的逻辑处理函数传入的LED是否启动和
@@ -426,7 +425,7 @@ void DoLinearDimControl(float Current,bool IsMainLEDEnabled)
  *********************************************************/	
  else 
    {
-	 if(Current<3.9)DACVID=250+(Current*250); //LT3935 VIset=250mV(offset)+(250mv/A)
+	 if(Current<3.9)DACVID=250+(Current*AuxBuckIsensemOhm*10); //LT3935 VIset=250mV(offset)+[额定电流(A)*电流检测电阻数值(mΩ)*电流检测放大器倍数(10X)]
 	 else DACVID=40+(Current*30); //主Buck VIset=40mV(offset)+(30mv/A)
 	 DACVID*=Comp; //乘以查表得到的补偿系数
 	 DACVID/=1000; //mV转V
@@ -545,7 +544,7 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
 		 {
 		 if(!AD5693R_SetOutput((VID+250)/(float)1000,AuxBuckAD5693ADDR))return Error_DAC_Logic;
 		 if(!MCP3421_ReadVoltage(&ILED))return Error_ADC_Logic; //读取电流
-		 if(((ILED*100)/25)>=MinimumLEDCurrent&&ADCO.LEDVf>LEDVfMin)break; //电流足够且电压达标
+		 if(ConvertAuxBuckIsense(ILED)>=MinimumLEDCurrent&&ADCO.LEDVf>LEDVfMin)break; //电流足够且电压达标
 		 VID=((100-VID)<VIDIncValue)?VID+0.5:VID+VIDIncValue;//增加VID，如果快到上限就慢慢加，否则继续快速增加VID
 		 VIDIncValue+=StartupLEDVIDStep; //每次VID增加的数值
 		 }

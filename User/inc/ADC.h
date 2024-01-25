@@ -55,6 +55,7 @@ bool ADC_GetResult(ADCOutTypeDef *ADCOut);//获取温度和LED Vf
 void OnChipADC_FaultHandler(void);//ADC异常处理
 void ADC_EOC_interrupt_Callback(void);//ADC结束转换处理
 void InternalADC_QuickInit(void);//内部ADC快速初始化
+float ConvertAuxBuckIsense(float VIN);//转换外部辅助buck的电压值反馈到电流值
 
 //外部ref
 extern const char *NTCStateString[3];

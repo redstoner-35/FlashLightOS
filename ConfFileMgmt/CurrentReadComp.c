@@ -93,10 +93,16 @@ void RunMainLEDHandler(bool IsMainBuck,int Pass)
  int j=0;
  //计算目标电流和DACVID
  UartPrintf("\r\n[Calibration]%s Buck Pass #%d begin.",IsMainBuck?"Main":"Aux",Pass);
- if(!IsMainBuck)TargetCurrent=MinimumLEDCurrent+(((3.9-MinimumLEDCurrent)/50)*(float)Pass); 
- else TargetCurrent=3.9+(((FusedMaxCurrent-3.9)/50)*(float)Pass); //计算目标电流
- if(!IsMainBuck)DACVID=250+(TargetCurrent*250); //LT3935 VIset=250mV(offset)+(250mv/A)
- else DACVID=40+(TargetCurrent*30); //主Buck VIset=40mV(offset)+(30mv/A)
+ if(!IsMainBuck) //使用副buck
+   { 
+   TargetCurrent=MinimumLEDCurrent+(((3.9-MinimumLEDCurrent)/50)*(float)Pass); //计算目标电流(电流从最低开始-3.9A)
+   DACVID=250+(TargetCurrent*AuxBuckIsensemOhm*10); //LT3935 VIset=250mV(offset)+[额定电流(A)*电流检测电阻数值(mΩ)*电流检测放大器倍数(10X)]
+	 }
+ else //使用主buck
+   {	 
+	 TargetCurrent=3.9+(((FusedMaxCurrent-3.9)/50)*(float)Pass); //计算目标电流(电流从3.9A开始到极亮电流)
+   DACVID=40+(TargetCurrent*30); //主Buck VIset=40mV(offset)+(30mv/A)
+	 }
  //设置AUX PowerPIN
  SetAUXPWR(IsMainBuck);
  AD5693R_SetOutput(DACVID/(float)1000,!IsMainBuck?AuxBuckAD5693ADDR:MainBuckAD5693ADDR); //设置电压
@@ -117,7 +123,7 @@ void RunMainLEDHandler(bool IsMainBuck,int Pass)
     }
 	 //误差修正完毕，首先填写调光误差
 	 UartPrintf("\r\n[Calibration]VID Adjust completed,Adjusted VID=%.2fmV.",DACVID);
-	 delta=!IsMainBuck?250+(TargetCurrent*250):40+(TargetCurrent*30);
+	 delta=!IsMainBuck?250+(TargetCurrent*AuxBuckIsensemOhm*10):40+(TargetCurrent*30); //计算原始VID值
 	 DimValue=DACVID/delta; //计算出预期的VID偏差之后算出补偿值
 	 if(IsMainBuck)
 	   {
@@ -138,7 +144,7 @@ void RunMainLEDHandler(bool IsMainBuck,int Pass)
 		 delay_ms(18);
 		 ADC_GetResult(&ADCO);
 		 MCP3421_ReadVoltage(&delta);
-		 if(!IsMainBuck)ActualCurrent+=(delta*100)/25;
+		 if(!IsMainBuck)ActualCurrent+=ConvertAuxBuckIsense(delta);
 		 else ActualCurrent+=ADCO.LEDIfNonComp; //读取电流设置
 		 CurrentREF+=ADCO.LEDCalIf;
 		 }
