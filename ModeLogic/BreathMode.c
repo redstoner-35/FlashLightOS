@@ -164,6 +164,6 @@ void BreatheStateMachine(void)
  辅助电源。如果电流为0的时候我们就需要关闭辅助电源。除了
  省电以外还可以解决鬼影问题。
  ******************************************************/
- if(BreathCurrent<0.05||ForceLEDOff)SysPstatebuf.ToggledFlash=false;
+ if(BreathCurrent<MinimumLEDCurrent||ForceLEDOff)SysPstatebuf.ToggledFlash=false;
  else SysPstatebuf.ToggledFlash=true;
  }

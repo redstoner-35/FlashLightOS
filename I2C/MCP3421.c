@@ -11,15 +11,8 @@ bool MCP3421_SetChip(PGAGainDef Gain,SampleRateDef Rate,bool IsPowerDown)
   buf=IsPowerDown?0x00:0x10;
 	buf|=(char)Gain&0x03; //设置增益
   buf|=((char)Rate&0x03)<<2;//设置转换位数和转换率
-	//写参数
-	IIC_Start();
-  IIC_Send_Byte(MCP3421ADDR); //送出地址
-  if(IIC_Wait_Ack())return false;
-  IIC_Send_Byte(buf); //送出配置字节
-  if(IIC_Wait_Ack())return false;
-	IIC_Stop();//IIC停止
-	//发送完毕，退出
-  return true;
+	//发送配置到ADC
+	return PMBUS_SendCommand(MCP3421ADDR,buf);
 	}
 
 //读取电压

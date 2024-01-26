@@ -288,8 +288,9 @@ void LinearDIM_POR(void)
  MCP3421_SetChip(PGA_Gain2to1,Sample_14bit_60SPS,true); //关闭ADC
  SetTogglePin(false); //PWM pin关闭
  AD5693R_SetOutput(0,AuxBuckAD5693ADDR); //将DAC设置为0V输出	
+ DACInitStr.DACPState=DAC_Disable_HiZ;
  DACInitStr.IsOnchipRefEnabled=false; 
- AD5693R_SetChipConfig(&DACInitStr,AuxBuckAD5693ADDR); //关闭基准使buck停止运行		
+ AD5693R_SetChipConfig(&DACInitStr,AuxBuckAD5693ADDR); //关闭基准并设置为输出高阻使buck停止运行		
  IsDisableBattCheck=false; //默认开启电池质量检测
 }
 //从开灯状态切换到关灯状态的逻辑
@@ -304,9 +305,9 @@ void TurnLightOFFLogic(void)
  //关闭外设
  DisableFlashTimer();//关闭闪烁定时器
  SetTogglePin(false);
- DACInitStr.DACPState=DAC_Normal_Mode;
+ DACInitStr.DACPState=DAC_Disable_HiZ;
  DACInitStr.DACRange=DAC_Output_REF;
- DACInitStr.IsOnchipRefEnabled=false; //关闭副buck的基准电源  
+ DACInitStr.IsOnchipRefEnabled=false; //关闭副buck的基准电源,辅助DAC进入低功耗模式
  AD5693R_SetOutput(0,AuxBuckAD5693ADDR);	
  AD5693R_SetOutput(0,MainBuckAD5693ADDR); //将主buck和副buck的输出都set0
  AD5693R_SetChipConfig(&DACInitStr,AuxBuckAD5693ADDR);//关闭基准，彻底让副buck下电
@@ -428,6 +429,7 @@ void DoLinearDimControl(float Current,bool IsMainLEDEnabled)
 	 if(Current<3.9)DACVID=250+(Current*AuxBuckIsensemOhm*10); //LT3935 VIset=250mV(offset)+[额定电流(A)*电流检测电阻数值(mΩ)*电流检测放大器倍数(10X)]
 	 else DACVID=40+(Current*30); //主Buck VIset=40mV(offset)+(30mv/A)
 	 DACVID*=Comp; //乘以查表得到的补偿系数
+	 SysPstatebuf.CurrentDACVID=DACVID;//存储计算后的DACVID
 	 DACVID/=1000; //mV转V
 	 if(!AD5693R_SetOutput(DACVID,Current<3.9?AuxBuckAD5693ADDR:MainBuckAD5693ADDR)) //设置主buck或者副buck的VID
      {
@@ -640,7 +642,8 @@ void RuntimeModeCurrentHandler(void)
  降档系数用于限制电流
  ********************************************************/
  //判断是否需要应用降档设置 
- if(CurrentMode->IsModeAffectedByStepDown)IsEnableStepDown=true;//挡位启用温控降档 		 
+ if(!IsMainLEDEnabled)IsEnableStepDown=false;//当前LED处于关闭阶段，不进行温控降档的计算
+ else if(CurrentMode->IsModeAffectedByStepDown)IsEnableStepDown=true;//挡位启用温控降档 		 
  else if(CurrentTactalDim==101)IsEnableStepDown=true;//瞬时极亮启用，强制开启温控降档 		 
  else if(ADCO.NTCState==LED_NTC_OK&&ADCO.LEDTemp>(CfgFile.LEDThermalTripTemp-5))IsEnableStepDown=true; //LED温度逼近临界值，立即启动降档
  else if(ADCO.SPSTMONState==SPS_TMON_OK&&(ADCO.SPSTemp>CfgFile.MOSFETThermalTripTemp-10))IsEnableStepDown=true; //MOS温度逼近临界值，立即启动降档

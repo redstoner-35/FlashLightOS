@@ -6,6 +6,7 @@
 #include "runtimelogger.h"
 #include "ADC.h"
 #include "I2C.h"
+#include "MCP3421.h"
 #include "logger.h"
 #include <math.h>
 
@@ -135,6 +136,7 @@ void CollectLoginfo(const char *ErrorArea,INADoutSreDef *BattStat)
  {
  LoggerDataUnion LogData;
  ADCOutTypeDef ADCO;
+ float buf;
  //填写基本信息
  strncpy(LogData.LoggerDateSection.ErrorStageText,ErrorArea,32);//错误日志输入
  LogData.LoggerDateSection.SystemPstate=SysPstatebuf.Pstate;
@@ -148,6 +150,10 @@ void CollectLoginfo(const char *ErrorArea,INADoutSreDef *BattStat)
  LogData.LoggerDateSection.CurrentModeSel.RegularGrpMode=CurMode.RegularGrpMode;
  LogData.LoggerDateSection.CurrentModeSel.SpecialGrpMode=CurMode.SpecialGrpMode;
  //开始遥测ADC的部分
+ buf=3072;
+ delay_ms(18);
+ MCP3421_ReadVoltage(&buf); //读取辅助ADC电压
+ if(buf!=3072)SysPstatebuf.AuxBuckCurrent=ConvertAuxBuckIsense(buf); //读取辅助buck电流
  if(!ADC_GetResult(&ADCO))//遥测数据不可用
    {
    LogData.LoggerDateSection.DriverTelem.LEDIf=NAN;

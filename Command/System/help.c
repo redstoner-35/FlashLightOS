@@ -90,10 +90,8 @@ void HelpHandler(void)
  //找到匹配的结果
  if(CmdName==NULL&&KeyWord==NULL)
 	 UARTPutsAuto((char *)AllResultListed,TotalLength,TotalLength);
- else if(resultcount)
-	 UartPrintf("\r\n\r\n查找完毕,共找到%d条结果.",resultcount);
  else
-	 UARTPuts("\r\n\r\n无匹配结果,您可尝试缩短或去除关键词限制.");
+	 UartPrintf("\r\n\r\n查找完毕,共找到%d条结果.",resultcount);
  ClearRecvBuffer();//清除接收缓冲
  CmdHandle=Command_None;//命令执行完毕		
  }

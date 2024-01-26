@@ -6,6 +6,7 @@
 #include "MCP3421.h"
 #include "delay.h"
 
+#ifdef FlashLightOS_Debug_Mode
 void hwdiaghandler(void)
   {
 	DACInitStrDef DACTest;
@@ -65,3 +66,4 @@ void hwdiaghandler(void)
 	ClearRecvBuffer();//清除接收缓冲
 	CmdHandle=Command_None;//命令执行完毕
 	}
+#endif
