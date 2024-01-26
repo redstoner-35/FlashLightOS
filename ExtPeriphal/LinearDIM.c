@@ -252,7 +252,7 @@ void LinearDIM_POR(void)
  ***********************************************************************/	 
  VSet=0.4;//初始VID 0.4
  VGet=0;//电流为0
- if(!MCP3421_SetChip(PGA_Gain2to1,Sample_14bit_60SPS,false))
+ if(!MCP3421_SetChip(AuxBuckIsenADCGain,AuxBuckIsenADCRes,false))
    {
 	 UartPost(Msg_critical,"LineDIM","Aux Buck Isens ADC init error.");
 	 SelfTestErrorHandler();  
@@ -285,7 +285,7 @@ void LinearDIM_POR(void)
  副buck自检成功结束，这个时候我们通过设置DAC基准强制关闭副buck并关闭ADC,
  进入低功耗休眠阶段。
  ***********************************************************************/
- MCP3421_SetChip(PGA_Gain2to1,Sample_14bit_60SPS,true); //关闭ADC
+ MCP3421_SetChip(AuxBuckIsenADCGain,AuxBuckIsenADCRes,true); //关闭ADC
  SetTogglePin(false); //PWM pin关闭
  AD5693R_SetOutput(0,AuxBuckAD5693ADDR); //将DAC设置为0V输出	
  DACInitStr.DACPState=DAC_Disable_HiZ;
@@ -312,7 +312,7 @@ void TurnLightOFFLogic(void)
  AD5693R_SetOutput(0,MainBuckAD5693ADDR); //将主buck和副buck的输出都set0
  AD5693R_SetChipConfig(&DACInitStr,AuxBuckAD5693ADDR);//关闭基准，彻底让副buck下电
  INA219_SetConvMode(INA219_PowerDown,INA219ADDR);//关闭INA219功率计
- MCP3421_SetChip(PGA_Gain2to1,Sample_14bit_60SPS,true);//关闭辅助buck的功率测量模块
+ MCP3421_SetChip(AuxBuckIsenADCGain,AuxBuckIsenADCRes,true);//关闭辅助buck的功率测量模块
  SetAUXPWR(false);//切断3.3V辅助电源
  //复位侧按LED管理器并计算运行日志的CRC32
  CurrentLEDIndex=0;
@@ -407,13 +407,19 @@ void DoLinearDimControl(float Current,bool IsMainLEDEnabled)
 	 SetAUXPWR(false); //如果buck需要关机则关闭主buck电源
 	 DACInitStr.DACPState=DAC_Normal_Mode;
    DACInitStr.DACRange=DAC_Output_REF;
-   DACInitStr.IsOnchipRefEnabled=!BuckPowerState; //关闭副buck的基准电源
-	 if(!AD5693R_SetChipConfig(&DACInitStr,AuxBuckAD5693ADDR))
+   DACInitStr.IsOnchipRefEnabled=!BuckPowerState; 
+	 if(!AD5693R_SetChipConfig(&DACInitStr,AuxBuckAD5693ADDR)) //设置副buck的基准状态
      {
 		 //DAC无响应,这是严重故障,立即写log并停止驱动运行
 	   RunTimeErrorReportHandler(Error_DAC_Logic);
 		 return;
 	   } 
+	 if(!MCP3421_SetChip(AuxBuckIsenADCGain,AuxBuckIsenADCRes,BuckPowerState))//如果主副buck都掉电则使MCP3421停止运行，节省功耗
+		 {
+	   //ADC配置失败,这是严重故障,立即写log并停止驱动运行
+	   RunTimeErrorReportHandler(Error_ADC_Logic);
+	   return;
+	   }
 	 }
  /*********************************************************
  当前LED电流为0，且主LED设置为关闭，因此设置PWMPin=0使得两
@@ -468,7 +474,7 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
 	 return Error_ADC_Logic;//设置INA219遥测的器件地址,然后让INA219进入工作模式
  if(!AD5693R_SetOutput(0,MainBuckAD5693ADDR))
 	 return Error_DAC_Logic;//将DAC输出设置为0V,确保送主电源时主Buck变换器不工作
- if(!MCP3421_SetChip(PGA_Gain2to1,Sample_14bit_60SPS,false))
+ if(!MCP3421_SetChip(AuxBuckIsenADCGain,AuxBuckIsenADCRes,false))
 	 return Error_ADC_Logic; //初始化ADC逻辑
  delay_ms(1);
  SetTogglePin(true);//控制引脚设置为常通

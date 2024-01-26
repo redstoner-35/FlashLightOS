@@ -54,7 +54,6 @@ void EnteredLowPowerMode(void)
   CLKConfig.Bit.PB=1;
   CLKConfig.Bit.USART1=1;
   CLKConfig.Bit.PDMA=1;
-  CLKConfig.Bit.MCTM0 = 1;
   CLKConfig.Bit.ADC0 = 1;
   CLKConfig.Bit.GPTM1 = 1;
   CKCU_PeripClockConfig(CLKConfig,DISABLE);
@@ -100,7 +99,6 @@ void ExitLowPowerMode(void)
   CLKConfig.Bit.PB=1;
   CLKConfig.Bit.USART1=1;
   CLKConfig.Bit.PDMA=1;
-  CLKConfig.Bit.MCTM0 = 1;
   CLKConfig.Bit.ADC0 = 1;
   CLKConfig.Bit.GPTM1 = 1;
   CKCU_PeripClockConfig(CLKConfig,ENABLE);

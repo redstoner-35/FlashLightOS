@@ -76,8 +76,10 @@
 //电池功率计参数设置
 #define INA219ShuntOhm 0.5 //驱动的INA219功率级的分流电阻阻值(单位mΩ)
 
-//辅助月光buck小板电流设置参数
+//辅助月光buck小板设置参数
 #define AuxBuckIsensemOhm 10 //辅助月光buck小板的检流电阻阻值(单位mΩ)
+#define AuxBuckIsenADCRes Sample_14bit_60SPS //辅助小板的ADC使用14bit模式
+#define AuxBuckIsenADCGain PGA_Gain2to1 //设置输入增益为2X（fullscale=1.024V）
 
 //ADC模拟电压参考电压
 #define ADC_VRef 3.2990 //实际的ADC电压参考值

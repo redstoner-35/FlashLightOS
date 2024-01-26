@@ -180,7 +180,7 @@ void DoSelfCalibration(void)
  CurrentLEDIndex=2; 
  LEDMgmt_CallBack();//LED管理器指示绿灯常亮	 
  //上电，开始初始化DAC ADC
- MCP3421_SetChip(PGA_Gain2to1,Sample_14bit_60SPS,false);
+ MCP3421_SetChip(AuxBuckIsenADCGain,AuxBuckIsenADCRes,false);
  SetTogglePin(false);
  SetAUXPWR(false); //主副buck都关闭
  DACInitStr.DACPState=DAC_Normal_Mode;
@@ -259,7 +259,7 @@ void DoSelfCalibration(void)
  SetAUXPWR(false); //主副buck都关闭
  DACInitStr.IsOnchipRefEnabled=false; 	 
  AD5693R_SetChipConfig(&DACInitStr,AuxBuckAD5693ADDR); //关闭基准
- MCP3421_SetChip(PGA_Gain2to1,Sample_14bit_60SPS,true);//开启PD模式
+ MCP3421_SetChip(AuxBuckIsenADCGain,AuxBuckIsenADCRes,true);//开启PD模式
  CurrentLEDIndex=0; 
  }	
 
