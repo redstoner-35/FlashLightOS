@@ -438,12 +438,6 @@ void DoLinearDimControl(float Current,bool IsMainLEDEnabled)
  else 
    {   
 	 IsAuxBuckEnabled=Current<3.9?true:false;//判别AUXbuck的状态
-	 if(AuxDACSetState!=IsAuxBuckEnabled) //辅助DAC发生状态变化
-	   {
-		 AuxDACSetState=IsAuxBuckEnabled; //同步辅助DAC状态
-		 DAResult[1]=AD5693R_SetOutput(0,AuxDACSetState?AuxBuckAD5693ADDR:MainBuckAD5693ADDR);	//主buck启用，设置副buck的VID=0，否则设置主buck的VID=0
-		 }	 
-	 else DAResult[1]=true; //不需要更新主buck的状态
 	 SetAUXPWR(!IsAuxBuckEnabled); //电流小于3.9切换到副buck,否则使用主buck	
 	 SetTogglePin(true); //将两个buck的总使能信号设置为1	 
 	 if(IsAuxBuckEnabled)DACVID=250+(Current*AuxBuckIsensemOhm*10); //LT3935 VIset=250mV(offset)+[额定电流(A)*电流检测电阻数值(mΩ)*电流检测放大器倍数(10X)]
@@ -453,6 +447,12 @@ void DoLinearDimControl(float Current,bool IsMainLEDEnabled)
 	 DACVID/=1000; //mV转V
 	 delay_us(30); //这个延时是为了确保buck POR阶段DAC的VID维持0一段时间然后再送,否则LT的芯片将会不响应
 	 DAResult[0]=AD5693R_SetOutput(DACVID,IsAuxBuckEnabled?AuxBuckAD5693ADDR:MainBuckAD5693ADDR); //设置VID
+	 if(AuxDACSetState!=IsAuxBuckEnabled) //检测函数，作用是如果辅助或者主buck发生状态变化，则将被禁用的部分的DAC设置为0V
+	   {
+		 AuxDACSetState=IsAuxBuckEnabled; //同步辅助DAC状态
+		 DAResult[1]=AD5693R_SetOutput(0,AuxDACSetState?AuxBuckAD5693ADDR:MainBuckAD5693ADDR);	//主buck启用，设置副buck的VID=0，否则设置主buck的VID=0
+		 }	 
+	 else DAResult[1]=true; //不需要更新主buck的状态
 	 if(!DAResult[0]||!DAResult[1])RunTimeErrorReportHandler(Error_DAC_Logic); //DAC无响应,这是严重故障,立即写log并停止驱动运行 
 	 }
  }	
