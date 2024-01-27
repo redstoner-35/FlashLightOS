@@ -15,7 +15,7 @@ typedef enum
  RunLogCmd_XmodemRxInProgress  //Xmodem接收进行中
  }runlogCfgStateDef;
 
-static const char *RunLogOpStr="\r\n运行日志记录器已被%s,您需要使用'reboot'命令重启驱动以使更改生效.";
+static const char *RunLogOpStr="\r\n运行日志记录器已被%s.";
 static const char *RunLogFileName="运行日志文件";
 
 runlogCfgStateDef RunLogCmdState;
@@ -31,7 +31,7 @@ const char *runlogcfgArgument(int ArgCount)
 		case 0:
 		case 1:return "清除系统中的运行日志";	
 		case 2:
-		case 3:return "设置运行日志记录器是否启用(需要重启方可生效)";
+		case 3:return "设置运行日志记录器是否启用.";
 		case 4:
 		case 5:return "将运行日志以Xmodem的方式保存到电脑进行分析";
 		case 6:

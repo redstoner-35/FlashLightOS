@@ -23,7 +23,7 @@ const char *battcfgArgument(int ArgCount)
 		case 0:
 		case 1:return "指定电池组的低电压警告电压(低于此电压后驱动输出电流被限制以保护电池)";
 		case 2:
-		case 3:return "指定电池组的低电压保护电压(低于此电压后驱动自动关机以保护电池)";
+		case 3:return "指定电池组的低电压关机保护电压.";
     case 4:
 		case 5:return "设置电池组的满电电压(电池充满的额定电压)";
 		case 6:

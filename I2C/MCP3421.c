@@ -58,6 +58,6 @@ bool MCP3421_ReadVoltage(float *VOUT)
 		default:return false;
 		}		
 	//计算完毕，返回结果
-		if(!(conf&0x80))*VOUT=result; //输出结果有效，更新数值
+	if(!(conf&0x80))*VOUT=result; //输出结果有效，更新数值
 	return true;
 	}
