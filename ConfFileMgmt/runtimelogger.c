@@ -457,7 +457,9 @@ void RunLogModule_POR(void)
 	 SelfIncBuf[i]=Data.DataSec.LogIncrementCode;
 	 }
  //遍历完毕，查询自增码获得最新的log entry并计算CRC32
+ #ifdef FlashLightOS_Debug_Mode
  UartPost(Msg_info,"RTLogger","Check completed,find %d broken runtime log entry.",errorlog);
+ #endif
  i=FindLatestEntryViaIncCode(SelfIncBuf);
  if(!LoadRunLogDataFromROM(&RunLogEntry.Data,i))//从ROM内读取选择的Entry作为目前数据的内容
     {
@@ -468,10 +470,12 @@ void RunLogModule_POR(void)
  for(j=0;j<RunTimeLoggerDepth;j++)if(SelfIncBuf[j])IsLogEmpty=false; //检查entry是不是已经空了
  if(IsLogEmpty)RunLogEntry.ProgrammedEntry=0;//如果目前事件日志一组记录都没有，则从0开始记录
  else RunLogEntry.ProgrammedEntry=(i+1)%RunTimeLoggerDepth;//目前entry已经有数据了，从下一条entry开始
+ #ifdef FlashLightOS_Debug_Mode
  UartPost(Msg_info,"RTLogger","Last Entry is #%d,Logger will log data to entry #%d.",i,RunLogEntry.ProgrammedEntry);
+ #endif
  CalcLastLogCRCBeforePO();
  RunLogEntry.Data.DataSec.IsLowVoltageAlert=false;//已经重启了需要重置低压警告不然用户会发现换了电池还是低压警告.
  RunLogEntry.CurrentDataCRC=CalcRunLogCRC32(&RunLogEntry.Data);//计算CRC-32
- UartPost(Msg_info,"RTLogger","Run-Time logger has been started,last log data CRC-32 value=0x%08X.",RunLogEntry.CurrentDataCRC);
+ UartPost(Msg_info,"RTLogger","Run-Time logger has started,last log data CRC-32 is 0x%08X.",RunLogEntry.CurrentDataCRC);
  IsRunTimeLoggingEnabled=true; //logger启动
  }

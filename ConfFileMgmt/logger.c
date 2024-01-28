@@ -109,16 +109,16 @@ void LoggerHeader_POR(void)
 	  else IsEntryContainError=false; //判断有没有错误
 		if(IsEntryContainError!=LoggerHdr.LoggerHeader.IsEntryHasError[i])//错误数据不一致
 		  {
-			UartPost(Msg_warning,"Logger","error log entry #%d has mismatch information compared to log-header,fixing...",i);
+			UartPost(Msg_warning,"Logger","error log entry #%d has mismatch information,fixing...",i);
 			LoggerHdr.LoggerHeader.IsEntryHasError[i]=IsEntryContainError;//覆写对应的未知
 			HeaderUpdated=true;
 			faultentry++;
 			}
 		}
-  UartPost(Msg_info,"Logger","Error logger has been started with %d problematic log entry.",faultentry);
+  UartPost(Msg_info,"Logger","Error logger has started with %d problematic log entry.",faultentry);
 	if(HeaderUpdated)//需要更新header
 	  {
-		UartPost(Msg_info,"Logger","Writing updated log-header...");
+		UartPost(Msg_info,"Logger","Writing updated header...");
 		if(!WriteLoggerHeader(&LoggerHdr))
 			UartPost(msg_error,"Logger","Failed to overwrite log-header in ROM.");
 		}
@@ -126,7 +126,7 @@ void LoggerHeader_POR(void)
  //检查不通过
  else
   {
-	UartPost(msg_error,"Logger","Logger header has been broken,system will re-initialize log area...");
+	UartPost(msg_error,"Logger","Error Logger Header/Area corrupted,Re-initializing...");
 	if(!ReInitLogArea())UartPost(msg_error,"Logger","Failed to re-initialize log area."); //重新初始化	
   NVIC_SystemReset();//reboot
 	}

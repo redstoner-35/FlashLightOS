@@ -203,7 +203,21 @@ void GPTM0_IRQHandler(void)
 			}
 		}
  }
+ /*********************************************************************************************************//**
+ * @brief   This function handles RTC interrupt.
+ * @retval  None
+ * @details 跳转到中断处理函数将设置为锁定
+ ************************************************************************************************************/
+void RTCCMIntHandler(void); 
  
+void RTC_IRQHandler(void)
+{
+  u8 bFlags=RTC_GetFlagStatus();
+  if (bFlags & RTC_FLAG_CM) //比较中断发生
+  {
+    RTCCMIntHandler(); //执行比较处理
+  }
+}
 /*********************************************************************************************************//**
  * @brief   This function handles GPTM1 interrupt.
  * @retval  None

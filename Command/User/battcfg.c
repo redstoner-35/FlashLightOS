@@ -6,6 +6,7 @@
 #include <math.h>
 
 //外部变量
+const char *BattParamHasUpdated="\r\n电池的%s电压值已被更新为%.2fV.";
 const char *IllegalVoltageConfig="\r\n您应当指定一个在%.1f-%.1f(V)之间的数值作为电池的%s值.";
 const char *BatteryVoltagePoint="\r\n 电池%s电压 : %.2fV";
 const char *FailedToDoSthColumb="\r\n由于运行日志连带库仑计已被管理员禁用,因此您无法对库仑计进行%s操作.\r\n";
@@ -33,7 +34,7 @@ const char *battcfgArgument(int ArgCount)
 		case 10:
 		case 11:return "手动设置库仑计的设计电池容量.";
 		case 12:
-		case 13:return "复位库仑计的电池统计和容量数据以及电池质量警告";
+		case 13:return "复位库仑计的电池统计数据以及电池质量警告";
 	  case 14:
 		case 15:return "查看系统中电池的参数和库仑计的统计信息";
 		}
@@ -114,7 +115,7 @@ void battcfghandler(void)
 			RunLogEntry.Data.DataSec.IsLowQualityBattAlert=false;//重置警告
 			RunLogEntry.CurrentDataCRC=CalcRunLogCRC32(&RunLogEntry.Data);//算新的CRC-32值
 			WriteRuntimeLogToROM();//更新运行日志数据
-			UARTPuts("\r\n库仑计的统计数据已被复位且库仑计已暂时禁用,您需要重新运行一次电池容量自学习以启用库仑计.\r\n");
+			UARTPuts("\r\n库仑计的统计数据已被复位,您需要重新运行一次电池容量自学习以启用库仑计.\r\n");
 			}
 		IsCmdParamOK=true;
 		}
@@ -180,7 +181,7 @@ void battcfghandler(void)
 		else
 		  {
 			CfgFile.VoltageOverTrip=buf;
-			UartPrintf("\r\n电池过压保护电压值已被更新为%.2fV.",CfgFile.VoltageOverTrip);
+			UartPrintf((char *)BattParamHasUpdated,"过压保护",CfgFile.VoltageOverTrip);
 			}
 		IsCmdParamOK=true;
 		}
@@ -197,7 +198,7 @@ void battcfghandler(void)
 		else
 		  {
 			CfgFile.VoltageFull=buf;
-			UartPrintf("\r\n电池组的满电电压值已被更新为%.2fV.",CfgFile.VoltageFull);
+			UartPrintf((char *)BattParamHasUpdated,"满电",CfgFile.VoltageFull);
 			}
 		IsCmdParamOK=true;
 		}
@@ -214,7 +215,7 @@ void battcfghandler(void)
 		else
 		  {
 			CfgFile.VoltageTrip=buf;
-			UartPrintf("\r\n电池组的低电压断电保护门限值已被更新为%.2fV.",CfgFile.VoltageTrip);
+			UartPrintf((char *)BattParamHasUpdated,"过放保护",CfgFile.VoltageTrip);
 			}
 		IsCmdParamOK=true;
 		}
@@ -231,7 +232,7 @@ void battcfghandler(void)
 		else
 		  {
 			CfgFile.VoltageAlert=buf;
-			UartPrintf("\r\n电池组的低电压警告门限值已被更新为%.2fV.",CfgFile.VoltageAlert);
+			UartPrintf((char *)BattParamHasUpdated,"低压警告",CfgFile.VoltageAlert);
 			}
 		IsCmdParamOK=true;
 		}

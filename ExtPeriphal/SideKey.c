@@ -87,6 +87,12 @@ void SideKey_Callback(void)
 	if(SysPstatebuf.Pstate==PState_DeepSleep)ExitLowPowerMode();
 	if(CfgFile.DeepSleepTimeOut>0)DeepSleepTimer=CfgFile.DeepSleepTimeOut;
   else DeepSleepTimer=-1;//复位定时器
+	if(HT_RTC->CR&0x01) //任意按键按下，RTC重置计时
+	  {
+		SetupRTCForCounter(false); 
+		delay_us(10); 
+		SetupRTCForCounter(true); //reset RTC计时
+		}
 	//给内部处理变量赋值
 	delay_ms(13); //软件消抖
 	#ifdef SideKeyPolar_positive	

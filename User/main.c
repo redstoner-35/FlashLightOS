@@ -59,7 +59,7 @@ int main(void)
  DriverLockPOR();//初始化上电锁定状态 
  ConsoleReconfigure();//自检完毕后输出配置信息
  getSideKeyShortPressCount(true); //在进入主APP前清除按键信息
- if(!IsParameterAdjustMode)ResetLogEnableAfterPOST(); //非调参模式正常启动，重新打开记录器
+ if(!IsParameterAdjustMode)ResetLogEnableAfterPOST(); //非调参模式正常启动,重新打开记录器
  EnteredMainApp=true;//标记已进入主APP,不在定时器中断内处理LED控制器
  //主循环
  while(1)

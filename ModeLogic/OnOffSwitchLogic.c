@@ -119,6 +119,7 @@ void LEDPowerOffOperationHandler(void)
   RunLogEntry.Data.DataSec.IsRunlogHasContent=true;//标记运行日志已经有内容了
   RunLogEntry.Data.DataSec.IsLowVoltageAlert=false;//清除低电压警报
   RunLogEntry.CurrentDataCRC=CalcRunLogCRC32(&RunLogEntry.Data); //计算运行日志的CRC32
+	SetupRTCForCounter(true); //手电筒关机，启用RTC计时实现自动锁定
 	}
 /*
 系统的状态机处理函数。该函数主要负责根据用户操作
@@ -154,6 +155,7 @@ void PStateStateMachine(void)
 				ForceWriteRuntimelog();//尝试写ROM
 				CurrentLEDIndex=25;
 				SysPstatebuf.Pstate=PState_Standby; 
+				SetupRTCForCounter(true); //手电筒手动解锁，立即启用RTC
 				//解锁时如果位于的挡位大于额定功率的一半则执行跳档,避免解锁之后开幕雷击伤人
         CurrentMode=GetCurrentModeConfig();
         if(CurrentMode==NULL)break;//当前挡位为空
@@ -187,6 +189,7 @@ void PStateStateMachine(void)
 			//五击侧按，锁定手电
 		  if(ShortPress==5)
 			  {
+				SetupRTCForCounter(false); //手电筒手动进入锁定，强制关闭RTC计时
 				RunLogEntry.Data.DataSec.IsFlashLightLocked=true;//指示手电已锁定
 				ForceWriteRuntimelog();//尝试写ROM
 				CurrentLEDIndex=26;
@@ -207,8 +210,12 @@ void PStateStateMachine(void)
 		  else if(IsPowerOn)
 			  {
 			  if(IsRunTimeLoggingEnabled)CalcLastLogCRCBeforePO();//计算运行log的CRC32
-			  SysPstatebuf.ErrorCode=TurnLightONLogic(&BattO);//执行自检逻辑
-			  if(SysPstatebuf.ErrorCode==Error_None)SysPstatebuf.Pstate=PState_LEDOn;
+			  SysPstatebuf.ErrorCode=TurnLightONLogic(&BattO);//执行自检逻辑	
+			  if(SysPstatebuf.ErrorCode==Error_None)
+				  { 
+				  SetupRTCForCounter(false); //手电筒开机，关闭RTC计时
+				  SysPstatebuf.Pstate=PState_LEDOn;
+					}
 				else //如果自检成功则跳转到开灯状态，否则跳转到错误状态并写入日志。
 				  {	
 				  if(SysPstatebuf.ErrorCode!=Error_Input_UVP)CollectLoginfo(ErrorStrDuringPost,&BattO);
@@ -219,7 +226,8 @@ void PStateStateMachine(void)
 		      ResetBreathStateMachine();
 				  ResetCustomFlashControl();//复位自定义闪控制
 					MorseSenderReset();//关灯后重置呼吸和摩尔斯电码发送的状态机
-				  }
+					
+					}
 				}
 			//快速短按四次，进入战术模式(长按并按住开灯,松手就灭)
 		  else if(ShortPress==4)
@@ -244,6 +252,7 @@ void PStateStateMachine(void)
 			//五击侧按，锁定手电
 		  if(ShortPress==5)
 			  {
+				SetupRTCForCounter(false); //手电筒手动进入锁定，强制关闭RTC计时
 				RunLogEntry.Data.DataSec.IsFlashLightLocked=true;//指示手电已锁定
 				ForceWriteRuntimelog();//尝试写ROM
 				CurrentLEDIndex=26;
@@ -254,7 +263,11 @@ void PStateStateMachine(void)
 			  {
 			  if(IsRunTimeLoggingEnabled)CalcLastLogCRCBeforePO();//计算运行log的CRC32
 				SysPstatebuf.ErrorCode=TurnLightONLogic(&BattO);//执行自检逻辑
-			  if(SysPstatebuf.ErrorCode==Error_None)SysPstatebuf.Pstate=PState_LEDOnNonHold;
+			  if(SysPstatebuf.ErrorCode==Error_None)
+				  { 
+				  SetupRTCForCounter(false); //手电筒开机，关闭RTC计时
+				  SysPstatebuf.Pstate=PState_LEDOnNonHold;
+					}
 				else //如果自检成功则跳转到开灯状态，否则跳转到错误状态并写入日志。
 				  {		
 					if(SysPstatebuf.ErrorCode!=Error_Input_UVP)CollectLoginfo(ErrorStrDuringPost,&BattO);

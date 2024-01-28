@@ -60,6 +60,7 @@ void LoadDefaultConf(bool IsOverridePassword)
  CfgFile.IsDriverLockedAfterPOR=false; //上电不自锁
  CfgFile.DeepSleepTimeOut=8*DeepsleepDelay;//深度睡眠时间
  CfgFile.IdleTimeout=8*DefaultTimeOutSec; //定时器频率乘以超时时间得到超时值
+ CfgFile.AutoLockTimeOut=300; //默认驱动在没有任何操作的5分钟后触发锁定
  #ifdef EnableSideLocLED	 
  CfgFile.EnableLocatorLED=true;//启用侧按定位LED
  #else

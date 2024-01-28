@@ -147,6 +147,7 @@ typedef struct
  }SYSPStateStrDef;	
 
 //外部函数
+void SetupRTCForCounter(bool IsRTCStartCount);//设置RTC
 SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput);//开灯自检操作
 void DisplayLEDTemp(void);//通过侧按LED显示基板温度
 void WriteRunLogWithLVAlert(void);//低电压告警触发的时候写运行日志

@@ -20,7 +20,8 @@ static const char *TinyShellText[]=
 "\r\n'E'或'e' : 通过xmodem方式将错误日志下载到电脑进行分析.", //2
 "\r\n'R'或'r' : 手动重启驱动.",//3
 "\r\n'M'或'm' : 查看驱动输出的最后一条自检日志信息.",//4
-"\r\n\r\nRescue:>"//5
+"\r\n\r\nRescue:>",//5
+"\r\n您请求了下载%s日志,请打开Xmodem传输软件进行日志内容的接收.\r\n\r\n",//6
 };
 
 
@@ -107,13 +108,13 @@ void SelfTestErrorHandler(void)
 		//发送错误日志
 		else if(TinyShellBuf=='E'||TinyShellBuf=='e')
 		  {
-			UARTPuts("\r\n您请求了下载错误日志,请打开Xmodem传输软件进行错误日志的接收.\r\n\r\n");
+		  UartPrintf((char *)TinyShellText[6],"错误");
 			XmodemInitTxModule(LoggerAreaSize,LoggerBase);
 			}
 		//发送错误日志
 		else if(TinyShellBuf=='X'||TinyShellBuf=='x')
 		  {
-			UARTPuts("\r\n您请求了下载自检日志,请打开Xmodem传输软件进行自检日志的接收.\r\n\r\n");
+		  UartPrintf((char *)TinyShellText[6],"自检");
 			XmodemInitTxModule((SelftestLogDepth*sizeof(SelfTestLogUnion)),SelfTestLogBase);
 			}
 		//输入了非法内容

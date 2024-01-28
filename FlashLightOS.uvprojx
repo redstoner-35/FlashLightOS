@@ -747,6 +747,11 @@
               <FileType>1</FileType>
               <FilePath>.\ExtPeriphal\TempControl.c</FilePath>
             </File>
+            <File>
+              <FileName>AutoLockRTC.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\ExtPeriphal\AutoLockRTC.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

@@ -137,17 +137,17 @@ void logviewhandler(void)
 		 UartPrintf("%s错误位置 : %s",LogVIewAlertStr[4],LogData.LoggerDateSection.ErrorStageText);
 		 UartPrintf("%s------------  详细参数记录  ------------",LogVIewAlertStr[4]);
 		 UartPrintf("%s系统电源状态(P-State) : %s",LogVIewAlertStr[4],PstateString);
-     UartPrintf("%s温度降档幅度 : %.2f%%",LogVIewAlertStr[4],LogData.LoggerDateSection.CurrentThrottleLevel);	
-     UartPrintf("%s线性调光DAC输出 : %.1fmV",LogVIewAlertStr[4],LogData.LoggerDateSection.CurrentDACVID);			 
+     UartPrintf("%s过热降档幅度 : %.2f%%",LogVIewAlertStr[4],LogData.LoggerDateSection.CurrentThrottleLevel);	
+     UartPrintf("%s调光DAC输出 : %.1fmV",LogVIewAlertStr[4],LogData.LoggerDateSection.CurrentDACVID);			 
 		 UartPrintf("%sLED基板NTC温度检测状态 : %s",LogVIewAlertStr[4],NTCStateString[LogData.LoggerDateSection.LEDBaseNTCStatu]);
      UartPrintf("%s驱动SPS温度检测状态 : %s",LogVIewAlertStr[4],SPSTMONString[LogData.LoggerDateSection.SPSTMONStatu]);			
-		 UartPrintf("%s目标的挡位组 : %s",LogVIewAlertStr[4],ModeGroupString);	
+		 UartPrintf("%s目标挡位组 : %s",LogVIewAlertStr[4],ModeGroupString);	
 		 if(LogData.LoggerDateSection.CurrentModeSel.ModeGrpSel==ModeGrp_Regular)
 				 errorcount=LogData.LoggerDateSection.CurrentModeSel.RegularGrpMode;
 		 else
 				 errorcount=LogData.LoggerDateSection.CurrentModeSel.SpecialGrpMode; //获取挡位数量
 		 if(LogData.LoggerDateSection.CurrentModeSel.ModeGrpSel!=ModeGrp_DoubleClick)
-			   UartPrintf("%s目标的挡位 : 第%d个",LogVIewAlertStr[4],errorcount+1);
+			   UartPrintf("%s目标挡位 : 第%d个",LogVIewAlertStr[4],errorcount+1);
      //显示遥测数据
      DisaplayTelemResult(LogData.LoggerDateSection.DriverTelem.LEDTemp,"'C","LED基板温度",true);			
 		 DisaplayTelemResult(LogData.LoggerDateSection.DriverTelem.LEDVf,"V","LED两端电压(驱动输出)",true);	

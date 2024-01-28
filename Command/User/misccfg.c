@@ -12,17 +12,25 @@ const char *termcfgArgument(int ArgCount)
  {
 	switch(ArgCount)
 	 {
-		case 0:return "设置终端的超时时间(单位:秒)";	
+		case 0:return "设置终端的超时时间(秒)";	
 	  case 1:return "设置终端的波特率(bps)";
 		case 2:return "设置驱动的自动省电睡眠延时(秒)";
 		case 3:return "设置侧按的定位LED功能是否激活";
 		case 4:return "设置手电筒的开机操作方式";
 		case 5:return "设置反向战术功能的模式";
+		case 6:return "设置驱动的自动锁定延时(秒)";
 	 }
  return NULL;
  }
-
-
+//显示延迟已被更新
+void DisplayValueHasUpgraded(int Value)
+ {
+ if(Value==0)
+		UARTPuts("功能已被禁用.");
+ else 
+		UartPrintf("延时已更新为%d秒.",Value);
+ }	
+//处理主函数
 void termcfgHandler(void)
  {
  bool IsParameterOK=false;
@@ -46,8 +54,11 @@ void termcfgHandler(void)
 	 else //更新数值
 	    {      
       CfgFile.IdleTimeout=Value*8;
-			if(CfgFile.IdleTimeout==0)UARTPuts("\r\n终端登录的超时时间已被禁用.");
-			else UartPrintf("\r\n终端超时时间已更新为%d秒.",Value);
+		  UARTPuts("\r\n终端登录的超时时间");
+			if(CfgFile.IdleTimeout==0)
+				 UARTPuts("已被禁用.");
+			else 
+				 UartPrintf("\r\n已更新为%d秒.",Value);
 			}
 	 }
  //更改波特率
@@ -83,11 +94,8 @@ void termcfgHandler(void)
 	 else //更新数值
 	    {
       CfgFile.DeepSleepTimeOut=Value;
-			if(CfgFile.DeepSleepTimeOut==0)
-				 {
-				 UARTPuts("\r\n驱动的自动省电睡眠功能已被禁用.");
-				 }
-			else UartPrintf("\r\n驱动的自动省电睡眠延时已更新为%d秒.",Value);
+		  UARTPuts("\r\n驱动的自动省电睡眠");
+      DisplayValueHasUpgraded(Value);
 			}
 	 }
  //更改侧按LED的定位灯
@@ -142,6 +150,25 @@ void termcfgHandler(void)
 			CfgFile.RevTactalSettings=TacSettings;
 			DisplayReverseTacModeName(TacString,32,TacSettings);
 			UartPrintf("\r\n手电筒的反向战术模式已更新为%s.",TacString);
+			}
+	 }
+//更改自动锁定时间
+ Param=IsParameterExist("6",8,NULL);
+ if(Param!=NULL)
+   {
+	 Value=-1;	
+	 IsParameterOK=true; 
+	 if(!CheckIfParamOnlyDigit(Param))Value=atoi(Param);
+	 if(CheckIfParamOnlyDigit(Param)||Value<0||(Value>0&&Value<60)||Value>2040)
+	    {
+      DisplayIllegalParam(Param,8,2);//显示用户输入了非法参数
+			UartPrintf((char *)OptionsOnlyAcceptNumber,60,2040,"秒","为0则永不自动锁定");
+			}
+	 else //更新数值
+	    {
+      CfgFile.AutoLockTimeOut=Value;
+		  UARTPuts("\r\n驱动的自动锁定");
+      DisplayValueHasUpgraded(Value);
 			}
 	 }
  //没有检测到处理函数执行了功能

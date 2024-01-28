@@ -5,8 +5,10 @@
 #include <string.h>
 #include <math.h>
 
-//外部字符串指针数组
+//字符串
 extern const char *ModeSelectStr[];
+static const char *APOBoostConflit="\r\n自动关机定时器和鸡血技能冲突,请将此挡位的%s禁用!";
+static const char *HasbeenDisabled="已被禁用.";
 
 //参数帮助entry
 const char *modepofcfgArgument(int ArgCount)
@@ -53,7 +55,7 @@ void modepofcfghandler(void)
 		else buf=-1;//读取数值
 		TargetMode=GetSelectedModeConfig(UserSelect,modenum);
 	  if(TargetMode->PowerOffTimer>0)
-   		UARTPuts("\r\n自动关机定时器和鸡血技能冲突,请将此挡位的鸡血技能禁用!");	
+   		UartPrintf((char *)APOBoostConflit,"鸡血技能");	
 		else if(TargetMode==NULL)
 		   UARTPuts((char *)ModeSelectStr[4]);
 		else if(buf<0||buf>360) //数值非法
@@ -65,8 +67,9 @@ void modepofcfghandler(void)
 		  {
 			TargetMode->PowerOffTimer=buf;
 			DisplayWhichModeSelected(UserSelect,modenum);
-			if(buf>0)UartPrintf("的定时关机时间已被设置为%d分钟.",buf);
-			else UARTPuts("的定时关机功能已被禁用.");
+			UARTPuts("的定时关机");	
+			if(buf>0)UartPrintf("时间已被设置为%d分钟.",buf);
+			else UARTPuts((char *)HasbeenDisabled);
 			}
 		}
 	//设置短时鸡血次数
@@ -77,7 +80,7 @@ void modepofcfghandler(void)
 		else buf=-1;//读取数值
 		TargetMode=GetSelectedModeConfig(UserSelect,modenum);
 		if(TargetMode->PowerOffTimer>0)
-   		UARTPuts("\r\n鸡血技能和自动关机定时器冲突,请将此挡位的自动关机定时器禁用!");	
+   		UartPrintf((char *)APOBoostConflit,"自动关机定时");	
 		else if(TargetMode==NULL)
 		   UARTPuts((char *)ModeSelectStr[4]);
 		else if(buf<0||buf>5) //数值非法
@@ -89,8 +92,9 @@ void modepofcfghandler(void)
 		  {
 			TargetMode->MaxMomtTurboCount=(char)buf;
 			DisplayWhichModeSelected(UserSelect,modenum);
-			if(buf>0)UartPrintf("的鸡血技能次数已被设置为%d次.",buf);
-			else UARTPuts("的鸡血技能已被禁用.");
+		  UARTPuts("的鸡血技能");
+			if(buf>0)UartPrintf("次数已被设置为%d次.",buf);
+			else UARTPuts((char *)HasbeenDisabled);
 			}
 		}
 	//命令处理完毕

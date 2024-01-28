@@ -120,8 +120,8 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		 {Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//8
 		"misccfg",
 		"允许用户配置驱动的通用参数(CLI登录超时,波特率,省电睡眠延迟和操作方式配置)",
-		"-it\0-b\0-st\0-lled\0-km\0-rtac\0\n",
-		" <终端超时(秒)>\0 <波特率(bps)>\0 <睡眠超时(秒)>\0 <true或false>\0 <true或false>\0 <模式字符串.>\0\n",
+		"-it\0-b\0-st\0-lled\0-km\0-rtac\0-alck\0\n",
+		" <终端超时(秒)>\0 <波特率(bps)>\0 <睡眠超时(秒)>\0 <true或false>\0 <true或false>\0 <模式字符串.>\0 <自动锁定时间(秒)>\0\n",
 		&termcfgArgument,
 		Command_termcfg,
 		NULL,
