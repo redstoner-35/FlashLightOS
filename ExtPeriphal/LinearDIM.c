@@ -265,7 +265,7 @@ void LinearDIM_POR(void)
  AD5693R_SetOutput(VSet,AuxBuckAD5693ADDR); //10mS等待辅助buck POR之后，将DAC设置为初始输出
  for(i=0;i<50;i++)//等待buck启动
 		{
-	  delay_ms(17);
+	  delay_ms(MCP_waitTime);
 		if(!ADC_GetResult(&ADCO))OnChipADC_FaultHandler();//让ADC获取信息
 	  if(!MCP3421_ReadVoltage(&VGet))//读取电流
 		   {
@@ -560,6 +560,7 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
  while(VID<100)
 		 {
 		 if(!AD5693R_SetOutput((VID+250)/(float)1000,AuxBuckAD5693ADDR))return Error_DAC_Logic;
+		 delay_ms(MCP_waitTime);
 		 if(!MCP3421_ReadVoltage(&ILED))return Error_ADC_Logic; //读取电流
 		 if(ConvertAuxBuckIsense(ILED)>=MinimumLEDCurrent&&ADCO.LEDVf>LEDVfMin)break; //电流足够且电压达标
 		 VID=((100-VID)<VIDIncValue)?VID+0.5:VID+VIDIncValue;//增加VID，如果快到上限就慢慢加，否则继续快速增加VID
@@ -588,7 +589,7 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
  ********************************************************/
  SysPstatebuf.IsLEDShorted=false;
  SysPstatebuf.ToggledFlash=true;// LED没有短路，上电点亮
- SysPstatebuf.AuxBuckCurrent=(ILED*100)/25;//填写辅助buck的输出电流
+ SysPstatebuf.AuxBuckCurrent=ConvertAuxBuckIsense(ILED);//填写辅助buck的输出电流
  FillThermalFilterBuf(&ADCO); //填写温度信息
  for(i=0;i<12;i++)LEDVfFilterBuf[i]=ADCO.LEDVf;//填写LEDVf 
  MainAuxBuckSwitchState=false; //自检结束后默认是以副buck运行，复位该标志位

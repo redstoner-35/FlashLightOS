@@ -141,7 +141,7 @@ void RunMainLEDHandler(bool IsMainBuck,int Pass)
 	 delta=0; //默认电流反馈=0
    for(j=0;j<10;j++)
      {
-		 delay_ms(18);
+		 delay_ms(MCP_waitTime);
 		 ADC_GetResult(&ADCO);
 		 MCP3421_ReadVoltage(&delta);
 		 if(!IsMainBuck)ActualCurrent+=ConvertAuxBuckIsense(delta);
@@ -182,13 +182,14 @@ void DoSelfCalibration(void)
  //上电，开始初始化DAC ADC
  MCP3421_SetChip(AuxBuckIsenADCGain,AuxBuckIsenADCRes,false);
  SetTogglePin(false);
- SetAUXPWR(false); //主副buck都关闭
+ SetAUXPWR(false); //主副buck都关闭 
+ AD5693R_SetOutput(0,MainBuckAD5693ADDR);	 
+ AD5693R_SetOutput(0,AuxBuckAD5693ADDR); //设置输出都为0V 	 
+ delay_ms(10); //延迟10mS后再送基准电压启动辅助buck
  DACInitStr.DACPState=DAC_Normal_Mode;
  DACInitStr.DACRange=DAC_Output_REF;
  DACInitStr.IsOnchipRefEnabled=true; 	 
  AD5693R_SetChipConfig(&DACInitStr,AuxBuckAD5693ADDR); //启动辅助buck的基准，辅助buck上电
- AD5693R_SetOutput(0,MainBuckAD5693ADDR);	 
- AD5693R_SetOutput(0,AuxBuckAD5693ADDR); //设置输出都为0V 	 
  SetTogglePin(true);//令辅助buck进入工作状态
  //开始校准
  for(i=0;i<50;i++)RunMainLEDHandler(false,i); //校准副buck
@@ -218,9 +219,9 @@ void DoSelfCalibration(void)
 	 delta=0; //默认电流反馈=0
 	 for(j=0;j<10;j++)
 	   {
-	   delay_ms(20);
+	   delay_ms(MCP_waitTime);
 		 MCP3421_ReadVoltage(&delta);
-		 SysPstatebuf.AuxBuckCurrent=(delta*100)/25; //读取ADC检测到的电流输入并且进行换算
+		 SysPstatebuf.AuxBuckCurrent=ConvertAuxBuckIsense(delta); //读取ADC检测到的电流输入并且进行换算
 		 ADC_GetResult(&ADCO); //读取数值
 	   ActualCurrent+=ADCO.LEDIf; //累加
 	   }

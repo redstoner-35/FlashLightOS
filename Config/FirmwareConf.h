@@ -11,7 +11,7 @@
 
 //固件模式配置
 #define Firmware_DIY_Mode //是否启用DIY高级用户模式，在此模式下驱动所有功能可以使用，否则温控调整和日志清除和恢复功能会被禁用。
-//#define FlashLightOS_Debug_Mode //是否启用debug模式，此时驱动将会禁用部分自检项目以及低电量关机功能，并且强制使用工厂配置
+#define FlashLightOS_Debug_Mode //是否启用debug模式，此时驱动将会禁用部分自检项目以及低电量关机功能，并且强制使用工厂配置
 //#define Internal_Driver_Debug //是否启用驱动内部设备驱动的额外信息输出。
 #define EnableFirmwareSecure //是否启用固件只读和CRC安全锁
 #define HardwarePlatformString "Xtern Ripper" //硬件平台字符串信息，可以任意修改
@@ -77,9 +77,12 @@
 #define INA219ShuntOhm 0.5 //驱动的INA219功率级的分流电阻阻值(单位mΩ)
 
 //辅助月光buck小板设置参数
-#define AuxBuckIsensemOhm 10 //辅助月光buck小板的检流电阻阻值(单位mΩ)
-#define AuxBuckIsenADCRes Sample_14bit_60SPS //辅助小板的ADC使用14bit模式
+#define AuxBuckIsensemOhm 10 //辅助月光buck小板的检流电阻阻值(单位mΩ) 
 #define AuxBuckIsenADCGain PGA_Gain2to1 //设置输入增益为2X（fullscale=1.024V）
+
+//#define AuxBuckADC_12BitMode //辅助小板的ADC使用12bit模式
+#define AuxBuckADC_14BitMode //辅助小板的ADC使用14bit模式
+//#define AuxBuckADC_16BitMode //辅助小板的ADC使用16bit模式(注意！以上三个define只能同时存在一个)
 
 //ADC模拟电压参考电压
 #define ADC_VRef 3.2990 //实际的ADC电压参考值
