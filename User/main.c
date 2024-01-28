@@ -34,10 +34,12 @@ int main(void)
  CLKConfig.Bit.GPTM1 = 1;
  CLKConfig.Bit.BKP = 1;
  CKCU_PeripClockConfig(CLKConfig,ENABLE);
+ //初始化LSI和RTC
  while((PWRCU_CheckReadyAccessed() != PWRCU_OK)){}; //等待BKP可以访问
+ RTC_LSILoadTrimData();//加载LSI的修正值
  RTC_DeInit();//复位RTC确保RTC不要在运行
- delay_init();//初始化systick
  //外设初始化
+ delay_init();//初始化systick
  ConsoleInit();//初始化串行
  SMBUS_Init();//初始化SMBUS 
  #ifdef EnableFirmwareSecure

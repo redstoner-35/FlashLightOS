@@ -63,6 +63,8 @@ bool CheckForErrLogStatu(int ROMAddr)
  return true;
  }
 //上电自检的时候初始化log记录器
+static const char *FailedToLoadLog="Failed to load logger %s #%d from EEPROM."; 
+ 
 void LoggerHeader_POR(void)
  {
  int i,faultentry;
@@ -75,7 +77,7 @@ void LoggerHeader_POR(void)
  ResetLoggerHeader_AutoUpdateTIM();//复位TIM
  if(!fetchloggerheader(&LoggerHdr))
   {
-	UartPost(Msg_critical,"Logger","Failed to load logger header from EEPROM.");
+	UartPost(Msg_critical,"Logger",(char *)FailedToLoadLog,"header",0);
 	SelfTestErrorHandler();
 	}
  //检查读出来的logger头部信息
@@ -87,7 +89,7 @@ void LoggerHeader_POR(void)
 		//从ROM内读取数据
 		if(!FetchLoggerData(&LogData,i))
       {
-	    UartPost(Msg_critical,"Logger","Failed to load logger data section #%d from EEPROM.",i);
+	    UartPost(Msg_critical,"Logger",(char *)FailedToLoadLog,"data area",i);
 	    SelfTestErrorHandler();
 	    }
 	  //验证log entry的CRC32，如果不一致，则写入数据
@@ -100,7 +102,7 @@ void LoggerHeader_POR(void)
 			LoggerHdr.LoggerHeader.IsEntryHasError[i]=false;
 		  LoggerHdr.LoggerHeader.EntryCRC[i]=calculateLogEntryCRC32(&LogData);//加入默认配置并计算CRC-32
 			if(!WriteLoggerData(&LogData,i))
-				UartPost(msg_error,"Logger","Failed to overwrite broken error log entry #%d in ROM.",i);
+				UartPost(msg_error,"Logger","Failed to overwrite broken log entry #%d in ROM.",i);
 			faultentry++;
 			continue;
 			}
@@ -109,16 +111,16 @@ void LoggerHeader_POR(void)
 	  else IsEntryContainError=false; //判断有没有错误
 		if(IsEntryContainError!=LoggerHdr.LoggerHeader.IsEntryHasError[i])//错误数据不一致
 		  {
-			UartPost(Msg_warning,"Logger","error log entry #%d has mismatch information,fixing...",i);
+			UartPost(Msg_warning,"Logger","error log entry #%d has mismatch information.",i);
 			LoggerHdr.LoggerHeader.IsEntryHasError[i]=IsEntryContainError;//覆写对应的未知
 			HeaderUpdated=true;
 			faultentry++;
 			}
 		}
-  UartPost(Msg_info,"Logger","Error logger has started with %d problematic log entry.",faultentry);
+  UartPost(Msg_info,"Logger","Error logger has started with %d problematic entry.",faultentry);
 	if(HeaderUpdated)//需要更新header
 	  {
-		UartPost(Msg_info,"Logger","Writing updated header...");
+		UartPost(Msg_info,"Logger","Updating log header...");
 		if(!WriteLoggerHeader(&LoggerHdr))
 			UartPost(msg_error,"Logger","Failed to overwrite log-header in ROM.");
 		}
@@ -126,7 +128,7 @@ void LoggerHeader_POR(void)
  //检查不通过
  else
   {
-	UartPost(msg_error,"Logger","Error Logger Header/Area corrupted,Re-initializing...");
+	UartPost(msg_error,"Logger","Re-initializing Logger DB...");
 	if(!ReInitLogArea())UartPost(msg_error,"Logger","Failed to re-initialize log area."); //重新初始化	
   NVIC_SystemReset();//reboot
 	}
