@@ -213,10 +213,8 @@ void RTCCMIntHandler(void);
 void RTC_IRQHandler(void)
 {
   u8 bFlags=RTC_GetFlagStatus();
-  if (bFlags & RTC_FLAG_CM) //比较中断发生
-  {
-    RTCCMIntHandler(); //执行比较处理
-  }
+  if(bFlags&RTC_FLAG_CSEC)RTCCMIntHandler(); //比较中断的下一个秒中断，执行比较处理		
+	else if(bFlags&RTC_FLAG_CM)HT_RTC->IWEN=0x01; //比较中断发生，关闭比较中断然后开启秒中断等待下一个周期
 }
 /*********************************************************************************************************//**
  * @brief   This function handles GPTM1 interrupt.

@@ -7,6 +7,10 @@
 #include "delay.h"
 
 #ifdef FlashLightOS_Debug_Mode
+//变量
+extern bool IsTimeExceeded;
+
+//处理函数
 void hwdiaghandler(void)
   {
 	DACInitStrDef DACTest;
@@ -15,6 +19,7 @@ void hwdiaghandler(void)
 	INADoutSreDef PORINADout;
 	float buf;
   char result[384];
+	int i;
 	//开始测试	
 	UARTPuts("\r\n---------- FlashLightOS 高级硬件测试 ----------");
   UARTPuts("\r\nPart1 DAC部分:");  
@@ -62,6 +67,20 @@ void hwdiaghandler(void)
 	UartPrintf("\r\n当前电池电压读数 : %.2fV",PORINADout.BusVolt);
 	UartPrintf("\r\n当前电池电流读数 : %.2fA",PORINADout.BusCurrent);
 	UartPrintf("\r\n当前电池功率读数 : %.2fW",PORINADout.BusPower);
+  //RTC
+	UARTPuts("\r\n\r\nPart6 RTC部分:");
+	IsTimeExceeded=false;
+	i=0;
+	SetupRTCForCounter(true);
+	UARTPuts("\r\nRTC配置已完毕，等待倒数...");
+	while(i<700&&!IsTimeExceeded)
+	  {
+	  delay_ms(10); //延时等待RTC计数完毕
+	  i++;
+		if((i%100)==0)UartPrintf("\r\n驱动已等待%d秒.",i/100);
+		}
+	if(i==700)UARTPuts("\r\n\r\n错误:片内RTC未正常计数.");
+  else UartPrintf("\r\n\r\nRTC自检正常完成,实际到数时间%d毫秒.",i*10);
 	//执行完毕
 	ClearRecvBuffer();//清除接收缓冲
 	CmdHandle=Command_None;//命令执行完毕

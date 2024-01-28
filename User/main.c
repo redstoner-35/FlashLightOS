@@ -32,10 +32,13 @@ int main(void)
  CLKConfig.Bit.PDMA=1;
  CLKConfig.Bit.ADC0 = 1;
  CLKConfig.Bit.GPTM1 = 1;
+ CLKConfig.Bit.BKP = 1;
  CKCU_PeripClockConfig(CLKConfig,ENABLE);
+ while((PWRCU_CheckReadyAccessed() != PWRCU_OK)){}; //等待BKP可以访问
+ RTC_DeInit();//复位RTC确保RTC不要在运行
  delay_init();//初始化systick
  //外设初始化
- ConsoleInit();//初始化串行 
+ ConsoleInit();//初始化串行
  SMBUS_Init();//初始化SMBUS 
  #ifdef EnableFirmwareSecure
  GPIO_DisableDebugPort();//关闭debug口

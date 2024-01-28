@@ -93,7 +93,7 @@ void usrmodhandler(void)
 		NamePtr=IsParameterExist("23",3,&ParamExist);
 		if(NamePtr!=NULL)namelen=strlen(NamePtr);
 	  else namelen=0;
-		if(AccountState==Log_Perm_Root)UARTPuts("\r\n错误:超级用户的名称不允许被更改!");
+		if(AccountState==Log_Perm_Root)UARTPuts("\r\n错误:超级用户的名称不得被更改!");
 		else if(NamePtr==NULL)UARTPuts("\r\n错误:管理员用户的名称不得为空!");	 
 		else if(namelen<3||namelen>19)UartPrintf((char *)InputTooLong,"管理员用户的名称");	 
 		else //执行更新名字的操作

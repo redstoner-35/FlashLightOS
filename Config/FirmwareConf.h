@@ -24,7 +24,7 @@
 #define LVAlertCurrentLimit 4.3 //当低电压警告触发后，驱动最大的输出电流值(A)
 #define ForceThermalControlCurrent 5.5 //当挡位的运行电流大于这个值时温控将会被强制启用不准关闭
 #define MaxAllowedLEDCurrent 32 //驱动硬件熔断的最大输出电流设置(测得电流超过此电流的1.2倍将触发保护)
-#define MinimumLEDCurrent 0.1 //最小的LED电流
+#define MinimumLEDCurrent 0.04 //最小的LED电流
 #define BatteryCellCount 3 //默认情况下驱动使用的电池组中锂电池的串数(按照三元锂电池计算)
 #define DeepsleepDelay 40 //驱动的出厂深度睡眠时间,40秒内没有操作则睡眠
 #define ForceRequireLEDNTC //驱动的LED NTC热敏电阻强制要求存在,如果检测不到热敏电阻则驱动将自检失败
@@ -77,8 +77,8 @@
 #define INA219ShuntOhm 0.5 //驱动的INA219功率级的分流电阻阻值(单位mΩ)
 
 //辅助月光buck小板设置参数
-#define AuxBuckIsensemOhm 10 //辅助月光buck小板的检流电阻阻值(单位mΩ) 
-#define AuxBuckIsenADCGain PGA_Gain2to1 //设置输入增益为2X（fullscale=1.024V）
+#define AuxBuckIsensemOhm 15 //辅助月光buck小板的检流电阻阻值(单位mΩ) 
+#define AuxBuckIsenADCGain PGA_Gain2to1 //设置输入增益为2X（fullscale=1.024V,Vsens=0.6V）
 
 //#define AuxBuckADC_12BitMode //辅助小板的ADC使用12bit模式
 #define AuxBuckADC_14BitMode //辅助小板的ADC使用14bit模式
