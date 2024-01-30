@@ -8,6 +8,7 @@ static const char *PleaseEnterStr="请在下方输入 '我知道我在干什么'
 static const char *EnterInputSnippet="\r\n\r\n?";
 static const char *ConfigIsSame="\r\n当前配置和%s配置文件中的配置一致,无需加载.";
 static const char *ConfigFileCorrDetected="\r\n检测到%s配置文件损毁,系统将尝试自动修复.";
+static const char *IndicateWhatOp="\r\n'%s':指示程序对%用配置文件进行操作.";
 
 //enum
 typedef enum
@@ -41,22 +42,24 @@ static void OperationStopByUserInfo(void)
 static void DisplayParam(void)
   {
 	UARTPuts("\r\n允许的参数如下：");
-	UARTPuts("\r\n'Main':指示程序对主用配置文件进行操作");
-	UARTPuts("\r\n'Backup':指示程序对备用配置文件进行操作");
+  UartPrintf((char *)IndicateWhatOp,"Main","主");
+	UartPrintf((char *)IndicateWhatOp,"Backup","备");
 	}
 //显示损坏结果
 static bool DisplayConfError(int checkresult,bool IgnoreCorrError)
   {
+	 const char *ErrStr="";
 	 switch(checkresult)
       {
-			case 1:UARTPuts("\n\n错误:配置存储器离线。");break;
-      case 2:UARTPuts("\n\n错误:内部加解密模块异常");break;
-	    case 3:UARTPuts("\n\n错误:配置文件已损坏或被篡改");
+			case 1:ErrStr="配置EEPROM离线";break;
+		  case 2:ErrStr="内部加解密模块异常";break;
+	    case 3:ErrStr="配置文件已损坏或被篡改";break;
 			}
+	 UartPrintf("\n\n错误:%s",ErrStr);
 	 if(checkresult)//内部错误
 			{
 			if(IgnoreCorrError&&checkresult==3)return false;
-			UARTPuts("\r\n由于上方所列出的致命系统错误，指定的配置文件操作无法完成。");
+			UARTPuts("\r\n由于上方所列出的致命系统错误,指定的配置文件操作无法完成.");
 			ClearRecvBuffer();//清除接收缓冲
 			CmdHandle=Command_None;//命令执行完毕
 			return true;

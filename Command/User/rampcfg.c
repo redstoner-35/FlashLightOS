@@ -38,6 +38,7 @@ const char *rampcfgArgument(int ArgCount)
 //命令处理主函数
 void rampcfghandler(void)
   {
+	#ifndef FlashLightOS_Debug_Mode
 	int modenum,RampCfgIndex;	
 	char *ParamPtr;
 	char ParamO;
@@ -184,6 +185,7 @@ void rampcfghandler(void)
 			}
 		}
 	if(!IsCmdParamOK)UartPrintCommandNoParam(29);//显示啥也没找到的信息 
+	#endif
 	//命令处理完毕
 	ClearRecvBuffer();//清除接收缓冲
   CmdHandle=Command_None;//命令执行完毕		

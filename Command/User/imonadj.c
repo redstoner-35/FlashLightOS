@@ -11,8 +11,7 @@
 const char *imonadjArgument(int ArgCount)
   {	
 	if(ArgCount<2)return "查看主buck的参数";
-	else return "查看副buck的参数";
-	return NULL;	
+	return "查看副buck的参数";	
 	}
 #endif
 //命令处理
@@ -20,7 +19,6 @@ void Imonadjhandler(void)
  {
  #ifdef FlashLightOS_Debug_Mode
  int i;
- char *ParamPtr;
  float buf;
  float *DimCompValue;
  float *DimCompThr;

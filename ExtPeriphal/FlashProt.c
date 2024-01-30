@@ -45,13 +45,12 @@ unsigned int MainProgramRegionCRC(void)
 //启用flash锁定
 void CheckForFlashLock(void)
  {
- int i=0;
- FLASH_OptionByte Option;
- unsigned int ProgramAreaCRC;
  #ifdef FlashLightOS_Debug_Mode
  UartPost(Msg_warning,"FWSec","Debug mode Enabled,firmware security feature will be disabled.");	 
- return;
- #endif	 
+ #else	 
+ int i=0;
+ FLASH_OptionByte Option;
+ unsigned int ProgramAreaCRC; 
  //检查option byte是否开启
  FLASH_GetOptionByteStatus(&Option);
  if(Option.MainSecurity != 0)
@@ -126,4 +125,5 @@ void CheckForFlashLock(void)
  #endif
  NVIC_SystemReset();  //刷完之后重启
  while(1);
+ #endif
  }

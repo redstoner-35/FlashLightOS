@@ -245,12 +245,12 @@ void LinearDIM_POR(void)
  SetTogglePin(false);
  AD5693R_SetOutput(0,MainBuckAD5693ADDR);
  SetAUXPWR(false);
- delay_ms(50);
+ delay_ms(200);
  /***********************************************************************
  下一步，我们需要进行副buck相关电路的检查。首先我们配置好读取电流的MCP3421
  ADC，然后启用辅助buck DAC的基准使辅助buck运行，然后检查读回的电流是否正常
  ***********************************************************************/	 
- VSet=0.4;//初始VID 0.4
+ VSet=0.26;//初始VID 0.26
  VGet=0;//电流为0
  if(!MCP3421_SetChip(AuxBuckIsenADCGain,AuxBuckIsenADCRes,false))
    {
@@ -275,7 +275,7 @@ void LinearDIM_POR(void)
 		if(ADCO.LEDVf>=LEDVfMax)break; //电压超过VfMax
 	  if(ConvertAuxBuckIsense(VGet)>=MinimumLEDCurrent)break; //电流达标
 		//VID加一点,设置输出之后继续尝试
-		if(VSet<0.8)VSet+=0.05;  
+		if(VSet<0.5)VSet+=0.05;  
 		AD5693R_SetOutput(VSet,AuxBuckAD5693ADDR); //将DAC设置为初始输出
 		}
  if(i==50) //出错

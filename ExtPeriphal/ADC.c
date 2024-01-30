@@ -72,9 +72,12 @@ bool ADC_GetLEDIfPinVoltage(float *VOUT)
 //ADC获取数值
 bool ADC_GetResult(ADCOutTypeDef *ADCOut)
   {
+	#ifndef FlashLightOS_Debug_Mode
+	float Rt;
+	#endif
   int retry,avgcount,i;
 	unsigned int ADCResult[4]={0};
-  float buf,Rt,Comp;
+  float buf,Comp;
 	bool IsResultOK;
 	//开始测量
 	for(avgcount=0;avgcount<ADCAvg;avgcount++)
@@ -241,8 +244,7 @@ void InternalADC_Init(void)
 	   {
 		 #ifdef FlashLightOS_Debug_Mode
      UartPost(msg_error,"IntADC","Base Plate temperature sensor did not work properly.");
-     return;
-		 #endif
+		 #else
      //非自检模式正常输出的部分			 
 		 #ifndef ForceRequireLEDNTC
 		 UartPost(msg_error,"IntADC","Base Plate temperature sensor did not work properly.");
@@ -250,6 +252,7 @@ void InternalADC_Init(void)
 		 UartPost(Msg_critical,"IntADC","LED Base Plate temperature sensor failure detected.");
 		 CurrentLEDIndex=28;//指示LED基板NTC异常
 		 SelfTestErrorHandler();	 
+		 #endif
 		 #endif
 		 }
 	}

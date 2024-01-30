@@ -7,7 +7,9 @@
 
 //外部字符串指针数组
 extern const char *ModeSelectStr[];
+#ifndef FlashLightOS_Debug_Mode
 static const char *TimeParamHasSet="的%s时间(信标模式)%s已被设置为%.1f秒.\r\n";
+#endif
 
 //参数帮助entry
 const char *breathecfgArgument(int ArgCount)

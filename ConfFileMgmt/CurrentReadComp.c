@@ -166,6 +166,8 @@ void RunMainLEDHandler(bool IsMainBuck,int Pass)
 	 UartPrintf("\r\n[Calibration]Dimming Comp Value=%.3f,IMON CompValue=%.3f,LEDIf Error=%.2f%%,RAW IMON=%.2fA\r\n",DimValue,IMONValue,((CurrentREF/TargetCurrent)*100)-100,ActualCurrent);	 
  }
 //自动进行电流回读的校准
+bool IsStartedCalibrationOverCommand=false; 
+ 
 void DoSelfCalibration(void)
  {
  float TargetCurrent,ActualCurrent,EffCalcbuf;
@@ -175,8 +177,8 @@ void DoSelfCalibration(void)
  int i,j,TargetLogAddr;
  float delta;
  char CSVStrbuf[128]; //字符缓冲
- //按键没有按下，不执行
- if(!getSideKeyLongPressEvent())return; 
+ //按键没有按下或者没有通过命令启动校准，不执行
+ if(!getSideKeyLongPressEvent()&&!IsStartedCalibrationOverCommand)return; 
  CurrentLEDIndex=2; 
  LEDMgmt_CallBack();//LED管理器指示绿灯常亮	 
  //上电，开始初始化DAC ADC
@@ -262,6 +264,8 @@ void DoSelfCalibration(void)
  AD5693R_SetChipConfig(&DACInitStr,AuxBuckAD5693ADDR); //关闭基准
  MCP3421_SetChip(AuxBuckIsenADCGain,AuxBuckIsenADCRes,true);//开启PD模式
  CurrentLEDIndex=0; 
+ IsStartedCalibrationOverCommand=false;
+ UARTPuts("\r\n[Calibration]Auto Calibration and test run completed.");
  }	
 
 #endif
