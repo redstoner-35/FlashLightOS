@@ -42,6 +42,7 @@ extern float LEDVfMax; //LEDVf限制
 const char *DACInitError="Failed to init %s DAC.";
 const char *SPSFailure="SPS %sreports %s during init.";
 const char *DidnotStr="did Not ";
+const char *ShortAlert="Driver output short detected.(this might due to unreleased %s Buck)";
 
 //在挡位电流变化小于35%的情况下指示用户的处理函数
 void NotifyUserForGearChgHandler(void)	
@@ -120,8 +121,9 @@ void LinearDIM_POR(void)
  int i,retry;
  bool IMONOKFlag=false;
  /**********************************************************************
- 自检过程中的第1步：我们首先需要配置好AD5693R DAC,将DAC内置基准打开并转
- 换为工作模式。
+ 自检过程中的第1步：我们首先读配置好AD5693R DAC,将主DAC内置基准打开并转
+ 换为工作模式。对于辅助DAC因为我们不希望辅助buck运行因此我们将其基准设为
+ 关闭以便禁用辅助buck
  ***********************************************************************/
  UartPost(Msg_info,"LineDIM","Checking dimming circult...");
  DACInitStr.DACPState=DAC_Normal_Mode;
@@ -153,6 +155,7 @@ void LinearDIM_POR(void)
  for(VSet=0.5;VSet<=2.5;VSet+=0.5)
 	{
 	AD5693R_SetOutput(VSet,MainBuckAD5693ADDR);
+	delay_ms(50);
 	if(!ADC_GetLEDIfPinVoltage(&VGet))OnChipADC_FaultHandler();//ADC寮傚父
 	if(VGet<(VSet-0.05)||VGet>(VSet+0.05))
 	  {
@@ -169,6 +172,7 @@ void LinearDIM_POR(void)
  ***********************************************************************/
  SetTogglePin(false);
  AD5693R_SetOutput(1.25,MainBuckAD5693ADDR);
+ delay_ms(50);
  if(!ADC_GetLEDIfPinVoltage(&VGet))OnChipADC_FaultHandler();//令ADC采样电压
  if(VGet>=0.05)
     {
@@ -184,6 +188,7 @@ void LinearDIM_POR(void)
  ***********************************************************************/
  AD5693R_SetOutput(0,MainBuckAD5693ADDR);
  SetTogglePin(true);	
+ delay_ms(50);
  if(!ADC_GetLEDIfPinVoltage(&VGet))OnChipADC_FaultHandler();//令ADC采样电压
  if(VGet>=0.05)
 	  {
@@ -208,14 +213,14 @@ void LinearDIM_POR(void)
 		if(ADCO.SPSTMONState==SPS_TMON_OK)
 		   {
 		   if(ADCO.LEDVf>=LEDVfMax)retry++;
-		   else if(ADCO.LEDIf>0.6)//电流检测正常，累加数值
+		   else if(ADCO.LEDIf>0.4&&ADCO.LEDVf>=LEDVfMin)//电流检测正常且LED没有短路，累加数值
 			   {
 				 IMONOKFlag=true;
 			   retry++; 
 				 }
-		   else 
+		   else
 			   {				 
-				 if(VSet<0.1)VSet+=0.01;  
+				 if(VSet<0.1&&ADCO.LEDVf>=LEDVfMin)VSet+=0.01;  
 			   AD5693R_SetOutput(VSet,MainBuckAD5693ADDR); //设置DAC输出提高电压直到检测通过
 			   retry=0;
 				 }
@@ -225,9 +230,15 @@ void LinearDIM_POR(void)
 		}
  if(i==200)
    {	 
-	 //SPS没有正确返回温度信号或者直接将温度信号拉高到3.3V,或者电流检测电流没有信号输入.这说明SPS或者辅助电源出现灾难性异常,需要锁死。
-	 CurrentLEDIndex=24;
-	 if(ADCO.SPSTMONState==SPS_TMON_CriticalFault)
+	 /*
+	 SPS没有正确返回温度信号或者直接将温度信号拉高到3.3V,
+	 或者电流检测电流没有信号输入以及驱动在电流检测期间的输
+	 出电压过低.这说明SPS或者辅助电源出现灾难性异常,需要锁死。
+   */
+	 CurrentLEDIndex=ADCO.LEDVf<LEDVfMin?15:24; //点亮LED报告异常
+	 if(ADCO.LEDVf<LEDVfMin)
+		  UartPost(Msg_critical,"LineDIM",(char *)ShortAlert,"AUX"); 
+	 else if(ADCO.SPSTMONState==SPS_TMON_CriticalFault)
 		  UartPost(Msg_critical,"LineDIM",(char *)SPSFailure,"","CATERR");
 	 else if(ADCO.SPSTMONState!=SPS_TMON_OK)
 	    UartPost(Msg_critical,"LineDIM",(char *)SPSFailure,DidnotStr,"TMON");	 	 
@@ -245,12 +256,12 @@ void LinearDIM_POR(void)
  SetTogglePin(false);
  AD5693R_SetOutput(0,MainBuckAD5693ADDR);
  SetAUXPWR(false);
- delay_ms(200);
+ delay_ms(150); //等待主buck放电结束
  /***********************************************************************
  下一步，我们需要进行副buck相关电路的检查。首先我们配置好读取电流的MCP3421
  ADC，然后启用辅助buck DAC的基准使辅助buck运行，然后检查读回的电流是否正常
  ***********************************************************************/	 
- VSet=0.26;//初始VID 0.26
+ VSet=0.35;//初始VID 0.35
  VGet=0;//电流为0
  if(!MCP3421_SetChip(AuxBuckIsenADCGain,AuxBuckIsenADCRes,false))
    {
@@ -269,18 +280,18 @@ void LinearDIM_POR(void)
 		if(!ADC_GetResult(&ADCO))OnChipADC_FaultHandler();//让ADC获取信息
 	  if(!MCP3421_ReadVoltage(&VGet))//读取电流
 		   {
-			 UartPost(Msg_critical,"LineDIM","Aux Buck Isens ADC no response.");
+			 UartPost(Msg_critical,"LineDIM","Aux Buck Isens ADC(MCP3421) no response.");
 			 DisableAuxBuckForFault();//关闭辅助buck并报错
 			 }
 		if(ADCO.LEDVf>=LEDVfMax)break; //电压超过VfMax
-	  if(ConvertAuxBuckIsense(VGet)>=MinimumLEDCurrent)break; //电流达标
+	  if(ConvertAuxBuckIsense(VGet)>=MinimumLEDCurrent&&ADCO.LEDVf>=LEDVfMin)break; //电压达LED最低电压且电流达到最小的LED电流，退出
 		//VID加一点,设置输出之后继续尝试
-		if(VSet<0.5)VSet+=0.05;  
+		if(VSet<0.8&&ADCO.LEDVf>=LEDVfMin)VSet+=0.01;  
 		AD5693R_SetOutput(VSet,AuxBuckAD5693ADDR); //将DAC设置为初始输出
 		}
  if(i==50) //出错
     {
-		UartPost(Msg_critical,"LineDIM","Failed to start Aux Buck.");
+		UartPost(Msg_critical,"LineDIM","Failed to start Aux Buck(No output).");
     DisableAuxBuckForFault(); //关闭辅助buck并报错
 		}
  /***********************************************************************

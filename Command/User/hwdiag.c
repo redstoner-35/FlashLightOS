@@ -110,12 +110,8 @@ void hwdiaghandler(void)
 	if(IsCmdOK)
 	  {
 		cmdParamFound=true;
-		INA219_SetConvMode(INA219_Cont_Both,INA219ADDR); //设置启动全部模式
-		INA219_GetBusInformation(&PORINADout);//获取电源
 		if(IsParameterAdjustMode)
-			UARTPuts("当前驱动位于USB调参模式,无法启动校准运行.请彻底断电后先接上12V电源然后再连接console线.");
-		else if(PORINADout.BusVolt<11.1)
-			UartPrintf("驱动电源输入电压过低(%.1fV),校准运行无法继续,请确保输入的电压应大于11.1V.",PORINADout.BusVolt);
+			 UARTPuts("当前驱动位于USB调参模式,无法启动校准运行.请彻底断电后先接上12V电源然后再连接console线.");
 		else if(IsStartedCalibrationOverCommand)
 		   UARTPuts("请等待驱动完成本次的试运行和自校准!");
 		else 

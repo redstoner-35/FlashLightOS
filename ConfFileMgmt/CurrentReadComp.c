@@ -89,36 +89,48 @@ void RunMainLEDHandler(bool IsMainBuck,int Pass)
  float TargetCurrent,ActualCurrent,CurrentREF;
  float DimValue,IMONValue;
  ADCOutTypeDef ADCO;
- float DACVID,delta;
- int j=0;
+ float DACVID,delta,AllowedError,MinimumVID;
+ int j=0,fixcount;
  //计算目标电流和DACVID
  UartPrintf("\r\n[Calibration]%s Buck Pass #%d begin.",IsMainBuck?"Main":"Aux",Pass);
  if(!IsMainBuck) //使用副buck
    { 
    TargetCurrent=MinimumLEDCurrent+(((3.9-MinimumLEDCurrent)/50)*(float)Pass); //计算目标电流(电流从最低开始-3.9A)
    DACVID=250+(TargetCurrent*AuxBuckIsensemOhm*10); //LT3935 VIset=250mV(offset)+[额定电流(A)*电流检测电阻数值(mΩ)*电流检测放大器倍数(10X)]
+	 AllowedError=TargetCurrent<0.5?0.1:0.02; //副buck在极低电流下允许10%的误差
+	 if(DACVID<270)DACVID=270; //幅度限制确保DAC可以启动
 	 }
  else //使用主buck
    {	 
 	 TargetCurrent=3.9+(((FusedMaxCurrent-3.9)/50)*(float)Pass); //计算目标电流(电流从3.9A开始到极亮电流)
    DACVID=40+(TargetCurrent*30); //主Buck VIset=40mV(offset)+(30mv/A)
+	 AllowedError=TargetCurrent<6?0.03:0.015; //主buck在极低电流下允许3%左右的误差
 	 }
  //设置AUX PowerPIN
  SetAUXPWR(IsMainBuck);
- AD5693R_SetOutput(DACVID/(float)1000,!IsMainBuck?AuxBuckAD5693ADDR:MainBuckAD5693ADDR); //设置电压
- UartPrintf("\r\n[Calibration]VID has been programmed,initial VID=%.2fmV.",DACVID);
+ AD5693R_SetOutput(DACVID/(float)1000,IsMainBuck?MainBuckAD5693ADDR:AuxBuckAD5693ADDR); //设置电压
+ UartPrintf("\r\n[Calibration]Target LED Current=%.2fA.VID has been programmed,initial VID=%.2fmV.",TargetCurrent,DACVID);
  //开始对比VID修正电流误差
  ActualCurrent=0;
+ fixcount=0;
+ MinimumVID=IsMainBuck?50:250; //最小VID输出，主buck=50mV，辅助buck=250mV
  while(j<6)
     {
     delay_ms(1);
     ADC_GetResult(&ADCO);
     delta=TargetCurrent-ADCO.LEDCalIf; //计算误差
-    if(delta>0)DACVID+=0.025; 
-    else if(delta<0)DACVID-=0.025;//增减VID
-    if(DACVID<50)break;
-    AD5693R_SetOutput(DACVID/(float)1000,!IsMainBuck?AuxBuckAD5693ADDR:MainBuckAD5693ADDR); //设置电压
-    if(fabsf(delta)<=(TargetCurrent*0.015))j=j<6?j+1:j;
+	  if(delta>0)DACVID+=0.01; 
+    else if(delta<0)DACVID-=0.01;
+	  if(DACVID<MinimumVID)DACVID=MinimumVID;
+		if(DACVID>1250)DACVID=1250; //根据误差对DACVID进行调整，然后对调整后的DACVID限幅    
+		if(fixcount>=500) //每500mS输出一次
+		   {
+			 fixcount=0;
+			 UartPrintf("\r\n[Calibration]Actual LEDIf=%.2fA,Currently VID=%.2fmV.",ADCO.LEDCalIf,DACVID);
+			 }
+		else fixcount++;
+		AD5693R_SetOutput(DACVID/(float)1000,IsMainBuck?MainBuckAD5693ADDR:AuxBuckAD5693ADDR); //设置电压
+    if(fabsf(delta)<=(TargetCurrent*AllowedError))j=j<6?j+1:j;
     else j=j>0?j-1:j; //如果误差修正OK则退出
     }
 	 //误差修正完毕，首先填写调光误差
@@ -192,9 +204,14 @@ void DoSelfCalibration(void)
  DACInitStr.DACRange=DAC_Output_REF;
  DACInitStr.IsOnchipRefEnabled=true; 	 
  AD5693R_SetChipConfig(&DACInitStr,AuxBuckAD5693ADDR); //启动辅助buck的基准，辅助buck上电
+ delay_ms(10); //延迟10mS后再送基准电压启动辅助buck
  SetTogglePin(true);//令辅助buck进入工作状态
  //开始校准
  for(i=0;i<50;i++)RunMainLEDHandler(false,i); //校准副buck
+ AD5693R_SetOutput(0,AuxBuckAD5693ADDR); //设置副buck DAC输出为0 	 
+ DACInitStr.IsOnchipRefEnabled=false; 	 
+ AD5693R_SetChipConfig(&DACInitStr,AuxBuckAD5693ADDR); //关闭辅助buck的基准使辅助buck下电
+ delay_ms(10);
  for(i=0;i<50;i++)RunMainLEDHandler(true,i); //校准主buck
  WriteCompDataToROM(); //校准结束，保存数值到EEPROM内
  //关闭主副buck的输出等待一下	 
