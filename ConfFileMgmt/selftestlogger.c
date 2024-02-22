@@ -22,6 +22,7 @@ static const char *GetHeaderFromLevel(Postmessagelevel Level)
 //根据上次自检成功与否检查记录器是否启动（避免覆盖掉上次的错误日志）
 void CheckLastStartUpIsOK(void)
   {
+	#ifndef FlashLightOS_Debug_Mode
   char Result;
 	//读取数据
 	if(M24C512_PageRead(&Result,SelftestLogControlByte,1))
@@ -32,6 +33,9 @@ void CheckLastStartUpIsOK(void)
 	//读取出来的数据如果是0x0E则说明上次自检出现异常，关闭记录器
 	if(Result==0x0E)IsSelftestLoggerReady=false;
 	else IsSelftestLoggerReady=true; //默认打开记录器
+  #else
+	IsSelftestLoggerReady=true; //debug模式下始终打开记录器	
+  #endif
 	}
 //当自检通过后重置记录器的使能位
 void ResetLogEnableAfterPOST(void)

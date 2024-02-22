@@ -43,6 +43,7 @@ const char *DACInitError="Failed to init %s DAC.";
 const char *SPSFailure="SPS %sreports %s during init.";
 const char *DidnotStr="did Not ";
 const char *ShortAlert="Driver output short detected.(this might due to unreleased %s Buck)";
+const char *AUXBuckADCError="Aux Buck Isens ADC %s.";
 
 //在挡位电流变化小于35%的情况下指示用户的处理函数
 void NotifyUserForGearChgHandler(void)	
@@ -100,6 +101,8 @@ void SetTogglePin(bool IsPowerEnabled)
  else GPIO_SetOutBits(ToggleFlash_IOG,ToggleFlash_IOP); //输出强制set0
  }	
 
+#ifndef SkipMoonDLCTest
+//在自检失败的时候关闭辅助buck
 static void DisableAuxBuckForFault(void)
  {
 	DACInitStrDef DACInitStr;
@@ -110,6 +113,25 @@ static void DisableAuxBuckForFault(void)
 	AD5693R_SetChipConfig(&DACInitStr,AuxBuckAD5693ADDR); //关闭基准
   AD5693R_SetOutput(0,AuxBuckAD5693ADDR); //将DAC设置为初始输出
 	SelfTestErrorHandler();
+ }
+#endif
+
+//在DAC自检器件等待电压达到预定值
+bool CheckDACOutVoltage(float VSet,float *VGetO,float ErrorRange)
+ {
+ int j=0;
+ float VGet;
+ //等待电压到达预定值
+ while(j<500)
+	  {
+		delay_ms(1);
+	  if(!ADC_GetLEDIfPinVoltage(&VGet))OnChipADC_FaultHandler();//ADC读取数据
+		if(VGetO!=NULL)*VGetO=VGet; //写数据
+	  if(fabsf(VSet-VGet)<=ErrorRange)return true; //电压在误差范围内，结束本次检测
+		j++;//检测失败，重试
+		}
+ //等待500mS后电压仍未达到标称值，检测超时
+ return false;	
  }
  
 //线性调光模块相关的电路的上电自校准程序
@@ -135,6 +157,7 @@ void LinearDIM_POR(void)
 	CurrentLEDIndex=20;//DAC无法启动,保护
 	SelfTestErrorHandler(); 
 	}
+ #ifndef SkipMoonDLCTest
  DACInitStr.IsOnchipRefEnabled=false; //初始化Slave DAC
  if(!AD5693R_SetChipConfig(&DACInitStr,AuxBuckAD5693ADDR))
    { 
@@ -142,6 +165,7 @@ void LinearDIM_POR(void)
 	 CurrentLEDIndex=20;//DAC无法启动,保护
 	 SelfTestErrorHandler(); 
 	 }	
+ #endif
  /**********************************************************************
  自检过程中的第2步：首先需要确保辅助电源处于关闭状态,然后我们将DAC输出的
  PWM Mux设置为常通(100%占空比)，然后通过电流反馈MUX将调光信号反馈给电流
@@ -155,9 +179,7 @@ void LinearDIM_POR(void)
  for(VSet=0.5;VSet<=2.5;VSet+=0.5)
 	{
 	AD5693R_SetOutput(VSet,MainBuckAD5693ADDR);
-	delay_ms(50);
-	if(!ADC_GetLEDIfPinVoltage(&VGet))OnChipADC_FaultHandler();//ADC寮傚父
-	if(VGet<(VSet-0.05)||VGet>(VSet+0.05))
+	if(!CheckDACOutVoltage(VSet,&VGet,0.1))//电压超范围
 	  {
 		UartPost(Msg_critical,"LineDIM","Expected Master DAC out %.2fV but get %.2fV.",VSet,VGet);
 	  CurrentLEDIndex=30;//电压误差过大,说明PWM MUX或者电流反馈MUX相关的电流反馈电路有问题。
@@ -172,9 +194,7 @@ void LinearDIM_POR(void)
  ***********************************************************************/
  SetTogglePin(false);
  AD5693R_SetOutput(1.25,MainBuckAD5693ADDR);
- delay_ms(50);
- if(!ADC_GetLEDIfPinVoltage(&VGet))OnChipADC_FaultHandler();//令ADC采样电压
- if(VGet>=0.05)
+ if(!CheckDACOutVoltage(0,NULL,0.05))
     {
 	  //有超过0.05的电压,说明PWM MUX无法切断电压.PWM相关电路有问题
 		UartPost(Msg_critical,"LineDIM","Dimming MUX Error.");
@@ -188,9 +208,7 @@ void LinearDIM_POR(void)
  ***********************************************************************/
  AD5693R_SetOutput(0,MainBuckAD5693ADDR);
  SetTogglePin(true);	
- delay_ms(50);
- if(!ADC_GetLEDIfPinVoltage(&VGet))OnChipADC_FaultHandler();//令ADC采样电压
- if(VGet>=0.05)
+ if(!CheckDACOutVoltage(0,NULL,0.05))
 	  {
 		//有超过0.05的电压,说明DAC有问题输出无法归零
 		UartPost(Msg_critical,"LineDIM","Master DAC ZRST error.");
@@ -220,8 +238,8 @@ void LinearDIM_POR(void)
 				 }
 		   else
 			   {				 
-				 if(VSet<0.1&&ADCO.LEDVf>=LEDVfMin)VSet+=0.01;  
-			   AD5693R_SetOutput(VSet,MainBuckAD5693ADDR); //设置DAC输出提高电压直到检测通过
+				 if(VSet<0.1&&ADCO.LEDVf<LEDVfMax)VSet+=0.01;  //Vset电压低于100mV且当前LED的Vf小于VfMax的时候增加DAC输出
+			   AD5693R_SetOutput(VSet,MainBuckAD5693ADDR); //设置DAC输出电压直到检测通过
 			   retry=0;
 				 }
 	     }
@@ -256,6 +274,7 @@ void LinearDIM_POR(void)
  SetTogglePin(false);
  AD5693R_SetOutput(0,MainBuckAD5693ADDR);
  SetAUXPWR(false);
+ #ifndef SkipMoonDLCTest
  delay_ms(150); //等待主buck放电结束
  /***********************************************************************
  下一步，我们需要进行副buck相关电路的检查。首先我们配置好读取电流的MCP3421
@@ -265,7 +284,7 @@ void LinearDIM_POR(void)
  VGet=0;//电流为0
  if(!MCP3421_SetChip(AuxBuckIsenADCGain,AuxBuckIsenADCRes,false))
    {
-	 UartPost(Msg_critical,"LineDIM","Aux Buck Isens ADC init error.");
+	 UartPost(Msg_critical,"LineDIM",(char *)AUXBuckADCError,"init FAIL.");
 	 SelfTestErrorHandler();  
 	 }	 
  AD5693R_SetOutput(0,AuxBuckAD5693ADDR); //将辅助buck输出设置为0，在上电之前辅助buck调光引脚不能有电压否则芯片不运行
@@ -280,20 +299,21 @@ void LinearDIM_POR(void)
 		if(!ADC_GetResult(&ADCO))OnChipADC_FaultHandler();//让ADC获取信息
 	  if(!MCP3421_ReadVoltage(&VGet))//读取电流
 		   {
-			 UartPost(Msg_critical,"LineDIM","Aux Buck Isens ADC(MCP3421) no response.");
+			 UartPost(Msg_critical,"LineDIM",(char *)AUXBuckADCError,"no response");
 			 DisableAuxBuckForFault();//关闭辅助buck并报错
 			 }
 		if(ADCO.LEDVf>=LEDVfMax)break; //电压超过VfMax
 	  if(ConvertAuxBuckIsense(VGet)>=MinimumLEDCurrent&&ADCO.LEDVf>=LEDVfMin)break; //电压达LED最低电压且电流达到最小的LED电流，退出
 		//VID加一点,设置输出之后继续尝试
-		if(VSet<0.8&&ADCO.LEDVf>=LEDVfMin)VSet+=0.01;  
-		AD5693R_SetOutput(VSet,AuxBuckAD5693ADDR); //将DAC设置为初始输出
+		if(VSet<0.8&&ADCO.LEDVf<LEDVfMax)VSet+=0.01;  
+		AD5693R_SetOutput(VSet,AuxBuckAD5693ADDR); //增大DAC输出电压直到检测通过
 		}
  if(i==50) //出错
     {
 		UartPost(Msg_critical,"LineDIM","Failed to start Aux Buck(No output).");
     DisableAuxBuckForFault(); //关闭辅助buck并报错
 		}
+ 
  /***********************************************************************
  副buck自检成功结束，这个时候我们通过设置DAC基准强制关闭副buck并关闭ADC,
  进入低功耗休眠阶段。
@@ -305,6 +325,13 @@ void LinearDIM_POR(void)
  DACInitStr.IsOnchipRefEnabled=false; 
  AD5693R_SetChipConfig(&DACInitStr,AuxBuckAD5693ADDR); //关闭基准并设置为输出高阻使buck停止运行		
  IsDisableBattCheck=false; //默认开启电池质量检测
+ #else
+ /***********************************************************************
+ 在跳过辅助buck检查的情况下成功的结束了主buck的检测，关闭主buck并重置变量
+ ***********************************************************************/ 
+ SetTogglePin(false); //PWM pin关闭
+ IsDisableBattCheck=false; //默认开启电池质量检测
+ #endif
 }
 //从开灯状态切换到关灯状态的逻辑
 void TurnLightOFFLogic(void)

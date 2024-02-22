@@ -14,6 +14,7 @@
 #define FlashLightOS_Debug_Mode //是否启用debug模式，此时驱动将会禁用部分自检项目以及低电量关机功能，并且强制使用工厂配置
 //#define Internal_Driver_Debug //是否启用驱动内部设备驱动的额外信息输出。
 #define EnableFirmwareSecure //是否启用固件只读和CRC安全锁
+//#define NoMoonDLCSelfTest //在debug模式下是否关闭月光小板的DAC自检（该选项仅debug模式有效）
 #define HardwarePlatformString "Xtern Ripper" //硬件平台字符串信息，可以任意修改
 
 //性能参数定义

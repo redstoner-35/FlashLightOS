@@ -111,7 +111,7 @@ static bool MorseLetterTrasnsmit(char Letter)
  const char *Morseq;
  //获得对应的字符串
  if(Letter>0x60&&Letter<0x7B)Letter-=0x20;//小写转大写
- Morseq=GetMorseSequenceFromASCII(Letter);
+ Morseq=GetMorseSequenceFromASCII(Letter);//将处理过后的ASCII代码送入LUT查表
  //发送出对应的摩尔斯代码
  if(Morseq==NULL) //序列为空,非法内容,跳过
 	 {	 
@@ -156,7 +156,7 @@ void MorseSenderStateMachine(void)
 		 /*如果是SOS模式，则默认使用固定的'SOS'字符串否则使用
 		 对应挡位的摩尔斯发送模式下指定的的字符串。*/
 		 if(CurrentMode->Mode==LightMode_SOS)Text=(char *)SOSString;
-		 else Text=CurrentMode->MosTransStr;//
+		 else Text=CurrentMode->MosTransStr;
 		 MosSeqPtr=0;
 		 MosStrPtr=0;//重置字符串和单个字母发送序列的指针
 		 MosGapTIM=0;//复位计时器
