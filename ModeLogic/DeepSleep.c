@@ -45,6 +45,7 @@ void EnteredLowPowerMode(void)
 	AFIO_GPxConfig(GPIO_PA,GPIO_PIN_4,AFIO_FUN_GPIO);
   AFIO_GPxConfig(GPIO_PA,GPIO_PIN_5,AFIO_FUN_GPIO); //配置为普通GPIO模式
 	GPIO_PullResistorConfig(HT_GPIOA,GPIO_PIN_5,GPIO_PR_DISABLE);//关闭内部上拉电阻
+	GPIO_SetOutBits(NTCEN_IOG,NTCEN_IOP); //让NTC的GPIO转换为浮空状态，节省电力
 	if(CfgFile.EnableLocatorLED)SideLEDWeakLitControl(true); //启用侧按LED
 	GPIO_DirectionConfig(HT_GPIOA,GPIO_PIN_4,GPIO_DIR_IN);
 	GPIO_DirectionConfig(HT_GPIOA,GPIO_PIN_5,GPIO_DIR_IN); //将PA4-5配置为高阻GPIO避免TX和RX往外漏电

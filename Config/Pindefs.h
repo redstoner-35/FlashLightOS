@@ -40,14 +40,21 @@ PA14：预留给MCTM的PWM output channel
 #define ExtKeyLatch_IOBank B 
 #define ExtKeyLatch_IOPN 3 //外部侧按按钮锁存器使能引脚（PB3）这个脚主要是实现USB DFU相关电路所用
 
-//3.3V辅助电源和LT3741芯片的使能
-#define AUXPWR_EN_IOBank B
-#define AUXPWR_EN_IOPinNum 2 //AUXPWR Pin=PB2
+//3.3V辅助电源使能和主副buck切换
+#define BUCKSEL_IOBank B
+#define BUCKSEL_IOPinNum 2 //BUCKSEL Pin=PB2
+
+#define AUXV33_IOBank B
+#define AUXV33_IOPinNum 4  //3V3AUX Pin=PB4
 
 //负责测量LED电压电流，温度和SPS温度的ADC输入引脚
 #define LED_Vf_ADC_Ch 0 //LED电压测量（PA0）
 #define NTC_ADC_Ch 1  //LED温度测量模拟输入（PA1）
 #define LED_If_Ch 2  //LED电流检测的IO（PA2）
 #define SPS_Temp_Ch 3  //SPS温度检测的IO （PA3）
+
+#define NTCEN_IOBank B
+#define NTCEN_IOPinNum 7  //NTC测温热敏电阻的使能引脚 PB7
+
 
 #endif

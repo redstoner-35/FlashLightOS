@@ -20,9 +20,13 @@ const char *ErrorStrDuringPost="上电自检时";
 void PStateInit(void)
   {
 	//初始化辅助电源管理的IO
-	AFIO_GPxConfig(AUXPWR_EN_IOB,AUXPWR_EN_IOP, AFIO_FUN_GPIO);//配置为GPIO
-  GPIO_DirectionConfig(AUXPWR_EN_IOG,AUXPWR_EN_IOP,GPIO_DIR_OUT);//输出
-  GPIO_ClearOutBits(AUXPWR_EN_IOG,AUXPWR_EN_IOP);//默认输出0
+	AFIO_GPxConfig(BUCKSEL_IOB,BUCKSEL_IOP, AFIO_FUN_GPIO);//配置为GPIO
+  GPIO_DirectionConfig(BUCKSEL_IOG,BUCKSEL_IOP,GPIO_DIR_OUT);//输出
+  GPIO_ClearOutBits(BUCKSEL_IOG,BUCKSEL_IOP);//BUCKSEL 默认输出0
+		
+	AFIO_GPxConfig(AUXV33_IOB,AUXV33_IOP, AFIO_FUN_GPIO);//配置为GPIO
+  GPIO_DirectionConfig(AUXV33_IOG,AUXV33_IOP,GPIO_DIR_OUT);//输出
+  GPIO_ClearOutBits(AUXV33_IOG,AUXV33_IOP);//DCDC-EN 默认输出0			
 	//初始化电源状态管理状态机的相关变量
 	CurrentTactalDim=100;//电流按照默认值跑
 	ReverseTactalEnabled=false;//默认关闭
@@ -59,12 +63,19 @@ void DriverLockPOR(void)
 	RunLogEntry.CurrentDataCRC=CalcRunLogCRC32(&RunLogEntry.Data);//填写数据后更新CRC-32
 	WriteRuntimeLogToROM();//尝试写ROM
 	}
-//控制驱动上的3.3V辅助电源(给电流检测和SPS供电)
-void SetAUXPWR(bool IsEnabled)
+//控制主副Buck的选择引脚
+void SetBUCKSEL(bool IsEnabled)
   {
 	//根据输入控制IO
-	if(!IsEnabled)GPIO_ClearOutBits(AUXPWR_EN_IOG,AUXPWR_EN_IOP);
-	else GPIO_SetOutBits(AUXPWR_EN_IOG,AUXPWR_EN_IOP);
+	if(!IsEnabled)GPIO_ClearOutBits(BUCKSEL_IOG,BUCKSEL_IOP);
+	else GPIO_SetOutBits(BUCKSEL_IOG,BUCKSEL_IOP);
+	}
+//控制主副Buck的选择引脚
+void Set3V3AUXDCDC(bool IsEnabled)
+  {
+	//根据输入控制IO
+	if(!IsEnabled)GPIO_ClearOutBits(AUXV33_IOG,AUXV33_IOP);
+	else GPIO_SetOutBits(AUXV33_IOG,AUXV33_IOP);
 	}
 /*
 在系统运行过程中，自动执行运行日志commit的处理函数	

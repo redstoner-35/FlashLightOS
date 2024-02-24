@@ -21,6 +21,7 @@ const char *DBErrorStr[]={"","EEP_Reload","DB_Integrity","DB_Value_Invalid"};
 
 //全局变量
 CompDataStorUnion CompData; //全局补偿数据
+bool IsStartedCalibrationOverCommand=false; //是否通过命令启动校准的标志位
 
 //计算补偿数据组的CRC校验和
 static int CalcCompCRC32(CompDataUnion *CompIN)
@@ -72,6 +73,27 @@ static char ReadCompDataFromROM(CompDataStorUnion *DataOut)
  }
 
 #ifdef FlashLightOS_Debug_Mode 
+ 
+//在SPS报告CATERR的时候输出提示
+static void ReportSPSCATERR(void)
+ {
+	DACInitStrDef DACInitStr;
+	//关闭所有外设
+  INA219_SetConvMode(INA219_PowerDown,INA219ADDR);//关闭INA219
+  SetTogglePin(false);//关闭输出buck
+  AD5693R_SetOutput(0,MainBuckAD5693ADDR);	 
+  AD5693R_SetOutput(0,AuxBuckAD5693ADDR); //设置输出都为0V 	 
+  SetBUCKSEL(false); //主副buck都关闭
+	DACInitStr.DACPState=DAC_Disable_HiZ;
+	DACInitStr.DACRange=DAC_Output_REF;
+  DACInitStr.IsOnchipRefEnabled=false; 	 
+  AD5693R_SetChipConfig(&DACInitStr,AuxBuckAD5693ADDR); //关闭基准
+  MCP3421_SetChip(AuxBuckIsenADCGain,AuxBuckIsenADCRes,true);//开启PD模式
+  CurrentLEDIndex=0; 
+  IsStartedCalibrationOverCommand=false;
+  UARTPuts("\r\n[Calibration]Auto Calibration and test run failed.");
+ }	
+ 
 //写校准数据到ROM
 char WriteCompDataToROM(void)
  {
@@ -84,7 +106,7 @@ char WriteCompDataToROM(void)
  }
 
 //运行主LED并处理校准功能的函数
-void RunMainLEDHandler(bool IsMainBuck,int Pass)
+static bool RunMainLEDHandler(bool IsMainBuck,int Pass)
  {
  float TargetCurrent,ActualCurrent,CurrentREF;
  float DimValue,IMONValue;
@@ -97,17 +119,17 @@ void RunMainLEDHandler(bool IsMainBuck,int Pass)
    { 
    TargetCurrent=MinimumLEDCurrent+(((3.9-MinimumLEDCurrent)/50)*(float)Pass); //计算目标电流(电流从最低开始-3.9A)
    DACVID=250+(TargetCurrent*AuxBuckIsensemOhm*10); //LT3935 VIset=250mV(offset)+[额定电流(A)*电流检测电阻数值(mΩ)*电流检测放大器倍数(10X)]
-	 AllowedError=TargetCurrent<0.5?0.1:0.02; //副buck在极低电流下允许10%的误差
+	 AllowedError=TargetCurrent<0.5?0.1:0.02; //副buck在极低电流下允许10%的误差,高电流下允许2%误差
 	 if(DACVID<270)DACVID=270; //幅度限制确保DAC可以启动
 	 }
  else //使用主buck
    {	 
 	 TargetCurrent=3.9+(((FusedMaxCurrent-3.9)/50)*(float)Pass); //计算目标电流(电流从3.9A开始到极亮电流)
    DACVID=40+(TargetCurrent*30); //主Buck VIset=40mV(offset)+(30mv/A)
-	 AllowedError=TargetCurrent<6?0.03:0.015; //主buck在极低电流下允许3%左右的误差
+	 AllowedError=TargetCurrent<6?0.02:0.01; //主buck在极低电流下允许3%左右的误差,在大电流下允许1%
 	 }
  //设置AUX PowerPIN
- SetAUXPWR(IsMainBuck);
+ SetBUCKSEL(IsMainBuck);
  AD5693R_SetOutput(DACVID/(float)1000,IsMainBuck?MainBuckAD5693ADDR:AuxBuckAD5693ADDR); //设置电压
  UartPrintf("\r\n[Calibration]Target LED Current=%.2fA.VID has been programmed,initial VID=%.2fmV.",TargetCurrent,DACVID);
  //开始对比VID修正电流误差
@@ -118,6 +140,11 @@ void RunMainLEDHandler(bool IsMainBuck,int Pass)
     {
     delay_ms(1);
     ADC_GetResult(&ADCO);
+		if(IsMainBuck&&ADCO.SPSTMONState==SPS_TMON_CriticalFault) //SPS报告CATERR
+		  {
+			UARTPuts("\r\n[Calibration]SPS Reports CATERR signal during test run!");
+			return false;
+			}
     delta=TargetCurrent-ADCO.LEDCalIf; //计算误差
 	  if(delta>0)DACVID+=0.01; 
     else if(delta<0)DACVID-=0.01;
@@ -174,15 +201,14 @@ void RunMainLEDHandler(bool IsMainBuck,int Pass)
 	   CompData.CompDataEntry.CompData.Data.AuxBuckIFBValue[Pass]=IMONValue; 
 	   CompData.CompDataEntry.CompData.Data.AuxBuckIFBThreshold[Pass]=ActualCurrent; //阈值写目标电流		 		 
 		 }
-	 UartPrintf("\r\n[Calibration]%s Buck Pass #%d complete.Target LEDIf=%.2fA,Adjusted Actual LEDIf=%.2fA.",IsMainBuck?"Main":"Aux",Pass,TargetCurrent,CurrentREF);	
+	 UartPrintf("\r\n[Calibration]%s Buck Pass #%d complete.Target LEDIf=%.2fA,Adjusted Actual LEDIf=%.2fA,LED Vf=%.2fV",IsMainBuck?"Main":"Aux",Pass,TargetCurrent,CurrentREF,ADCO.LEDVf);	
 	 UartPrintf("\r\n[Calibration]Dimming Comp Value=%.3f,IMON CompValue=%.3f,LEDIf Error=%.2f%%,RAW IMON=%.2fA\r\n",DimValue,IMONValue,((CurrentREF/TargetCurrent)*100)-100,ActualCurrent);	 
+	 return true;
  }
 //自动进行电流回读的校准
-bool IsStartedCalibrationOverCommand=false; 
- 
 void DoSelfCalibration(void)
  {
- float TargetCurrent,ActualCurrent,EffCalcbuf;
+ float TargetCurrent,ActualCurrent,EffCalcbuf,LEDVf;
  ADCOutTypeDef ADCO;
  INADoutSreDef BattStat;
  DACInitStrDef DACInitStr;
@@ -196,7 +222,7 @@ void DoSelfCalibration(void)
  //上电，开始初始化DAC ADC
  MCP3421_SetChip(AuxBuckIsenADCGain,AuxBuckIsenADCRes,false);
  SetTogglePin(false);
- SetAUXPWR(false); //主副buck都关闭 
+ SetBUCKSEL(false); //主副buck都关闭 
  AD5693R_SetOutput(0,MainBuckAD5693ADDR);	 
  AD5693R_SetOutput(0,AuxBuckAD5693ADDR); //设置输出都为0V 	 
  delay_ms(10); //延迟10mS后再送基准电压启动辅助buck
@@ -206,21 +232,54 @@ void DoSelfCalibration(void)
  AD5693R_SetChipConfig(&DACInitStr,AuxBuckAD5693ADDR); //启动辅助buck的基准，辅助buck上电
  delay_ms(10); //延迟10mS后再送基准电压启动辅助buck
  SetTogglePin(true);//令辅助buck进入工作状态
- //开始校准
+ //开始校准辅助buck
  for(i=0;i<50;i++)RunMainLEDHandler(false,i); //校准副buck
  AD5693R_SetOutput(0,AuxBuckAD5693ADDR); //设置副buck DAC输出为0 	 
  DACInitStr.IsOnchipRefEnabled=false; 	 
  AD5693R_SetChipConfig(&DACInitStr,AuxBuckAD5693ADDR); //关闭辅助buck的基准使辅助buck下电
+ UARTPuts("\r\n[Calibration]Auxiliary Buck Calibration completed.\r\n");
+ delay_ms(300);
+ //开始校准主buck
+ AD5693R_SetOutput(0,MainBuckAD5693ADDR); //先设置为0V
+ Set3V3AUXDCDC(true); //送3V3AUX启动DrMOS
  delay_ms(10);
- for(i=0;i<50;i++)RunMainLEDHandler(true,i); //校准主buck
+ i=0;
+ ADC_GetResult(&ADCO); //读取一次结果判断DrMOS是否正常运行
+ while(ADCO.SPSTMONState!=SPS_TMON_CriticalFault&&i<5) //CATERR了
+   {
+	 Set3V3AUXDCDC(false); //关闭主buck电源 
+	 delay_ms(10);
+	 Set3V3AUXDCDC(true); //10mS后重新打开主buck电源进行toggle
+   delay_ms(10);		 
+	 ADC_GetResult(&ADCO); //读取一次结果
+	 i++;//重试次数+1
+	 }
+ if(i==5) //DrMOS报告CATERR，重试五次仍未消除，报错
+   {
+	 ReportSPSCATERR();
+	 return;
+	 }
+ SetBUCKSEL(true); //令BUCKSEL=1，启动主buck的控制器
+ delay_ms(1);
+ for(i=0;i<50;i++)if(!RunMainLEDHandler(true,i))//校准主buck(出现错误时退出)
+   {
+	 ReportSPSCATERR();
+	 return;
+	 }
+ //校准结束，保存数据然后关闭主副buck的输出并等待一下,准备试运行	 
+ UARTPuts("\r\n[Calibration]Auto Calibration completed,Saving Calibration Data to ROM...   ");
  WriteCompDataToROM(); //校准结束，保存数值到EEPROM内
- //关闭主副buck的输出等待一下	 
+ UARTPuts("done");
  SetTogglePin(false);//关闭输出buck
  AD5693R_SetOutput(0,MainBuckAD5693ADDR);	 
  AD5693R_SetOutput(0,AuxBuckAD5693ADDR); //设置输出都为0V 	 
- SetAUXPWR(false); //主副buck都关闭
+ SetBUCKSEL(false); //主副buck都关闭
  delay_ms(500); 
- SetTogglePin(true);//重新拉高
+ DACInitStr.IsOnchipRefEnabled=true; 	 
+ AD5693R_SetChipConfig(&DACInitStr,AuxBuckAD5693ADDR); //打开基准使得辅助buck开始运作
+ delay_ms(10); 
+ SetTogglePin(true);//延迟10mS等待辅助buck就绪后重新拉高toggle引脚
+ UARTPuts("\r\n[TestRun]Starting Test-Run...");
  //准备第二次运行，取70个点采集效率信息
  TargetLogAddr=0xD6EE; //log起始点为D6EE
  memset(CSVStrbuf,0,sizeof(CSVStrbuf));
@@ -231,9 +290,13 @@ void DoSelfCalibration(void)
  for(i=0;i<70;i++)
    {
 	 //设置电流
-   DoLinearDimControl(MinimumLEDCurrent+(((FusedMaxCurrent-MinimumLEDCurrent)/70)*(float)i),true);//控制主buck设置电流		 
+	 TargetCurrent=MinimumLEDCurrent+(((FusedMaxCurrent-MinimumLEDCurrent)/70)*(float)i);//计算目标电流
+   DoLinearDimControl(TargetCurrent,true);//控制主buck设置电流	
+   delay_ms(300);	 	 //等待电流设置完毕
 	 INA219_SetConvMode(INA219_Cont_Both,INA219ADDR); //启动INA219开始读取信息
-	 //读取电流
+	 delay_ms(300);	 	 //等待功率计启动
+	 //读取LED电压和电流数据
+	 LEDVf=0;
 	 ActualCurrent=0; //清零缓冲区
 	 delta=0; //默认电流反馈=0
 	 for(j=0;j<10;j++)
@@ -242,8 +305,10 @@ void DoSelfCalibration(void)
 		 MCP3421_ReadVoltage(&delta);
 		 SysPstatebuf.AuxBuckCurrent=ConvertAuxBuckIsense(delta); //读取ADC检测到的电流输入并且进行换算
 		 ADC_GetResult(&ADCO); //读取数值
-	   ActualCurrent+=ADCO.LEDIf; //累加
+		 LEDVf+=ADCO.LEDVf; //LED电压
+	   ActualCurrent+=ADCO.LEDIf; //累加LED电流
 	   }
+	 LEDVf/=10;
 	 ActualCurrent/=10; //求平均
 	 //读取INA219的数据
 	 BattStat.TargetSensorADDR=INA219ADDR; //设置地址
@@ -251,17 +316,27 @@ void DoSelfCalibration(void)
 	 if(!INA219_SetConvMode(INA219_PowerDown,INA219ADDR))break;//关闭INA219
 	 //开始commit CSV数据
 	 memset(CSVStrbuf,0,sizeof(CSVStrbuf));
-	 snprintf(CSVStrbuf,128,"%.2f,%.2f,%.2f,%.2f,",BattStat.BusVolt,BattStat.BusCurrent,BattStat.BusPower,TargetCurrent);
+	 snprintf(CSVStrbuf,128,"%.2f,%.2f,%.2f,%.2f,",BattStat.BusVolt,BattStat.BusCurrent,BattStat.BusPower,TargetCurrent); //打印电池输入参数
 	 j=strlen(CSVStrbuf);
-	 EffCalcbuf=100*((ADCO.LEDVf*ActualCurrent)/BattStat.BusPower); //计算效率
-	 if(EffCalcbuf<99.5&&EffCalcbuf>2)
-      snprintf(&CSVStrbuf[j],128-j,"%.2f,%.2f,%.2f,%.2fC,%.2f%%",ActualCurrent,ADCO.LEDVf,ADCO.LEDVf*ActualCurrent,ADCO.SPSTemp,EffCalcbuf);	//写入电池电压信息	 
+	 snprintf(&CSVStrbuf[j],128-j,"%.2f,%.2f,%.2f,",ActualCurrent,LEDVf,LEDVf*ActualCurrent); //打印实际电流，LED电压和LED功率
+	 j=strlen(CSVStrbuf);
+	 if(ADCO.SPSTMONState==SPS_TMON_OK) 
+	    snprintf(&CSVStrbuf[j],128-j,"%.2fC,",ADCO.SPSTemp); //SPS温度返回数据正常，显示温度 
 	 else
-		  snprintf(&CSVStrbuf[j],128-j,"%.2f,%.2f,%.2f,%.2fC,No Info",ActualCurrent,ADCO.LEDVf,ADCO.LEDVf*ActualCurrent,ADCO.SPSTemp);	//写入电池电压信息
+		  snprintf(&CSVStrbuf[j],128-j,"No Info,"); //否则显示无数据
+	 EffCalcbuf=100*((LEDVf*ActualCurrent)/BattStat.BusPower); //计算效率
+	 j=strlen(CSVStrbuf);
+	 if(EffCalcbuf<99.5&&EffCalcbuf>2)  
+      snprintf(&CSVStrbuf[j],128-j,"%.2f%%",EffCalcbuf);	//效率参数有效，写入效率信息 
+	 else
+		  snprintf(&CSVStrbuf[j],128-j,"No Info");	////效率参数无效
 	 j=strlen(CSVStrbuf);
    snprintf(&CSVStrbuf[j],128-j,",%.3f%%,%.3f%%,\r\n",((TargetCurrent/ADCO.LEDCalIf)*100)-100,((TargetCurrent/ActualCurrent)*100)-100); //连接了校准器，写入电流检测误差值
    M24C512_PageWrite(CSVStrbuf,TargetLogAddr,strlen(CSVStrbuf)); 
    TargetLogAddr+=strlen(CSVStrbuf);//加上长度
+	 //一轮运行+记录结束，显示结果
+	 UartPrintf("\r\n[TestRun]Cycle #%d  Vin:%.2fV,Pin:%.2fW,Vled:%.2fV,Pled:%.2fW,Eff=%.2f%%",i,BattStat.BusVolt,BattStat.BusPower,LEDVf,LEDVf*ActualCurrent,EffCalcbuf);	
+	 if(ADCO.SPSTMONState==SPS_TMON_OK)UartPrintf(",SPS Tj:%.2fC.",ADCO.SPSTemp);
 	 } 	 
  //输出log底部截止的信息
  memset(CSVStrbuf,0,sizeof(CSVStrbuf));
@@ -269,20 +344,23 @@ void DoSelfCalibration(void)
  M24C512_PageWrite(CSVStrbuf,TargetLogAddr,strlen(CSVStrbuf)); 
  TargetLogAddr+=strlen(CSVStrbuf);//写入版本信息
  memset(CSVStrbuf,0,sizeof(CSVStrbuf));
- snprintf(CSVStrbuf,128,"CopyRight to redstoner_35 @ 35's Embedded Systems Inc. JAN 2024,\r\n\xFF");
+ snprintf(CSVStrbuf,128,"CopyRight to redstoner_35 @ 35's Embedded Systems Inc. FEB 2024,\r\n\xFF");
  M24C512_PageWrite(CSVStrbuf,TargetLogAddr,strlen(CSVStrbuf)); //写入版权信息
  //运行结束，关闭LED输出
+ UARTPuts("\r\n[TestRun]test run completed,sending OFF command to other peripheral...");
  INA219_SetConvMode(INA219_PowerDown,INA219ADDR);//关闭INA219
  SetTogglePin(false);//关闭输出buck
  AD5693R_SetOutput(0,MainBuckAD5693ADDR);	 
  AD5693R_SetOutput(0,AuxBuckAD5693ADDR); //设置输出都为0V 	 
- SetAUXPWR(false); //主副buck都关闭
+ SetBUCKSEL(false); //主副buck都关闭
  DACInitStr.IsOnchipRefEnabled=false; 	 
  AD5693R_SetChipConfig(&DACInitStr,AuxBuckAD5693ADDR); //关闭基准
  MCP3421_SetChip(AuxBuckIsenADCGain,AuxBuckIsenADCRes,true);//开启PD模式
+ delay_ms(10);
+ Set3V3AUXDCDC(false); //10mS后关闭3V3辅助电源
  CurrentLEDIndex=0; 
  IsStartedCalibrationOverCommand=false;
- UARTPuts("\r\n[Calibration]Auto Calibration and test run completed.");
+ UARTPuts("\r\n\r\nAuto Calibration and test run completed.");
  }	
 
 #endif

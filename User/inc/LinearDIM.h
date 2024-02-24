@@ -10,10 +10,15 @@
 #define ToggleFlash_IOB STRCAT2(GPIO_P,ToggleFlash_IOBank)
 #define ToggleFlash_IOP STRCAT2(GPIO_PIN_,ToggleFlash_IOPinNum)
 
-/*  辅助电源引脚的自动define,不允许修改！  */
-#define AUXPWR_EN_IOB STRCAT2(GPIO_P,AUXPWR_EN_IOBank)
-#define AUXPWR_EN_IOG STRCAT2(HT_GPIO,AUXPWR_EN_IOBank)
-#define AUXPWR_EN_IOP STRCAT2(GPIO_PIN_,AUXPWR_EN_IOPinNum)
+/*  主副buck切换引脚的自动define,不允许修改！  */
+#define BUCKSEL_IOB STRCAT2(GPIO_P,BUCKSEL_IOBank)
+#define BUCKSEL_IOG STRCAT2(HT_GPIO,BUCKSEL_IOBank)
+#define BUCKSEL_IOP STRCAT2(GPIO_PIN_,BUCKSEL_IOPinNum)
+
+/*  3.3V辅助DCDC引脚的自动define,不允许修改！  */
+#define AUXV33_IOB STRCAT2(GPIO_P,AUXV33_IOBank)
+#define AUXV33_IOG STRCAT2(HT_GPIO,AUXV33_IOBank)
+#define AUXV33_IOP STRCAT2(GPIO_PIN_,AUXV33_IOPinNum)
 
 //函数
 FlagStatus IsHostConnectedViaUSB(void);//检测USB是否连接

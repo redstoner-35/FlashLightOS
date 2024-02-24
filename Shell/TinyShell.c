@@ -90,11 +90,11 @@ void SelfTestErrorHandler(void)
 		//显示最后一条自检信息
 		if(TinyShellBuf=='M'||TinyShellBuf=='m')
 		  {
-			UARTPuts("\r\n您请求了显示最后一条自检的日志信息,请等待系统从存储器内取出该信息...");
+				UARTPuts("\r\n您请求了显示最后一条自检的日志信息,正在读取中...");
 			if(!DisplayLastTraceBackMessage())
-			  UARTPuts("\r\n系统取出该信息时遇到了错误,请重试.");
+			  UARTPuts("\r\n系统读取该信息时遇到了错误,请重试.");
 			else
-				UARTPuts("\r\n\r\n系统已成功取出该信息,该信息内容如上.");
+				UARTPuts("\r\n\r\n系统已成功读取并显示该信息,该信息内容如上.");
 			UARTPuts((char *)TinyShellText[5]);//显示shell字符
 			}
 		//重启系统

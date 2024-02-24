@@ -42,7 +42,6 @@ extern float LEDVfMax; //LEDVf限制
 const char *DACInitError="Failed to init %s DAC.";
 const char *SPSFailure="SPS %sreports %s during init.";
 const char *DidnotStr="did Not ";
-const char *ShortAlert="Driver output short detected.(this might due to unreleased %s Buck)";
 const char *AUXBuckADCError="Aux Buck Isens ADC %s.";
 
 //在挡位电流变化小于35%的情况下指示用户的处理函数
@@ -172,7 +171,7 @@ void LinearDIM_POR(void)
  检测ADC。然后通过ADC测量DAC的输出.这一步是为了验证DAC的实际电压输出值和
  设置值是一致的
  ***********************************************************************/
- SetAUXPWR(false);
+ SetBUCKSEL(false);
  SetTogglePin(true);
  delay_ms(2);
  i=1;
@@ -216,13 +215,15 @@ void LinearDIM_POR(void)
 	  SelfTestErrorHandler();  		
 		}
   /**********************************************************************
- 自检过程中的最后一步：我们打开主buck输出小电流检查电流反馈电路，温度传感
- 器(MOSFET)是否运行正常。
+ 自检过程中的第五步：我们打开主buck输出小电流检查电流反馈电路，片内温度传
+ 感器(MOSFET)以及辅助DCDC是否运行正常。
  ***********************************************************************/
  VSet=0.01;
- SetTogglePin(true);
- AD5693R_SetOutput(VSet,MainBuckAD5693ADDR); //将DAC设置为初始输出，100%占空比
- SetAUXPWR(true); 
+ Set3V3AUXDCDC(true); //打开3V3 DCDC
+ delay_ms(10);
+ SetBUCKSEL(true); //10mS后送上控制器的EN 	
+ delay_ms(10);
+ AD5693R_SetOutput(VSet,MainBuckAD5693ADDR); //将DAC设置为初始输出开始试运行
  retry=0;//清零等待标志位
  for(i=0;i<200;i++)//等待辅助电源上电稳定检测电压
 		{
@@ -255,7 +256,7 @@ void LinearDIM_POR(void)
    */
 	 CurrentLEDIndex=ADCO.LEDVf<LEDVfMin?15:24; //点亮LED报告异常
 	 if(ADCO.LEDVf<LEDVfMin)
-		  UartPost(Msg_critical,"LineDIM",(char *)ShortAlert,"AUX"); 
+		  UartPost(Msg_critical,"LineDIM","Driver output short detected,Check LED Connection."); 
 	 else if(ADCO.SPSTMONState==SPS_TMON_CriticalFault)
 		  UartPost(Msg_critical,"LineDIM",(char *)SPSFailure,"","CATERR");
 	 else if(ADCO.SPSTMONState!=SPS_TMON_OK)
@@ -263,7 +264,7 @@ void LinearDIM_POR(void)
 	 else if(!IMONOKFlag)
 		  UartPost(Msg_critical,"LineDIM",(char *)SPSFailure,DidnotStr,"IMON");
 	 //严重错误,死循环使驱动锁定
-	 SetAUXPWR(false);
+	 SetBUCKSEL(false);
 	 SelfTestErrorHandler();  
 	 }
  /**********************************************************************
@@ -272,10 +273,12 @@ void LinearDIM_POR(void)
  得主buck不会在我们不想要的情况下意外启动。 
  ***********************************************************************/
  SetTogglePin(false);
- AD5693R_SetOutput(0,MainBuckAD5693ADDR);
- SetAUXPWR(false);
+ AD5693R_SetOutput(0,MainBuckAD5693ADDR); 
+ SetBUCKSEL(false);
+ delay_ms(10);
+ Set3V3AUXDCDC(false); //主buck的控制器关闭10mS后禁用3V3 DCDC
  #ifndef SkipMoonDLCTest
- delay_ms(150); //等待主buck放电结束
+ delay_ms(100); //等待主buck退出运行
  /***********************************************************************
  下一步，我们需要进行副buck相关电路的检查。首先我们配置好读取电流的MCP3421
  ADC，然后启用辅助buck DAC的基准使辅助buck运行，然后检查读回的电流是否正常
@@ -310,7 +313,7 @@ void LinearDIM_POR(void)
 		}
  if(i==50) //出错
     {
-		UartPost(Msg_critical,"LineDIM","Failed to start Aux Buck(No output).");
+		UartPost(Msg_critical,"LineDIM","Failed to start Aux Buck.");
     DisableAuxBuckForFault(); //关闭辅助buck并报错
 		}
  
@@ -353,7 +356,9 @@ void TurnLightOFFLogic(void)
  AD5693R_SetChipConfig(&DACInitStr,AuxBuckAD5693ADDR);//关闭基准，彻底让副buck下电
  INA219_SetConvMode(INA219_PowerDown,INA219ADDR);//关闭INA219功率计
  MCP3421_SetChip(AuxBuckIsenADCGain,AuxBuckIsenADCRes,true);//关闭辅助buck的功率测量模块
- SetAUXPWR(false);//切断3.3V辅助电源
+ SetBUCKSEL(false);//令BuckSel=0，同时关闭主buck和辅助buck
+ delay_ms(10);
+ Set3V3AUXDCDC(false); //10毫秒后令辅助3V3 DCDC下电 
  //复位侧按LED管理器并计算运行日志的CRC32
  CurrentLEDIndex=0;
  LED_Reset();//复位LED管理器
@@ -446,7 +451,17 @@ void DoLinearDimControl(float Current,bool IsMainLEDEnabled)
 	 BuckPowerState=IsBuckPowerOff; //同步参数
 	 AD5693R_SetOutput(0,MainBuckAD5693ADDR);	
 	 AD5693R_SetOutput(0,AuxBuckAD5693ADDR);	//清除主和副buck的VID，确保下次buck启动前VID=0
-	 SetAUXPWR(false); //设置辅助电源引脚关闭主buck电源
+	 if(BuckPowerState) //主buck下电
+	   {
+		 SetBUCKSEL(false); //关闭主buck
+	   delay_ms(10);
+	   Set3V3AUXDCDC(false); //在关闭控制器之后等待1mS再关闭辅助DCDC
+		 }
+   else
+	   {
+		 Set3V3AUXDCDC(true); //辅助DCDC先上电
+		 delay_ms(10); //延时10mS后再启动下面的操作
+		 }
 	 DACInitStr.DACPState=DAC_Normal_Mode;
    DACInitStr.DACRange=DAC_Output_REF;
    DACInitStr.IsOnchipRefEnabled=!BuckPowerState; 
@@ -461,7 +476,7 @@ void DoLinearDimControl(float Current,bool IsMainLEDEnabled)
 	   //ADC配置失败,这是严重故障,立即写log并停止驱动运行
 	   RunTimeErrorReportHandler(Error_ADC_Logic);
 	   return;
-	   }
+	   } 
 	 delay_us(30); //这个延时是为了确保buck POR阶段DAC的VID维持0一段时间然后再送,否则LT的芯片将会不响应
 	 }
  /*********************************************************
@@ -476,7 +491,7 @@ void DoLinearDimControl(float Current,bool IsMainLEDEnabled)
  else 
    {   
 	 IsAuxBuckEnabled=Current<3.9?true:false;//判别AUXbuck的状态
-	 SetAUXPWR(!IsAuxBuckEnabled); //电流小于3.9切换到副buck,否则使用主buck	
+	 SetBUCKSEL(!IsAuxBuckEnabled); //电流小于3.9切换到副buck,否则使用主buck	
 	 SetTogglePin(true); //将两个buck的总使能信号设置为1	 
 	 if(IsAuxBuckEnabled)DACVID=250+(Current*AuxBuckIsensemOhm*10); //LT3935 VIset=250mV(offset)+[额定电流(A)*电流检测电阻数值(mΩ)*电流检测放大器倍数(10X)]
 	 else DACVID=40+(Current*30); //主Buck VIset=40mV(offset)+(30mv/A)
@@ -484,13 +499,13 @@ void DoLinearDimControl(float Current,bool IsMainLEDEnabled)
 	 SysPstatebuf.CurrentDACVID=DACVID;//存储计算后的DACVID
 	 DACVID/=1000; //mV转V
 	 delay_us(30); //这个延时是为了确保buck POR阶段DAC的VID维持0一段时间然后再送,否则LT的芯片将会不响应
-	 DAResult[0]=AD5693R_SetOutput(DACVID,IsAuxBuckEnabled?AuxBuckAD5693ADDR:MainBuckAD5693ADDR); //设置VID
 	 if(AuxDACSetState!=IsAuxBuckEnabled) //检测函数，作用是如果辅助或者主buck发生状态变化，则将被禁用的部分的DAC设置为0V
 	   {
 		 AuxDACSetState=IsAuxBuckEnabled; //同步辅助DAC状态
 		 DAResult[1]=AD5693R_SetOutput(0,AuxDACSetState?AuxBuckAD5693ADDR:MainBuckAD5693ADDR);	//主buck启用，设置副buck的VID=0，否则设置主buck的VID=0
 		 }	 
 	 else DAResult[1]=true; //不需要更新主buck的状态
+	 DAResult[0]=AD5693R_SetOutput(DACVID,IsAuxBuckEnabled?AuxBuckAD5693ADDR:MainBuckAD5693ADDR); //设置VID
 	 if(!DAResult[0]||!DAResult[1])RunTimeErrorReportHandler(Error_DAC_Logic); //DAC无响应,这是严重故障,立即写log并停止驱动运行 
 	 }
  }	
@@ -523,9 +538,9 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
 	 return Error_DAC_Logic;//将DAC输出设置为0V,确保送主电源时主Buck变换器不工作
  if(!MCP3421_SetChip(AuxBuckIsenADCGain,AuxBuckIsenADCRes,false))
 	 return Error_ADC_Logic; //初始化ADC逻辑
- delay_ms(1);
- SetTogglePin(true);//控制引脚设置为常通
- SetAUXPWR(true);
+ SetBUCKSEL(false); //令BUCKSEL=0，选择使用辅助BUCK
+ delay_ms(1); 
+ Set3V3AUXDCDC(true); 
  AuxPSURecycleCount=0;
  while(AuxPSURecycleCount<5) //送上辅助DCDC电源，开始进行SPS的检查
    {
@@ -541,9 +556,9 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
 	 //启动成功，跳出循环
 	 if(i<5000)break;
 	 //本次启动失败，关闭辅助电源，100mS后重新打开并再次启动
-	 SetAUXPWR(false);
+	 Set3V3AUXDCDC(false);
 	 delay_ms(100);
-	 SetAUXPWR(true);
+	 Set3V3AUXDCDC(true);
 	 AuxPSURecycleCount++;//启动重试次数+1
 	 }
  if(AuxPSURecycleCount==5)//启动重试次数到达限制
@@ -590,16 +605,17 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
  VID=StartUpInitialVID;
  VIDIncValue=0.5;
  ILED=0;
- SetAUXPWR(false); //关闭主buck
+ SetTogglePin(true);//控制引脚设置为常通
  DACInitStr.DACPState=DAC_Normal_Mode;
  DACInitStr.DACRange=DAC_Output_REF;
- DACInitStr.IsOnchipRefEnabled=true; //启用副buck的基准电源
+ DACInitStr.IsOnchipRefEnabled=true; //启用副buck的基准电源,让副buck开始运作
  if(!AD5693R_SetChipConfig(&DACInitStr,AuxBuckAD5693ADDR))return Error_DAC_Logic;
  while(VID<100)
 		 {
 		 if(!AD5693R_SetOutput((VID+250)/(float)1000,AuxBuckAD5693ADDR))return Error_DAC_Logic;
 		 delay_ms(MCP_waitTime);
 		 if(!MCP3421_ReadVoltage(&ILED))return Error_ADC_Logic; //读取电流
+	   if(!ADC_GetResult(&ADCO))return Error_ADC_Logic; //读取LED Vf
 		 if(ConvertAuxBuckIsense(ILED)>=MinimumLEDCurrent&&ADCO.LEDVf>LEDVfMin)break; //电流足够且电压达标
 		 VID=((100-VID)<VIDIncValue)?VID+0.5:VID+VIDIncValue;//增加VID，如果快到上限就慢慢加，否则继续快速增加VID
 		 VIDIncValue+=StartupLEDVIDStep; //每次VID增加的数值
@@ -627,9 +643,11 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
  ********************************************************/
  SysPstatebuf.IsLEDShorted=false;
  SysPstatebuf.ToggledFlash=true;// LED没有短路，上电点亮
+ PSUState=0;//复位主副buck关机计时器
  SysPstatebuf.AuxBuckCurrent=ConvertAuxBuckIsense(ILED);//填写辅助buck的输出电流
  FillThermalFilterBuf(&ADCO); //填写温度信息
  for(i=0;i<12;i++)LEDVfFilterBuf[i]=ADCO.LEDVf;//填写LEDVf 
+ BuckPowerState=false; //上电成功，当前处于正常运行阶段
  MainAuxBuckSwitchState=false; //自检结束后默认是以副buck运行，复位该标志位
  return Error_None;
  }

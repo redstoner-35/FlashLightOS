@@ -214,7 +214,8 @@ void RestoreFactoryModeCfg(void);//复位挡位设置
 void ModeSwitchLogicHandler(void);//模式开关配置
 void PStateInit(void);//初始化PState
 void PStateStateMachine(void);//电源状态的状态机
-void SetAUXPWR(bool IsEnabled);//设置辅助电源的输出
+void SetBUCKSEL(bool IsEnabled);//设置主副buck的选择引脚
+void Set3V3AUXDCDC(bool IsEnabled);//设置主Buck 3V3辅助DCDC的状态
 void EnteredLowPowerMode(void);//
 ModeConfStr *GetCurrentModeConfig(void);//获取当前挡位设置 
 ModeConfStr *GetSelectedModeConfig(ModeGrpSelDef ModeGrpSel,int index);//根据传入的挡位设置得到对应挡位的结构体指针 

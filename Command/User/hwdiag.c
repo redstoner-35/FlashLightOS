@@ -11,6 +11,7 @@
 extern bool IsTimeExceeded;
 extern bool IsParameterAdjustMode;
 extern bool IsStartedCalibrationOverCommand;
+static bool IsExecuteCal=false;
 
 //命令参数·
 const char *hwdiagargument(int ArgCount)
@@ -38,7 +39,14 @@ void hwdiaghandler(void)
 	char IsCmdOK;	
 	bool cmdParamFound=false;
 	//当前驱动正在校准运行，使命令不响应
-	if(IsStartedCalibrationOverCommand)return;	
+	if(IsStartedCalibrationOverCommand)return;
+  if(IsExecuteCal) //校准结束后停止命令执行，避免在校准结束后再执行一次弹出未知参数
+    {
+		IsExecuteCal=false;
+	  ClearRecvBuffer();//清除接收缓冲
+	  CmdHandle=Command_None;//命令执行完毕
+    return; 		
+		}		
 	//开始高级硬件测试
   IsParameterExist("01",31,&IsCmdOK);
 	if(IsCmdOK)
@@ -117,6 +125,7 @@ void hwdiaghandler(void)
 		else 
        {
 			 IsStartedCalibrationOverCommand=true;
+			 IsExecuteCal=true;
 			 UARTPuts("驱动将开始试运行和自校准,请稍等...");
 			 ClearRecvBuffer();//清除接收缓冲
 			 return;

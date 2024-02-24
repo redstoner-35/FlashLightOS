@@ -6,12 +6,12 @@
 #define HardwareMinorVer 0  //硬件版本号
 
 #define MajorVersion 2
-#define MinorVersion 1
+#define MinorVersion 2
 #define HotfixVersion 0  //固件版本号
 
 //固件模式配置
 #define Firmware_DIY_Mode //是否启用DIY高级用户模式，在此模式下驱动所有功能可以使用，否则温控调整和日志清除和恢复功能会被禁用。
-#define FlashLightOS_Debug_Mode //是否启用debug模式，此时驱动将会禁用部分自检项目以及低电量关机功能，并且强制使用工厂配置
+//#define FlashLightOS_Debug_Mode //是否启用debug模式，此时驱动将会禁用部分自检项目以及低电量关机功能，并且强制使用工厂配置
 //#define Internal_Driver_Debug //是否启用驱动内部设备驱动的额外信息输出。
 #define EnableFirmwareSecure //是否启用固件只读和CRC安全锁
 //#define NoMoonDLCSelfTest //在debug模式下是否关闭月光小板的DAC自检（该选项仅debug模式有效）

@@ -80,6 +80,8 @@ bool ADC_GetResult(ADCOutTypeDef *ADCOut)
   float buf,Comp;
 	bool IsResultOK;
 	//开始测量
+  GPIO_ClearOutBits(NTCEN_IOG,NTCEN_IOP); //让NTC的GPIO转换为强下拉模式
+	delay_us(1);
 	for(avgcount=0;avgcount<ADCAvg;avgcount++)
 		{
 		//初始化变量
@@ -104,6 +106,9 @@ bool ADC_GetResult(ADCOutTypeDef *ADCOut)
 		}
 	//转换完毕，求平均
   for(i=0;i<4;i++)ADCResult[i]/=avgcount;
+  #ifndef FlashLightOS_Debug_Mode	
+  GPIO_SetOutBits(NTCEN_IOG,NTCEN_IOP); //让NTC的GPIO转换为浮空状态，节省电力
+	#endif
 	//计算LEDVf
 	buf=(float)ADCResult[LED_Vf_ADC_Ch]*(ADC_AVRef/(float)4096);//将AD值转换为电压
 	buf*=(float)3;//乘以分压比得到最终Vf
@@ -134,7 +139,7 @@ bool ADC_GetResult(ADCOutTypeDef *ADCOut)
 		}
 	#endif
 	//计算LED输出电流
-	if(GPIO_ReadOutBit(AUXPWR_EN_IOG,AUXPWR_EN_IOP)) //主buck启动，从SPS的IMON读取电流
+	if(GPIO_ReadOutBit(BUCKSEL_IOG,BUCKSEL_IOP)==SET) //主buck启动，从SPS的IMON读取电流
 	  {
 	  buf=(float)ADCResult[LED_If_Ch]*(ADC_AVRef/(float)4096);//将AD值转换为电压
 	  buf=(buf*(float)1000)/(float)SPSIMONDiffOpGain;//将算出的电压转为mV单位，然后除以INA199放大器的增益值得到原始的电压
@@ -215,7 +220,16 @@ void InternalADC_Init(void)
 	 AFIO_GPxConfig(GPIO_PA,NTC_IOP,AFIO_FUN_ADC0);
 	 AFIO_GPxConfig(GPIO_PA,LED_If_IOP,AFIO_FUN_ADC0);
    AFIO_GPxConfig(GPIO_PA,SPS_Temp_IOP,AFIO_FUN_ADC0);	
-   GPIO_PullResistorConfig(HT_GPIOA,LED_If_IOP,GPIO_PR_DOWN);//LED If输入启用下拉电阻	
+   GPIO_PullResistorConfig(HT_GPIOA,LED_If_IOP,GPIO_PR_DOWN);//LED If输入启用下拉电阻
+	 //将负责控制NTC电阻采样的IO设置为开漏模式
+   AFIO_GPxConfig(NTCEN_IOB,NTCEN_IOP, AFIO_FUN_GPIO);//配置为GPIO
+	 GPIO_DirectionConfig(NTCEN_IOG,NTCEN_IOP,GPIO_DIR_OUT);
+	 GPIO_OpenDrainConfig(NTCEN_IOG,NTCEN_IOP,ENABLE);//开漏输出模式
+	 #ifdef FlashLightOS_Debug_Mode	
+	 GPIO_ClearOutBits(NTCEN_IOG,NTCEN_IOP);//Debug模式，NTC EN强下拉	
+   #else		
+	 GPIO_SetOutBits(NTCEN_IOG,NTCEN_IOP);//NTC EN默认设置为开漏	
+	 #endif
    //设置转换组别类型，转换时间，转换模式      
 	 CKCU_SetADCnPrescaler(CKCU_ADCPRE_ADC0, CKCU_ADCPRE_DIV16);//ADC时钟为主时钟16分频=3MHz                                               
    ADC_RegularGroupConfig(HT_ADC0,DISCONTINUOUS_MODE, 4, 0);//单次触发模式,一次完成4个数据的转换
@@ -232,11 +246,8 @@ void InternalADC_Init(void)
 	 //启用ADC
 	 ADC_Cmd(HT_ADC0, ENABLE);
 	 //触发ADC转换
-	 for(i=0;i<3;i++)
-	   if(!ADC_GetResult(&ADCO))OnChipADC_FaultHandler();//出现异常
+	 for(i=0;i<3;i++)if(!ADC_GetResult(&ADCO))OnChipADC_FaultHandler();//出现异常
 	 //开始显示
-	 UartPost(Msg_info,"IntADC","-------- System Monitor ADC Result --------");
-   UartPost(Msg_info,"IntADC","LED Vf Pin Volt : %.2fV",ADCO.LEDVf);
 	 UartPost(Msg_info,"IntADC","LED BasePlate NTC Status : %s",NTCStateString[ADCO.NTCState]);
 	 if(ADCO.NTCState==LED_NTC_OK)
 		 UartPost(Msg_info,"IntADC","LED BasePlate Temperature : %.1f'C",ADCO.LEDTemp);

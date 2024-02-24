@@ -15,6 +15,10 @@
 #define _LED_If_Ch STRCAT2(ADC_CH_,LED_If_Ch)
 #define _SPS_Temp_Ch STRCAT2(ADC_CH_,SPS_Temp_Ch)
 
+#define NTCEN_IOB STRCAT2(GPIO_P,NTCEN_IOBank)
+#define NTCEN_IOG STRCAT2(HT_GPIO,NTCEN_IOBank)
+#define NTCEN_IOP STRCAT2(GPIO_PIN_,NTCEN_IOPinNum) //负责控制NTC使能与否的控制器
+
 //ADC的配置参数
 #define ADCAvg 5  //ADC平均次数
 #define ADCConvTimeOut 2000 //ADC转换超时时间(单位2mS)
