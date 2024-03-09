@@ -6,15 +6,15 @@
 #define HardwareMinorVer 0  //硬件版本号
 
 #define MajorVersion 2
-#define MinorVersion 2
+#define MinorVersion 3
 #define HotfixVersion 0  //固件版本号
 
 //固件模式配置
 #define Firmware_DIY_Mode //是否启用DIY高级用户模式，在此模式下驱动所有功能可以使用，否则温控调整和日志清除和恢复功能会被禁用。
-//#define FlashLightOS_Debug_Mode //是否启用debug模式，此时驱动将会禁用部分自检项目以及低电量关机功能，并且强制使用工厂配置
+#define FlashLightOS_Debug_Mode //是否启用debug模式，此时驱动将会禁用部分自检项目以及低电量关机功能，并且强制使用工厂配置
 //#define Internal_Driver_Debug //是否启用驱动内部设备驱动的额外信息输出。
 #define EnableFirmwareSecure //是否启用固件只读和CRC安全锁
-//#define NoMoonDLCSelfTest //在debug模式下是否关闭月光小板的DAC自检（该选项仅debug模式有效）
+#define NoMoonDLCSelfTest //在debug模式下是否关闭月光小板的DAC自检（该选项仅debug模式有效）
 #define HardwarePlatformString "Xtern Ripper" //硬件平台字符串信息，可以任意修改
 
 //性能参数定义
@@ -24,8 +24,8 @@
 #define GammaCorrectionValue 2.45   //亮度拟合曲线的gamma修正，根据不同LED有所不同
 #define LVAlertCurrentLimit 4.3 //当低电压警告触发后，驱动最大的输出电流值(A)
 #define ForceThermalControlCurrent 5.5 //当挡位的运行电流大于这个值时温控将会被强制启用不准关闭
-#define MaxAllowedLEDCurrent 32 //驱动硬件熔断的最大输出电流设置(测得电流超过此电流的1.2倍将触发保护)
-#define MinimumLEDCurrent 0.08 //最小的LED电流
+#define MaxAllowedLEDCurrent 33 //驱动硬件熔断的最大输出电流设置(测得电流超过此电流的1.2倍将触发保护)
+#define MinimumLEDCurrent 0.1 //最小的LED电流
 #define BatteryCellCount 3 //默认情况下驱动使用的电池组中锂电池的串数(按照三元锂电池计算)
 #define DeepsleepDelay 40 //驱动的出厂深度睡眠时间,40秒内没有操作则睡眠
 #define ForceRequireLEDNTC //驱动的LED NTC热敏电阻强制要求存在,如果检测不到热敏电阻则驱动将自检失败
@@ -87,5 +87,11 @@
 
 //ADC模拟电压参考电压
 #define ADC_VRef 3.2990 //实际的ADC电压参考值
+
+//试运行校准参数
+#define TestRunAuxBuckLowMargen 4 //测试运行时辅助BUCK在低电流下的最大电流误差(单位%)
+#define TestRunAuxBuckHighMargen 1 //测试运行时辅助BUCK在高电流下的最大电流误差(单位%)
+#define TestRunMainBuckLowMargen 2 //测试运行时主BUCK在低电流下的最大电流误差(单位%)
+#define TestRunMainBuckHighMargen 1 //测试运行时主BUCK在高电流下的最大电流误差(单位%)
 
 #endif

@@ -99,9 +99,15 @@ static const char *GetMorseSequenceFromASCII(char ASCIIIn)
 int CheckForStringCanBeSentViaMorse(char *StringIN)
  {
  int i;
+ char Letter;
  if(StringIN==NULL)return 0;//字符串啥也没有不执行下面的东西直接返回0
- for(i=0;i<31;i++)//摩尔斯码能送出的最大字符串就是31个字符,全部检查过没问题就OK
-	 if(StringIN[i]!='\0'&&GetMorseSequenceFromASCII(StringIN[i])==NULL)return i;
+ for(i=0;i<31;i++)
+	 {
+	 //摩尔斯码能送出的最大字符串就是31个字符,全部检查过没问题就OK
+	 Letter=StringIN[i];
+	 if(Letter>0x60&&Letter<0x7B)Letter-=0x20;//小写转大写
+	 if(Letter!='\0'&&GetMorseSequenceFromASCII(Letter)==NULL)return i; //发现字符存在问题
+	 }
  return -1;//检查通过返回-1
  }
  

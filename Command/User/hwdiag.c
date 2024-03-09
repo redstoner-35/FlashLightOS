@@ -5,6 +5,7 @@
 #include "AD5693R.h"
 #include "MCP3421.h"
 #include "delay.h"
+#include <math.h>
 
 #ifdef FlashLightOS_Debug_Mode
 //变量
@@ -12,6 +13,9 @@ extern bool IsTimeExceeded;
 extern bool IsParameterAdjustMode;
 extern bool IsStartedCalibrationOverCommand;
 static bool IsExecuteCal=false;
+
+//字符串
+static const char *SwitchedScale="\r\n已切换校准器量程为%sBUCK,请检查校准器指示.";
 
 //命令参数·
 const char *hwdiagargument(int ArgCount)
@@ -62,7 +66,11 @@ void hwdiaghandler(void)
 		UartPrintf("\r\n月光DLC小板DAC设置电压  %s",AD5693R_SetOutput(1.35,AuxBuckAD5693ADDR)?"成功":"失败");
 		UartPrintf("\r\n功率板DAC  连接%s",AD5693R_Detect(MainBuckAD5693ADDR)?"成功":"失败");
 		UartPrintf("\r\n功率板DAC初始化  %s",AD5693R_SetChipConfig(&DACTest,MainBuckAD5693ADDR)?"成功":"失败");
-		UartPrintf("\r\n功率板DAC设置电压  %s",AD5693R_SetOutput(1.35,MainBuckAD5693ADDR)?"成功":"失败");\
+		UartPrintf("\r\n功率板DAC设置电压  %s",AD5693R_SetOutput(1.35,MainBuckAD5693ADDR)?"成功":"失败");
+		delay_ms(50);
+    buf=0;			
+	  ADC_GetLEDIfPinVoltage(&buf); //获取一次LED If Pin的电压
+		UartPrintf("\r\n功率板DAC实际输出电压  %.2fV(基准%s)",buf,fabsf(buf-1.35)<0.2?"正常":"故障");
 		//片内ADC		
 		UARTPuts("\r\n\r\nPart2 片内ADC部分:");  
 		UartPrintf("\r\n片内ADC转换数据  %s",ADC_GetResult(&IntADTest)?"成功":"失败");
@@ -112,6 +120,13 @@ void hwdiaghandler(void)
 			}
 		if(i==700)UARTPuts("\r\n\r\n错误:片内RTC未正常计数.");
 		else UartPrintf("\r\n\r\nRTC自检正常完成,实际到数时间%d毫秒.",i*10);
+		//校准器
+		UARTPuts("\r\n\r\nPart7 校准器控制:");
+    GPIO_SetOutBits(NTCEN_IOG,NTCEN_IOP);	
+		UartPrintf((char *)SwitchedScale,"辅助");
+	  delay_Second(4);
+	  GPIO_ClearOutBits(NTCEN_IOG,NTCEN_IOP);		
+		UartPrintf((char *)SwitchedScale,"主");
 		}
 	//启动一次校准运行
 	IsParameterExist("23",31,&IsCmdOK);
@@ -119,7 +134,7 @@ void hwdiaghandler(void)
 	  {
 		cmdParamFound=true;
 		if(IsParameterAdjustMode)
-			 UARTPuts("当前驱动位于USB调参模式,无法启动校准运行.请彻底断电后先接上12V电源然后再连接console线.");
+			 UARTPuts("当前驱动位于USB调参模式,无法启动校准运行!");
 		else if(IsStartedCalibrationOverCommand)
 		   UARTPuts("请等待驱动完成本次的试运行和自校准!");
 		else 

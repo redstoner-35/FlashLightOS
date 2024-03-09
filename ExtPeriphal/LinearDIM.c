@@ -156,15 +156,17 @@ void LinearDIM_POR(void)
 	CurrentLEDIndex=20;//DAC无法启动,保护
 	SelfTestErrorHandler(); 
 	}
- #ifndef SkipMoonDLCTest
  DACInitStr.IsOnchipRefEnabled=false; //初始化Slave DAC
  if(!AD5693R_SetChipConfig(&DACInitStr,AuxBuckAD5693ADDR))
    { 
+	 #ifndef SkipMoonDLCTest
    UartPost(Msg_critical,"LineDIM",(char *)DACInitError,"aux");
 	 CurrentLEDIndex=20;//DAC无法启动,保护
 	 SelfTestErrorHandler(); 
+	 #else
+	 UartPost(msg_error,"LineDIM",(char *)DACInitError,"aux");	 
+	 #endif
 	 }	
- #endif
  /**********************************************************************
  自检过程中的第2步：首先需要确保辅助电源处于关闭状态,然后我们将DAC输出的
  PWM Mux设置为常通(100%占空比)，然后通过电流反馈MUX将调光信号反馈给电流
@@ -275,8 +277,6 @@ void LinearDIM_POR(void)
  SetTogglePin(false);
  AD5693R_SetOutput(0,MainBuckAD5693ADDR); 
  SetBUCKSEL(false);
- delay_ms(10);
- Set3V3AUXDCDC(false); //主buck的控制器关闭10mS后禁用3V3 DCDC
  #ifndef SkipMoonDLCTest
  delay_ms(100); //等待主buck退出运行
  /***********************************************************************
@@ -326,13 +326,17 @@ void LinearDIM_POR(void)
  AD5693R_SetOutput(0,AuxBuckAD5693ADDR); //将DAC设置为0V输出	
  DACInitStr.DACPState=DAC_Disable_HiZ;
  DACInitStr.IsOnchipRefEnabled=false; 
- AD5693R_SetChipConfig(&DACInitStr,AuxBuckAD5693ADDR); //关闭基准并设置为输出高阻使buck停止运行		
+ AD5693R_SetChipConfig(&DACInitStr,AuxBuckAD5693ADDR); //关闭基准并设置为输出高阻使buck停止运行
+ delay_ms(10);
+ Set3V3AUXDCDC(false); //主buck的控制器关闭10mS后禁用3V3 DCDC		
  IsDisableBattCheck=false; //默认开启电池质量检测
  #else
  /***********************************************************************
  在跳过辅助buck检查的情况下成功的结束了主buck的检测，关闭主buck并重置变量
  ***********************************************************************/ 
  SetTogglePin(false); //PWM pin关闭
+ delay_ms(10);
+ Set3V3AUXDCDC(false); //主buck的控制器关闭10mS后禁用3V3 DCDC		
  IsDisableBattCheck=false; //默认开启电池质量检测
  #endif
 }
@@ -417,6 +421,7 @@ void DoLinearDimControl(float Current,bool IsMainLEDEnabled)
  if(NotifyUserTIM>0)Current*=0.5; //如果用户挡位发生了较小的变动则让电流短时间减低到原始值的50%
  if(Current>0&&Current<MinimumLEDCurrent)Current=MinimumLEDCurrent; //电流不是0且低于最低允许值，强制设为最低值 
  #ifdef FlashLightOS_Debug_Mode
+ GPIO_WriteOutBits(NTCEN_IOG,NTCEN_IOP,Current<3.9?SET:RESET);//根据当前校准的变换器控制校准器量程选择pin(0=主BUCK,1=辅助BUCK)	
  if(CheckCompData()!=Database_No_Error) //debug模式下如果补偿数据库未就绪则不取补偿数据库
    Comp=1.00;
  else //正常读取数据

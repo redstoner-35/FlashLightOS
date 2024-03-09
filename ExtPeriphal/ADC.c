@@ -11,6 +11,7 @@
 
 const char *NTCStateString[3]={"正常","开路","未连接"};
 const char *SPSTMONString[3]={"正常","未连接","致命错误"};
+extern bool IsParameterAdjustMode;
 
 static bool ADCEOCFlag=false;
 
@@ -45,6 +46,7 @@ bool ADC_GetLEDIfPinVoltage(float *VOUT)
   {
 	int retry,avgcount;
 	unsigned int ADCResult=0;
+	float VREF=!IsParameterAdjustMode?ADC_AVRef:3.0052;//基准电压选择，在使用USB供电时VREF会下降
 	for(avgcount=0;avgcount<ADCAvg;avgcount++)
 		{
 		//初始化变量
@@ -66,7 +68,7 @@ bool ADC_GetLEDIfPinVoltage(float *VOUT)
 		}
 	//转换完毕，求平均
   ADCResult/=avgcount;
-	*VOUT=(float)ADCResult*(3.3/(float)4096);//将AD值转换为电压
+	*VOUT=(float)ADCResult*(VREF/(float)4096);//将AD值转换为电压
 	return true;
 	}
 //ADC获取数值
@@ -79,6 +81,7 @@ bool ADC_GetResult(ADCOutTypeDef *ADCOut)
 	unsigned int ADCResult[4]={0};
   float buf,Comp;
 	bool IsResultOK;
+	float VREF=!IsParameterAdjustMode?ADC_AVRef:3.0052;//基准电压选择，在使用USB供电时VREF会下降
 	//开始测量
   GPIO_ClearOutBits(NTCEN_IOG,NTCEN_IOP); //让NTC的GPIO转换为强下拉模式
 	delay_us(1);
@@ -110,20 +113,20 @@ bool ADC_GetResult(ADCOutTypeDef *ADCOut)
   GPIO_SetOutBits(NTCEN_IOG,NTCEN_IOP); //让NTC的GPIO转换为浮空状态，节省电力
 	#endif
 	//计算LEDVf
-	buf=(float)ADCResult[LED_Vf_ADC_Ch]*(ADC_AVRef/(float)4096);//将AD值转换为电压
+	buf=(float)ADCResult[LED_Vf_ADC_Ch]*(VREF/(float)4096);//将AD值转换为电压
 	buf*=(float)3;//乘以分压比得到最终Vf
 	ADCOut->LEDVf=buf;
   #ifdef FlashLightOS_Debug_Mode
 	//Debug模式，重定义温度引脚为校准电流输入
 	ADCOut->NTCState=LED_NTC_OK;
 	ADCOut->LEDTemp=35;  //LED温度部分被移除
-	buf=(float)ADCResult[NTC_ADC_Ch]*(ADC_AVRef/(float)4096);//将AD值转换为电压
-	buf=(buf*(float)1000)/(float)50;//首先乘以1000转换为mV除以INA199A1的增益系数得到电阻上的电压
-	ADCOut->LEDCalIf=buf; //校准套件的检流电阻是1mV/1A所以直接返回数值就可以。
+	buf=(float)ADCResult[NTC_ADC_Ch]*(VREF/(float)4096);//将AD值转换为电压
+  Comp=(GPIO_ReadOutBit(NTCEN_IOG,NTCEN_IOP)==RESET)?50:750; //根据当前量程选择位选择副BUCK的750mV/A以及主Buck的50mV/A	
+	ADCOut->LEDCalIf=(buf*(float)1000)/(float)Comp;//首先乘以1000转换为mV然后除以校准套件的放大系数(50或750mV/A)得到实际输出电流(A)
 	#else
   //计算温度
-	buf=(float)ADCResult[NTC_ADC_Ch]*(ADC_AVRef/(float)4096);//将AD值转换为电压
-	Rt=((float)NTCUpperResValueK*buf)/(ADC_AVRef-buf);//得到NTC的电阻
+	buf=(float)ADCResult[NTC_ADC_Ch]*(VREF/(float)4096);//将AD值转换为电压
+	Rt=((float)NTCUpperResValueK*buf)/(VREF-buf);//得到NTC的电阻
 	buf=1/((1/(273.15+(float)NTCT0))+log(Rt/(float)NTCUpperResValueK)/(float)NTCBValue);//计算出温度
 	buf-=273.15;//减去开氏温标常数变为摄氏度
 	buf+=(float)NTCTRIM;//加上修正值	
@@ -141,7 +144,7 @@ bool ADC_GetResult(ADCOutTypeDef *ADCOut)
 	//计算LED输出电流
 	if(GPIO_ReadOutBit(BUCKSEL_IOG,BUCKSEL_IOP)==SET) //主buck启动，从SPS的IMON读取电流
 	  {
-	  buf=(float)ADCResult[LED_If_Ch]*(ADC_AVRef/(float)4096);//将AD值转换为电压
+	  buf=(float)ADCResult[LED_If_Ch]*(VREF/(float)4096);//将AD值转换为电压
 	  buf=(buf*(float)1000)/(float)SPSIMONDiffOpGain;//将算出的电压转为mV单位，然后除以INA199放大器的增益值得到原始的电压
 	  buf/=(float)SPSIMONShunt;//欧姆定律，I=U/R计算出SPS往外怼出来的电流（单位mA）
 	  buf/=((float)SPSIMONScale/(float)1000);//将算出来的电流除以SPS的电流反馈系数（换算为mA/A）得到实际的电流值
@@ -158,7 +161,7 @@ bool ADC_GetResult(ADCOutTypeDef *ADCOut)
 	if(IsResultOK&&Comp!=NAN)buf*=Comp;//如果补偿系数合法则得到最终结果
   ADCOut->LEDIf=buf;//计算完毕返回结果
 	//计算SPS温度数值
-	buf=(float)ADCResult[SPS_Temp_Ch]*(ADC_AVRef/(float)4096);//将AD值转换为电压
+	buf=(float)ADCResult[SPS_Temp_Ch]*(VREF/(float)4096);//将AD值转换为电压
 	if(buf>3.05)
 	  {
 		ADCOut->SPSTemp=-20;//温度反馈为-20度		
@@ -224,10 +227,10 @@ void InternalADC_Init(void)
 	 //将负责控制NTC电阻采样的IO设置为开漏模式
    AFIO_GPxConfig(NTCEN_IOB,NTCEN_IOP, AFIO_FUN_GPIO);//配置为GPIO
 	 GPIO_DirectionConfig(NTCEN_IOG,NTCEN_IOP,GPIO_DIR_OUT);
-	 GPIO_OpenDrainConfig(NTCEN_IOG,NTCEN_IOP,ENABLE);//开漏输出模式
 	 #ifdef FlashLightOS_Debug_Mode	
-	 GPIO_ClearOutBits(NTCEN_IOG,NTCEN_IOP);//Debug模式，NTC EN强下拉	
-   #else		
+	 GPIO_ClearOutBits(NTCEN_IOG,NTCEN_IOP);//Debug模式，NTC EN复用为校准器量程选择，默认输出0选择使用主BUCK	
+   #else		 
+	 GPIO_OpenDrainConfig(NTCEN_IOG,NTCEN_IOP,ENABLE);//开漏输出模式
 	 GPIO_SetOutBits(NTCEN_IOG,NTCEN_IOP);//NTC EN默认设置为开漏	
 	 #endif
    //设置转换组别类型，转换时间，转换模式      

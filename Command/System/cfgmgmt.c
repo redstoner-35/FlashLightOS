@@ -55,7 +55,7 @@ static bool DisplayConfError(int checkresult,bool IgnoreCorrError)
 		  case 2:ErrStr="内部加解密模块异常";break;
 	    case 3:ErrStr="配置文件已损坏或被篡改";break;
 			}
-	 UartPrintf("\n\n错误:%s",ErrStr);
+	 if(checkresult>0)UartPrintf("\n\n错误:%s",ErrStr);
 	 if(checkresult)//内部错误
 			{
 			if(IgnoreCorrError&&checkresult==3)return false;

@@ -13,17 +13,29 @@ bool InputDataBlackList(char DIN);
 
 static char TinyShellPtr=0;
 static char TinyShellBuf=0;
+static char TinyShellKey[]={'x','e','r','m'};
 static const char *TinyShellText[]=
 {
-"\r\n在这个环境下您可以通过输入如下的命令来指定操作.",//0
-"\r\n'X'或'x' : 通过xmodem方式将自检日志下载到电脑进行分析.",//1
-"\r\n'E'或'e' : 通过xmodem方式将错误日志下载到电脑进行分析.", //2
-"\r\n'R'或'r' : 手动重启驱动.",//3
-"\r\n'M'或'm' : 查看驱动输出的最后一条自检日志信息.",//4
+"\r\n在这个环境下您可输入如下命令进行排查.",//0
+"自检",//1
+"错误", //2
+"手动重启驱动",//3
+"查看驱动输出的最后一条自检日志信息",//4
 "\r\n\r\nRescue:>",//5
 "\r\n您请求了下载%s日志,请打开Xmodem传输软件进行日志内容的接收.\r\n\r\n",//6
 };
 
+//显示Shell操作内容
+static void PrintShellContent(void)
+ {
+ int i;
+ for(i=0;i<6;i++)
+	 {
+	 if(i!=0&&i<5)UartPrintf("\r\n'%c'或'%c' : ",TinyShellKey[i-1]-0x20,TinyShellKey[i-1]);
+	 if(i!=0&&i<3)UartPrintf("通过xmodem方式将%s日志下载到电脑进行分析",TinyShellText[i]);
+	 else UARTPuts((char *)TinyShellText[i]);
+	 }
+ }
 
 //简易shell收取数据的流程
 void TinyshellGetData(void)
@@ -69,13 +81,12 @@ void TinyshellXmodemHandler(void)
 //自检错误的时候进入的简易shell环境
 void SelfTestErrorHandler(void)
  {
- int i;
  XmodemTransferReset();//复位Xmodem状态机
  delay_Second(3);
  UARTPuts("\x0C\033[2J");
- UARTPuts("\r\n驱动在POST时发现了致命硬件错误.为了保证安全,自我保护模式已激活.\r\n此模式会导致手电处于不可用状态.");
+ UARTPuts("\r\n驱动在POST时发现了致命硬件错误.为避免故障扩大,自我保护模式已激活.");
  UARTPuts("\r\n如您作为消费者看到此提示,请输入'X'下载日志并发给商家分析问题."); 
- for(i=0;i<6;i++)UARTPuts((char *)TinyShellText[i]);
+ PrintShellContent();//打印操作提示
  while(1)//主循环
   {
 	TinyshellGetData();//收取数据
@@ -93,8 +104,6 @@ void SelfTestErrorHandler(void)
 				UARTPuts("\r\n您请求了显示最后一条自检的日志信息,正在读取中...");
 			if(!DisplayLastTraceBackMessage())
 			  UARTPuts("\r\n系统读取该信息时遇到了错误,请重试.");
-			else
-				UARTPuts("\r\n\r\n系统已成功读取并显示该信息,该信息内容如上.");
 			UARTPuts((char *)TinyShellText[5]);//显示shell字符
 			}
 		//重启系统
@@ -122,7 +131,7 @@ void SelfTestErrorHandler(void)
 		  {
 			UARTPuts("\x0C\033[2J");
 			UARTPuts("\r\n您输入的命令不合法,请重试.");
-      for(i=0;i<6;i++)UARTPuts((char *)TinyShellText[i]);
+      PrintShellContent();//打印操作提示
 			}
 	  TinyShellPtr=0;
 		TinyShellBuf=0;// 完成处理开始处理别的	

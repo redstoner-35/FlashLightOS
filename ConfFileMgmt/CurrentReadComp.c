@@ -119,17 +119,19 @@ static bool RunMainLEDHandler(bool IsMainBuck,int Pass)
    { 
    TargetCurrent=MinimumLEDCurrent+(((3.9-MinimumLEDCurrent)/50)*(float)Pass); //计算目标电流(电流从最低开始-3.9A)
    DACVID=250+(TargetCurrent*AuxBuckIsensemOhm*10); //LT3935 VIset=250mV(offset)+[额定电流(A)*电流检测电阻数值(mΩ)*电流检测放大器倍数(10X)]
-	 AllowedError=TargetCurrent<0.5?0.1:0.02; //副buck在极低电流下允许10%的误差,高电流下允许2%误差
+	 AllowedError=(TargetCurrent<0.5?TestRunAuxBuckLowMargen:TestRunAuxBuckHighMargen)/(float)100; //设置辅助buck试运行允许的误差
 	 if(DACVID<270)DACVID=270; //幅度限制确保DAC可以启动
 	 }
  else //使用主buck
    {	 
 	 TargetCurrent=3.9+(((FusedMaxCurrent-3.9)/50)*(float)Pass); //计算目标电流(电流从3.9A开始到极亮电流)
    DACVID=40+(TargetCurrent*30); //主Buck VIset=40mV(offset)+(30mv/A)
-	 AllowedError=TargetCurrent<6?0.02:0.01; //主buck在极低电流下允许3%左右的误差,在大电流下允许1%
+	 AllowedError=(TargetCurrent<6?TestRunMainBuckLowMargen:TestRunMainBuckHighMargen)/(float)100; //设置主buck试运行允许的误差
 	 }
+ UartPrintf("\r\n[Calibration]Allowed current regulation error=±%d%%.",AllowedError*100);
  //设置AUX PowerPIN
  SetBUCKSEL(IsMainBuck);
+ GPIO_WriteOutBits(NTCEN_IOG,NTCEN_IOP,IsMainBuck?RESET:SET);//根据当前校准的变换器控制校准器量程选择pin(0=主BUCK,1=辅助BUCK)	
  AD5693R_SetOutput(DACVID/(float)1000,IsMainBuck?MainBuckAD5693ADDR:AuxBuckAD5693ADDR); //设置电压
  UartPrintf("\r\n[Calibration]Target LED Current=%.2fA.VID has been programmed,initial VID=%.2fmV.",TargetCurrent,DACVID);
  //开始对比VID修正电流误差
@@ -310,6 +312,7 @@ void DoSelfCalibration(void)
 	   }
 	 LEDVf/=10;
 	 ActualCurrent/=10; //求平均
+	 if(TargetCurrent<3.9)LEDVf+=(ActualCurrent*0.015); //效率计算的时候需要排除掉校准套件中辅助BUCK采样器检流电阻(R015)引入的压降否则效率偏低		  
 	 //读取INA219的数据
 	 BattStat.TargetSensorADDR=INA219ADDR; //设置地址
 	 if(!INA219_GetBusInformation(&BattStat))break;
