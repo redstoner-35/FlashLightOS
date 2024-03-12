@@ -101,10 +101,10 @@ void logviewhandler(void)
 				case Error_LED_Open:ErrorString="LED灯珠压降过高或开路";break; //灯珠开路
 				case Error_LED_Short:ErrorString="LED灯珠短路";break; //灯珠短路
 				case Error_LED_OverCurrent:ErrorString="LED灯珠过流";break; //灯珠过流保护
-				case Error_LED_ThermTrip:ErrorString="LED灯珠严重过热";break; //灯珠过热保护
+				case Error_LED_ThermTrip:ErrorString="LED灯珠过热";break; //灯珠过热保护
 				case Error_Input_UVP:ErrorString="输入欠压";break; //输入欠压保护
-				case Error_DAC_Logic:ErrorString="内部线性调光DAC";break; //DAC异常
-				case Error_ADC_Logic:ErrorString="内部测量ADC";break; //ADC异常
+				case Error_DAC_Logic:ErrorString="整定DAC";break; //DAC异常
+				case Error_ADC_Logic:ErrorString="测量ADC";break; //ADC异常
 				case Error_Mode_Logic:ErrorString="驱动挡位配置";break; //驱动挡位配置异常
 				case Error_Input_OCP:ErrorString="电源输入超载";break; //输入过载
 				case Error_SPS_TMON_Offline:ErrorString="智能功率级(驱动内部)温度反馈输出";break; //温度反馈异常

@@ -109,10 +109,10 @@ char WriteCompDataToROM(void)
 static bool RunMainLEDHandler(bool IsMainBuck,int Pass)
  {
  float TargetCurrent,ActualCurrent,CurrentREF;
- float DimValue,IMONValue;
+ float DimValue,IMONValue,AvgBuf,min,max;
  ADCOutTypeDef ADCO;
  float DACVID,delta,AllowedError,MinimumVID;
- int j=0,fixcount;
+ int i,retryCount=0;
  //计算目标电流和DACVID
  UartPrintf("\r\n[Calibration]%s Buck Pass #%d begin.",IsMainBuck?"Main":"Aux",Pass);
  if(!IsMainBuck) //使用副buck
@@ -125,10 +125,9 @@ static bool RunMainLEDHandler(bool IsMainBuck,int Pass)
  else //使用主buck
    {	 
 	 TargetCurrent=3.9+(((FusedMaxCurrent-3.9)/50)*(float)Pass); //计算目标电流(电流从3.9A开始到极亮电流)
-   DACVID=TargetCurrent*30; //主Buck VIset=30mv/A
-	 AllowedError=(TargetCurrent<6?TestRunMainBuckLowMargen:TestRunMainBuckHighMargen)/(float)100; //设置主buck试运行允许的误差
+   DACVID=(TargetCurrent*30)+40; //主Buck VIset=30mv/A+40mV offset
+	 AllowedError=(TargetCurrent<8?TestRunMainBuckLowMargen:TestRunMainBuckHighMargen)/(float)100; //设置主buck试运行允许的误差
 	 }
- UartPrintf("\r\n[Calibration]Allowed current regulation error=±%.2f%%.",AllowedError*100);
  //设置AUX PowerPIN
  SetBUCKSEL(IsMainBuck);
  if(!IsMainBuck)GPIO_SetOutBits(NTCEN_IOG,NTCEN_IOP);	
@@ -137,37 +136,49 @@ static bool RunMainLEDHandler(bool IsMainBuck,int Pass)
  UartPrintf("\r\n[Calibration]Target LED Current=%.2fA.VID has been programmed,initial VID=%.2fmV.",TargetCurrent,DACVID);
  //开始对比VID修正电流误差
  ActualCurrent=0;
- fixcount=0;
  MinimumVID=IsMainBuck?50:250; //最小VID输出，主buck=50mV，辅助buck=250mV
- while(j<6)
+ while(retryCount<50)
     {
-    delay_ms(1);
-    ADC_GetResult(&ADCO);
+		//开始采样数据 
+		AvgBuf=0;
+	  delay_ms(9);
+		min=2048;max=-2048; //初始化极值测量
+	  for(i=0;i<200;i++)
+			{
+			delay_ms(1);
+			ADC_GetResult(&ADCO);
+			max=ADCO.LEDCalIf>max?ADCO.LEDCalIf:max;
+			min=ADCO.LEDCalIf<min?ADCO.LEDCalIf:min;	//进行极值采样
+			AvgBuf+=ADCO.LEDCalIf; //进行平均值累加
+			}
+    //采样结束，进行误差判断
 		if(IsMainBuck&&ADCO.SPSTMONState==SPS_TMON_CriticalFault) //SPS报告CATERR
 		  {
 			UARTPuts("\r\n[Calibration]SPS Reports CATERR signal during test run!");
 			return false;
 			}
-    delta=TargetCurrent-ADCO.LEDCalIf; //计算误差
-	  if(delta>0)DACVID+=0.01; 
-    else if(delta<0)DACVID-=0.01;
-	  if(DACVID<MinimumVID)DACVID=MinimumVID;
-		if(DACVID>1250)DACVID=1250; //根据误差对DACVID进行调整，然后对调整后的DACVID限幅    
-		if(fixcount>=500) //每500mS输出一次
-		   {
-			 fixcount=0;
-			 UartPrintf("\r\n[Calibration]Actual LEDIf=%.2fA,Currently VID=%.2fmV.",ADCO.LEDCalIf,DACVID);
-			 }
-		else fixcount++;
+		AvgBuf/=(float)i;
+		UartPrintf("\r\n[Calibration]Measure done.Max LEDIf=%.3fA,Min LEDIf=%.3fA,Avg Real LEDIf=%.3fA",max,min,AvgBuf);
+    delta=TargetCurrent-AvgBuf; //根据一段时间内的平均LED电流计算误差
+    if(fabsf(delta)<=(TargetCurrent*AllowedError))break; //误差在允许范围内，结束
+	  min=DACVID; //存下旧的VID
+		DACVID+=delta*(IsMainBuck?30:AuxBuckIsensemOhm*10); //进行比例调节，按照电流误差进行调整				
+		if(DACVID<MinimumVID)DACVID=MinimumVID;
+		if(DACVID>1250)DACVID=1250; //对调整后的DACVID限幅   
 		AD5693R_SetOutput(DACVID/(float)1000,IsMainBuck?MainBuckAD5693ADDR:AuxBuckAD5693ADDR); //设置电压
-    if(fabsf(delta)<=(TargetCurrent*AllowedError))j=j<6?j+1:j;
-    else j=j>0?j-1:j; //如果误差修正OK则退出
-    }
-	 //误差修正完毕，首先填写调光误差
-	 UartPrintf("\r\n[Calibration]VID Adjust completed,Adjusted VID=%.2fmV.",DACVID);
-	 delta=!IsMainBuck?250+(TargetCurrent*AuxBuckIsensemOhm*10):(TargetCurrent*30); //计算原始VID值
-	 DimValue=DACVID/delta; //计算出预期的VID偏差之后算出补偿值
-	 if(IsMainBuck)
+	  UartPrintf("\r\n[Calibration]VID has been trimmed,Last VID=%.2fmV,Current VID=%.2fmV.",min,DACVID);
+    retryCount++;
+		}
+ if(retryCount==50) //超时
+	  {
+		UARTPuts("\r\n[Calibration]Failed to Trim Output current after 50 Attempt!");
+	  return false;
+		}
+ //误差修正完毕，首先填写调光误差
+ UartPrintf("\r\n[Calibration]VID Adjust completed,Adjusted VID=%.3fmV.",DACVID);
+ delta=!IsMainBuck?250+(TargetCurrent*AuxBuckIsensemOhm*10):((TargetCurrent*30)+40); //计算原始VID值
+ DimValue=DACVID/delta; //计算出预期的VID偏差之后算出补偿值
+ if(IsMainBuck)
 	   {
 		 CompData.CompDataEntry.CompData.Data.MainBuckDimmingValue[Pass]=DimValue;
      CompData.CompDataEntry.CompData.Data.MainBuckDimmingThreshold[Pass]=TargetCurrent; //填写目标电流  
@@ -181,7 +192,7 @@ static bool RunMainLEDHandler(bool IsMainBuck,int Pass)
    ActualCurrent=0;
 	 CurrentREF=0;
 	 delta=0; //默认电流反馈=0
-   for(j=0;j<10;j++)
+   for(i=0;i<10;i++)
      {
 		 delay_ms(MCP_waitTime);
 		 ADC_GetResult(&ADCO);
@@ -236,7 +247,11 @@ void DoSelfCalibration(void)
  delay_ms(10); //延迟10mS后再送基准电压启动辅助buck
  SetTogglePin(true);//令辅助buck进入工作状态
  //开始校准辅助buck
- for(i=0;i<50;i++)RunMainLEDHandler(false,i); //校准副buck
+ for(i=0;i<50;i++)if(!RunMainLEDHandler(false,i)) //校准副buck，如果出现错误则退出
+   {
+	 ReportSPSCATERR();
+	 return;
+	 }
  AD5693R_SetOutput(0,AuxBuckAD5693ADDR); //设置副buck DAC输出为0 	 
  DACInitStr.IsOnchipRefEnabled=false; 	 
  AD5693R_SetChipConfig(&DACInitStr,AuxBuckAD5693ADDR); //关闭辅助buck的基准使辅助buck下电
@@ -244,14 +259,12 @@ void DoSelfCalibration(void)
  delay_ms(300);
  //开始校准主buck 
  AD5693R_SetOutput(0,MainBuckAD5693ADDR); //先设置为0V
- UARTPuts("\r\n[Calibration]Sending PSON command to AUX3V3 DCDC for SPS.");
  Set3V3AUXDCDC(true); //送3V3AUX启动DrMOS
  delay_ms(15);
  i=0;
  ADC_GetResult(&ADCO); //读取一次结果判断DrMOS是否正常运行
  while(ADCO.SPSTMONState==SPS_TMON_CriticalFault&&i<5) //CATERR了
    {
-	 UARTPuts("\r\n[Calibration]SPS Reports CATERR during POR,Toggling Power for it...");
 	 Set3V3AUXDCDC(false); //关闭主buck电源 
 	 delay_ms(10);
 	 Set3V3AUXDCDC(true); //10mS后重新打开主buck电源进行toggle
@@ -261,10 +274,10 @@ void DoSelfCalibration(void)
 	 }
  if(i==5) //DrMOS报告CATERR，重试五次仍未消除，报错
    {
+	 UARTPuts("\r\n[Calibration]SPS Reports CATERR during POR!");
 	 ReportSPSCATERR();
 	 return;
 	 }
- UARTPuts("\r\n[Calibration]Sending PSON command to Main Buck controller.");
  SetBUCKSEL(true); //令BUCKSEL=1，启动主buck的控制器
  delay_ms(1);
  for(i=0;i<50;i++)if(!RunMainLEDHandler(true,i))//校准主buck(出现错误时退出)
@@ -356,7 +369,6 @@ void DoSelfCalibration(void)
  snprintf(CSVStrbuf,128,"CopyRight to redstoner_35 @ 35's Embedded Systems Inc. FEB 2024,\r\n\xFF");
  M24C512_PageWrite(CSVStrbuf,TargetLogAddr,strlen(CSVStrbuf)); //写入版权信息
  //运行结束，关闭LED输出
- UARTPuts("\r\n[TestRun]test run completed,sending OFF command to other peripheral...");
  INA219_SetConvMode(INA219_PowerDown,INA219ADDR);//关闭INA219
  SetTogglePin(false);//关闭输出buck
  AD5693R_SetOutput(0,MainBuckAD5693ADDR);	 

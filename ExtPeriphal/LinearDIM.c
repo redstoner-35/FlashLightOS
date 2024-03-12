@@ -500,7 +500,7 @@ void DoLinearDimControl(float Current,bool IsMainLEDEnabled)
 	 SetBUCKSEL(!IsAuxBuckEnabled); //电流小于3.9切换到副buck,否则使用主buck	
 	 SetTogglePin(true); //将两个buck的总使能信号设置为1	 
 	 if(IsAuxBuckEnabled)DACVID=250+(Current*AuxBuckIsensemOhm*10); //LT3935 VIset=250mV(offset)+[额定电流(A)*电流检测电阻数值(mΩ)*电流检测放大器倍数(10X)]
-	 else DACVID=Current*30; //主Buck VIset=30mv/A
+	 else DACVID=(Current*30)+40; //主Buck VIset=30mv/A+40mV offset
 	 DACVID*=Comp; //乘以查表得到的补偿系数
 	 SysPstatebuf.CurrentDACVID=DACVID;//存储计算后的DACVID
 	 DACVID/=1000; //mV转V

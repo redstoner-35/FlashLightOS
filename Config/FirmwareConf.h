@@ -91,7 +91,7 @@
 //试运行校准参数
 #define TestRunAuxBuckLowMargen 3 //测试运行时辅助BUCK在低电流下的最大电流误差(单位%)
 #define TestRunAuxBuckHighMargen 1 //测试运行时辅助BUCK在高电流下的最大电流误差(单位%)
-#define TestRunMainBuckLowMargen 2 //测试运行时主BUCK在低电流下的最大电流误差(单位%)
+#define TestRunMainBuckLowMargen 4 //测试运行时主BUCK在低电流下的最大电流误差(单位%)
 #define TestRunMainBuckHighMargen 1 //测试运行时主BUCK在高电流下的最大电流误差(单位%)
 
 #endif

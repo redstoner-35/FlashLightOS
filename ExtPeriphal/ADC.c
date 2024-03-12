@@ -128,7 +128,8 @@ bool ADC_GetResult(ADCOutTypeDef *ADCOut)
 	#else
   //计算温度
 	buf=(float)ADCResult[NTC_ADC_Ch]*(VREF/(float)4096);//将AD值转换为电压
-	Rt=((float)NTCUpperResValueK*buf)/(VREF-buf);//得到NTC的电阻
+	Rt=((float)NTCUpperResValueK*buf)/(VREF-buf);//得到NTC+单片机IO导通电阻的传感器温度值
+	Rt-=0.037; //减去单片机GPIO的Ron(37欧姆)得到实际的NTC电阻值
 	buf=1/((1/(273.15+(float)NTCT0))+log(Rt/(float)NTCUpperResValueK)/(float)NTCBValue);//计算出温度
 	buf-=273.15;//减去开氏温标常数变为摄氏度
 	buf+=(float)NTCTRIM;//加上修正值	
