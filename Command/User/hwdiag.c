@@ -127,6 +127,15 @@ void hwdiaghandler(void)
 	  delay_Second(4);
 	  GPIO_ClearOutBits(NTCEN_IOG,NTCEN_IOP);		
 		UartPrintf((char *)SwitchedScale,"主");
+		//外部晶振
+	  UARTPuts("\r\n\r\nPart8 控制器时钟树:");
+	  UartPrintf("\r\n外部晶振   %s",HT_CKCU->GCSR&0x04?"存在":"异常");
+		UartPrintf("\r\nPLL   %s",HT_CKCU->GCSR&0x02?"已启用":"异常");
+		UartPrintf("\r\n当前PLL作为时钟源   %s",(HT_CKCU->CKST&0x100)==0x100?"是":"否");
+		i=(HT_CKCU->PLLCFGR>>23)&0x0F; //读取PFBD bit确认PLL频率系数
+	  i/=(int)pow(2,(double)((HT_CKCU->PLLCFGR>>21)&0x03)); //读取POTD bit确认PLL输出分频系数
+	  i*=8; //乘以HSE频率
+	  UartPrintf("\r\n当前fCPU   %dMHz",i);
 		}
 	//启动一次校准运行
 	IsParameterExist("23",31,&IsCmdOK);

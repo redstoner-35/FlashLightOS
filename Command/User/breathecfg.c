@@ -14,6 +14,7 @@ static const char *TimeParamHasSet="的%s时间(信标模式)%s已被设置为%.
 //参数帮助entry
 const char *breathecfgArgument(int ArgCount)
   {
+	#ifndef FlashLightOS_Debug_Mode
 	switch(ArgCount)
 	  {
 		case 0:
@@ -30,6 +31,9 @@ const char *breathecfgArgument(int ArgCount)
 		case 11:return "配置指定挡位的地板电流保持时间Tholddn(电流下滑到地板后,在重新爬升前的等待时间,单位秒)";
 	  }
 	return NULL;
+	#else
+	return "No Param";
+	#endif
 	}
 
 //命令处理主函数
