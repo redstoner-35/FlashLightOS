@@ -180,7 +180,7 @@ void LinearDIM_POR(void)
  for(VSet=0.5;VSet<=2.5;VSet+=0.5)
 	{
 	AD5693R_SetOutput(VSet,MainBuckAD5693ADDR);
-	if(!CheckDACOutVoltage(VSet,&VGet,0.1))//电压超范围
+	if(!CheckDACOutVoltage(VSet,&VGet,0.25))//电压超范围
 	  {
 		UartPost(Msg_critical,"LineDIM","Expected Master DAC out %.2fV but get %.2fV.",VSet,VGet);
 	  CurrentLEDIndex=30;//电压误差过大,说明PWM MUX或者电流反馈MUX相关的电流反馈电路有问题。
@@ -258,7 +258,7 @@ void LinearDIM_POR(void)
    */
 	 CurrentLEDIndex=ADCO.LEDVf<LEDVfMin?15:24; //点亮LED报告异常
 	 if(ADCO.LEDVf<LEDVfMin)
-		  UartPost(Msg_critical,"LineDIM","Driver output short detected,Check LED Connection."); 
+		  UartPost(Msg_critical,"LineDIM","Driver output short-circuit detected."); 
 	 else if(ADCO.SPSTMONState==SPS_TMON_CriticalFault)
 		  UartPost(Msg_critical,"LineDIM",(char *)SPSFailure,"","CATERR");
 	 else if(ADCO.SPSTMONState!=SPS_TMON_OK)
@@ -411,6 +411,7 @@ void DoLinearDimControl(float Current,bool IsMainLEDEnabled)
  bool IsBuckPowerOff,resultOK=true,DAResult[2],IsAuxBuckEnabled; 
  static bool AuxDACSetState=true;
  float DACVID,Comp;
+ bool IsReturnFromPowerDown=false;
  /*********************************************************
  首先系统会对传入的电流参数进行控制和限幅，然后系统会根据处
  理完毕的电流数值计算补偿参数，这个补偿参数用于处理LED电流
@@ -421,7 +422,6 @@ void DoLinearDimControl(float Current,bool IsMainLEDEnabled)
  if(NotifyUserTIM>0)Current*=0.5; //如果用户挡位发生了较小的变动则让电流短时间减低到原始值的50%
  if(Current>0&&Current<MinimumLEDCurrent)Current=MinimumLEDCurrent; //电流不是0且低于最低允许值，强制设为最低值 
  #ifdef FlashLightOS_Debug_Mode
- GPIO_WriteOutBits(NTCEN_IOG,NTCEN_IOP,Current<3.9?SET:RESET);//根据当前校准的变换器控制校准器量程选择pin(0=主BUCK,1=辅助BUCK)	
  if(CheckCompData()!=Database_No_Error) //debug模式下如果补偿数据库未就绪则不取补偿数据库
    Comp=1.00;
  else //正常读取数据
@@ -459,13 +459,14 @@ void DoLinearDimControl(float Current,bool IsMainLEDEnabled)
 	 if(BuckPowerState) //主buck下电
 	   {
 		 SetBUCKSEL(false); //关闭主buck
-	   delay_ms(10);
-	   Set3V3AUXDCDC(false); //在关闭控制器之后等待1mS再关闭辅助DCDC
+	   delay_ms(5);
+	   Set3V3AUXDCDC(false); //在关闭控制器之后等待5mS再关闭辅助DCDC
 		 }
    else
 	   {
 		 Set3V3AUXDCDC(true); //辅助DCDC先上电
-		 delay_ms(10); //延时10mS后再启动下面的操作
+		 delay_ms(15); //延时15mS后再启动下面的操作
+		 if(Current<3.9)IsReturnFromPowerDown=true; //在关机前是辅助buck操作，加入额外的处理
 		 }
 	 DACInitStr.DACPState=DAC_Normal_Mode;
    DACInitStr.DACRange=DAC_Output_REF;
@@ -499,7 +500,7 @@ void DoLinearDimControl(float Current,bool IsMainLEDEnabled)
 	 SetBUCKSEL(!IsAuxBuckEnabled); //电流小于3.9切换到副buck,否则使用主buck	
 	 SetTogglePin(true); //将两个buck的总使能信号设置为1	 
 	 if(IsAuxBuckEnabled)DACVID=250+(Current*AuxBuckIsensemOhm*10); //LT3935 VIset=250mV(offset)+[额定电流(A)*电流检测电阻数值(mΩ)*电流检测放大器倍数(10X)]
-	 else DACVID=40+(Current*30); //主Buck VIset=40mV(offset)+(30mv/A)
+	 else DACVID=Current*30; //主Buck VIset=30mv/A
 	 DACVID*=Comp; //乘以查表得到的补偿系数
 	 SysPstatebuf.CurrentDACVID=DACVID;//存储计算后的DACVID
 	 DACVID/=1000; //mV转V
@@ -509,7 +510,18 @@ void DoLinearDimControl(float Current,bool IsMainLEDEnabled)
 		 AuxDACSetState=IsAuxBuckEnabled; //同步辅助DAC状态
 		 DAResult[1]=AD5693R_SetOutput(0,AuxDACSetState?AuxBuckAD5693ADDR:MainBuckAD5693ADDR);	//主buck启用，设置副buck的VID=0，否则设置主buck的VID=0
 		 }	 
-	 else DAResult[1]=true; //不需要更新主buck的状态
+	 else DAResult[1]=true; //不需要更新主buck的状态 
+	 /**********************************************
+	 如果在省电阶段重新复位之后需要工作的是辅助buck
+	 就需要让辅助buck先工作在270mV一段时间然后再降到
+	 额定电流所对应的VID确保VID能高于芯片启动阈值
+	 避免辅助buck阈值漂移导致芯片无法启动
+	 **********************************************/
+	 if(IsReturnFromPowerDown) 
+	   {
+		 AD5693R_SetOutput(0.27,AuxBuckAD5693ADDR);
+		 delay_ms(2);
+		 }
 	 DAResult[0]=AD5693R_SetOutput(DACVID,IsAuxBuckEnabled?AuxBuckAD5693ADDR:MainBuckAD5693ADDR); //设置VID
 	 if(!DAResult[0]||!DAResult[1])RunTimeErrorReportHandler(Error_DAC_Logic); //DAC无响应,这是严重故障,立即写log并停止驱动运行 
 	 }

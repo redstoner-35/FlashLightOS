@@ -83,7 +83,9 @@ bool ADC_GetResult(ADCOutTypeDef *ADCOut)
 	bool IsResultOK;
 	float VREF=!IsParameterAdjustMode?ADC_AVRef:3.0052;//基准电压选择，在使用USB供电时VREF会下降
 	//开始测量
+	#ifndef FlashLightOS_Debug_Mode	
   GPIO_ClearOutBits(NTCEN_IOG,NTCEN_IOP); //让NTC的GPIO转换为强下拉模式
+	#endif
 	delay_us(1);
 	for(avgcount=0;avgcount<ADCAvg;avgcount++)
 		{

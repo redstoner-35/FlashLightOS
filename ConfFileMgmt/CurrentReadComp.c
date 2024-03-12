@@ -125,13 +125,14 @@ static bool RunMainLEDHandler(bool IsMainBuck,int Pass)
  else //使用主buck
    {	 
 	 TargetCurrent=3.9+(((FusedMaxCurrent-3.9)/50)*(float)Pass); //计算目标电流(电流从3.9A开始到极亮电流)
-   DACVID=40+(TargetCurrent*30); //主Buck VIset=40mV(offset)+(30mv/A)
+   DACVID=TargetCurrent*30; //主Buck VIset=30mv/A
 	 AllowedError=(TargetCurrent<6?TestRunMainBuckLowMargen:TestRunMainBuckHighMargen)/(float)100; //设置主buck试运行允许的误差
 	 }
- UartPrintf("\r\n[Calibration]Allowed current regulation error=±%d%%.",AllowedError*100);
+ UartPrintf("\r\n[Calibration]Allowed current regulation error=±%.2f%%.",AllowedError*100);
  //设置AUX PowerPIN
  SetBUCKSEL(IsMainBuck);
- GPIO_WriteOutBits(NTCEN_IOG,NTCEN_IOP,IsMainBuck?RESET:SET);//根据当前校准的变换器控制校准器量程选择pin(0=主BUCK,1=辅助BUCK)	
+ if(!IsMainBuck)GPIO_SetOutBits(NTCEN_IOG,NTCEN_IOP);	
+ else GPIO_ClearOutBits(NTCEN_IOG,NTCEN_IOP);	//根据当前工作的变换器控制校准器量程选择pin(0=主BUCK,1=辅助BUCK)
  AD5693R_SetOutput(DACVID/(float)1000,IsMainBuck?MainBuckAD5693ADDR:AuxBuckAD5693ADDR); //设置电压
  UartPrintf("\r\n[Calibration]Target LED Current=%.2fA.VID has been programmed,initial VID=%.2fmV.",TargetCurrent,DACVID);
  //开始对比VID修正电流误差
@@ -164,7 +165,7 @@ static bool RunMainLEDHandler(bool IsMainBuck,int Pass)
     }
 	 //误差修正完毕，首先填写调光误差
 	 UartPrintf("\r\n[Calibration]VID Adjust completed,Adjusted VID=%.2fmV.",DACVID);
-	 delta=!IsMainBuck?250+(TargetCurrent*AuxBuckIsensemOhm*10):40+(TargetCurrent*30); //计算原始VID值
+	 delta=!IsMainBuck?250+(TargetCurrent*AuxBuckIsensemOhm*10):(TargetCurrent*30); //计算原始VID值
 	 DimValue=DACVID/delta; //计算出预期的VID偏差之后算出补偿值
 	 if(IsMainBuck)
 	   {
@@ -241,14 +242,16 @@ void DoSelfCalibration(void)
  AD5693R_SetChipConfig(&DACInitStr,AuxBuckAD5693ADDR); //关闭辅助buck的基准使辅助buck下电
  UARTPuts("\r\n[Calibration]Auxiliary Buck Calibration completed.\r\n");
  delay_ms(300);
- //开始校准主buck
+ //开始校准主buck 
  AD5693R_SetOutput(0,MainBuckAD5693ADDR); //先设置为0V
+ UARTPuts("\r\n[Calibration]Sending PSON command to AUX3V3 DCDC for SPS.");
  Set3V3AUXDCDC(true); //送3V3AUX启动DrMOS
- delay_ms(10);
+ delay_ms(15);
  i=0;
  ADC_GetResult(&ADCO); //读取一次结果判断DrMOS是否正常运行
- while(ADCO.SPSTMONState!=SPS_TMON_CriticalFault&&i<5) //CATERR了
+ while(ADCO.SPSTMONState==SPS_TMON_CriticalFault&&i<5) //CATERR了
    {
+	 UARTPuts("\r\n[Calibration]SPS Reports CATERR during POR,Toggling Power for it...");
 	 Set3V3AUXDCDC(false); //关闭主buck电源 
 	 delay_ms(10);
 	 Set3V3AUXDCDC(true); //10mS后重新打开主buck电源进行toggle
@@ -261,6 +264,7 @@ void DoSelfCalibration(void)
 	 ReportSPSCATERR();
 	 return;
 	 }
+ UARTPuts("\r\n[Calibration]Sending PSON command to Main Buck controller.");
  SetBUCKSEL(true); //令BUCKSEL=1，启动主buck的控制器
  delay_ms(1);
  for(i=0;i<50;i++)if(!RunMainLEDHandler(true,i))//校准主buck(出现错误时退出)
@@ -293,6 +297,8 @@ void DoSelfCalibration(void)
    {
 	 //设置电流
 	 TargetCurrent=MinimumLEDCurrent+(((FusedMaxCurrent-MinimumLEDCurrent)/70)*(float)i);//计算目标电流
+	 if(TargetCurrent<3.9)GPIO_SetOutBits(NTCEN_IOG,NTCEN_IOP);	
+   else GPIO_ClearOutBits(NTCEN_IOG,NTCEN_IOP);	//根据当前工作的变换器控制校准器量程选择pin(0=主BUCK,1=辅助BUCK)
    DoLinearDimControl(TargetCurrent,true);//控制主buck设置电流	
    delay_ms(300);	 	 //等待电流设置完毕
 	 INA219_SetConvMode(INA219_Cont_Both,INA219ADDR); //启动INA219开始读取信息

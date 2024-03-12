@@ -25,7 +25,7 @@
 #define LVAlertCurrentLimit 4.3 //当低电压警告触发后，驱动最大的输出电流值(A)
 #define ForceThermalControlCurrent 5.5 //当挡位的运行电流大于这个值时温控将会被强制启用不准关闭
 #define MaxAllowedLEDCurrent 33 //驱动硬件熔断的最大输出电流设置(测得电流超过此电流的1.2倍将触发保护)
-#define MinimumLEDCurrent 0.1 //最小的LED电流
+#define MinimumLEDCurrent 0.05 //最小的LED电流
 #define BatteryCellCount 3 //默认情况下驱动使用的电池组中锂电池的串数(按照三元锂电池计算)
 #define DeepsleepDelay 40 //驱动的出厂深度睡眠时间,40秒内没有操作则睡眠
 #define ForceRequireLEDNTC //驱动的LED NTC热敏电阻强制要求存在,如果检测不到热敏电阻则驱动将自检失败
@@ -89,7 +89,7 @@
 #define ADC_VRef 3.2990 //实际的ADC电压参考值
 
 //试运行校准参数
-#define TestRunAuxBuckLowMargen 4 //测试运行时辅助BUCK在低电流下的最大电流误差(单位%)
+#define TestRunAuxBuckLowMargen 3 //测试运行时辅助BUCK在低电流下的最大电流误差(单位%)
 #define TestRunAuxBuckHighMargen 1 //测试运行时辅助BUCK在高电流下的最大电流误差(单位%)
 #define TestRunMainBuckLowMargen 2 //测试运行时主BUCK在低电流下的最大电流误差(单位%)
 #define TestRunMainBuckHighMargen 1 //测试运行时主BUCK在高电流下的最大电流误差(单位%)
