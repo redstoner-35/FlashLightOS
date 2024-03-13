@@ -314,7 +314,7 @@ void FirmwareVersionCheck(void)
  //信息匹配，加载数据，显示信息
  else
     {
-		UartPost(Msg_info,"FRUChk","FRU Information has been loaded.");
+		UartPost(Msg_info,"FRUChk","FRU Data has been loaded.");
 		SetLEDVfMinMax(&FRU);//设置Vmin和Vmax
 		NTCBValue=FRU.FRUBlock.Data.Data.NTCBValue; //获取B值
 		NTCTRIM=FRU.FRUBlock.Data.Data.NTCTrim;

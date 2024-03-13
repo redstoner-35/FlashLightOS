@@ -517,7 +517,7 @@ void DoLinearDimControl(float Current,bool IsMainLEDEnabled)
 	 额定电流所对应的VID确保VID能高于芯片启动阈值
 	 避免辅助buck阈值漂移导致芯片无法启动
 	 **********************************************/
-	 if(IsReturnFromPowerDown) 
+	 if(IsReturnFromPowerDown&&DACVID<270) 
 	   {
 		 AD5693R_SetOutput(0.27,AuxBuckAD5693ADDR);
 		 delay_ms(2);
