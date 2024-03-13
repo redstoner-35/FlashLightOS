@@ -3,6 +3,7 @@
 #include "modelogic.h"
 #include "console.h"
 #include "Cfgfile.h"
+#include "LEDMgmt.h"
 #include "runtimelogger.h"
 
 #ifdef FlashLightOS_Debug_Mode	
@@ -52,16 +53,23 @@ void RTCCMIntHandler(void)
 	IsTimeExceeded=true;	
 	SetupRTCForCounter(false);
 	#else	
-	//首先检测电源状态，如果电源状态已经进入深度睡眠则首先退出低功耗模式，然后在结束写入后立刻重新进入
+	/*******************************************
+  首先检测电源状态，如果电源状态已经进入深度睡
+	眠则首先退出低功耗模式，然后在结束写入后等待
+	锁定提示的LED序列结束，指示灯熄灭之后再立即
+	进入深度睡眠
+	*******************************************/
   if(SysPstatebuf.Pstate==PState_DeepSleep)
 	  {
-		DeepSleepTimer=0;  //立即重新进入睡眠
+		if(RunLogEntry.Data.DataSec.IsFlashLightLocked)DeepSleepTimer=0; //手电已锁定，立即回到睡眠阶段
+	  else DeepSleepTimer=20;  //手电未锁定引入额外延迟，用于让LED播报提示
 	  ExitLowPowerMode();
 		}
 	//关闭RTC并复位
 	SetupRTCForCounter(false);
 	//设置运行日志中的锁定位为1然后写入日志
 	CalcLastLogCRCBeforePO();//计算CRC32
+	if(!RunLogEntry.Data.DataSec.IsFlashLightLocked)CurrentLEDIndex=26; //手电未上锁，此时指示手电已被锁定
 	RunLogEntry.Data.DataSec.IsFlashLightLocked=true;//指示手电已锁定
 	RunLogEntry.CurrentDataCRC=CalcRunLogCRC32(&RunLogEntry.Data);
 	WriteRuntimeLogToROM();	//计算新的CRC32然后写入运行日志

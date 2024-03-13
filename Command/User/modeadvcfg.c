@@ -23,7 +23,7 @@ const char *modeadvcfgArgument(int ArgCount)
 		case 4:
 	  case 5:return "指定挡位的运行模式(常亮/爆闪/SOS等)";
 		case 6:
-		case 7:return "指定挡位的名称";
+		case 7:return "指定挡位名称";
 		case 8:
 		case 9:return "指定挡位是否带记忆功能(手电筒关闭后保持在该挡位)";
 		case 10:

@@ -17,7 +17,7 @@ bool CheckLinearTable(int TableSize,float *TableIn);//检查校准数据库的LU
 bool CheckLinearTableValue(int TableSize,float *TableIn);//检查补偿数据库的数据域
 
 //字符串和常量
-const char *DBErrorStr[]={"","EEP_Reload","DB_Integrity","DB_Value_Invalid"};
+const char *DBErrorStr[]={"","EEP_Error","DB_Integrity","DB_Value_Invalid"};
 
 //全局变量
 CompDataStorUnion CompData; //全局补偿数据
@@ -447,7 +447,7 @@ void LoadCalibrationConfig(void)
  #ifndef FlashLightOS_Debug_Mode
    {
 	 CurrentLEDIndex=31;//指示校准数据库异常
-	 UartPost(Msg_critical,"Comp","Compensation DB error detected,Error code:%s",DBErrorStr[(int)DBResult]);
+	 UartPost(Msg_critical,"Comp","Compensation DB error!Error code:%s",DBErrorStr[(int)DBResult]);
 	 SelfTestErrorHandler();//EEPROM掉线
 	 }
  #else

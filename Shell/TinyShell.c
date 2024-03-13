@@ -22,7 +22,7 @@ static const char *TinyShellText[]=
 "手动重启驱动",//3
 "查看驱动输出的最后一条自检日志信息",//4
 "\r\n\r\nRescue:>",//5
-"\r\n您请求了下载%s日志,请打开Xmodem传输软件进行日志内容的接收.\r\n\r\n",//6
+"\r\n您请求了下载%s日志,请打开Xmodem传输软件以接收日志.\r\n\r\n",//6
 };
 
 //显示Shell操作内容
