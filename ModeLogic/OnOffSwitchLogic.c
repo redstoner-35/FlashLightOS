@@ -114,6 +114,30 @@ void RunTimeErrorReportHandler(SystemErrorCodeDef ErrorCode)
 	TurnLightOFFLogic();
 	return;
 	}
+//手电筒进行开机自检操作的处理函数
+static void LEDPowerOnHandler(bool IsTac,INADoutSreDef *BattO)
+  {
+  if(IsRunTimeLoggingEnabled)CalcLastLogCRCBeforePO();//计算运行log的CRC32
+	SysPstatebuf.ErrorCode=TurnLightONLogic(BattO);//执行自检逻辑	
+	if(SysPstatebuf.ErrorCode==Error_None)
+		{ 
+		SetupRTCForCounter(false); //手电筒开机，关闭RTC计时
+		SysPstatebuf.Pstate=IsTac?PState_LEDOnNonHold:PState_LEDOn; //根据是否为瞬时模式跳转到对应的P-States
+		}
+	else //如果自检成功则跳转到开灯状态，否则跳转到错误状态并写入日志。
+	  {	
+		if(SysPstatebuf.ErrorCode!=Error_Input_UVP)CollectLoginfo(ErrorStrDuringPost,BattO);
+		else WriteRunLogWithLVAlert();//标记低压告警次数+1
+		SysPstatebuf.Pstate=PState_Error; 
+		TurnLightOFFLogic();
+		ResetRampMode();//重置无极调光模块
+		ResetBreathStateMachine();
+	  ResetCustomFlashControl();//复位自定义闪控制
+		MorseSenderReset();//关灯后重置呼吸和摩尔斯电码发送的状态机
+		}
+	
+	}
+	
 //手电筒从LED点亮到关机时需要进行的处理函数
 void LEDPowerOffOperationHandler(void)
   {
@@ -143,6 +167,7 @@ void PStateStateMachine(void)
 	int ShortPress;
 	ModeConfStr *CurrentMode;
 	INADoutSreDef BattO;
+  static MoonLightModeCacheDef MoonLightBuf;
   //获取侧按按钮的操作(按下并按住，短按，长按等等)
 	LongPressHold=getSideKeyHoldEvent(); 
 	LongPressOnce=getSideKeyLongPressEvent(); 
@@ -172,9 +197,28 @@ void PStateStateMachine(void)
         if(CurrentMode==NULL)break;//当前挡位为空
 			  if(CurrentMode->LEDCurrentHigh>=(FusedMaxCurrent/2))ModeNoMemoryRollBackHandler();
 				}
+			//单击+长按，开启月光档
+			else if(getSideKeyClickAndHoldEvent())
+			  {
+				MoonLightBuf.RegularGrpMode=CurMode.RegularGrpMode;
+			  CurMode.RegularGrpMode=0; //设置为第一个挡位
+			  MoonLightBuf.ModeGrpSel=CurMode.ModeGrpSel;
+				CurMode.ModeGrpSel=ModeGrp_Regular;//设为常规挡位组
+				CurrentMode=GetCurrentModeConfig(); //修改完挡位之后获取当前挡位的数据
+        if(CurrentMode==NULL)break;//当前挡位为空
+				MoonLightBuf.ModeCurrent=CurrentMode->LEDCurrentHigh;
+				CurrentMode->LEDCurrentHigh=MinimumLEDCurrent; //电流设置为固件的最低闲置
+				MoonLightBuf.IsModeEnabled=CurrentMode->IsModeEnabled; 
+				CurrentMode->IsModeEnabled=true;//模式强制设置为开启
+				MoonLightBuf.Mode=CurrentMode->Mode; 
+				CurrentMode->Mode=LightMode_On; //挡位运行模式强制设置为常亮模式
+				MoonLightBuf.IsStepdown=CurrentMode->IsModeAffectedByStepDown;
+				CurrentMode->IsModeAffectedByStepDown=false; //紧急月光挡位没什么电流，因此强制关闭降档	
+				//进行开机操作	
+				LEDPowerOnHandler(false,&BattO);
+				}
 			//其余任何按键情况，手电红色灯闪烁三次表示已锁定
 			else if(
-			  getSideKeyClickAndHoldEvent()||
 			  ShortPress||
 			  LongPressOnce||
 			  DoubleClickHold||
@@ -217,29 +261,8 @@ void PStateStateMachine(void)
 					ExtLEDIndex=&LEDModeStr[0];//传指针过去	
 					}
 				}
-			//长按3秒开启手电
-		  else if(IsPowerOn)
-			  {
-			  if(IsRunTimeLoggingEnabled)CalcLastLogCRCBeforePO();//计算运行log的CRC32
-			  SysPstatebuf.ErrorCode=TurnLightONLogic(&BattO);//执行自检逻辑	
-			  if(SysPstatebuf.ErrorCode==Error_None)
-				  { 
-				  SetupRTCForCounter(false); //手电筒开机，关闭RTC计时
-				  SysPstatebuf.Pstate=PState_LEDOn;
-					}
-				else //如果自检成功则跳转到开灯状态，否则跳转到错误状态并写入日志。
-				  {	
-				  if(SysPstatebuf.ErrorCode!=Error_Input_UVP)CollectLoginfo(ErrorStrDuringPost,&BattO);
-					else WriteRunLogWithLVAlert();//标记低压告警次数+1
-					SysPstatebuf.Pstate=PState_Error; 
-					TurnLightOFFLogic();
-					ResetRampMode();//重置无极调光模块
-		      ResetBreathStateMachine();
-				  ResetCustomFlashControl();//复位自定义闪控制
-					MorseSenderReset();//关灯后重置呼吸和摩尔斯电码发送的状态机
-					
-					}
-				}
+			//长按或者单击开启手电（根据用户配置）
+		  else if(IsPowerOn)LEDPowerOnHandler(false,&BattO);
 			//快速短按四次，进入战术模式(长按并按住开灯,松手就灭)
 		  else if(ShortPress==4)
 			  {
@@ -269,28 +292,8 @@ void PStateStateMachine(void)
 				CurrentLEDIndex=26;
 				SysPstatebuf.Pstate=PState_Locked; 
 				}
-			//长按3秒开启手电
-		  else if(LongPressHold)
-			  {
-			  if(IsRunTimeLoggingEnabled)CalcLastLogCRCBeforePO();//计算运行log的CRC32
-				SysPstatebuf.ErrorCode=TurnLightONLogic(&BattO);//执行自检逻辑
-			  if(SysPstatebuf.ErrorCode==Error_None)
-				  { 
-				  SetupRTCForCounter(false); //手电筒开机，关闭RTC计时
-				  SysPstatebuf.Pstate=PState_LEDOnNonHold;
-					}
-				else //如果自检成功则跳转到开灯状态，否则跳转到错误状态并写入日志。
-				  {		
-					if(SysPstatebuf.ErrorCode!=Error_Input_UVP)CollectLoginfo(ErrorStrDuringPost,&BattO);
-					else WriteRunLogWithLVAlert();//标记低压告警次数+1
-					SysPstatebuf.Pstate=PState_Error; 
-					TurnLightOFFLogic();
-		      ResetBreathStateMachine();
-					ResetCustomFlashControl();//复位自定义闪控制
-					ResetRampMode();//重置无极调光模块
-          MorseSenderReset();//关灯后重置呼吸和摩尔斯电码发送的状态机
-				  }
-				}
+			//战术模式下长按开启手电
+		  else if(LongPressHold)LEDPowerOnHandler(true,&BattO);
 			//快速短按四次，退出战术模式回到普通模式(长按开灯,再次长按关灯)
 		  else if(ShortPress==4)
 			  {
@@ -338,10 +341,10 @@ void PStateStateMachine(void)
 			  ResetBreathStateMachine();
 				ResetCustomFlashControl();//复位自定义闪控制
 				MorseSenderReset();//复位所有的特殊功能状态机
-				if(LongPressOnce)
+				if(LongPressOnce) //如果用户长按手动清除错误码则回到待机或锁定状态
 				  {
-					SysPstatebuf.Pstate=PState_Standby;
-					SysPstatebuf.ErrorCode=Error_None; //手动清除错误码才回到待机状态
+					SysPstatebuf.Pstate=RunLogEntry.Data.DataSec.IsFlashLightLocked?PState_Standby:PState_Locked;
+					SysPstatebuf.ErrorCode=Error_None; 
 					}
 				else
 					SysPstatebuf.Pstate=PState_DeepSleep;//进入深度睡眠
@@ -361,8 +364,24 @@ void PStateStateMachine(void)
 			//执行运行过程中的故障检测,以及挡位逻辑
 			FlashTimerInitHandler();                  //定时器配置
 	    RuntimeModeCurrentHandler();              //运行过程中的电流管理
+			//锁定模式开启的紧急月光，单击或者长按关机
+			if(RunLogEntry.Data.DataSec.IsFlashLightLocked&&(ShortPress==1||LongPressOnce)) 	
+			  {
+				LEDPowerOffOperationHandler(); //关闭主LED
+				SysPstatebuf.Pstate=PState_Locked; //退回到锁定模式
+				CurrentMode=GetCurrentModeConfig(); //获取当前挡位的数据
+        if(CurrentMode==NULL)break;//当前挡位为空	
+				CurrentMode->Mode=MoonLightBuf.Mode;
+				CurrentMode->IsModeAffectedByStepDown=MoonLightBuf.IsStepdown;
+				CurrentMode->IsModeEnabled=MoonLightBuf.IsModeEnabled;
+				CurrentMode->LEDCurrentHigh=MoonLightBuf.ModeCurrent; //复原被覆盖的默认模式0挡位的数据
+				CurMode.RegularGrpMode=MoonLightBuf.RegularGrpMode; 
+				CurMode.ModeGrpSel=MoonLightBuf.ModeGrpSel; //复原被覆盖的挡位组数据
+				}
+			//锁定模式下不执行下面的任何内容
+			else if(RunLogEntry.Data.DataSec.IsFlashLightLocked)break;
 			//按侧按6次重置亮度等级
-			if(ShortPress==6)
+			else if(ShortPress==6)
 			  {
 				if(ResetRampBrightness()) //复位亮度等级,如果成功则侧按提示
 				  {

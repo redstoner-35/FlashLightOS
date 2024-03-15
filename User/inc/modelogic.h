@@ -114,6 +114,17 @@ typedef struct
  LightModeDef Mode;//该挡位的操作模式
  }ModeConfStr;
 
+//临时存储月光挡位部分数据的结构体
+typedef struct
+ {
+ unsigned char RegularGrpMode; //标准挡位组当前的数值
+ ModeGrpSelDef ModeGrpSel;  //模式组的选择
+ bool IsModeEnabled; //模式是否启用
+ float ModeCurrent; //挡位电流
+ LightModeDef Mode;//该挡位的操作模式
+ bool IsStepdown; //是否降档
+ }MoonLightModeCacheDef;	
+ 
 //挡位切换控制的结构体
 typedef struct
  {

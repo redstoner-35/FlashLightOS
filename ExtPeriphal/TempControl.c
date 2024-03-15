@@ -91,7 +91,7 @@ float PIDThermalControl(void)
 	if(TargetMode!=NULL&&TargetMode->MaxMomtTurboCount>0&&TargetMode->PowerOffTimer==0)
 	  {
 		result=getSideKeyDoubleClickAndHoldEvent();//获取用户是否使能操作
-		if(DoubleClickPressed!=result)
+		if(!RunLogEntry.Data.DataSec.IsFlashLightLocked&&DoubleClickPressed!=result)
 		  {
 			DoubleClickPressed=result;//同步结果判断用户是否按下
 			if(DoubleClickPressed&&TempControlEnabled) //用户按下

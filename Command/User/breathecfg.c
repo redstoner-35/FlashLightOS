@@ -26,9 +26,9 @@ const char *breathecfgArgument(int ArgCount)
 		case 6:
 		case 7:return "配置指定挡位的电流下滑时间Trampdn(电流从天花板下滑到地板所用的总时间,单位秒)";		
 		case 8:
-		case 9:return "配置指定挡位的天花板电流保持时间Tholdup(电流爬升到天花板后,在下滑到地板前的等待时间,单位秒)";	
+		case 9:return "配置指定挡位的天花板电流保持时间Tholdup(电流爬升到天花板后的保持时间,单位秒)";	
 		case 10:
-		case 11:return "配置指定挡位的地板电流保持时间Tholddn(电流下滑到地板后,在重新爬升前的等待时间,单位秒)";
+		case 11:return "配置指定挡位的地板电流保持时间Tholddn(电流下滑到地板后的保持时间,单位秒)";
 	  }
 	return NULL;
 	#else

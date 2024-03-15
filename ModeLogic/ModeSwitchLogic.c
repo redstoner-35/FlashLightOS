@@ -38,7 +38,7 @@ void DisplayBatteryValueHandler(void)
   ModeConfStr *CurrentMode;
 	//判断是否可以执行检测
 	CurrentMode=GetCurrentModeConfig();//获取当前挡位配置
-	if(CurrentMode==NULL||SysPstatebuf.Pstate==PState_Locked)return;//当前挡位为空或者处于锁定状态，不执行
+	if(CurrentMode==NULL||RunLogEntry.Data.DataSec.IsFlashLightLocked)return;//当前挡位为空或者处于锁定状态，不执行
 	if(SysPstatebuf.Pstate==PState_Standby||SysPstatebuf.Pstate==PState_NonHoldStandBy)IsExecute=true;//手电筒处于待机状态，判断显示
 	else if(SysPstatebuf.Pstate==PState_LEDOnNonHold||SysPstatebuf.Pstate==PState_Error)IsExecute=false; //战术模式或者遇到错误，不启用判断逻辑
 	else if(CurrentMode->Mode!=LightMode_Ramp)IsExecute=true; //当前挡位模式不是无极调光，可以执行
@@ -223,7 +223,7 @@ void RestoreFactoryModeCfg(void)
 	//特殊功能组的处理
 	for(i=0;i<4;i++)
 	 {
-	 strncpy(CfgFile.SpecialMode[i].MosTransStr,"DDH-D8B-Red35",32);//传输的字符串
+	 strncpy(CfgFile.SpecialMode[i].MosTransStr,MoresIDCode,32);//传输的字符串
 	 CfgFile.SpecialMode[i].IsModeEnabled=true;//挡位启用
 	 strncpy(CfgFile.SpecialMode[i].ModeName,SpecModeConst[i],16);//挡位名称
 	 CfgFile.SpecialMode[i].CustomFlashSpeed=10;
@@ -421,7 +421,7 @@ void ModeSwitchLogicHandler(void)
 	ModeConfStr *CurrentMode;
   float CurrentModeILED;
   bool DoubleClickHoldDetected,IsNeedToSwitchGear;
-	if(SysPstatebuf.Pstate==PState_Locked||SysPstatebuf.Pstate==PState_Error)return;//处于锁定或者错误状态，此时不处理
+	if(RunLogEntry.Data.DataSec.IsFlashLightLocked||SysPstatebuf.Pstate==PState_Error)return;//处于锁定或者错误状态，此时不处理
 	//获取按键次数
   DoubleClickHoldDetected=getSideKeyDoubleClickAndHoldEvent();//获取用户是否使能操作
 	keycount=getSideKeyShortPressCount(false);//获取短按按键次数

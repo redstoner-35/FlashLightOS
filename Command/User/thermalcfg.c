@@ -20,7 +20,7 @@ const char *thremalcfgArgument(int ArgCount)
 	switch(ArgCount)
 	  {
     case 0:
-		case 1:return "设置LED基板和驱动MOS管对降档幅度影响的权重比值";
+		case 1:return "设置LED基板和驱动MOS管温度的降档权重值";
     case 2:
 		case 3:return "设置触发PID温控启动的LED基板和MOS的加权平均温度阈值.";
 		case 4:

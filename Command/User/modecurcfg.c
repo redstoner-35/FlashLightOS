@@ -19,9 +19,9 @@ const char *modecurcfgArgument(int ArgCount)
 		case 2:
 		case 3:return ModeSelectStr[3];
 		case 4:
-	  case 5:return "指定挡位的最小电流(作为无极调光和信标模式的地板电流)";
+	  case 5:return "指定挡位的最小电流(作为无极调光/信标模式的地板电流)";
 		case 6:
-		case 7:return "指定挡位的额定电流(作为无极调光和信标模式的天花板电流)";
+		case 7:return "指定挡位的额定电流(作为无极调光/信标模式的天花板电流)";
 	  }
 	return NULL;
 	}
@@ -86,7 +86,7 @@ void modecurcfghandler(void)
 		  if(AccountState!=Log_Perm_Root&&buf>ForceThermalControlCurrent) //电流调整后进行计算
 			  {
 				DisplayWhichModeSelected(UserSelect,modenum);
-			  UARTPuts("的温控功能因为电流较高,为了保证手电安全已被强制启用.\r\n");
+				UARTPuts("的温控功能因保证手电安全已被强制启用.\r\n");
 				TargetMode->IsModeAffectedByStepDown=true;
 				}
 			}

@@ -61,7 +61,7 @@ void modepofcfghandler(void)
 		else if(buf<0||buf>360) //数值非法
 		  {
 			DisplayIllegalParam(ParamPtr,7,4);//显示用户输入了非法参数  
-			UARTPuts("\r\n您设置的自动关机时间应该在1-360分钟内.如果输入0则表示禁用此挡位的定时关机功能.");
+			UARTPuts("\r\n您设置的自动关机时间应该在1-360分钟内.如果输入0则表示禁用定时关机功能.");
 			}
 		else //更改
 		  {
