@@ -198,6 +198,7 @@ void LinearFlashReset(void);
 void LinearFlashHandler(void);//线性变频闪的复位和处理模块
 bool ResetRampBrightness(void);//强制复位当前无极调光挡位
 int GetRampConfigIndexFromMode(void);//根据当前挡位转换数组下标的模块
+void PORResetFactoryDetect(void);//在上电自检阶段进行reset操作的函数
 
 //外部引用
 extern CurrentModeStr CurMode;//当前模式的结构体 

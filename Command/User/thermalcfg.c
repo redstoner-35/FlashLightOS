@@ -20,19 +20,19 @@ const char *thremalcfgArgument(int ArgCount)
 	switch(ArgCount)
 	  {
     case 0:
-		case 1:return "设置LED基板和驱动MOS管温度的降档权重值";
+		case 1:return "设置LED基板和驱动MOS管温度的温度权重值";
     case 2:
-		case 3:return "设置触发PID温控启动的LED基板和MOS的加权平均温度阈值.";
+		case 3:return "设置触发PID温控启动的手电内部温度阈值.";
 		case 4:
-		case 5:return "设置PID温控器的目标LED基板和MOS的加权平均温度.";
+		case 5:return "设置PID温控器的目标手电内部温度.";
 		case 6:
-		case 7:return "设置触发PID温控器停止的LED基板和MOS的加权平均温度阈值.";	  
+		case 7:return "设置PID温控禁用的手电内部温度阈值.";	  
 		case 8:
-		case 9:return "设置PID温控器中的P参数";
+		case 9:return "设置PID温控的P参数";
 		case 10:
-		case 11:return "设置PID温控器中的I参数";	
+		case 11:return "设置PID温控的I参数";	
 		case 12:
-		case 13:return "设置PID温控器中的D参数";	    		
+		case 13:return "设置PID温控的D参数";	    		
 		}
 	return NULL;
 	}

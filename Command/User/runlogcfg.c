@@ -57,7 +57,7 @@ void RestoreRunLog(void)
 			UARTPuts("失败\r\n错误:您上传的日志文件无效,文件已损坏.");					 
 	else
 			{
-			UARTPuts("成功\r\n日志文件检查通过,正在搬运至ROM区域,请耐心等待...");
+			UARTPuts("成功\r\n日志文件检查通过,正在还原日志请耐心等待...");
 			CarrySize=RunTimeLogSize;
 			Address=XmodemConfRecvBase;
 			WriteAddress=RunTimeLogBase;
@@ -76,7 +76,7 @@ void RestoreRunLog(void)
 			   WriteAddress+=RWSize;
 			   }
 			if(CarrySize>0)UARTPuts("\r\n系统在编程运行日志文件时出现了错误.请重试.");
-			else UARTPuts("\r\n运行日志文件已经还原成功,请手动重启驱动以读取新的日志.");
+			else UARTPuts("\r\n运行日志文件已经还原成功.");
 			}
 	ExitRunLogCmdHandler();
 	}	

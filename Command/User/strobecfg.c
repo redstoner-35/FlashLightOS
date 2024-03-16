@@ -31,11 +31,11 @@ const char *strobecfgArgument(int ArgCount)
 		case 2:
 		case 3:return ModeSelectStr[3];
 		case 4:
-	  case 5:return "当挡位是爆闪模式时,指定挡位的爆闪频率(单位Hz)";	
+	  case 5:return "当挡位是爆闪模式时,指定挡位的爆闪频率(Hz)";	
 		case 6:
-		case 7:return "指定随机/线性变频闪模式下的下限频率(单位Hz)";	
+		case 7:return "指定随机/线性变频闪模式下的下限频率(Hz)";	
 		case 8:
-		case 9:return "指定随机/线性变频闪模式下的上限频率(单位Hz)";	
+		case 9:return "指定随机/线性变频闪模式下的上限频率(Hz)";	
 	  }
 	return NULL;
 	}

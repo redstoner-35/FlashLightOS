@@ -54,10 +54,10 @@ void RestoreErrorLogFromXmodem(void)
 	//开始处理
 	UartPrintf("%s系统正在验证文件完整性,请等待....   ",XmodemStatuString[4]);
 	if(!CheckForErrLogStatu(XmodemConfRecvBase))
-			UARTPuts("失败\r\n错误:您上传的错误日志文件无效,文件已损坏.");					 
+			UARTPuts("失败\r\n错误:您上传的错误日志文件无效.");					 
 	else
 			{
-			UARTPuts("成功\r\n错误日志文件检查通过.正在还原,请耐心等待...");
+			UARTPuts("成功\r\n正在还原错误日志,请耐心等待...");
 			CarrySize=LoggerAreaSize;
 			Address=XmodemConfRecvBase;
 			WriteAddress=LoggerBase;

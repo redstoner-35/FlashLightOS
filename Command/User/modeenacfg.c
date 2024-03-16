@@ -85,7 +85,7 @@ void ModeEnacfghandler(void)
 	else IsCollision=false;//试图关闭的挡位作为无记忆跳档时默认的挡位，不允许操作
 	if(IsCollision)   
 	   {
-		 UARTPuts("\r\n错误:您所指定的挡位作为系统启动和无记忆挡位跳回时的默认挡位,因此您无法禁用该挡位!\r\n");
+		 UARTPuts("\r\n错误:您所指定的挡位作为系统的默认挡位故无法禁用!\r\n");
 		 ClearRecvBuffer();//清除接收缓冲
      CmdHandle=Command_None;//命令执行完毕	
 		 return;
@@ -107,11 +107,6 @@ void ModeEnacfghandler(void)
 	TargetMode=GetSelectedModeConfig(UserSelect,modenum);
 	if(TargetMode==NULL)
 		UARTPuts((char *)ModeSelectStr[4]);
-	else if(TargetMode->IsModeEnabled==IsUserWantToEnable)
-	  {
-		DisplayWhichModeSelected(UserSelect,modenum);
-		UartPrintf("已经是%s状态,无需操作.\r\n",TargetMode->IsModeEnabled?"启用":"禁用");
-		}
 	else
 	  {
 		TargetMode->IsModeEnabled=IsUserWantToEnable;

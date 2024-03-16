@@ -25,11 +25,11 @@ const char *modeadvcfgArgument(int ArgCount)
 		case 6:
 		case 7:return "指定挡位名称";
 		case 8:
-		case 9:return "指定挡位是否带记忆功能(手电筒关闭后保持在该挡位)";
+		case 9:return "指定挡位是否带记忆功能";
 		case 10:
 		case 11:return "指定挡位是否带过热降档功能";		
 	  case 12:
-		case 13:return "指定此挡位温控设置相对于默认温控参数的负偏移.";
+		case 13:return "指定此挡位温控数值的负偏移.";
 		}
 	return NULL;
 	}
@@ -112,11 +112,6 @@ void modeadvcfgHandler(void)
 		 TargetMode=GetSelectedModeConfig(UserSelect,modenum);
 		 if(TargetMode==NULL)
 		   UARTPuts((char *)ModeSelectStr[4]);
-		 else if(TargetMode->IsModeHasMemory==IsUserWantToEnable)
-		   {
-		   DisplayWhichModeSelected(UserSelect,modenum);
-			 UartPrintf("的记忆功能已经是%s状态,无需操作.\r\n",TargetMode->IsModeHasMemory?"启用":"禁用");
-			 }
 		 else
 		   {
 			 TargetMode->IsModeHasMemory=IsUserWantToEnable;
@@ -153,11 +148,6 @@ void modeadvcfgHandler(void)
 			 {
 			 DisplayWhichModeSelected(UserSelect,modenum);
 			 UARTPuts("的温控功能因为电流较高,不允许关闭!\r\n");
-			 }
-		 else if(TargetMode->IsModeAffectedByStepDown==IsUserWantToEnable)
-		   {
-			 DisplayWhichModeSelected(UserSelect,modenum);
-		   UartPrintf("的温控功能已经是%s状态,无需操作.\r\n",TargetMode->IsModeAffectedByStepDown?"启用":"禁用");
 			 }
 		 else
 		   {

@@ -22,9 +22,9 @@ const char *mostranscfgArgument(int ArgCount)
 		case 2:
 		case 3:return ModeSelectStr[3];
 		case 4:
-		case 5:return "当挡位是SOS/自定义摩尔斯码发送时,指定发送时'.'的长度(单位为秒,越短速度越快)";	
+		case 5:return "当挡位是SOS/自定义摩尔斯码发送时,指定发送时'.'的长度(秒)";	
 		case 6:
-		case 7:return "当挡位是自定义摩尔斯码发送模式时指定发送内容";	
+		case 7:return "指定自定义摩尔斯码的发送内容";	
 	  }
 	return NULL;
 	}

@@ -52,9 +52,6 @@ void ConsoleReconfigure(void)
 	USART1InitStr.USART_WordLength=USART_WORDLENGTH_8B;
 	USART1InitStr.USART_StopBits=USART_STOPBITS_1; //115200BPS 8bit数据位，关闭校验
 	USART_Init(HT_USART1,&USART1InitStr);
-	//进行LED自检
-	CurrentLEDIndex=1;//红绿交替闪一下
-  while(CurrentLEDIndex==1);//循环等待直到自检序列结束
 	//打印串口ICON
 	PrintShellIcon();
 	}
