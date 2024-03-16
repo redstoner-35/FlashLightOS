@@ -41,7 +41,7 @@ typedef struct
 {
 float LEDVf;
 float LEDIf;
-#ifdef FlashLightOS_Debug_Mode
+#ifdef FlashLightOS_Init_Mode
 float LEDCalIf; //LED校准用的If	
 float LEDIfNonComp;//未补偿的LED If
 #endif

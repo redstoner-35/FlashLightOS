@@ -11,7 +11,7 @@
 #endif
 
 //处理月光档DLC小板调试模式的自动define
-#ifdef FlashLightOS_Debug_Mode
+#ifdef FlashLightOS_Init_Mode
 
  #ifdef NoMoonDLCSelfTest
  //定义特殊调试模式宏，关闭月光档自检

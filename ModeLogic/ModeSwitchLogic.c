@@ -14,8 +14,8 @@
 const char *ModeConst[5]={"极低亮","低亮","中亮","中高亮","高亮"};
 const float regModeCurrent[4]={12,23,35,50};  //常规挡位电流百分比(100%为满量程)
 #endif
-const LightModeDef ModeCfgConst[4]={LightMode_Flash,LightMode_SOS,LightMode_Breath,LightMode_MosTrans};
-const char *SpecModeConst[4]={"爆闪","SOS","信标","识别码发送"};
+const LightModeDef ModeCfgConst[4]={LightMode_RandomFlash,LightMode_SOS,LightMode_Breath,LightMode_MosTrans};
+const char *SpecModeConst[4]={"随机闪","SOS","信标","识别码发送"};
 const char *ModeGroupName[3]={"regular","double-click","special"};
 //字符串
 const char *ModeHasBeenSet="Default mode has been %s to %s mode NO.%d(name:%s)";
@@ -87,7 +87,7 @@ static void SaveMainConfig(void)
 	if(errorcode)
 	  {
 	  UartPost(Msg_critical,"CfgEEP",(char *)ConfigWriteFailed,"Main",errorcode);
-	  #ifndef FlashLightOS_Debug_Mode
+	  #ifndef FlashLightOS_Init_Mode
 	  SelfTestErrorHandler();
 		#endif
 		}
@@ -231,15 +231,15 @@ void RestoreFactoryModeCfg(void)
 	 memset(CfgFile.SpecialMode[i].CustomFlashStr,0x00,32);
    CfgFile.SpecialMode[i].IsModeHasMemory=false;//不记忆
 	 CfgFile.SpecialMode[i].MaxMomtTurboCount=0;//不支持鸡血
-	 CfgFile.SpecialMode[i].RandStrobeMaxFreq=10;
-	 CfgFile.SpecialMode[i].RandStrobeMinFreq=5;		//随机爆闪频率 
+	 CfgFile.SpecialMode[i].RandStrobeMaxFreq=15;
+	 CfgFile.SpecialMode[i].RandStrobeMinFreq=7;		//随机爆闪频率(7-15Hz)
 	 CfgFile.SpecialMode[i].ThermalControlOffset=0; //极亮按照满血温控跑
 	 CfgFile.SpecialMode[i].IsModeAffectedByStepDown=true;//受温控影响
 	 CfgFile.SpecialMode[i].LEDCurrentLow=0;//呼吸模式低电流为0A
 	 CfgFile.SpecialMode[i].LEDCurrentHigh=i==0?FusedMaxCurrent:FusedMaxCurrent*0.9;//编程电流(除了爆闪100%，其他90%)
    CfgFile.SpecialMode[i].Mode=ModeCfgConst[i];//配置挡位
 	 CfgFile.SpecialMode[i].MosTransferStep=0.15;//摩尔斯码发送的step为0.15秒1阶
-   CfgFile.SpecialMode[i].StrobeFrequency=16;//默认爆闪频率为16Hz		 
+   CfgFile.SpecialMode[i].StrobeFrequency=10;//默认爆闪频率为10Hz		 
    CfgFile.SpecialMode[i].MaxCurrentHoldTime=0;
 	 CfgFile.SpecialMode[i].MinCurrentHoldTime=10;
 	 CfgFile.SpecialMode[i].CurrentRampDownTime=2;
@@ -286,7 +286,7 @@ void ModeSwitchInit(void)
 	if(errorcode)
 	  {
 	  UartPost(Msg_critical,"CfgEEP",(char *)ConfigWriteFailed,"Backup",errorcode);
-	  #ifndef FlashLightOS_Debug_Mode
+	  #ifndef FlashLightOS_Init_Mode
 		SelfTestErrorHandler();
 	  #endif
 		}

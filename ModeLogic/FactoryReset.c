@@ -98,6 +98,7 @@ void PORResetFactoryDetect(void)
 	{
 	unsigned int crc,crcinbackup;
 	char PassKeyBuf[5]={0};
+	FRUBlockUnion FRU;
 	//等待用户输入
 	CurrentLEDIndex=1;//触发红绿交替闪一下
   while(CurrentLEDIndex==1)//循环等待直到自检序列结束
@@ -108,6 +109,8 @@ void PORResetFactoryDetect(void)
   if(CurrentLEDIndex==0)return; //自检序列播放结束，用户仍然没有动作，退出
 	//检测到重置开始，开始运行
   CurrentLEDIndex=0;//清除序列参数
+	if(ReadFRU(&FRU))return;	
+	if(!CheckFRUInfoCRC(&FRU))return; //尝试读取FRU，如果读取失败则直接跳过重置过程
   GenerateLEDInfoForInput("10",4);
   delay_Second(1);
 	GenerateLEDInfoForInput("30",1); //侧按闪烁4次，停顿1秒后闪烁1次表示开始接收数据

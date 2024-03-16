@@ -22,7 +22,7 @@ static const char *GetHeaderFromLevel(Postmessagelevel Level)
 //根据上次自检成功与否检查记录器是否启动（避免覆盖掉上次的错误日志）
 void CheckLastStartUpIsOK(void)
   {
-	#ifndef FlashLightOS_Debug_Mode
+	#ifndef FlashLightOS_Init_Mode
   char Result;
 	//读取数据
 	if(M24C512_PageRead(&Result,SelftestLogControlByte,1))

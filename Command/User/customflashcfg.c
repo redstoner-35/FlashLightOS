@@ -28,6 +28,7 @@ const char *customflashcfgArgument(int ArgCount)
 //命令处理
 void customflashcfgHandler(void)
   {
+	#ifndef FlashLightOS_Init_Mode
 	int modenum,strresult;
 	ModeGrpSelDef UserSelect;
 	ModeConfStr *TargetMode;
@@ -96,6 +97,7 @@ void customflashcfgHandler(void)
 			}
 		}
 	if(!IsCmdParamOK)UartPrintCommandNoParam(25);//显示啥也没找到的信息 
+	#endif
 	//命令处理完毕
 	ClearRecvBuffer();//清除接收缓冲
   CmdHandle=Command_None;//命令执行完毕

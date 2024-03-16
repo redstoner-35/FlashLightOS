@@ -151,7 +151,7 @@ void modeadvcfgHandler(void)
 			 }
 		 else
 		   {
-			 #ifndef FlashLightOS_Debug_Mode
+			 #ifndef FlashLightOS_Init_Mode
 			 if(TargetMode->LEDCurrentHigh>ForceThermalControlCurrent&&!IsUserWantToEnable)
 			   {
 				 UARTPuts("\033[40;33m警告:通过超级用户权限强制关闭温度保护将会使此设备永久失去保修!\033[0m\r\n");

@@ -470,7 +470,7 @@ void RunLogModule_POR(void)
 	 SelfIncBuf[i]=Data.DataSec.LogIncrementCode;
 	 }
  //遍历完毕，查询自增码获得最新的log entry并计算CRC32
- #ifdef FlashLightOS_Debug_Mode
+ #ifdef FlashLightOS_Init_Mode
  UartPost(Msg_info,"RTLogger","Check completed,find %d broken runtime log entry.",errorlog);
  #endif
  i=FindLatestEntryViaIncCode(SelfIncBuf);
@@ -483,7 +483,7 @@ void RunLogModule_POR(void)
  for(j=0;j<RunTimeLoggerDepth;j++)if(SelfIncBuf[j])IsLogEmpty=false; //检查entry是不是已经空了
  if(IsLogEmpty)RunLogEntry.ProgrammedEntry=0;//如果目前事件日志一组记录都没有，则从0开始记录
  else RunLogEntry.ProgrammedEntry=(i+1)%RunTimeLoggerDepth;//目前entry已经有数据了，从下一条entry开始
- #ifdef FlashLightOS_Debug_Mode
+ #ifdef FlashLightOS_Init_Mode
  UartPost(Msg_info,"RTLogger","Last Entry is #%d,Logger will log data to entry #%d.",i,RunLogEntry.ProgrammedEntry);
  #endif
  CalcLastLogCRCBeforePO();

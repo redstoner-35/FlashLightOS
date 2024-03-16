@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef FlashLightOS_Debug_Mode
+#ifdef FlashLightOS_Init_Mode
 //字符串
 static const char *IllegalTripTemperature="您设置的%s阈值不合法.合法的数值范围是%d-%d(摄氏度).";
 static const char *TripTemperatureHasSet="%s阈值已被成功更新为%d摄氏度.";
@@ -26,7 +26,7 @@ const char *thremaltripcfgArgument(int ArgCount)
 
 void thermaltripcfgHandler(void)
   {
-	#ifdef FlashLightOS_Debug_Mode
+	#ifdef FlashLightOS_Init_Mode
 	int buf;
 	char *Param;
   bool IsCmdParamOK=false;

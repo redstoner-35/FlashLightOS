@@ -143,7 +143,7 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		true			
 		},
 		{
-		#ifndef FlashLightOS_Debug_Mode  
+		#ifndef FlashLightOS_Init_Mode  
     {Log_Perm_PlaceHolder,Log_Perm_End},//10
 		"n0",
 		"???",  
@@ -377,12 +377,12 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		 true			 
 		},
 		{
-		 #ifdef FlashLightOS_Debug_Mode	
+		 #ifdef FlashLightOS_Init_Mode	
 		 {Log_Perm_Guest,Log_Perm_Admin,Log_Perm_Root,Log_Perm_End},//27
 		 "fruedit",
 		 "允许厂家工程师查看和编辑驱动中的FRU信息并给FRU永久上锁.",
-     "-v\0--view\0-sn\0-imax\0-p\0-l\0-ntcb\0-bptr\0-mstr\0-avref\0-ledid\0-majv\0-minv\0-ledn\0-inpl\0-sohm\0\n",
-		 " \0 \0 <序列号字符串>\0 <最大电流(A)>\0 <目标LED平台>\0 \0 <NTC B值>\0 <LED基板温度修正值'℃'>\0 <驱动MOS温度修正值'℃'>\0 <驱动ADC参考电压(V)>\0 <LED识别码(0x0-0xFFFE)>\0 <大版本号>\0 <小版本号>\0 <LED名称字符串>\0 <输入功率限制(W)>\0 <检流电阻阻值(mR)>\0\n",
+     "-v\0--view\0-sn\0-imax\0-p\0-l\0-ntcb\0-bptr\0-mstr\0-avref\0-ledid\0-majv\0-minv\0-ledn\0-inpl\0-sohm\0-rpin\0\n",
+			" \0 \0 <序列号字符串>\0 <最大电流(A)>\0 <目标LED平台>\0 \0 <NTC B值>\0 <LED基板温度修正值'℃'>\0 <驱动MOS温度修正值'℃'>\0 <驱动ADC参考电压(V)>\0 <LED识别码(0x0-0xFFFE)>\0 <大版本号>\0 <小版本号>\0 <LED名称字符串>\0 <输入功率限制(W)>\0 <检流电阻阻值(mR)>\0 <重置PIN>\0\n",
 		 &frueditArgument,
 		 #else
 		 {Log_Perm_PlaceHolder,Log_Perm_End},//27
@@ -399,7 +399,7 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		 false			 
 		},
 		{   
-		 #ifdef FlashLightOS_Debug_Mode
+		 #ifdef FlashLightOS_Init_Mode
      {Log_Perm_Root,Log_Perm_End},//28  
 		 "thermaltripcfg",
 		 "允许厂家工程师编辑驱动的过热关机温度阈值.",
@@ -432,7 +432,7 @@ const ComamandStringStr Commands[TotalCommandCount]=
 		 false,
      true			 
 		},
-		#ifdef FlashLightOS_Debug_Mode 
+		#ifdef FlashLightOS_Init_Mode 
 		{
 		{Log_Perm_Root,Log_Perm_End},//30  
 		 "eepedit",

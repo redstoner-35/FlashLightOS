@@ -6,7 +6,7 @@
 #include "LEDMgmt.h"
 #include "runtimelogger.h"
 
-#ifdef FlashLightOS_Debug_Mode	
+#ifdef FlashLightOS_Init_Mode	
 //变量声明
 bool IsTimeExceeded; //测试变量，测试时间是否到达
 #endif
@@ -24,7 +24,7 @@ void SetupRTCForCounter(bool IsRTCStartCount)
 		NVIC_DisableIRQ(RTC_IRQn); //禁用RTC中断
     RTC_DeInit();//禁用RTC
 		}
-	#ifdef FlashLightOS_Debug_Mode
+	#ifdef FlashLightOS_Init_Mode
 	else if(!(HT_RTC->CR&0x01)) //RTC未启用,启用RTC
 	  {
 		NVIC_EnableIRQ(RTC_IRQn); //启用RTC中断
@@ -48,7 +48,7 @@ void SetupRTCForCounter(bool IsRTCStartCount)
 //RTC比较中断触发的处理函数
 void RTCCMIntHandler(void)
   {
-	#ifdef FlashLightOS_Debug_Mode	
+	#ifdef FlashLightOS_Init_Mode	
   //时间到，设置flag为真然后关闭RTC
 	IsTimeExceeded=true;	
 	SetupRTCForCounter(false);

@@ -26,7 +26,7 @@ const char *modeporcfgArgument(int ArgCount)
 //命令处理主函数
 void modeporcfghandler(void)
   {
-  #ifndef FlashLightOS_Debug_Mode
+  #ifndef FlashLightOS_Init_Mode
 	int modenum,maxmodenum;	
   ModeGrpSelDef UserSelect;
 	ModeConfStr *TargetMode;

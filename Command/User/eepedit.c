@@ -5,7 +5,7 @@
 #include <string.h>
 #include "delay.h"
 
-#ifdef FlashLightOS_Debug_Mode
+#ifdef FlashLightOS_Init_Mode
 
 //状态枚举
 typedef enum

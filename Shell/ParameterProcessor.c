@@ -4,6 +4,18 @@
 #include <string.h>
 #include "modelogic.h"
 
+//检查厂家工程师输入的Pin码是否有效
+//输入：字符串指针 输出：布尔类型指示是否有效
+bool CheckIfResetPinIsLegal(char *PIN)
+  {
+	int len=strlen(PIN);
+	int i;
+	if(len!=5)return false; //长度出错
+	for(i=0;i<5;i++)if(PIN[i]<'0'||PIN[i]>'9')return false; //包含非数字内容
+	//检查通过
+	return true;
+	}
+
 //显示用户将反向战术模式配置为了什么
 //输入：字符串指针，打印的字符内存空间 输出：无
 void DisplayReverseTacModeName(char *ParamO,int size,ReverseTacModeDef ModeIn)

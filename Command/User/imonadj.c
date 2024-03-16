@@ -7,7 +7,7 @@
 #include <stdlib.h>
 
 //参数帮助entry
-#ifdef FlashLightOS_Debug_Mode	
+#ifdef FlashLightOS_Init_Mode	
 const char *imonadjArgument(int ArgCount)
   {	
 	if(ArgCount<2)return "查看主buck的参数";
@@ -17,7 +17,7 @@ const char *imonadjArgument(int ArgCount)
 //命令处理
 void Imonadjhandler(void)
  {
- #ifdef FlashLightOS_Debug_Mode
+ #ifdef FlashLightOS_Init_Mode
  int i;
  float buf;
  float *DimCompValue;

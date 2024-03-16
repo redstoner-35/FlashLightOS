@@ -61,7 +61,7 @@ void NMI_Handler(void)
  ************************************************************************************************************/
 void HardFault_Handler(void)
 {
-  #ifdef FlashLightOS_Debug_Mode
+  #ifdef FlashLightOS_Init_Mode
   
   static vu32 gIsContinue = 0;
   /*--------------------------------------------------------------------------------------------------------*/

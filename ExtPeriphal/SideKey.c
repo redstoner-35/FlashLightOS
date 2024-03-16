@@ -215,7 +215,7 @@ bool getSideKeyTripleClickAndHoldEvent(void)
   {
 	return Keyevent.TripleClickAndHold;
 	}
-#ifdef FlashLightOS_Debug_Mode
+#ifdef FlashLightOS_Init_Mode
 int HoldCount=0;
 	
 //按键测试打印的函数	

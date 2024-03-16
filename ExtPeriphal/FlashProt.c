@@ -45,7 +45,7 @@ unsigned int MainProgramRegionCRC(void)
 //启用flash锁定
 void CheckForFlashLock(void)
  {
- #ifdef FlashLightOS_Debug_Mode
+ #ifdef FlashLightOS_Init_Mode
  UartPost(Msg_warning,"FWSec","Debug mode Enabled,firmware security feature will be disabled.");	 
  #else	 
  int i=0;

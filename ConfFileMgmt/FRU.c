@@ -176,7 +176,7 @@ bool ProgramWarrantySign(WarrantyVoidReasonDef WarrState)
  Dbuf[4]=(char)WarrState^0xAA; //最后一个字节存原因 
  if(M24C512_PageRead(RDbuf,MaxByteRange-8,5))return false; //读取失败  
  if(!memcmp(RDbuf,Dbuf,5))return true; //已写入，跳过避免重复写EEPROM	 
- #ifdef FlashLightOS_Debug_Mode
+ #ifdef FlashLightOS_Init_Mode
  UARTPuts("\r\n保修标签数据已更新.");
  #endif
  return !M24C512_PageWrite(Dbuf,MaxByteRange-8,5)?true:false; //返回写EEPROM的结果
@@ -232,7 +232,7 @@ bool CalcFRUCRC(FRUBlockUnion *FRU)
 写入默认的FRU信息。这个函数平时不会编译到ROM中，只有debug模式开
 启才会编译到ROM内。
 **************************************************************/
-#ifdef FlashLightOS_Debug_Mode
+#ifdef FlashLightOS_Init_Mode
 static void WriteNewFRU(const char *reason)
  {
  FRUBlockUnion FRU;
@@ -279,7 +279,7 @@ void FirmwareVersionCheck(void)
  {
  FRUBlockUnion FRU;
  WarrantyVoidReasonDef WarrState;
- #ifdef FlashLightOS_Debug_Mode
+ #ifdef FlashLightOS_Init_Mode
  LEDThermalConfStrDef ParamOut;
  #endif
  //读取	 
@@ -292,7 +292,7 @@ void FirmwareVersionCheck(void)
  //检查FRU数据是否有效
  if(!CheckFRUInfoCRC(&FRU))
    {
-	 #ifndef FlashLightOS_Debug_Mode
+	 #ifndef FlashLightOS_Init_Mode
 	 CurrentLEDIndex=3;//红灯常亮表示FRU验证不通过
 	 UartPost(Msg_critical,"FRUChk","FRU information corrupted.System halted!");
 	 SelfTestErrorHandler();//FRU信息损坏
@@ -303,7 +303,7 @@ void FirmwareVersionCheck(void)
  //检查硬件版本是否匹配
  else if(memcmp(&FRU.FRUBlock.Data.Data.FRUVersion[1],&FRUVersion[1],2))
    {
-	 #ifndef FlashLightOS_Debug_Mode
+	 #ifndef FlashLightOS_Init_Mode
 	 CurrentLEDIndex=3;//红灯常亮表示FRU验证不通过
 	 UartPost(Msg_critical,"FRUChk","This Firmware only works on V%d.%d hardware.",HardwareMajorVer,HardwareMinorVer);
 	 SelfTestErrorHandler();//FRU信息损坏
@@ -324,7 +324,7 @@ void FirmwareVersionCheck(void)
 		if(FRU.FRUBlock.Data.Data.FRUVersion[0]==0x04)IsRedLED=true; //如果FRU内LED型号是SBT90R,则休眠指示变为红色
 		if(FRU.FRUBlock.Data.Data.MaxLEDCurrent>QueryMaximumCurrentLimit(&FRU))//非法的电流设置
 		  {
-			#ifdef FlashLightOS_Debug_Mode
+			#ifdef FlashLightOS_Init_Mode
 			UartPost(msg_error,"FRUChk","Illegal Max current(%.2fA)for %s LED which will be trimed to %.2fA.",
 			  FRU.FRUBlock.Data.Data.MaxLEDCurrent,
 			  DisplayLEDType(&FRU),
@@ -335,7 +335,7 @@ void FirmwareVersionCheck(void)
 		  if(!WriteFRU(&FRU))UartPost(Msg_info,"FRUChk","FRU has been corrected.");
 			}
 		else FusedMaxCurrent=FRU.FRUBlock.Data.Data.MaxLEDCurrent;//加载最大LED电流
-	  #ifdef FlashLightOS_Debug_Mode
+	  #ifdef FlashLightOS_Init_Mode
 		UartPost(Msg_info,"FRUChk","Maximum Current has been set to %.2fA.",FusedMaxCurrent);
 		if(FRU.FRUBlock.Data.Data.FRUVersion[0]==0x03||FRU.FRUBlock.Data.Data.FRUVersion[0]==0x06) //是通用3V/6V LED,进行LED OEMID检查
 			{
@@ -344,7 +344,7 @@ void FirmwareVersionCheck(void)
 			} 
 		#endif
 	  if(!ReadWarrantySign(&WarrState))
-	  #ifndef FlashLightOS_Debug_Mode
+	  #ifndef FlashLightOS_Init_Mode
 			{				
 	    CurrentLEDIndex=6;//EEPROM不工作
 	    UartPost(Msg_critical,"FRUChk","Warranty sign corrupted.");

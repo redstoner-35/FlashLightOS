@@ -421,7 +421,7 @@ void DoLinearDimControl(float Current,bool IsMainLEDEnabled)
  if(Current>FusedMaxCurrent)Current=FusedMaxCurrent;//限制传入的电流值范围为0-熔断限制值
  if(NotifyUserTIM>0)Current*=0.5; //如果用户挡位发生了较小的变动则让电流短时间减低到原始值的50%
  if(Current>0&&Current<MinimumLEDCurrent)Current=MinimumLEDCurrent; //电流不是0且低于最低允许值，强制设为最低值 
- #ifdef FlashLightOS_Debug_Mode
+ #ifdef FlashLightOS_Init_Mode
  if(CheckCompData()!=Database_No_Error) //debug模式下如果补偿数据库未就绪则不取补偿数据库
    Comp=1.00;
  else //正常读取数据

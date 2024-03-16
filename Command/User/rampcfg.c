@@ -38,7 +38,7 @@ const char *rampcfgArgument(int ArgCount)
 //命令处理主函数
 void rampcfghandler(void)
   {
-	#ifndef FlashLightOS_Debug_Mode
+	#ifndef FlashLightOS_Init_Mode
 	int modenum,RampCfgIndex;	
 	char *ParamPtr;
 	char ParamO;

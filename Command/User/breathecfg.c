@@ -7,14 +7,14 @@
 
 //外部字符串指针数组
 extern const char *ModeSelectStr[];
-#ifndef FlashLightOS_Debug_Mode
+#ifndef FlashLightOS_Init_Mode
 static const char *TimeParamHasSet="的%s时间(信标模式)%s已被设置为%.1f秒.\r\n";
 #endif
 
 //参数帮助entry
 const char *breathecfgArgument(int ArgCount)
   {
-	#ifndef FlashLightOS_Debug_Mode
+	#ifndef FlashLightOS_Init_Mode
 	switch(ArgCount)
 	  {
 		case 0:
@@ -39,7 +39,7 @@ const char *breathecfgArgument(int ArgCount)
 //命令处理主函数
 void breathecfghandler(void)
   {
-	#ifndef FlashLightOS_Debug_Mode
+	#ifndef FlashLightOS_Init_Mode
 	int modenum;
 	ModeGrpSelDef UserSelect;
 	ModeConfStr *TargetMode;

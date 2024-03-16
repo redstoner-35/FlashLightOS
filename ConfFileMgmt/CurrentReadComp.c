@@ -72,7 +72,7 @@ static char ReadCompDataFromROM(CompDataStorUnion *DataOut)
  return 0;
  }
 
-#ifdef FlashLightOS_Debug_Mode 
+#ifdef FlashLightOS_Init_Mode 
  
 //在SPS报告CATERR的时候输出提示
 static void ReportSPSCATERR(void)
@@ -390,7 +390,7 @@ CalibrationDBErrorDef CheckCompData(void)
   {
 	int CRCResult;
 	bool Result[2];
-  #ifndef FlashLightOS_Debug_Mode
+  #ifndef FlashLightOS_Init_Mode
 	int i;
   for(i=0;i<2;i++)
    {
@@ -428,7 +428,7 @@ void LoadCalibrationConfig(void)
  {
  bool IsError=false;
  CalibrationDBErrorDef DBResult;
- #ifdef FlashLightOS_Debug_Mode
+ #ifdef FlashLightOS_Init_Mode
  int i; 
  #endif
  //读取数据，如果数据读取成功则计算CRC32检查数据	 
@@ -444,7 +444,7 @@ void LoadCalibrationConfig(void)
 		}
  //出现错误，显示校准数据损毁
  if(IsError)
- #ifndef FlashLightOS_Debug_Mode
+ #ifndef FlashLightOS_Init_Mode
    {
 	 CurrentLEDIndex=31;//指示校准数据库异常
 	 UartPost(Msg_critical,"Comp","Compensation DB error!Error code:%s",DBErrorStr[(int)DBResult]);

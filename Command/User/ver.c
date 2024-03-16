@@ -54,7 +54,7 @@ void verHandler(void)
 		 }
 
 	UartPrintf("\r\n\r\nPowered by FlashLight OS version %d.%d.%d,终端波特率:%dbps",MajorVersion,MinorVersion,HotfixVersion,CfgFile.USART_Baud);	
-  #ifdef FlashLightOS_Debug_Mode
+  #ifdef FlashLightOS_Init_Mode
 		 UARTPuts("\r\n\033[40;33m警告:此固件为Debug模式的测试固件。仅用于初始化用途！\033[0m");		 
 	#endif
 	if(ReadWarrantySign(&WarrState)&&WarrState!=Warranty_OK)

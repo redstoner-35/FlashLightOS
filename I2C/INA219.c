@@ -166,7 +166,7 @@ void INA219_POR(void)
   {
 	UartPost(Msg_critical,"INA21x","Failed to configure SMBUS Power Gauge,Error:0x%d",Result);
 	CurrentLEDIndex=4;//指示219初始化异常
-	#ifndef FlashLightOS_Debug_Mode
+	#ifndef FlashLightOS_Init_Mode
 	SelfTestErrorHandler();
 	#else
 	return;
@@ -176,7 +176,7 @@ void INA219_POR(void)
   {
 	UartPost(Msg_critical,"INA21x",(char *)Change219PstateErrStr,"active");
 	CurrentLEDIndex=5;//指示219初次测量异常
-	#ifndef FlashLightOS_Debug_Mode
+	#ifndef FlashLightOS_Init_Mode
 	SelfTestErrorHandler();
 	#else
 	return;
@@ -186,7 +186,7 @@ void INA219_POR(void)
   {
 	UartPost(Msg_critical,"INA21x","Measurement test did not complete.");
 	CurrentLEDIndex=5;//指示219初次测量异常
-	#ifndef FlashLightOS_Debug_Mode
+	#ifndef FlashLightOS_Init_Mode
 	SelfTestErrorHandler();
 	#else
 	return;
@@ -196,7 +196,7 @@ void INA219_POR(void)
   {
 	UartPost(Msg_critical,"INA21x",(char *)Change219PstateErrStr,"inactive");
 	CurrentLEDIndex=5;//指示219初次测量异常
-	#ifndef FlashLightOS_Debug_Mode
+	#ifndef FlashLightOS_Init_Mode
 	SelfTestErrorHandler();
 	#else
 	return;

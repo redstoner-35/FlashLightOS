@@ -200,7 +200,7 @@ void RunTimeBatteryTelemetry(void)
 	   ProgramWarrantySign(Void_BattOverPower); //电池输入超过驱动允许值，自动注销保修
 		 RunTimeErrorReportHandler(Error_Input_OCP);//电池过功率保护,这是严重故障,立即写log并停止驱动运行
 		 }
- #ifndef FlashLightOS_Debug_Mode
+ #ifndef FlashLightOS_Init_Mode
  //如果电压低于警告值则强制锁定驱动的输出电流为指定值
  if(RunTimeBattTelemResult.BusVolt<CfgFile.VoltageAlert)
 		RunLogEntry.Data.DataSec.IsLowVoltageAlert=true;
@@ -227,7 +227,7 @@ void RunTimeBatteryTelemetry(void)
 		 //不是更新容量，标记低电压告警触发
 		 else WriteRunLogWithLVAlert();
 		 //关机
-		 #ifndef FlashLightOS_Debug_Mode
+		 #ifndef FlashLightOS_Init_Mode
 		 SysPstatebuf.Pstate=PState_Error;
 		 SysPstatebuf.ErrorCode=Error_Input_UVP;
 		 TurnLightOFFLogic(); 

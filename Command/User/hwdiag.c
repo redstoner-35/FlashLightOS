@@ -7,7 +7,7 @@
 #include "delay.h"
 #include <math.h>
 
-#ifdef FlashLightOS_Debug_Mode
+#ifdef FlashLightOS_Init_Mode
 //变量
 extern bool IsTimeExceeded;
 extern bool IsParameterAdjustMode;

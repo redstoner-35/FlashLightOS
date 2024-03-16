@@ -39,14 +39,14 @@ void CommandHandler(void)
 	  case Command_fruedit:fruedithandler();break;//fruedit
 		case Command_thermaltripcfg:thermaltripcfgHandler();break;//thermaltripcfg
 		case Command_rampcfg:rampcfghandler();break; //rampcfg
-		#ifdef FlashLightOS_Debug_Mode
+		#ifdef FlashLightOS_Init_Mode
 		case Command_eepedit:eepedithandler();break;//eepedit
 		case Command_hwdiag:hwdiaghandler();break;//hwdiag
 		#endif
 		//其余情况，显示错误或者直接退出
     default:
 		  {
-			#ifdef FlashLightOS_Debug_Mode
+			#ifdef FlashLightOS_Init_Mode
 			UARTPuts("FlashLight OS CLI Internal Error:No matching handler for command '");
 			UARTPuts(RXBuffer);
 			UARTPuts("'.\r\nThis means you forget to register a handle when submit a new");

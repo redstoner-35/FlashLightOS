@@ -8,7 +8,7 @@
 
 //外部字符串指针数组
 extern const char *ModeSelectStr[];
-#ifndef FlashLightOS_Debug_Mode
+#ifndef FlashLightOS_Init_Mode
 static const char *RandStrobeString="\r\n您设定的%s%s频率应当在%.1fHz到%.1fHz之间的正数,负数值和0均为非法值.";
 static const char *RandStrobeSetDoneString="的%s%s频率已被设置为%.1fHz.\r\n";
 #endif
@@ -24,6 +24,7 @@ const char *ConvertStrobeModeStr(ModeConfStr *TargetMode)
 //参数帮助entry
 const char *strobecfgArgument(int ArgCount)
   {
+	#ifndef FlashLightOS_Init_Mode
 	switch(ArgCount)
 	  {
 		case 0:
@@ -38,11 +39,14 @@ const char *strobecfgArgument(int ArgCount)
 		case 9:return "指定随机/线性变频闪模式下的上限频率(Hz)";	
 	  }
 	return NULL;
+	#else
+	return "";
+	#endif
 	}
 
 void strobecfghandler(void)
  {
-	#ifndef FlashLightOS_Debug_Mode
+	#ifndef FlashLightOS_Init_Mode
   int modenum;
 	ModeGrpSelDef UserSelect;
 	ModeConfStr *TargetMode;

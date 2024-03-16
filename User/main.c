@@ -77,7 +77,7 @@ int main(void)
 		 //调参模式启用，禁用手电筒的所有运行逻辑，绿灯慢闪
 	   if(IsParameterAdjustMode)
 		    {
-				#ifdef FlashLightOS_Debug_Mode	
+				#ifdef FlashLightOS_Init_Mode	
 				SideKey_LogicHandler();//处理侧按按键事务
 		    SideKeyTestDisplay();//侧按测试打印
 				#endif
@@ -88,7 +88,7 @@ int main(void)
 		    continue;
 				}
 		 }
-   #ifndef FlashLightOS_Debug_Mode	 
+   #ifndef FlashLightOS_Init_Mode	 
 	 //处理手电筒自身的运行逻辑
 	 DisplayBatteryValueHandler();//处理显示电池电量操作的事务
 	 SideKey_LogicHandler();//处理侧按按键事务

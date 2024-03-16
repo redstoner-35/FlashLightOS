@@ -14,7 +14,7 @@
 #define RXDMAIdleCount 5 //RX DMA Idle trigger count
 #define DefaultTimeOutSec 90  //默认的命令行超时时间(秒)
 
-#ifndef FlashLightOS_Debug_Mode
+#ifndef FlashLightOS_Init_Mode
    #define TotalCommandCount 30  //非debug模式，总命令数30
 #else
    #define TotalCommandCount 32  //debug模式，总命令数32
@@ -89,7 +89,7 @@ Command_modeview,
 Command_fruedit,
 Command_thermaltripcfg,
 Command_rampcfg,
-#ifdef FlashLightOS_Debug_Mode
+#ifdef FlashLightOS_Init_Mode
 Command_eepedit,
 Command_hwdiag
 #endif
@@ -200,6 +200,7 @@ int UartPrintf(char *Format,...);
 
 //负责检查用户参数输入和权限验证的函数(内部使用的函数，切勿在除了命令执行后端的handler以外的任何其他地方引用)	
 bool IsCmdExecutable(int cmdindex);
+bool CheckIfResetPinIsLegal(char *PIN);
 ReverseTacModeDef getReverseTacModeFromUserInput(char *Param);
 char *IsParameterExist(const char *TargetArgcList,int CmdIndex,char *Result);
 char CheckIfParamOnlyDigit(char *Param);	

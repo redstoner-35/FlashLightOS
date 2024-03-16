@@ -103,10 +103,10 @@ void ConsoleInit(void)
   IsUsingOtherKeySet=true;//重新使用第二组key
 	//显示其余内容
 	UARTPuts("   All rights reserved.\r\n\r\n");
-	#ifdef FlashLightOS_Debug_Mode
+	#ifdef FlashLightOS_Init_Mode
 	UARTPuts("\r\n\r\nWarning:Debug mode has been enabled during FlashLight OS firmware compilation!");
 	UARTPuts("\r\nThis is a special mode only for internal development and SHOULD BE DISABLED in");
-	UARTPuts("\r\nproduction firmware! For developer, remove 'FlashLightOS_Debug_Mode' global\r\ndefinition in firmware project settings to disable it.\r\n");
+	UARTPuts("\r\nproduction firmware! For developer, remove 'FlashLightOS_Init_Mode' global\r\ndefinition in firmware project settings to disable it.\r\n");
 	#endif
 	XmodemTransferReset();//复位Xmodem模块
 	}

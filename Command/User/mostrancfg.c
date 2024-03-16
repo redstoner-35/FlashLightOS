@@ -8,13 +8,14 @@
 
 //外部字符串指针数组
 extern const char *ModeSelectStr[];
-#ifndef FlashLightOS_Debug_Mode
+#ifndef FlashLightOS_Init_Mode
 static const char *IllegalMosStr="\r\n错误:自定义摩尔斯码发送的字符串内容%s.\r\n";
 #endif
 
 //参数帮助entry
 const char *mostranscfgArgument(int ArgCount)
   {
+	#ifndef FlashLightOS_Init_Mode
 	switch(ArgCount)
 	  {
 		case 0:
@@ -27,11 +28,14 @@ const char *mostranscfgArgument(int ArgCount)
 		case 7:return "指定自定义摩尔斯码的发送内容";	
 	  }
 	return NULL;
+	#else
+	return "";
+	#endif
 	}
 //命令处理函数	
 void mostranscfghandler(void)
  {
-	#ifndef FlashLightOS_Debug_Mode
+	#ifndef FlashLightOS_Init_Mode
   int modenum,strresult;
 	ModeGrpSelDef UserSelect;
 	ModeConfStr *TargetMode;

@@ -331,7 +331,7 @@ void PORConfHandler(void)
  {
  unsigned int MainCRC,BackupCRC;
  int checkresult,backupcheckresult;
- #ifdef FlashLightOS_Debug_Mode
+ #ifdef FlashLightOS_Init_Mode
  UartPost(Msg_info,EEPModName,"Config 1 Offset:0x%04X",CfgFileSize);	
  UartPost(Msg_info,EEPModName,"Error log Area:0x%04X to 0x%04X",LoggerBase,RunTimeLogBase);	
  UartPost(Msg_info,EEPModName,"Runtime log Area:0x%04X to 0x%04X",RunTimeLogBase,RunTimeLogSize);

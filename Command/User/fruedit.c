@@ -9,7 +9,7 @@
 unsigned int atoh(char *Text,bool *IsError);
 
 //常量字符串指针
-#ifdef FlashLightOS_Debug_Mode
+#ifdef FlashLightOS_Init_Mode
 static const char *TempOffsetstr="\r\n%s温度修正值 : %.2f'C";
 
 static const char *frueditstr[]=
@@ -23,7 +23,7 @@ static const char *frueditstr[]=
 #endif
 
 //参数帮助entry
-#ifdef FlashLightOS_Debug_Mode
+#ifdef FlashLightOS_Init_Mode
 const char *frueditArgument(int ArgCount)
   {
 	switch(ArgCount)
@@ -44,6 +44,7 @@ const char *frueditArgument(int ArgCount)
 	  case 13:return "当使用自定义LED时,设置LED的名称";
 		case 14:return "设置驱动电源输入的最大允许功率(W)";
 		case 15:return "设置驱动电源输入的分流电阻阻值(mR)";
+		case 16:return "设置驱动的重置出厂PIN码";
 		}
 	return NULL;
 	} 
@@ -52,7 +53,7 @@ const char *frueditArgument(int ArgCount)
 //命令主处理函数
 void fruedithandler(void)
   {
-	#ifdef FlashLightOS_Debug_Mode
+	#ifdef FlashLightOS_Init_Mode
 	bool IsCmdParamOK=false;
 	FRUBlockUnion FRU;
 	char ParamOK;	
@@ -88,7 +89,7 @@ void fruedithandler(void)
 			UartPrintf("\r\n输入检流电阻阻值 : %.2fmΩ",FRU.FRUBlock.Data.Data.INA219ShuntValue);
 			}
 		}
-	#ifdef FlashLightOS_Debug_Mode
+	#ifdef FlashLightOS_Init_Mode
 	//设置序列号
 	ParamPtr=IsParameterExist("2",27,NULL);
   if(ParamPtr!=NULL)
@@ -461,6 +462,29 @@ void fruedithandler(void)
 				UartPrintf((char *)frueditstr[1],"输入检流电阻阻值");
 		  }
 		}		
+  //设置重置的密码
+	ParamPtr=IsParameterExist("G",27,NULL);
+  if(ParamPtr!=NULL)
+	  {
+		IsCmdParamOK=true;
+		//读取失败
+	  if(ReadFRU(&FRU)||!CheckFRUInfoCRC(&FRU))
+			UARTPuts((char *)frueditstr[0]);
+	  //FRU被锁定
+		else if(M24C512_QuerySecuSetLockStat()!=LockState_Unlocked)
+			UARTPuts((char *)frueditstr[2]);
+		//字符串过短或者过长
+		else if(!CheckIfResetPinIsLegal(ParamPtr))
+			UARTPuts("\r\n错误:您输入的重置PIN密码不合法,PIN长度为固定的5位且仅包含数字.");
+		else //正常写入
+		  {
+			strncpy(FRU.FRUBlock.Data.Data.GeneralLEDString,ParamPtr,32);	//复制序列号信息
+			if(!WriteFRU(&FRU))
+				UartPrintf("\r\n%s重置PIN密码已被更新为'%s'.",frueditstr[3],ParamPtr); 
+			else
+				UartPrintf((char *)frueditstr[1],"重置PIN密码");
+			}
+		}
 	#endif
 	if(!IsCmdParamOK)UartPrintCommandNoParam(27);//显示啥也没找到的信息 
 	#endif

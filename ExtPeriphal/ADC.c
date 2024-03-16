@@ -74,7 +74,7 @@ bool ADC_GetLEDIfPinVoltage(float *VOUT)
 //ADC获取数值
 bool ADC_GetResult(ADCOutTypeDef *ADCOut)
   {
-	#ifndef FlashLightOS_Debug_Mode
+	#ifndef FlashLightOS_Init_Mode
 	float Rt;
 	#endif
   int retry,avgcount,i;
@@ -83,7 +83,7 @@ bool ADC_GetResult(ADCOutTypeDef *ADCOut)
 	bool IsResultOK;
 	float VREF=!IsParameterAdjustMode?ADC_AVRef:3.0052;//基准电压选择，在使用USB供电时VREF会下降
 	//开始测量
-	#ifndef FlashLightOS_Debug_Mode	
+	#ifndef FlashLightOS_Init_Mode	
   GPIO_ClearOutBits(NTCEN_IOG,NTCEN_IOP); //让NTC的GPIO转换为强下拉模式
 	#endif
 	delay_us(1);
@@ -111,14 +111,14 @@ bool ADC_GetResult(ADCOutTypeDef *ADCOut)
 		}
 	//转换完毕，求平均
   for(i=0;i<4;i++)ADCResult[i]/=avgcount;
-  #ifndef FlashLightOS_Debug_Mode	
+  #ifndef FlashLightOS_Init_Mode	
   GPIO_SetOutBits(NTCEN_IOG,NTCEN_IOP); //让NTC的GPIO转换为浮空状态，节省电力
 	#endif
 	//计算LEDVf
 	buf=(float)ADCResult[LED_Vf_ADC_Ch]*(VREF/(float)4096);//将AD值转换为电压
 	buf*=(float)3;//乘以分压比得到最终Vf
 	ADCOut->LEDVf=buf;
-  #ifdef FlashLightOS_Debug_Mode
+  #ifdef FlashLightOS_Init_Mode
 	//Debug模式，重定义温度引脚为校准电流输入
 	ADCOut->NTCState=LED_NTC_OK;
 	ADCOut->LEDTemp=35;  //LED温度部分被移除
@@ -158,7 +158,7 @@ bool ADC_GetResult(ADCOutTypeDef *ADCOut)
 		buf=SysPstatebuf.AuxBuckCurrent; //如果当前主buck处于关闭状态则直接无视ADC结果从副buck的电流参数里面取
 	  Comp=QueueLinearTable(50,buf,CompData.CompDataEntry.CompData.Data.AuxBuckIFBThreshold,CompData.CompDataEntry.CompData.Data.AuxBuckIFBValue,&IsResultOK);//查曲线得到矫正系数
 		}
-	#ifdef FlashLightOS_Debug_Mode
+	#ifdef FlashLightOS_Init_Mode
   ADCOut->LEDIfNonComp=buf;//将未补偿的LEDIf放置到结构体内
 	#endif	
 	if(IsResultOK&&Comp!=NAN)buf*=Comp;//如果补偿系数合法则得到最终结果
@@ -230,7 +230,7 @@ void InternalADC_Init(void)
 	 //将负责控制NTC电阻采样的IO设置为开漏模式
    AFIO_GPxConfig(NTCEN_IOB,NTCEN_IOP, AFIO_FUN_GPIO);//配置为GPIO
 	 GPIO_DirectionConfig(NTCEN_IOG,NTCEN_IOP,GPIO_DIR_OUT);
-	 #ifdef FlashLightOS_Debug_Mode	
+	 #ifdef FlashLightOS_Init_Mode	
 	 GPIO_ClearOutBits(NTCEN_IOG,NTCEN_IOP);//Debug模式，NTC EN复用为校准器量程选择，默认输出0选择使用主BUCK	
    #else		 
 	 GPIO_OpenDrainConfig(NTCEN_IOG,NTCEN_IOP,ENABLE);//开漏输出模式
@@ -259,7 +259,7 @@ void InternalADC_Init(void)
 		 UartPost(Msg_info,"IntADC","LED BasePlate Temperature : %.1f'C",ADCO.LEDTemp);
 	 else 
 	   {
-		 #ifdef FlashLightOS_Debug_Mode
+		 #ifdef FlashLightOS_Init_Mode
      UartPost(msg_error,"IntADC","Base Plate temperature sensor did not work properly.");
 		 #else
      //非自检模式正常输出的部分			 

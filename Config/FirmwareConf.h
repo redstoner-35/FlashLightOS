@@ -10,8 +10,9 @@
 #define HotfixVersion 4  //固件版本号
 
 //固件模式配置
+#define FlashLightOS_Init_Mode //设定固件的编译模式，如果开启此注释则固件配置为初始化模式，此时将会允许工程师对FRU进行设置并允许校准功能
+
 #define Firmware_DIY_Mode //是否启用DIY高级用户模式，在此模式下驱动所有功能可以使用，否则温控调整和日志清除和恢复功能会被禁用。
-//#define FlashLightOS_Debug_Mode //是否启用debug模式，此时驱动将会禁用部分自检项目以及低电量关机功能，并且强制使用工厂配置
 //#define Internal_Driver_Debug //是否启用驱动内部设备驱动的额外信息输出。
 #define EnableFirmwareSecure //是否启用固件只读和CRC安全锁
 //#define NoMoonDLCSelfTest //在debug模式下是否关闭月光小板的DAC自检（该选项仅debug模式有效）
@@ -27,7 +28,7 @@
 #define MaxAllowedLEDCurrent 33 //驱动硬件熔断的最大输出电流设置(测得电流超过此电流的1.2倍将触发保护)
 #define MinimumLEDCurrent 0.05 //最小的LED电流
 #define BatteryCellCount 3 //默认情况下驱动使用的电池组中锂电池的串数(按照三元锂电池计算)
-#define DeepsleepDelay 40 //驱动的出厂深度睡眠时间,40秒内没有操作则睡眠
+#define DeepsleepDelay 35 //驱动的出厂深度睡眠时间,35秒内没有操作则睡眠
 #define ForceRequireLEDNTC //驱动的LED NTC热敏电阻强制要求存在,如果检测不到热敏电阻则驱动将自检失败
 //#define SideKeyPolar_positive  //侧按的极性，保留此define表示侧按按键高有效，否则低有效
 
