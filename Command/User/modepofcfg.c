@@ -22,7 +22,7 @@ const char *modepofcfgArgument(int ArgCount)
 		case 4:
 		case 5:return "设置挡位的自动关机计时器时间(分钟),输入0则禁用定时器.";	
 		case 6:
-		case 7:return "设置挡位的鸡血次数(短时间内强制关闭温控)";
+		case 7:return "设置挡位的鸡血(暂时关闭温控)次数";
 	  }
 	return NULL;
 	}

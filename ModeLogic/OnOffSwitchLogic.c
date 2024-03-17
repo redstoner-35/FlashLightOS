@@ -378,6 +378,7 @@ void PStateStateMachine(void)
 				CurrentMode->LEDCurrentHigh=MoonLightBuf.ModeCurrent; //复原被覆盖的默认模式0挡位的数据
 				CurMode.RegularGrpMode=MoonLightBuf.RegularGrpMode; 
 				CurMode.ModeGrpSel=MoonLightBuf.ModeGrpSel; //复原被覆盖的挡位组数据
+			  while(getSideKeyHoldEvent())SideKey_LogicHandler();//在这里等待用户放开侧按开关，解决错误报告处于锁定状态的bug
 				}
 			//锁定模式下不执行下面的任何内容
 			else if(RunLogEntry.Data.DataSec.IsFlashLightLocked)break;

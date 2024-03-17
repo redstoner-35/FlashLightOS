@@ -45,6 +45,7 @@
   */
 /* Defines ------------------------------------------------------------------------------------------------*/
 #define HARDFaultLED_BASE STRCAT2(HT_GPIO,LED_Red_IOBank) //IO Bank
+#define GreenLED_BASE STRCAT2(HT_GPIO,LED_Green_IOBank)
 
 /* Global functions ----------------------------------------------------------------------------------------*/
 /*********************************************************************************************************//**
@@ -89,6 +90,7 @@ void HardFault_Handler(void)
   static vu32 LEDTimer = 0;
 	
 	HARDFaultLED_BASE->DIRCR|=0x1<<LED_Red_IOPinNum; //设置对应的IO口为output
+	GreenLED_BASE->DIRCR&=~(0x1<<LED_Green_IOPinNum); //将绿色LED的IO口直接设置为input使LED熄灭
 	HARDFaultLED_BASE->DRVR|=0x3<<(2*LED_Red_IOPinNum); //设置值驱动电流16mA
 	while(1)
 	  {

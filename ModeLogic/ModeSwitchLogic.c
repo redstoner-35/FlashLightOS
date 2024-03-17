@@ -448,7 +448,7 @@ static float CalculateCurrentGearCurrent(void)
 			 if(Brightnessicon==0x3A)Brightnessicon='A'; //当检索完0-9之后检索A
 			 }
 		 CurrentDelta=CurrentMode->LEDCurrentHigh-CurrentMode->LEDCurrentLow;//计算差值
-		 Ratio=Brightnessicon!='A'?(float)(Brightnessicon-0x30)*0.1:1; //计算比值	
+		 Ratio=MaxBrightCmd!='A'?(float)(MaxBrightCmd-0x30)*0.1:1; //计算比值	
 		 return CurrentMode->LEDCurrentLow+(CurrentDelta*Ratio);
 		 }
   //返回其他值
