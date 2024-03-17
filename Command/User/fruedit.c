@@ -87,6 +87,8 @@ void fruedithandler(void)
 			UartPrintf("\r\nADC参考电压 : %.4fV",FRU.FRUBlock.Data.Data.ADCVREF);
 			UartPrintf("\r\n驱动最大输入功率 : %.2fW",FRU.FRUBlock.Data.Data.MaximumBatteryPower);
 			UartPrintf("\r\n输入检流电阻阻值 : %.2fmΩ",FRU.FRUBlock.Data.Data.INA219ShuntValue);
+			UARTPuts("\r\n重置PIN码 : ");
+			UARTPutd(FRU.FRUBlock.Data.Data.ResetPassword,5);
 			}
 		}
 	#ifdef FlashLightOS_Init_Mode
@@ -478,7 +480,7 @@ void fruedithandler(void)
 			UARTPuts("\r\n错误:您输入的重置PIN密码不合法,PIN长度为固定的5位且仅包含数字.");
 		else //正常写入
 		  {
-			strncpy(FRU.FRUBlock.Data.Data.GeneralLEDString,ParamPtr,32);	//复制序列号信息
+			strncpy(FRU.FRUBlock.Data.Data.ResetPassword,ParamPtr,5);	//复制序列号信息
 			if(!WriteFRU(&FRU))
 				UartPrintf("\r\n%s重置PIN密码已被更新为'%s'.",frueditstr[3],ParamPtr); 
 			else

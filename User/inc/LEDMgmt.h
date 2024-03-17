@@ -20,6 +20,7 @@ void LED_Reset(void);
 void LED_AddStrobe(int count,const char *ColorStr);//在自定义闪缓存加上strobe
 void SideLEDWeakLitControl(bool IsEnabled);//控制侧按LED实现LED微微发光的控制函数
 void LED_DisplayRampDir(bool IsDirUp);//显示无极调光方向
+void SubmitCustomLEDPattern(void);//往LED管理器提交自定义闪烁pattern并等待pattern完毕
 
 //外部变量
 extern volatile int CurrentLEDIndex;//给外部函数设置LED状态

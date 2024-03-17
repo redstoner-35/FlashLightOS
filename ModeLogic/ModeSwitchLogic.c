@@ -12,7 +12,7 @@
 #define MoresIDCode "Example"
 #ifndef DefaultRampMode
 const char *ModeConst[5]={"极低亮","低亮","中亮","中高亮","高亮"};
-const float regModeCurrent[4]={12,23,35,50};  //常规挡位电流百分比(100%为满量程)
+const float regModeCurrent[4]={6,11,22,44};  //常规挡位电流百分比(100%为满量程)
 #endif
 const LightModeDef ModeCfgConst[4]={LightMode_RandomFlash,LightMode_SOS,LightMode_Breath,LightMode_MosTrans};
 const char *SpecModeConst[4]={"随机闪","SOS","信标","识别码发送"};
@@ -135,7 +135,7 @@ void RestoreFactoryModeCfg(void)
 	CfgFile.RegularMode[0].IsModeHasMemory=true;//记忆
 	CfgFile.RegularMode[0].IsModeAffectedByStepDown=true;//受温控影响
 	CfgFile.RegularMode[0].LEDCurrentLow=MinimumLEDCurrent;//无极调光最低电流为设置值
-	CfgFile.RegularMode[0].LEDCurrentHigh=(FusedMaxCurrent*80)/(float)100;//编程电流(百分比)
+	CfgFile.RegularMode[0].LEDCurrentHigh=(FusedMaxCurrent*70)/(float)100;//编程电流(百分比)
 	CfgFile.RegularMode[0].Mode=LightMode_Ramp;//无极调光模式
 	CfgFile.RegularMode[0].StrobeFrequency=10;//默认爆闪频率为10Hz
 	CfgFile.RegularMode[0].ThermalControlOffset=10; //温度向下偏移10摄氏度

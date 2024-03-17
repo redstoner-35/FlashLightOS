@@ -57,6 +57,7 @@ typedef struct
  float MaximumBatteryPower;
  float INA219ShuntValue;
  char FRUVersion[3];
+ char ResetPassword[5];
  }FRUDataSection;
 
 typedef struct

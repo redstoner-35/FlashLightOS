@@ -10,7 +10,7 @@
 #define HotfixVersion 4  //固件版本号
 
 //固件模式配置
-#define FlashLightOS_Init_Mode //设定固件的编译模式，如果开启此注释则固件配置为初始化模式，此时将会允许工程师对FRU进行设置并允许校准功能
+//#define FlashLightOS_Init_Mode //设定固件的编译模式，如果开启此注释则固件配置为初始化模式，此时将会允许工程师对FRU进行设置并允许校准功能
 
 #define Firmware_DIY_Mode //是否启用DIY高级用户模式，在此模式下驱动所有功能可以使用，否则温控调整和日志清除和恢复功能会被禁用。
 //#define Internal_Driver_Debug //是否启用驱动内部设备驱动的额外信息输出。
@@ -44,6 +44,7 @@
 #define Using_Generic_6V_LED //使用其他任意未指定型号的6V LED
 
 //挡位和操作逻辑配置
+#define RESETPassword "12345" //固件的默认复位密码（在重置出厂时输入，可以单独更改）
 #define EnableSideLocLED //启用定位LED，在驱动休眠过程中，侧按指示灯会发出微弱的绿光指示手电开关的位置
 #define AMUTorchMode //保留此define则驱动的出厂开关机逻辑设置为阿木同款(单击开机长按关机)否则使用长按开关机
 //#define DefaultRampMode //保留此define则驱动的出厂挡位配置为无极调光模式,否则为5挡位模式

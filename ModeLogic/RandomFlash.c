@@ -10,6 +10,14 @@
 #include <stdlib.h>
 #include "runtimelogger.h"
 
+//外部变量和union
+extern INADoutSreDef RunTimeBattTelemResult;
+typedef union
+  {
+	float DataIN;
+	unsigned int BINOut;
+	}BinaryOpDef;
+
 //随机数值
 static int psc=1024;
 static char RandomCount=0;
@@ -19,6 +27,7 @@ void RandomFlashHandler(void)
  ModeConfStr *CurrentMode;
  unsigned int buf; 
  int maxreload,minreload;
+ BinaryOpDef BINbuf;
  //获取挡位配置
  CurrentMode=GetCurrentModeConfig();//获取目前挡位信息
  if(CurrentMode==NULL)return; //字符串为NULL
@@ -36,7 +45,8 @@ void RandomFlashHandler(void)
 	 return;
 	 }
  //设置随机数种子
- buf=(unsigned int)(HT_MCTM0->CNTR^HT_GPTM0->CNTR);//读取系统心跳和PWM定时器的计数器值
+ BINbuf.DataIN=RunTimeBattTelemResult.BusPower;
+ buf=(unsigned int)(HT_GPTM0->CNTR^BINbuf.BINOut);//读取系统心跳定时器的计数器值然后和电池功率异或
  buf^=(unsigned int)psc; //加上PSC值
  srand(buf^RunLogEntry.CurrentDataCRC);//将算出来的值和运行日志当前的CRC32异或作为随机种子
  //生成定时器重载值

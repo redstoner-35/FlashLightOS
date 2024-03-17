@@ -17,10 +17,9 @@ static void GenerateLEDInfoForInput(char *Color,int Time)
   {
 	LED_Reset();//复位LED管理器
   memset(LEDModeStr,0,sizeof(LEDModeStr));//清空内存
-	LED_AddStrobe(Time+1,Color);
+	LED_AddStrobe(Time,Color);
 	strncat(LEDModeStr,"E",sizeof(LEDModeStr)-1);  //指示当前输入的是哪一位
-	ExtLEDIndex=&LEDModeStr[0];//传指针过去	
-	while(ExtLEDIndex!=NULL);//等待提示结束	 
+	SubmitCustomLEDPattern();//提交编程好的pattern
 	}
 
 //接收用户的PassKey输入
@@ -55,7 +54,7 @@ static void AcceptPassKeyInput(char *PassKeyOut)
 		if(ShortPressCount<=0)continue; //用户没有按下按键，等待
 		PassKeyOut[PassKeyInputPtr]=ShortPressCount+0x30;
 		PassKeyInputPtr++; //存下当前数据，然后指针后移一位
-    GenerateLEDInfoForInput("20",PassKeyInputPtr+1); //生成红色闪烁显示用户输入的数字
+    GenerateLEDInfoForInput("20",ShortPressCount); //生成红色闪烁显示用户输入的数字
 		//如果用户还差一个字符则输出提示,否则进入等待用户确认的阶段
 		if(PassKeyInputPtr<5)
 		   {
@@ -67,17 +66,15 @@ static void AcceptPassKeyInput(char *PassKeyOut)
 			 LED_Reset();//复位LED管理器
        memset(LEDModeStr,0,sizeof(LEDModeStr));//清空内存
 			 strncat(LEDModeStr,"2233110D",sizeof(LEDModeStr)-1);  //红黄绿交替闪烁提示用户请按下按键确认
-			 if(getSideKeyHoldEvent())
-		     {
-				 PassKeyInputPtr=4; //回到上一位
-			   PassKeyOut[PassKeyInputPtr]=0; //清除数据
-			   GenerateLEDInfoForInput("30",PassKeyInputPtr+1); //生成黄色闪烁显示当前正在输入哪个字符
-			   while(getSideKeyHoldEvent())SideKey_LogicHandler(); //循环等待，直到LED序列播放完毕且用户松开按键
-			   continue; //打断本次循环
-				 }
-			 else while(getSideKeyShortPressCount(true)<=0)SideKey_LogicHandler(); //循环等待用户按一次按键确认输入完毕
+       ExtLEDIndex=&LEDModeStr[0];//传指针过去	
+			 while(!getSideKeyHoldEvent()&&getSideKeyShortPressCount(true)<=0)SideKey_LogicHandler(); //循环等待用户按一次按键确认输入完毕	 
 			 strncat(LEDModeStr,"E",sizeof(LEDModeStr)-1); //直接加入E打断循环
-			 while(ExtLEDIndex!=NULL);//等待提示结束	 
+			 SubmitCustomLEDPattern();//提交编程好的pattern 
+			 if(!getSideKeyHoldEvent())continue; //用户没有上输入长按，打断本次循环并重新判断条件	 
+			 PassKeyInputPtr=4; //回到上一位
+			 PassKeyOut[PassKeyInputPtr]=0; //清除数据
+			 GenerateLEDInfoForInput("30",PassKeyInputPtr+1); //生成黄色闪烁显示当前正在输入哪个字符
+			 while(getSideKeyHoldEvent())SideKey_LogicHandler(); //循环等待，直到LED序列播放完毕且用户松开按键
 			 }
 		}		
 	}
@@ -86,7 +83,7 @@ static void AcceptPassKeyInput(char *PassKeyOut)
 static void DisplayErrorHandler(void)
   {
 	strncat(LEDModeStr,"E",sizeof(LEDModeStr)-1); //直接加入E打断循环
-	while(ExtLEDIndex!=NULL){};//等待提示结束	
+	SubmitCustomLEDPattern();//提交编程好的pattern
 	CurrentLEDIndex=32; //指示数据库写入失败
 	while(CurrentLEDIndex==32){}; //等待显示结束
   NVIC_SystemReset();
@@ -117,7 +114,7 @@ void PORResetFactoryDetect(void)
 	getSideKeyShortPressCount(true); //再度读取一次清除掉按键数据
 	AcceptPassKeyInput(PassKeyBuf); //数据接收过程
 	if(!strncmp("USEND",PassKeyBuf,5))return; //用户单击+长按取消数据输入，退出
-	else if(!strncmp("12345",PassKeyBuf,5)) //重置数据正确
+	else if(!strncmp(FRU.FRUBlock.Data.Data.ResetPassword,PassKeyBuf,5)) //重置数据正确
 	  {
 		LED_Reset();//复位LED管理器
     memset(LEDModeStr,0,sizeof(LEDModeStr));//清空内存
@@ -137,19 +134,24 @@ void PORResetFactoryDetect(void)
 		if(crc==crcinbackup)//进行当前配置和备份配置的数据内容匹配,匹配则退出
 		  {
 			strncat(LEDModeStr,"E",sizeof(LEDModeStr)-1); //直接加入E打断循环
-	    while(ExtLEDIndex!=NULL);//等待提示结束	
+	    SubmitCustomLEDPattern();//提交编程好的pattern
 			return;
 	    }		
 		//内容不一致，保存覆盖后的出厂配置到ROM
 		if(WriteConfigurationToROM(Config_Main))DisplayErrorHandler();
+		//操作完成，改为绿灯常亮，3秒后重启单片机
+		strncat(LEDModeStr,"E",sizeof(LEDModeStr)-1); //直接加入E打断循环
+	  SubmitCustomLEDPattern();//提交编程好的pattern
+		CurrentLEDIndex=2;//绿灯常亮
+    delay_Second(3); 
 		NVIC_SystemReset();
-	  while(1); //重启单片机		
+	  while(1); //3秒后重启单片机		
 		}
 	//数据错误，提示重置失败并继续启动
 	else
 	  {
 		strncat(LEDModeStr,"E",sizeof(LEDModeStr)-1); //直接加入E打断循环
-	  while(ExtLEDIndex!=NULL);//等待提示结束	
+		SubmitCustomLEDPattern();//提交编程好的pattern
   	CurrentLEDIndex=27;
 	  while(CurrentLEDIndex==27){}; //等待显示结束	
 		}

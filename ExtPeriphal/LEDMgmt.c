@@ -40,7 +40,7 @@ const char *LEDPattern[LEDPatternSize]=
 	 "20102010301030103010DDD",//红绿色交替闪烁两次，橙绿交替闪烁3次然后暂停3秒重复 #电池过流保护 22
 	 "333", //橙色常亮表示电池电量中等 23
 	 "202020D10100101001010010DD", //红色灯快速闪三次，绿色灯闪7次，SPS自检异常 24
-	 "22221111E", //红灯亮一下然后转到绿灯表示手电已经解锁 25
+	 "222211110DE", //红灯亮一下然后转到绿灯表示手电已经解锁 25
 	 "11112222E", //绿灯亮一下然后转到红灯表示手电已被锁定 26
 	 "202020E", //红灯快速闪三次表示手电被锁定 27
 	 "202002020020DDD",//红色灯快速闪烁5次，停3秒循环 指示LED基板NTC异常 28
@@ -60,6 +60,7 @@ static char LEDThermalBlinkTimer=20;//用于在温控介入时闪侧按指示灯
 char *ExtLEDIndex = NULL; //用于传入的外部序列
 static char *LastExtLEDIdx = NULL;
 static char LEDDelayTimer=0; //侧按LED等待
+static volatile bool IsSequenceFinish=false; //序列是否结束
 bool IsRedLED=false;//对于SBT90-R，侧按会亮红灯
 extern bool ReverseTactalEnabled; //反向战术模式是否启用
  
@@ -73,6 +74,14 @@ void LED_DisplayRampDir(bool IsDirUp)
 	ExtLEDIndex=&LEDModeStr[0];//传指针过去		
 	}
  
+//往LED管理器提交自定义闪烁pattern并等待pattern完毕
+void SubmitCustomLEDPattern(void)
+  {
+	IsSequenceFinish=false;
+	ExtLEDIndex=&LEDModeStr[0];//传指针过去	
+	while(!IsSequenceFinish)delay_ms(1);//等待操作完成	
+	}
+	
 //往自定义LED缓存里面加上闪烁字符
 void LED_AddStrobe(int count,const char *ColorStr) 
   {
@@ -264,6 +273,7 @@ void LEDMgmt_CallBack(void)
 		  GPIO_ClearOutBits(LED_Red_IOG,LED_Red_IOP);
 			if(LastExtLEDIdx!=NULL)ExtLEDIndex=NULL;//使用的是外部传入的pattern，所以说需要清除指针
 			else CurrentLEDIndex=0;//回到熄灭状态
+			IsSequenceFinish=true; //序列已经结束
 			ConstReadPtr=0;//回到第一个参数
 			break;
 			}	

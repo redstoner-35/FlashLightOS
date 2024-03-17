@@ -253,6 +253,7 @@ static void WriteNewFRU(const char *reason)
  FRU.FRUBlock.Data.Data.MaximumBatteryPower=MaximumBatteryPowerAllowed; //目标的最大电池电流
  FRU.FRUBlock.Data.Data.MaxLEDCurrent=QueryMaximumCurrentLimit(&FRU);//设置电流信息
  strncpy(FRU.FRUBlock.Data.Data.SerialNumber,"Serial Undefined",32);	//复制序列号信息
+ strncpy(FRU.FRUBlock.Data.Data.ResetPassword,RESETPassword,5); //复制重置密码信息
  FRU.FRUBlock.Data.Data.NTCBValue=NTCB; //将B值写入到内存里面去
  FRU.FRUBlock.Data.Data.NTCTrim=NTCTRIMValue;
  FRU.FRUBlock.Data.Data.SPSTrim=SPSTRIMValue; //将温度修正值写入到内存里面去
