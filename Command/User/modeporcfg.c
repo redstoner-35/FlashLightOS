@@ -18,7 +18,7 @@ const char *modeporcfgArgument(int ArgCount)
 		case 2:
 		case 3:return "指定驱动上电自检完毕/非记忆挡位跳回的默认挡位在挡位组内的序号.";
     case 4:
-		case 5:return "设置驱动在完成上电自检后是否进入锁定状态以避免误动作.";
+		case 5:return "设置驱动是否在每次上电后进入锁定状态.";
 	  }
 	return NULL;
 	}

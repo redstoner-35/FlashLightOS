@@ -55,8 +55,6 @@ void modeadvcfgHandler(void)
 		TargetMode=GetSelectedModeConfig(UserSelect,modenum);
 	  if(TargetMode==NULL)
 		  UARTPuts((char *)ModeSelectStr[4]);
-	   else if(TargetMode->Mode==LightMode)
-			UartPrintf((char *)ModeHasBeenSet,ModeGrpString[(int)UserSelect],modenum,LightModeString[(int)LightMode],",无需操作.");
 		 else
 		  {
 			TargetMode->Mode=LightMode;
@@ -64,7 +62,7 @@ void modeadvcfgHandler(void)
 			if(TargetMode->Mode==LightMode_Ramp&&TargetMode->LEDCurrentLow<MinimumLEDCurrent)//检查电流值
 			  {
 				TargetMode->LEDCurrentLow=MinimumLEDCurrent;
-				UartPrintf("\033[40;33m警告:您选择将该挡位更改为无极调光模式.对于该模式,指定的最小\r\n电流值(地板电流)应大于等于%.2fA,程序已自动修正错误的电流设置.\033[0m\r\n",MinimumLEDCurrent);
+				UartPrintf("\033[40;33m警告:配置为无极调光模式时挡位最小电流值(地板电流)应大于等于%.2fA!\033[0m\r\n",MinimumLEDCurrent);
 				}	
 			}
 		}
@@ -80,7 +78,7 @@ void modeadvcfgHandler(void)
 		IsCmdParamOK=true;
 		TargetMode=GetSelectedModeConfig(UserSelect,modenum);
 	  if(strlen(ParamPtr)>15||strlen(ParamPtr)<1)
-			UARTPuts("\r\n错误:您指定的挡位名称的长度不得超过5个汉字字符或15个英文字符且应大于1个字符.\r\n");
+			UARTPuts("\r\n错误:您指定的挡位名称的长度应在1-5个汉字/15个英文字符之间!\r\n");
 		else if(TargetMode==NULL)
 		  UARTPuts((char *)ModeSelectStr[4]);
 		else

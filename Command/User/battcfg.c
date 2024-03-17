@@ -9,7 +9,7 @@
 const char *BattParamHasUpdated="\r\n电池的%s电压值已被更新为%.2fV.";
 const char *IllegalVoltageConfig="\r\n您应当指定一个在%.1f-%.1f(V)之间的数值作为电池的%s值.";
 const char *BatteryVoltagePoint="\r\n 电池%s电压 : %.2fV";
-const char *FailedToDoSthColumb="\r\n由于运行日志连带库仑计已被禁用,因此您无法对库仑计进行%s操作.\r\n";
+const char *FailedToDoSthColumb="\r\n由于运行日志(含库仑计)已被禁用,故您无法对库仑计进行%s操作.\r\n";
 extern float UsedCapacity;
 extern float MaximumBatteryPower;
 #ifndef Firmware_DIY_Mode
@@ -22,7 +22,7 @@ const char *battcfgArgument(int ArgCount)
 	switch(ArgCount)
 	  {
 		case 0:
-		case 1:return "指定电池组的低电压警告电压(低于此电压后驱动降流以保护电池)";
+		case 1:return "指定电池组的低电压警告电压(低于此电压后驱动减少输出电流)";
 		case 2:
 		case 3:return "指定电池组的低电压关机保护电压.";
     case 4:

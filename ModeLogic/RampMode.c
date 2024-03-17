@@ -28,6 +28,17 @@ bool ResetRampBrightness(void)
  RampConfig->RampModeConf=CfgFile.DefaultLevel[GetRampConfigIndexFromMode()]; //填写默认挡位
  return true;//复位成功
  }
+//在每次开机和换挡之前检测并控制方向
+void RampDimmingDirReConfig(void)
+ {
+ ModeConfStr *CurrentMode;
+ RampModeStaticStorDef *RampConfig;
+ CurrentMode=GetCurrentModeConfig();//获取目前挡位信息
+ if(CurrentMode==NULL||CurrentMode->Mode!=LightMode_Ramp)return; //挡位信息为空
+ RampConfig=&RunLogEntry.Data.DataSec.RampModeStor[GetRampConfigIndexFromMode()];//根据当前挡位信息获得目标需要处理的无极调光亮度结构体所在的位置
+ if(RampConfig->RampModeConf==1.00)RampConfig->RampModeDirection=true; //当前挡位已经到最大值，直接设置为向下调节
+ if(RampConfig->RampModeConf==0.00)RampConfig->RampModeDirection=false;	 //当前挡位已经到最小值，直接设置为向上 
+ }
 
 //根据当前模式挡位转换到模式设置数组下标的转换函数
 int GetRampConfigIndexFromMode(void)

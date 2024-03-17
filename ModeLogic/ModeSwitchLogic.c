@@ -414,12 +414,52 @@ static bool IsAllowToSwitchGear(void)
 	//返回结果 
 	return enabledcount>1?false:true; //当前挡位组数量大于1个挡位，可以换过去
 	}
+//计算当前挡位实际运行电流的函数
+static float CalculateCurrentGearCurrent(void)
+  {
+	RampModeStaticStorDef *RampConfig;
+  float CurrentDelta,Ratio;
+	char Brightnessicon='0',MaxBrightCmd='0';
+	int BrightnessCmdCount,LastBrightnessCmdCount,i;
+	ModeConfStr *CurrentMode=GetCurrentModeConfig();//获取目前挡位
+	if(CurrentMode==NULL)return -1; //挡位数据为空
+	else if(CurrentMode->Mode==LightMode_On)return CurrentMode->LEDCurrentHigh;//常亮档，取出当前挡位的电流
+	else if(CurrentMode->Mode==LightMode_Ramp) //无极调光模式，计算实际电流
+	   {
+		 RampConfig=&RunLogEntry.Data.DataSec.RampModeStor[GetRampConfigIndexFromMode()]; //取无极调光数据所在的位置
+		 CurrentDelta=CurrentMode->LEDCurrentHigh-CurrentMode->LEDCurrentLow;//计算差值
+		 return CurrentMode->LEDCurrentLow+(CurrentDelta*pow(RampConfig->RampModeConf,GammaCorrectionValue));//计算无极调光的额定输出电流
+		 }
+	else if(CurrentMode->Mode==LightMode_CustomFlash) //自定义闪模式，查找字符序列中使用最多的亮度命令作为平均值
+	   {
+		 LastBrightnessCmdCount=0;
+		 while(Brightnessicon<='9'||Brightnessicon=='A')
+		   {
+			 //对字符串进行遍历统计
+		   BrightnessCmdCount=0;
+			 for(i=0;i<32;i++)if(CurrentMode->CustomFlashStr[i]==Brightnessicon)BrightnessCmdCount++;
+			 //判断字符串数目
+			 if(BrightnessCmdCount>LastBrightnessCmdCount)//当前的命令字符数大于上一次测试的，更新结果
+			   {
+				 MaxBrightCmd=Brightnessicon; 	 
+			   LastBrightnessCmdCount=BrightnessCmdCount;//存储上一次遍历的结果
+				 }					 
+			 Brightnessicon++; //继续下一种字符
+			 if(Brightnessicon==0x3A)Brightnessicon='A'; //当检索完0-9之后检索A
+			 }
+		 CurrentDelta=CurrentMode->LEDCurrentHigh-CurrentMode->LEDCurrentLow;//计算差值
+		 Ratio=Brightnessicon!='A'?(float)(Brightnessicon-0x30)*0.1:1; //计算比值	
+		 return CurrentMode->LEDCurrentLow+(CurrentDelta*Ratio);
+		 }
+  //返回其他值
+	return -1;
+	}
 //换挡逻辑的处理实现函数
 void ModeSwitchLogicHandler(void)
   {
 	int keycount;
-	ModeConfStr *CurrentMode;
-  float CurrentModeILED;
+  ModeConfStr *CurrentMode;
+  float CurrentModeILED,NewModeILED;
   bool DoubleClickHoldDetected,IsNeedToSwitchGear;
 	if(RunLogEntry.Data.DataSec.IsFlashLightLocked||SysPstatebuf.Pstate==PState_Error)return;//处于锁定或者错误状态，此时不处理
 	//获取按键次数
@@ -475,10 +515,7 @@ void ModeSwitchLogicHandler(void)
 	if(!IsNeedToSwitchGear&&(keycount<2||keycount>3))return;	//短按按键次数小于2次或者按了超过三次不处理
   if(IsNeedToSwitchGear&&IsAllowToSwitchGear())return; 		//如果当前用户操作需要换挡，则根据当前用户位于的挡位组进行判断是否允许换挡
 	CurrentMode=GetCurrentModeConfig();//换挡前获取目前挡位的逻辑
-	if(CurrentMode!=NULL&&CurrentMode->Mode==LightMode_On)
-     CurrentModeILED=CurrentMode->LEDCurrentHigh; //取出当前挡位的电流
-  else
-		 CurrentModeILED=-1; //该挡位不满足判断条件不进行判断		
+	CurrentModeILED=CalculateCurrentGearCurrent(); //获取换挡前挡位的实际运行电流
   //检测到换挡操作时重置特殊功能的定时器和状态机
   ResetPowerOffTimerForPoff();//重置定时器
 	ResetBreathStateMachine();//重置呼吸闪状态机
@@ -521,14 +558,15 @@ void ModeSwitchLogicHandler(void)
 			}
 		default: break;
 		}
+	RampDimmingDirReConfig();//换挡完成之后重新配置无极调光方向
 	//操作侧按LED提示当前生成的挡位
 	if(SysPstatebuf.Pstate==PState_LEDOn||SysPstatebuf.Pstate==PState_LEDOnNonHold)
 	  { 
 		//主LED启动，如果当前挡位的电流变换不大则生成提示信息提示用户
-	  if(CurrentModeILED==-1)return; //不满足执行条件，直接退出
-		CurrentMode=GetCurrentModeConfig();//换挡后获取目前挡位
-	  CurrentModeILED=fabsf(1-(CurrentMode->LEDCurrentHigh/CurrentModeILED)); //计算两个挡位之间的电流变化百分比
-	  if(CurrentModeILED<=0.20)NotifyUserTIM=6; //挡位电流变化小于20%，指示用户
+		NewModeILED=CalculateCurrentGearCurrent(); //获取换挡前挡位的实际运行电流
+	  if(NewModeILED==-1||CurrentModeILED==-1)return; //不满足执行条件或者电流无效，直接退出
+	  CurrentModeILED=fabsf(1-(NewModeILED/CurrentModeILED)); //计算两个挡位之间的电流变化百分比
+	  if(CurrentModeILED<=0.20)NotifyUserTIM=4; //挡位电流变化小于20%，调低电流指示用户
     }
 	else
 	  SideLED_GenerateModeInfoPattern(false); //手电筒处于关机状态，显示挡位数据

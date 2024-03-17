@@ -29,9 +29,9 @@ const char *modeviewArgument(int ArgCount)
 	switch(ArgCount)
 	  {
 		case 0:
-		case 1:return "指定要查看详细数据的挡位所在的挡位组.";
+		case 1:return "指定要查看挡位所在的挡位组.";
 		case 2:
-		case 3:return "指定该挡位组中要被编辑的挡位序号.";	
+		case 3:return "指定该挡位组中要查看数据的挡位序号.";	
 		}
 	return NULL;
 	} 

@@ -119,6 +119,7 @@ static void LEDPowerOnHandler(bool IsTac,INADoutSreDef *BattO)
   {
   if(IsRunTimeLoggingEnabled)CalcLastLogCRCBeforePO();//计算运行log的CRC32
 	SysPstatebuf.ErrorCode=TurnLightONLogic(BattO);//执行自检逻辑	
+	RampDimmingDirReConfig();//重新配置无极调光方向
 	if(SysPstatebuf.ErrorCode==Error_None)
 		{ 
 		SetupRTCForCounter(false); //手电筒开机，关闭RTC计时
