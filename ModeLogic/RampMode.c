@@ -15,7 +15,6 @@ static bool IsKeyPressed=false;
 static char MinMaxBrightNessStrobeTimer=0;
 static bool IsEnabledLimitTimer=false;
 bool IsRampAdjusting=false; //外部引用，无极调光是否在调节
-bool IsMoonDimmingLocked=false; //外部引用用来判断月光档是否调节结束
 
 //强制重置当前挡位的函数
 bool ResetRampBrightness(void)
@@ -75,7 +74,6 @@ void RampModeHandler(void)
 	  {
 		//计算步进值
 		incValue=(float)1/(BreathTIMFreq*CurrentMode->RampModeSpeed);//计算出单位的步进值
-		if(!IsMoonDimmingLocked)incValue/=10; //没有锁相期间调节量降低到额定的10%
 	  //根据方向增减亮度值
     if(RampConfig->RampModeDirection&&RampConfig->RampModeConf>0)			
 			RampConfig->RampModeConf-=incValue;
@@ -88,7 +86,6 @@ void RampModeHandler(void)
 		if(CfgFile.IsNoteLEDEnabled&&RampConfig->RampModeConf>0&&RampConfig->RampModeConf<1.0)
 		   {
 			 IsRampAdjusting=true; //指示正在调光
-		   if(IsMoonDimmingLocked)IsMoonDimmingLocked=false; //让月光档重新锁相
 			 LED_DisplayRampDir(RampConfig->RampModeDirection);
 			 }
 		else IsRampAdjusting=false; //调光结束
@@ -108,6 +105,6 @@ void RampModeHandler(void)
 	//生成最后的电流设置
 	if(CurrentMode==NULL)return; //退出
 	incValue=CurrentMode->LEDCurrentHigh-CurrentMode->LEDCurrentLow;
-	BreathCurrent=CurrentMode->LEDCurrentLow<0.5?0.5:CurrentMode->LEDCurrentLow;//从低电流开始
+	BreathCurrent=CurrentMode->LEDCurrentLow<MinimumLEDCurrent?MinimumLEDCurrent:CurrentMode->LEDCurrentLow;//从低电流开始
 	BreathCurrent+=incValue*pow(RampConfig->RampModeConf,GammaCorrectionValue);//使用幂函数模拟人眼亮度曲线	
 	}

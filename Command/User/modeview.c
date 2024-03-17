@@ -111,10 +111,10 @@ void modeviewhandler(void)
 				   UartPrintf("\r\n  亮度下滑时间 : %.1f秒",TargetMode->MinCurrentHoldTime);
 				   break;
  				case LightMode_Ramp: //无极调光模式
-					 UartPrintf("\r\n默认亮度等级 : %.1f%%",CfgFile.DefaultLevel[RampCfgIndex]*100);
-			     UartPrintf("\r\n当前亮度等级 : %.1f%%",RunLogEntry.Data.DataSec.RampModeStor[RampCfgIndex].RampModeConf*100);
-			     UartPrintf("\r\n当前调光方向 : %s",!RunLogEntry.Data.DataSec.RampModeStor[RampCfgIndex].RampModeDirection?"向上":"向下");
-			     UartPrintf("\r\n亮度等级是否记忆 : %s",CfgFile.IsRememberBrightNess[RampCfgIndex]?"是":"否");	 
+					 UartPrintf("\r\n  默认亮度等级 : %.1f%%",CfgFile.DefaultLevel[RampCfgIndex]*100);
+			     UartPrintf("\r\n  当前亮度等级 : %.1f%%",RunLogEntry.Data.DataSec.RampModeStor[RampCfgIndex].RampModeConf*100);
+			     UartPrintf("\r\n  当前调光方向 : %s",!RunLogEntry.Data.DataSec.RampModeStor[RampCfgIndex].RampModeDirection?"向上":"向下");
+			     UartPrintf("\r\n  亮度等级是否记忆 : %s",CfgFile.IsRememberBrightNess[RampCfgIndex]?"是":"否");	 
 					 UartPrintf("\r\n  亮度爬升/下滑总时长 : %.1f秒",TargetMode->RampModeSpeed);
 				   break;
  				case LightMode_CustomFlash: //自定义闪模式

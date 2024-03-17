@@ -61,10 +61,10 @@ void modeadvcfgHandler(void)
 		  {
 			TargetMode->Mode=LightMode;
 			UartPrintf((char *)ModeHasBeenSet,ModeGrpString[(int)UserSelect],modenum,LightModeString[(int)LightMode],".");
-			if(TargetMode->Mode==LightMode_Ramp&&TargetMode->LEDCurrentLow<0.5)//检查电流值
+			if(TargetMode->Mode==LightMode_Ramp&&TargetMode->LEDCurrentLow<MinimumLEDCurrent)//检查电流值
 			  {
-				TargetMode->LEDCurrentLow=0.5;
-				UARTPuts("\033[40;33m警告:您选择将该挡位更改为无极调光模式.对于该模式,指定的最小\r\n电流值(地板电流)应大于等于0.5A,程序已为您自动修正此错误.\033[0m\r\n");
+				TargetMode->LEDCurrentLow=MinimumLEDCurrent;
+				UartPrintf("\033[40;33m警告:您选择将该挡位更改为无极调光模式.对于该模式,指定的最小\r\n电流值(地板电流)应大于等于%.2fA,程序已自动修正错误的电流设置.\033[0m\r\n",MinimumLEDCurrent);
 				}	
 			}
 		}
