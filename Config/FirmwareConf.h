@@ -6,8 +6,8 @@
 #define HardwareMinorVer 0  //硬件版本号
 
 #define MajorVersion 2
-#define MinorVersion 3
-#define HotfixVersion 8  //固件版本号
+#define MinorVersion 4
+#define HotfixVersion 0  //固件版本号
 
 //固件模式配置
 //#define FlashLightOS_Init_Mode //设定固件的编译模式，如果开启此注释则固件配置为初始化模式，此时将会允许工程师对FRU进行设置并允许校准功能
@@ -76,8 +76,14 @@
 #define NTCT0 25 //NTC电阻的标定温度，一般是25℃
 #define SPSTRIMValue 0 //DrMOS测温的修正值，单位为℃
 
-//电池功率计参数设置
+//电池功率计和输入电流环路限制参数设置
 #define INA219ShuntOhm 0.5 //驱动的INA219功率级的分流电阻阻值(单位mΩ)
+#define InputCurrentLimitTrip 24 //触发驱动电流输入的PID限制器的阈值
+#define InputCurrentMaintain 10 //PID限制器目标维持的电流
+#define InputCurrentLimitRelease 6 //除能驱动电流PID显示器的阈值
+#define InplPIDKp 0.95 
+#define InplPIDKi 1.8
+#define InplPIDKd 0.65 //输入电流限制PID环
 
 //辅助月光buck小板设置参数
 #define AuxBuckIsensemOhm 15 //辅助月光buck小板的检流电阻阻值(单位mΩ) 

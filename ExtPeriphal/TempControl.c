@@ -29,7 +29,12 @@ void DisplayNoMomentTurbo(void)
   strncat(LEDModeStr,"D3020000E",sizeof(LEDModeStr)-1);//填充指示内容	
 	ExtLEDIndex=&LEDModeStr[0];//传指针过去	
 	}
-
+//重置PID温控器的积分器
+void ResetThermalPID(void)
+  {
+	integral_temp=0;
+	err_last_temp=0; //在温控不需要启动的阶段，需要将温控的微分和积分器复位否则会发生过调
+	}
 //根据当前温度传感器的配置返回实际加权之后输出给温度计的温度值
 float GetActualTemp(ADCOutTypeDef *ADCResult)
   {
@@ -125,7 +130,7 @@ float PIDThermalControl(void)
 		RemainingMomtBurstCount=TargetMode->MaxMomtTurboCount;	
 	if(!TempControlEnabled&&PIDInputTemp>=TriggerTemp)TempControlEnabled=true;
 	else if(TempControlEnabled&&PIDInputTemp<=ReleaseTemp)TempControlEnabled=false;  //温控解除，恢复turbo次数
-	//温控不需要接入或者当前LED是熄灭状态，直接返回100%
+	//温控不需要接入或者当前LED是熄灭状态，直接返回100
 	if(!TempControlEnabled||!SysPstatebuf.ToggledFlash||SysPstatebuf.TargetCurrent==0)return 100;
 	//温控的PID部分
 	err_temp=MaintainTemp-PIDInputTemp; //计算误差值

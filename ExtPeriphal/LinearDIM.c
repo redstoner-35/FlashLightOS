@@ -23,7 +23,6 @@ void FillThermalFilterBuf(ADCOutTypeDef *ADCResult);//填充温度stepdown的缓
 static float LEDVfFilterBuf[12];
 static char ShortCount=0;
 static char MainAuxBuckCDTimer=0;
-bool IsDisableBattCheck; //是否关闭电池质量检测
 unsigned char PSUState=0x00; //辅助电源的状态
 unsigned char NotifyUserTIM=0; //软件计时器，用于提示用户挡位发生了较小的改动
 static bool BuckPowerState=false;//主副buck的电源状态
@@ -31,12 +30,14 @@ static bool MainAuxBuckSwitchState=false; //主副buck的电源使能切换状�
 static float LastEdgeSswitchCurrent=0; //上次边沿切换的电流
 
 //外部变量
+extern float InplValue; //输入限流环的电流值
 extern int CurrentTactalDim; //反向战术模式设定亮度的变量
 extern bool IsMoonDimmingLocked; //反馈给无极调光模块，告诉调光模块电流是否调节完毕
 extern bool IsRampAdjusting; //外部调光是否在调节
 extern float UnLoadBattVoltage; //没有负载时的电池电压
 extern float LEDVfMin;
 extern float LEDVfMax; //LEDVf限制
+extern bool IsInplAlertOccurred;//输入限流告警是否触发
 
 //字符串
 const char *DACInitError="Failed to init %s DAC.";
@@ -329,7 +330,6 @@ void LinearDIM_POR(void)
  AD5693R_SetChipConfig(&DACInitStr,AuxBuckAD5693ADDR); //关闭基准并设置为输出高阻使buck停止运行
  delay_ms(10);
  Set3V3AUXDCDC(false); //主buck的控制器关闭10mS后禁用3V3 DCDC		
- IsDisableBattCheck=false; //默认开启电池质量检测
  #else
  /***********************************************************************
  在跳过辅助buck检查的情况下成功的结束了主buck的检测，关闭主buck并重置变量
@@ -346,7 +346,6 @@ void TurnLightOFFLogic(void)
  DACInitStrDef DACInitStr;
 //复位变量
  TimerHasStarted=false;
- IsDisableBattCheck=false; //每次关机都要复位电池检测禁用位
  ShortCount=0;//复位短路次数统计
  PSUState=0x00;//关闭主电源控制的定时器
  //关闭外设
@@ -421,6 +420,7 @@ void DoLinearDimControl(float Current,bool IsMainLEDEnabled)
  if(Current>FusedMaxCurrent)Current=FusedMaxCurrent;//限制传入的电流值范围为0-熔断限制值
  if(NotifyUserTIM>0)Current=((Current*0.5)>=MinimumLEDCurrent)?Current*0.5:0; //如果用户挡位发生了较小的变动则让电流短时间减低到原始值的50%,如果减低到50%时差距仍然不够大则直接熄灭
  if(Current>0&&Current<MinimumLEDCurrent)Current=MinimumLEDCurrent; //电流不是0且低于最低允许值，强制设为最低值 
+ Current*=(InplValue/100);
  #ifdef FlashLightOS_Init_Mode
  if(CheckCompData()!=Database_No_Error) //debug模式下如果补偿数据库未就绪则不取补偿数据库
    Comp=1.00;
@@ -601,8 +601,6 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
 	 //LED过热 
 	 if(ADCO.LEDTemp>CfgFile.LEDThermalTripTemp)
 		 return ProgramWarrantySign(Void_LEDCriticalOverTemp)?Error_LED_ThermTrip:Error_Mode_Logic;
-	 //在低温下电池放电性能会锐减，因此我们需要在温度低于10度的时候关闭电池质量检测
-	 IsDisableBattCheck=fminf(ADCO.LEDTemp,ADCO.SPSTemp)<10?true:false;
 	 }
  //检查INA219读取到的电池电压确保电压合适
  if(BattOutput->BusVolt<=CfgFile.VoltageTrip||BattOutput->BusVolt>CfgFile.VoltageOverTrip) 
@@ -659,6 +657,7 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
  交由驱动的其余逻辑完成处理
  ********************************************************/
  SysPstatebuf.IsLEDShorted=false;
+ IsInplAlertOccurred=false;//输入限流告警没有发生
  SysPstatebuf.ToggledFlash=true;// LED没有短路，上电点亮
  PSUState=0;//复位主副buck关机计时器
  SysPstatebuf.AuxBuckCurrent=ConvertAuxBuckIsense(ILED);//填写辅助buck的输出电流
@@ -738,6 +737,7 @@ void RuntimeModeCurrentHandler(void)
  else if(ADCO.SPSTMONState==SPS_TMON_OK&&(ADCO.SPSTemp>CfgFile.MOSFETThermalTripTemp-10))IsEnableStepDown=true; //MOS温度逼近临界值，立即启动降档
  else IsEnableStepDown=false; //不需要应用降档设置
  //执行温控
+ if(!IsEnableStepDown)ResetThermalPID(); //禁用温控降档的时候复位温控PID
  Throttle=IsEnableStepDown?PIDThermalControl():100;//根据是否降档来执行PID温控计算降档参数
  if(Throttle>100)Throttle=100;
  if(Throttle<5)Throttle=5;//温度降档值限幅
@@ -754,10 +754,7 @@ void RuntimeModeCurrentHandler(void)
  else if(CurrentMode->Mode==LightMode_CustomFlash)IsCurrentControlledByMode=true;
  else IsCurrentControlledByMode=false;
  if(IsCurrentControlledByMode&&Current>BreathCurrent)Current=BreathCurrent;//最高电流和对应模式的计算值同步
- if(RunLogEntry.Data.DataSec.IsLowVoltageAlert&&Current>LVAlertCurrentLimit)
-	 Current=LVAlertCurrentLimit;//当低电压告警发生时限制输出电流 
- if(RunLogEntry.Data.DataSec.IsLowQualityBattAlert)
- Current=(CurrentMode->LEDCurrentHigh>(0.5*FusedMaxCurrent)) ?Current*0.6:Current;  //电池质量太次，限制电流
+ if(RunLogEntry.Data.DataSec.IsLowVoltageAlert&&Current>LVAlertCurrentLimit)Current=LVAlertCurrentLimit;  //当低电压告警发生时限制输出电流
  Current*=(float)(CurrentTactalDim>100?100:CurrentTactalDim)/(float)100; //根据反向战术模式的设置取设定亮度
  /* 应用温度控制设置算出来的电流 */
  if(Throttle<100) //PID调节值低于100，温控启动

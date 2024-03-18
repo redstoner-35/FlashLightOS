@@ -72,7 +72,7 @@ void ModeEnacfghandler(void)
 	 case UserInput_Nothing:	 //其余情况
 	   {
 		 DisplayIllegalParam(ParamPtr,14,2);//显示用户输入了非法参数
-		 UARTPuts("\r\n如您需要禁用该挡位,请输入'false'参数.对于启用,则输入'true'参数.\r\n");
+		 UARTPuts("\r\n如您需要禁用该挡位请输入'false'参数,'true'参数代表启用.\r\n");
 		 ClearRecvBuffer();//清除接收缓冲
      CmdHandle=Command_None;//命令执行完毕	
 		 return;
@@ -98,7 +98,7 @@ void ModeEnacfghandler(void)
 		 }
 	if(EnableCount<=1&&!IsUserWantToEnable)
 	   {
-		 UARTPuts("\r\n错误:对于常规挡位组,应至少存在1个启用的挡位!\r\n");
+		 UARTPuts("\r\n错误:对于常规挡位组应至少存在1个启用的挡位!\r\n");
 		 ClearRecvBuffer();//清除接收缓冲
      CmdHandle=Command_None;//命令执行完毕	
 		 return;

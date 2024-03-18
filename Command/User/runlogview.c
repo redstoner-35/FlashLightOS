@@ -109,7 +109,7 @@ void runlogviewHandler(void)
 		UartPrintf("%s自学习已启用 : %s\r\n",Rlvstr[8],RunLogEntry.Data.DataSec.BattUsage.IsLearningEnabled?"是":"否");
 		PrintStatuBar("告警统计");
 		UartPrintf((char *)Rlvstr[6],"电池欠压",RunLogEntry.Data.DataSec.LowVoltageShutDownCount);
-		UartPrintf((char *)Rlvstr[6],"过流",RunLogEntry.Data.DataSec.OCPFaultCount);	
+		UartPrintf((char *)Rlvstr[6],"输入过功率/限流及LED过流",RunLogEntry.Data.DataSec.OCPFaultCount);	
 		UartPrintf((char *)Rlvstr[6],"LED开/短路",RunLogEntry.Data.DataSec.LEDOpenShortCount);
 		UartPrintf((char *)Rlvstr[6],"LED过热",RunLogEntry.Data.DataSec.LEDThermalFaultCount);
 		UartPrintf((char *)Rlvstr[6],"驱动过热",RunLogEntry.Data.DataSec.DriverThermalFaultCount);

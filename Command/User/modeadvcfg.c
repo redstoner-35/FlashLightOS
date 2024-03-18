@@ -9,7 +9,7 @@
 //外部字符串指针数组
 extern const char *ModeSelectStr[];
 static const char *ModeHasBeenSet="\r\n%s挡位组中的第%d挡位已经配置为%s模式%s\r\n";
-const char *FuncOperationError="\r\n如您需要禁用该挡位的%s功能,请输入'false'参数.对于启用,则输入'true'参数.\r\n";
+const char *FuncOperationError="\r\n如您需要禁用该挡位的%s功能请输入'false'参数,输入'true'参数表示启用.\r\n";
 
 //参数帮助entry
 const char *modeadvcfgArgument(int ArgCount)

@@ -14,10 +14,14 @@ int iroundf(float IN);
 float fminf(float x,float y);
 INADoutSreDef RunTimeBattTelemResult;
 float UsedCapacity=0;
+static bool IsEnabledCINL=false; //是否启用输入电流限制器
 float UnLoadBattVoltage=12; //用于判断电池质量的电压变量
 static char LVFlashTimer=0;
-extern bool IsDisableBattCheck; //是否关闭电池质量警报
 extern float MaximumBatteryPower;//最大电池电流
+float InplValue=100; //限流设置电流(输出到buf)
+bool IsInplAlertOccurred=false; //输入限流告警是否发生的警报
+static float InplIntegral=0;
+static float InplLastError=0; //PID微分和积分
 
 //低压告警标记
 void WriteRunLogWithLVAlert(void)
@@ -130,7 +134,7 @@ void LowVoltageIndicate(void)
 //在手电筒运行期间测量电池参数的函数
 void RunTimeBatteryTelemetry(void)
  {
- float BatteryMidLevel,voltDiff,VoltAlert,BatteryFullLevel;
+ float BatteryMidLevel,voltDiff,VoltAlert,BatteryFullLevel,ErrInpl;
  bool IsNeedToUpdateCapacity;
  ADCOutTypeDef ADCO;
  //令INA219获取电池(输入电源)信息,同时令ADC获取温度信息
@@ -142,6 +146,30 @@ void RunTimeBatteryTelemetry(void)
 		 RunTimeErrorReportHandler(Error_ADC_Logic);
 		 return;
 	   }
+ //输入电流限制环路(电池质量检测)
+ if(RunTimeBattTelemResult.BusCurrent>InputCurrentLimitTrip)IsEnabledCINL=true;
+ else if(RunTimeBattTelemResult.BusCurrent<InputCurrentLimitRelease)IsEnabledCINL=false;		 //限制器使能控制
+ if(!IsEnabledCINL) //输入电流限制未激活
+     {
+     InplIntegral=0;
+		 InplLastError=0; //PID微分和积分器reset为0
+		 InplValue=100; //限流值复位
+	   }
+ else //PID调节启动 
+     {
+		 ErrInpl=InputCurrentMaintain-RunTimeBattTelemResult.BusCurrent; //计算误差值
+		 InplIntegral+=ErrInpl*0.04;
+		 if(InplIntegral>10)InplIntegral=10;
+		 if(InplIntegral<-85)InplIntegral=-85; //积分和积分限幅
+		 InplValue=90+(InplPIDKp*ErrInpl+InplPIDKi*InplIntegral+InplPIDKd*(ErrInpl-InplLastError));//计算调节值
+		 InplLastError=ErrInpl;//更新上次计算的错误值实现微分
+		 if(!IsInplAlertOccurred)//撞输入限流墙，且flag未置起，置起flag
+		   {
+			 if(RunLogEntry.Data.DataSec.OCPFaultCount<32766)RunLogEntry.Data.DataSec.OCPFaultCount++; //OCP事件+1
+		   RunLogEntry.Data.DataSec.IsLowQualityBattAlert=true; //置起电池警报
+			 IsInplAlertOccurred=true; //flag置1
+			 }
+		 }	 
  //根据每次启动手电空载的电压判断电池质量的前置准备 
  BatteryFullLevel=CfgFile.VoltageFull; //获取满电电压
  if(fminf(ADCO.LEDTemp,ADCO.SPSTemp)<10)BatteryFullLevel-=0.5; //低温环境，满电电压-0.5
@@ -155,13 +183,6 @@ void RunTimeBatteryTelemetry(void)
     BatteryMidLevel=VoltAlert+0.5; 
 		}
  else VoltAlert=CfgFile.VoltageAlert; //正常执行
- //电池质量检测		
- if(IsDisableBattCheck)UnLoadBattVoltage=RunTimeBattTelemResult.BusVolt; //电池质量检测被关闭，不执行下面的所有判断逻辑（并且同步空载和当前电压信息）		
- else if(UnLoadBattVoltage>(BatteryFullLevel-0.5)&&voltDiff>=2.4) //在大电流输出下电压差大于2.5或者电压低于警告值，电池质量太次触发警告
-    {
-    if(SysPstatebuf.TargetCurrent>=(0.6*FusedMaxCurrent))RunLogEntry.Data.DataSec.IsLowQualityBattAlert=true; 			
-		}
- else if(voltDiff<2.4)UnLoadBattVoltage=RunTimeBattTelemResult.BusVolt; //小电流下对压差进行修正	
  //根据读到的电池电压/容量控制电量指示灯
  if(!RunLogEntry.Data.DataSec.BattUsage.IsCalibrationDone)
     {   

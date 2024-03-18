@@ -168,6 +168,7 @@ typedef struct
  }SYSPStateStrDef;	
 
 //外部函数
+void ResetThermalPID(void);//在不需要使能PID的时候重置温控器
 void SetupRTCForCounter(bool IsRTCStartCount);//设置RTC
 SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput);//开灯自检操作
 void DisplayLEDTemp(void);//通过侧按LED显示基板温度

@@ -72,8 +72,8 @@ void LoginHandler(void)
 			UARTPuts("的身份登录.");
 			if(RunLogEntry.Data.DataSec.IsLowQualityBattAlert) //电池质量警告生效
 			  {
-			  UARTPuts("\r\n\r\n\033[40;33m警告:您使用的电池无法满足放电需求,为了保证您的安全,手电筒的运行功率将会");
-			  UARTPuts("\r\n被暂时限制为60%.请尽快更换高性能动力电池并使用'battcfg -crst'命令消除告警.\033[0m\r\n");
+			  UARTPuts("\r\n\r\n\033[40;33m警告:您使用的电池无法满足放电需求!请尽快更换高");
+			  UARTPuts("\r\n性能动力电池并使用'battcfg -crst'命令消除告警.\033[0m\r\n");
 				}
 	    if(CfgFile.IdleTimeout>0)IdleTimer=CfgFile.IdleTimeout;//重置登录超时计时器
 			TargetAccount=VerifyAccount_None;
