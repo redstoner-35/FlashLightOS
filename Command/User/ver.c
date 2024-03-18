@@ -33,7 +33,7 @@ const char EncryptedCopyRight[48]=
 0xDD,0x74,0xF4,0x3F,0xF0,0x2F,0xF9,0x4B
 };
 
-const char *WarrantyVoidReason[]={"强制关闭温控","LED严重过热","驱动严重过热","输入过功率","输入过压","输出严重过流"};
+const char *WarrantyVoidReason[]={"强制关闭温控","LED过热","驱动过热","输入过功率","输入过压","输出过流"};
 
 #pragma push
 #pragma Otime//优化该函数使用3级别优化

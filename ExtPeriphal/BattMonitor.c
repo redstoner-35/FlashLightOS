@@ -14,7 +14,7 @@ int iroundf(float IN);
 float fminf(float x,float y);
 INADoutSreDef RunTimeBattTelemResult;
 float UsedCapacity=0;
-static bool IsEnabledCINL=false; //是否启用输入电流限制器
+bool IsEnabledCINL=false; //是否启用输入电流限制器
 float UnLoadBattVoltage=12; //用于判断电池质量的电压变量
 static char LVFlashTimer=0;
 extern float MaximumBatteryPower;//最大电池电流
@@ -137,6 +137,7 @@ void RunTimeBatteryTelemetry(void)
  float BatteryMidLevel,voltDiff,VoltAlert,BatteryFullLevel,ErrInpl;
  bool IsNeedToUpdateCapacity;
  ADCOutTypeDef ADCO;
+ static char CurrentLowTIM=0;
  //令INA219获取电池(输入电源)信息,同时令ADC获取温度信息
  if(SysPstatebuf.Pstate!=PState_LEDOn&&SysPstatebuf.Pstate!=PState_LEDOnNonHold)return;//LED没开启
  RunTimeBattTelemResult.TargetSensorADDR=INA219ADDR; //指定地址
@@ -147,15 +148,20 @@ void RunTimeBatteryTelemetry(void)
 		 return;
 	   }
  //输入电流限制环路(电池质量检测)
- if(RunTimeBattTelemResult.BusCurrent>InputCurrentLimitTrip)IsEnabledCINL=true;
- else if(RunTimeBattTelemResult.BusCurrent<InputCurrentLimitRelease)IsEnabledCINL=false;		 //限制器使能控制
+ if(RunTimeBattTelemResult.BusCurrent>InputCurrentLimitTrip)IsEnabledCINL=true;//限制器使能控制
+ else if(RunTimeBattTelemResult.BusCurrent<InputCurrentLimitRelease)//输入电流低于警报解除值，开始计时
+     {	 
+     if(CurrentLowTIM>=80)IsEnabledCINL=false;		 
+		 else CurrentLowTIM++;
+		 }
+ else CurrentLowTIM=0;//输入电流仍然高于限制值，复位定时器
  if(!IsEnabledCINL) //输入电流限制未激活
      {
      InplIntegral=0;
 		 InplLastError=0; //PID微分和积分器reset为0
 		 InplValue=100; //限流值复位
 	   }
- else //PID调节启动 
+ else if(SysPstatebuf.ToggledFlash&&SysPstatebuf.TargetCurrent>0)//LED正常运行中，调节器启动 
      {
 		 ErrInpl=InputCurrentMaintain-RunTimeBattTelemResult.BusCurrent; //计算误差值
 		 InplIntegral+=ErrInpl*0.04;

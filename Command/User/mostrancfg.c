@@ -86,7 +86,7 @@ void mostranscfghandler(void)
 		TargetMode=GetSelectedModeConfig(UserSelect,modenum);
 		strresult=CheckForStringCanBeSentViaMorse(ParamPtr);
 		if(strlen(ParamPtr)>31||strlen(ParamPtr)<1)
-			UartPrintf((char *)IllegalMosStr,"不得超过31字符且应至少包含1个字符");
+			UartPrintf((char *)IllegalMosStr,"应包含1-31个字符");
 		else if(strresult!=-1)//字符串包含非法内容
 		  {
 			UartPrintf((char *)IllegalMosStr,"仅能包含大小写字母[A-Z,a-z]数字[0-9]和部分特殊符号[? / ( ) - _ .]");

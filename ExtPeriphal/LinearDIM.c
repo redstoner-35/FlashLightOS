@@ -38,7 +38,7 @@ extern float UnLoadBattVoltage; //没有负载时的电池电压
 extern float LEDVfMin;
 extern float LEDVfMax; //LEDVf限制
 extern bool IsInplAlertOccurred;//输入限流告警是否触发
-
+extern bool IsEnabledCINL;
 //字符串
 const char *DACInitError="Failed to init %s DAC.";
 const char *SPSFailure="SPS %sreports %s during init.";
@@ -542,6 +542,7 @@ SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput)
  ********************************************************/
  CurrentMode=GetCurrentModeConfig();
  if(CurrentMode==NULL)return Error_Mode_Logic; //挡位逻辑异常
+ if(CurrentMode->LEDCurrentHigh<InputCurrentLimitRelease)IsEnabledCINL=false; //输入电流小于限制值，复位控制器
  if(CheckCompData()!=Database_No_Error)return Error_Calibration_Data; //校准数据库错误
  /********************************************************
  首先我们需要将负责电池遥测的INA219功率级启动,然后先将DAC
