@@ -141,7 +141,7 @@ static void LEDPowerOnHandler(bool IsTac,INADoutSreDef *BattO)
 	}
 	
 //手电筒从LED点亮到关机时需要进行的处理函数
-static void LEDPowerOffOperationHandler(bool IsRollback)
+void LEDPowerOffOperationHandler(bool IsRollback)
   {
 	OPPFaultCounter=0;//重置过流保护计数器
 	CurrentTactalDim=100; //复位定时器

@@ -12,6 +12,7 @@
 //静态变量和函数声明
 int iroundf(float IN);
 float fminf(float x,float y);
+void LEDPowerOffOperationHandler(bool IsRollback);
 INADoutSreDef RunTimeBattTelemResult;
 float UsedCapacity=0;
 bool IsEnabledCINL=false; //是否启用输入电流限制器
@@ -264,7 +265,7 @@ void RunTimeBatteryTelemetry(void)
 		 #ifndef FlashLightOS_Init_Mode
 		 SysPstatebuf.Pstate=PState_Error;
 		 SysPstatebuf.ErrorCode=Error_Input_UVP;
-		 TurnLightOFFLogic(); 
+		 LEDPowerOffOperationHandler(false); //执行关机程序
 		 #endif
 		 }
  }
