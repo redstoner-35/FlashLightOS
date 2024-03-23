@@ -87,6 +87,13 @@ typedef enum
  Error_Input_OCP  //输入过流故障
  }SystemErrorCodeDef;	
  
+//实现浮点数据处理的union
+typedef union
+  {
+	float DataIN;
+	unsigned int BINOut;
+	}BinaryOpDef; 
+ 
 //每个挡位的结构体
 typedef struct
  {
@@ -168,6 +175,7 @@ typedef struct
  }SYSPStateStrDef;	
 
 //外部函数
+float CalculateCurrentGearCurrent(void);//计算当前挡位实际运行电流
 void ResetThermalPID(void);//在不需要使能PID的时候重置温控器
 void SetupRTCForCounter(bool IsRTCStartCount);//设置RTC
 SystemErrorCodeDef TurnLightONLogic(INADoutSreDef *BattOutput);//开灯自检操作

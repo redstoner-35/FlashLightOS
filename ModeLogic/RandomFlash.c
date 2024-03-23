@@ -12,11 +12,7 @@
 
 //外部变量和union
 extern INADoutSreDef RunTimeBattTelemResult;
-typedef union
-  {
-	float DataIN;
-	unsigned int BINOut;
-	}BinaryOpDef;
+
 
 //随机数值
 static int psc=1024;

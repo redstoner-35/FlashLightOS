@@ -415,7 +415,7 @@ static bool IsAllowToSwitchGear(void)
 	return enabledcount>1?false:true; //当前挡位组数量大于1个挡位，可以换过去
 	}
 //计算当前挡位实际运行电流的函数
-static float CalculateCurrentGearCurrent(void)
+float CalculateCurrentGearCurrent(void)
   {
 	RampModeStaticStorDef *RampConfig;
   float CurrentDelta,Ratio;

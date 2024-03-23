@@ -62,6 +62,7 @@ void CustomFlashHandler(void)
   {
 	float buf,CurrentRatio;
 	ModeConfStr *CurrentMode;
+  BinaryOpDef BINbuf;
 	//实现延时功能
 	if(CustomFlashTimer>0)
 	  {
@@ -72,7 +73,8 @@ void CustomFlashHandler(void)
 	CurrentMode=GetCurrentModeConfig();//获取目前挡位信息
 	if(CurrentMode==NULL)return; //字符串为NULL
 	//设置随机数种子
-	buf=(float)(HT_MCTM0->CNTR^HT_GPTM0->CNTR);//读取系统心跳和PWM定时器的计数器值
+  BINbuf.DataIN=RunTimeBattTelemResult.BusPower;
+  buf=(unsigned int)(HT_GPTM0->CNTR^BINbuf.BINOut);//读取系统心跳定时器的计数器值然后和电池功率异或
 	buf+=BreathCurrent*500; //加上呼吸电流值
 	srand(((unsigned int)buf)^RunLogEntry.CurrentDataCRC);//将算出来的值和运行日志当前的CRC32异或作为随机种子
   //解析字符

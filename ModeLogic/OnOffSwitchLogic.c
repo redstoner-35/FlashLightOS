@@ -193,10 +193,8 @@ void PStateStateMachine(void)
 				CurrentLEDIndex=25;
 				SysPstatebuf.Pstate=PState_Standby; 
 				SetupRTCForCounter(true); //手电筒手动解锁，立即启用RTC
-				//解锁时如果位于的挡位大于额定功率的一半则执行跳档,避免解锁之后开幕雷击伤人
-        CurrentMode=GetCurrentModeConfig();
-        if(CurrentMode==NULL)break;//当前挡位为空
-			  if(CurrentMode->LEDCurrentHigh>=(FusedMaxCurrent/2))ModeNoMemoryRollBackHandler();
+				//解锁时如果位于的挡位大于额定电流的一半则执行跳档,避免解锁之后开幕雷击伤人
+			  if(CalculateCurrentGearCurrent()>=(FusedMaxCurrent/2))ModeNoMemoryRollBackHandler();
 				}
 			//单击+长按，开启月光档
 			else if(getSideKeyClickAndHoldEvent())

@@ -7,7 +7,7 @@
 
 #define MajorVersion 2
 #define MinorVersion 4
-#define HotfixVersion 0  //固件版本号
+#define HotfixVersion 2  //固件版本号
 
 //固件模式配置
 //#define FlashLightOS_Init_Mode //设定固件的编译模式，如果开启此注释则固件配置为初始化模式，此时将会允许工程师对FRU进行设置并允许校准功能
