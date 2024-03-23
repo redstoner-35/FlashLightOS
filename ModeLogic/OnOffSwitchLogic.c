@@ -15,6 +15,7 @@ volatile SYSPStateStrDef SysPstatebuf;
 extern int AutoOffTimer;
 const char *ResetBrightLEDControlStr="0010202010DE";
 const char *ErrorStrDuringPost="上电自检时";
+extern char OPPFaultCounter;
 
 //初始化系统的电源状态的状态机
 void PStateInit(void)
@@ -140,13 +141,14 @@ static void LEDPowerOnHandler(bool IsTac,INADoutSreDef *BattO)
 	}
 	
 //手电筒从LED点亮到关机时需要进行的处理函数
-void LEDPowerOffOperationHandler(void)
+static void LEDPowerOffOperationHandler(bool IsRollback)
   {
+	OPPFaultCounter=0;//重置过流保护计数器
 	CurrentTactalDim=100; //复位定时器
 	OperationTimer=0; //复位定时器
   SysPstatebuf.Pstate=PState_Standby;//返回到待机状态
 	TurnLightOFFLogic();
-  ModeNoMemoryRollBackHandler();//关闭主灯后检查挡位是否带记忆，不带的就自动复位
+  if(IsRollback)ModeNoMemoryRollBackHandler();//关闭主灯后检查挡位是否带记忆，不带的就自动复位		
   ResetPowerOffTimerForPoff();//重置定时器
 	ResetBreathStateMachine();
 	ResetRampMode();//重置无极调光模块
@@ -366,7 +368,7 @@ void PStateStateMachine(void)
 			//锁定模式开启的紧急月光，单击或者长按关机
 			if(RunLogEntry.Data.DataSec.IsFlashLightLocked&&(ShortPress==1||LongPressOnce)) 	
 			  {
-				LEDPowerOffOperationHandler(); //关闭主LED
+				LEDPowerOffOperationHandler(false); //关闭主LED
 				SysPstatebuf.Pstate=PState_Locked; //退回到锁定模式
 				CurrentMode=GetCurrentModeConfig(); //获取当前挡位的数据
         if(CurrentMode==NULL)break;//当前挡位为空	
@@ -410,7 +412,7 @@ void PStateStateMachine(void)
 		  //反向战术模式启用并长按开关，执行对应的操作
 			else if(ReverseTactalEnabled)
 			 {
-			 if(ShortPress==5)LEDPowerOffOperationHandler(); //连续按按键5次，执行关机任务	 
+			 if(ShortPress==5)LEDPowerOffOperationHandler(true); //连续按按键5次，执行关机任务	 
 			 else if(!LongPressHold)CurrentTactalDim=100;//按钮松开，电流按照默认值跑
 			 else switch(CfgFile.RevTactalSettings)
 			   {
@@ -423,7 +425,7 @@ void PStateStateMachine(void)
 			 }
 			//长按3秒或者定时器已经到时间了,关闭LED回到待机状态
 		  else if(LongPressOnce||AutoOffTimer==0)
-       LEDPowerOffOperationHandler();			 
+       LEDPowerOffOperationHandler(true);			 
 			break;
 			}
 		/*******************************************************************************************
@@ -436,7 +438,7 @@ void PStateStateMachine(void)
 			//当用户放开侧按或者定时器已经到时间后,回到战术模式的待机状态
 		  if(!LongPressHold||AutoOffTimer==0)
 			  {
-				LEDPowerOffOperationHandler(); //执行关机任务
+				LEDPowerOffOperationHandler(false); //执行关机任务
 				SysPstatebuf.Pstate=PState_NonHoldStandBy;//回到战术模式的待机状态
 				}					
 			break;

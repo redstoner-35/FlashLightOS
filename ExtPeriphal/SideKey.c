@@ -48,7 +48,7 @@ void SideKeyInit(void)
   {
 	CKCU_PeripClockConfig_TypeDef CLKConfig={{0}};
   EXTI_InitTypeDef EXTI_InitStruct;
-	UartPost(Msg_info,"SideKey","Configuring E-switch driver...");
+	UartPost(Msg_info,"SideKey","Configuring side switch...");
   //配置时钟打开GPIOC AFIO和EXTI系统
 	CLKConfig.Bit.PC=1;
   CLKConfig.Bit.AFIO=1;

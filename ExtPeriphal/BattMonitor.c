@@ -17,6 +17,7 @@ float UsedCapacity=0;
 bool IsEnabledCINL=false; //是否启用输入电流限制器
 float UnLoadBattVoltage=12; //用于判断电池质量的电压变量
 static char LVFlashTimer=0;
+char OPPFaultCounter=0; //过功率保护计数器
 extern float MaximumBatteryPower;//最大电池电流
 float InplValue=100; //限流设置电流(输出到buf)
 bool IsInplAlertOccurred=false; //输入限流告警是否发生的警报
@@ -148,7 +149,11 @@ void RunTimeBatteryTelemetry(void)
 		 return;
 	   }
  //输入电流限制环路(电池质量检测)
- if(RunTimeBattTelemResult.BusCurrent>InputCurrentLimitTrip)IsEnabledCINL=true;//限制器使能控制
+ if(RunTimeBattTelemResult.BusCurrent>InputCurrentLimitTrip)
+     {
+		 if(CurrentLowTIM>=16)IsEnabledCINL=true;//输入过流时间连续触发16个检测周期，限制器启动
+		 else CurrentLowTIM++; //时间没到继续计时
+		 }
  else if(RunTimeBattTelemResult.BusCurrent<InputCurrentLimitRelease)//输入电流低于警报解除值，开始计时
      {	 
      if(CurrentLowTIM>=80)IsEnabledCINL=false;		 
@@ -222,7 +227,9 @@ void RunTimeBatteryTelemetry(void)
 	   ProgramWarrantySign(Void_BattOverVoltage); //电池输入超压，自动注销保修
      RunTimeErrorReportHandler(Error_Input_OVP);//电池过压保护,这是严重故障,立即写log并停止驱动运行
 		 }
- if(RunTimeBattTelemResult.BusPower>MaximumBatteryPower)
+	 if(RunTimeBattTelemResult.BusPower>MaximumBatteryPower)OPPFaultCounter=OPPFaultCounter<12?OPPFaultCounter+1:12;
+	 else OPPFaultCounter=OPPFaultCounter>0?OPPFaultCounter-1:0;  //如果过功率保护值触发则开始计数
+   if(OPPFaultCounter==12)
      {
 	   ProgramWarrantySign(Void_BattOverPower); //电池输入超过驱动允许值，自动注销保修
 		 RunTimeErrorReportHandler(Error_Input_OCP);//电池过功率保护,这是严重故障,立即写log并停止驱动运行
