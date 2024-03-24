@@ -7,7 +7,7 @@
 
 #define MajorVersion 2
 #define MinorVersion 4
-#define HotfixVersion 6  //固件版本号
+#define HotfixVersion 8  //固件版本号
 
 //固件模式配置
 //#define FlashLightOS_Init_Mode //设定固件的编译模式，如果开启此注释则固件配置为初始化模式，此时将会允许工程师对FRU进行设置并允许校准功能
@@ -19,6 +19,7 @@
 #define HardwarePlatformString "Xtern Ripper" //硬件平台字符串信息，可以任意修改
 
 //性能参数定义
+#define HighCurrentRampSpeed 15 //在驱动进行爆闪等大电流阶跃的场合控制电流在切换边沿的斜率
 #define MaximumBatteryPowerAllowed 200 //驱动允许的最大电池输入功率，单位W
 #define MainBuckOffTimeOut 5 //主Buck在LED熄灭命令之后的延时值,输入8表示1秒
 #define BreathTIMFreq 50 //负责生成平滑呼吸灯效果的定时器频率(单位Hz)，越高越平滑

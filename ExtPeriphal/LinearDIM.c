@@ -409,7 +409,8 @@ void DoLinearDimControl(float Current,bool IsMainLEDEnabled)
  bool IsBuckPowerOff,resultOK=true,DAResult[2],IsAuxBuckEnabled; 
  static bool AuxDACSetState=true;
  static float LastCurrent=0;
- float DACVID,Comp,Dimmratio;
+ int Dimmratio;
+ float DACVID,Comp;
  bool IsReturnFromPowerDown=false;
  /*********************************************************
  首先系统会对传入的电流参数进行控制和限幅，然后系统会根据处
@@ -493,12 +494,12 @@ void DoLinearDimControl(float Current,bool IsMainLEDEnabled)
     { 
 		#ifndef FlashLightOS_Init_Mode
 		//如果电流过大的时候立即关闭控制器将会导致哒哒哒的声音，因此需要生成ramp让电流缓降
-		if(LastCurrent>(FusedMaxCurrent/3))for(Dimmratio=1.00;Dimmratio>0;Dimmratio-=0.02)
+		if(LastCurrent>(FusedMaxCurrent/3))for(Dimmratio=100;Dimmratio>=0;Dimmratio-=5)
 			{
-			DACVID=(LastCurrent*30)+40;
-		  DACVID*=Dimmratio*Comp; //计算VID
+			DACVID=((LastCurrent*30)+40)*(float)Dimmratio;
+		  DACVID/=100*Comp;//计算VID
 			if(!AD5693R_SetOutput(DACVID/1000,MainBuckAD5693ADDR))RunTimeErrorReportHandler(Error_DAC_Logic); //设置DAC,如果出错就退出
-			delay_us(150); //生成从最高电流逐步slew到0的ramp，避免ΔI过高引起驱动发出哒哒哒得声音
+			delay_us(HighCurrentRampSpeed); //生成从最高电流逐步slew到0的ramp，避免ΔI过高引起驱动发出哒哒哒得声音
 			}
 		#endif
     SetTogglePin(false);
@@ -536,10 +537,11 @@ void DoLinearDimControl(float Current,bool IsMainLEDEnabled)
 		 delay_ms(2);
 		 }
 	 #ifndef FlashLightOS_Init_Mode
-	 if(LastCurrent==0&&!IsAuxBuckEnabled)for(Dimmratio=0;Dimmratio<=1.00;Dimmratio+=0.02)
+	 if(LastCurrent==0&&!IsAuxBuckEnabled)for(Dimmratio=0;Dimmratio<=100;Dimmratio+=5)
 	   {
-		 DAResult[0]=AD5693R_SetOutput(DACVID*Dimmratio,MainBuckAD5693ADDR);
-		 delay_us(100); //生成从0逐步slew到最高电流的ramp，避免ΔI过高引起驱动发出哒哒哒的声音 
+		 DAResult[0]=AD5693R_SetOutput((DACVID*(float)Dimmratio)/100,MainBuckAD5693ADDR);
+		 if(!DAResult[0])break;//DAC无响应，结束循环
+		 delay_us(HighCurrentRampSpeed); //生成从0逐步slew到最高电流的ramp，避免ΔI过高引起驱动发出哒哒哒的声音 
 		 }
 	 else DAResult[0]=AD5693R_SetOutput(DACVID,IsAuxBuckEnabled?AuxBuckAD5693ADDR:MainBuckAD5693ADDR); //设置VID
 	 #else

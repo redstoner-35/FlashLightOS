@@ -71,6 +71,12 @@ void verHandler(void)
      TextPtr=DisplayLEDType(&FRU);
 		 UartPrintf("%s V%d.%d for %s LED.",HardwarePlatformString,FRU.FRUBlock.Data.Data.FRUVersion[1],FRU.FRUBlock.Data.Data.FRUVersion[2],TextPtr);		 
 		 TextPtr=FRU.FRUBlock.Data.Data.SerialNumber;//获取序列号字符串
+		 if(AccountState!=Log_Perm_Guest)
+		    {
+		    memset(EncryptBUF,0,sizeof(EncryptBUF));
+			  memcpy(EncryptBUF,FRU.FRUBlock.Data.Data.ResetPassword,5);
+			  UartPrintf("\r\n重置PIN密码: '%s'",EncryptBUF); //当用户登录时显示重置密码
+				}
 		 }
   else UARTPuts((char *)TextPtr);//读取失败，显示未知  
 	UartPrintf("\r\n产品序列号:%s",TextPtr);

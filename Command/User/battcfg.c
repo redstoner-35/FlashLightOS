@@ -22,13 +22,13 @@ const char *battcfgArgument(int ArgCount)
 	switch(ArgCount)
 	  {
 		case 0:
-		case 1:return "指定电池组的低电压警告电压(低于此电压后驱动减少输出电流)";
+		case 1:return "指定电池组的低电压降功率警告阈值电压";
 		case 2:
-		case 3:return "指定电池组的低电压关机保护电压.";
+		case 3:return "指定电池组的低电压关机保护阈值电压.";
     case 4:
 		case 5:return "设置电池组的满电电压";
 		case 6:
-		case 7:return "设置电池输入的过压保护电压";
+		case 7:return "设置电池输入的过压保护阈值电压";
 		case 8:
 		case 9:return "启用库仑计的自学习模式学习电池容量";
 		case 10:

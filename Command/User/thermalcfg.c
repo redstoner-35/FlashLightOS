@@ -20,11 +20,11 @@ const char *thremalcfgArgument(int ArgCount)
 	switch(ArgCount)
 	  {
     case 0:
-		case 1:return "设置LED基板和驱动MOS管温度的温度权重值";
+		case 1:return "设置手电内部加权温度的各温度输入权重值";
     case 2:
 		case 3:return "设置触发PID温控启动的手电内部温度阈值.";
 		case 4:
-		case 5:return "设置PID温控器的目标手电内部温度.";
+		case 5:return "设置PID温控器所维持的目标手电内部温度.";
 		case 6:
 		case 7:return "设置PID温控禁用的手电内部温度阈值.";	  
 		case 8:

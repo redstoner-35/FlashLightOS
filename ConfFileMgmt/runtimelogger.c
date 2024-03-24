@@ -133,15 +133,19 @@ void RunTimeDataLogging(void)
 	 EffCalcBuf=RunLogEntry.Data.DataSec.AverageLEDVf*RunLogEntry.Data.DataSec.AverageLEDIf;//加入输出功率
    EffCalcBuf/=RunLogEntry.Data.DataSec.AverageBatteryPower;//除以输入功率的平均值得到效率
    EffCalcBuf*=(float)100;//将算出的值*100得到百分比
-   if(EffCalcBuf>99)EffCalcBuf=99;
-	 if(EffCalcBuf<5)EffCalcBuf=5;//算出的效率值进行限幅确保大于5且小于99
+	 if(EffCalcBuf>99)EffCalcBuf=101; //设置为无效值标记出错
+	 if(EffCalcBuf<5)EffCalcBuf=5;//算出的效率值进行限幅确保大于5
    RunLogEntry.Data.DataSec.AverageDriverEfficiency=EffCalcBuf;
    //驱动的峰值效率计算 
-   for(i=4;i>0;i--)MaxEfficiencyCalcBuf[i]=MaxEfficiencyCalcBuf[i-1];//搬运数据
-   MaxEfficiencyCalcBuf[0]=RunLogEntry.Data.DataSec.AverageDriverEfficiency;//将刚刚算出的平均效率加入到计算区域内
-   EffCalcBuf=-10; //将效率值设置为负数来方便找到最高的效率点
-   for(i=0;i<5;i++)EffCalcBuf=fmaxf(MaxEfficiencyCalcBuf[i],EffCalcBuf);//取一段时间内的最大值
-   RunLogEntry.Data.DataSec.MaximumEfficiency=EffCalcBuf;//峰值效率
+   if(RunLogEntry.Data.DataSec.AverageDriverEfficiency!=101)
+	    {		 
+		  for(i=4;i>0;i--)MaxEfficiencyCalcBuf[i]=MaxEfficiencyCalcBuf[i-1];//搬运数据
+      MaxEfficiencyCalcBuf[0]=RunLogEntry.Data.DataSec.AverageDriverEfficiency;//将刚刚算出的平均效率加入到计算区域内 
+			EffCalcBuf=-10; //将效率值设置为负数来方便找到最高的效率点
+      for(i=0;i<5;i++)EffCalcBuf=fmaxf(MaxEfficiencyCalcBuf[i],EffCalcBuf);//取一段时间内的最大值
+      RunLogEntry.Data.DataSec.MaximumEfficiency=EffCalcBuf;//峰值效率
+			}
+   else RunLogEntry.Data.DataSec.MaximumEfficiency=101;//标记效率计算出错
 	 }
  else if(SysPstatebuf.ToggledFlash&&SysPstatebuf.TargetCurrent>0)//LED点亮运行时累加电压和电流数据进去
    {
