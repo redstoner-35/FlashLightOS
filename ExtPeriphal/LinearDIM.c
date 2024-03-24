@@ -365,18 +365,17 @@ void TurnLightOFFLogic(void)
  //复位侧按LED管理器并计算运行日志的CRC32
  CurrentLEDIndex=0;
  LED_Reset();//复位LED管理器
- RunLogEntry.CurrentDataCRC=CalcRunLogCRC32(&RunLogEntry.Data); //计算新的CRC-32
  } 
 //放在系统延时里面进行积分的函数
 void LEDShortCounter(void)
  {
  //常亮档的短路检测
  if(!SysPstatebuf.IsLEDShorted)ShortCount=0;//短路没发生
- else if(ShortCount==3)
+ else if(ShortCount>=6)
     {
 		SysPstatebuf.IsLEDShorted=false;//复位标志位
 		ShortCount=0;
-		//LED短路超过0.375秒,这是严重故障,立即写log并停止驱动运行
+		//LED短路超过0.75秒,这是严重故障,立即写log并停止驱动运行
 	  RunTimeErrorReportHandler(Error_LED_Short);
 		return;
 	  }
@@ -409,7 +408,8 @@ void DoLinearDimControl(float Current,bool IsMainLEDEnabled)
  DACInitStrDef DACInitStr;
  bool IsBuckPowerOff,resultOK=true,DAResult[2],IsAuxBuckEnabled; 
  static bool AuxDACSetState=true;
- float DACVID,Comp;
+ static float LastCurrent=0;
+ float DACVID,Comp,Dimmratio;
  bool IsReturnFromPowerDown=false;
  /*********************************************************
  首先系统会对传入的电流参数进行控制和限幅，然后系统会根据处
@@ -489,7 +489,20 @@ void DoLinearDimControl(float Current,bool IsMainLEDEnabled)
  当前LED电流为0，且主LED设置为关闭，因此设置PWMPin=0使得两
  个buck全部关闭输出令LED熄灭
  *********************************************************/	 
- if(Current==0||!IsMainLEDEnabled)SetTogglePin(false);
+ if(Current==0||!IsMainLEDEnabled)
+    { 
+		#ifndef FlashLightOS_Init_Mode
+		//如果电流过大的时候立即关闭控制器将会导致哒哒哒的声音，因此需要生成ramp让电流缓降
+		if(LastCurrent>(FusedMaxCurrent/3))for(Dimmratio=1.00;Dimmratio>0;Dimmratio-=0.02)
+			{
+			DACVID=(LastCurrent*30)+40;
+		  DACVID*=Dimmratio*Comp; //计算VID
+			if(!AD5693R_SetOutput(DACVID/1000,MainBuckAD5693ADDR))RunTimeErrorReportHandler(Error_DAC_Logic); //设置DAC,如果出错就退出
+			delay_us(150); //生成从最高电流逐步slew到0的ramp，避免ΔI过高引起驱动发出哒哒哒得声音
+			}
+		#endif
+    SetTogglePin(false);
+		}
  /*********************************************************
  当前LED处于运行状态，根据输入的电流指令进行主副buck和DAC的
  VID控制，以及toggle引脚的控制
@@ -522,9 +535,20 @@ void DoLinearDimControl(float Current,bool IsMainLEDEnabled)
 		 AD5693R_SetOutput(0.27,AuxBuckAD5693ADDR);
 		 delay_ms(2);
 		 }
+	 #ifndef FlashLightOS_Init_Mode
+	 if(LastCurrent==0&&!IsAuxBuckEnabled)for(Dimmratio=0;Dimmratio<=1.00;Dimmratio+=0.02)
+	   {
+		 DAResult[0]=AD5693R_SetOutput(DACVID*Dimmratio,MainBuckAD5693ADDR);
+		 delay_us(100); //生成从0逐步slew到最高电流的ramp，避免ΔI过高引起驱动发出哒哒哒的声音 
+		 }
+	 else DAResult[0]=AD5693R_SetOutput(DACVID,IsAuxBuckEnabled?AuxBuckAD5693ADDR:MainBuckAD5693ADDR); //设置VID
+	 #else
 	 DAResult[0]=AD5693R_SetOutput(DACVID,IsAuxBuckEnabled?AuxBuckAD5693ADDR:MainBuckAD5693ADDR); //设置VID
+	 #endif
 	 if(!DAResult[0]||!DAResult[1])RunTimeErrorReportHandler(Error_DAC_Logic); //DAC无响应,这是严重故障,立即写log并停止驱动运行 
 	 }
+   //存储上一次进行调节的电流(如果LED启用则存储电流值否则写0)
+	 LastCurrent=IsMainLEDEnabled?Current:0;
  }	
  
 //从关灯状态转换到开灯状态,上电自检的逻辑
@@ -758,6 +782,8 @@ void RuntimeModeCurrentHandler(void)
  if(RunLogEntry.Data.DataSec.IsLowVoltageAlert&&Current>LVAlertCurrentLimit)Current=LVAlertCurrentLimit;  //当低电压告警发生时限制输出电流
  Current*=(float)(CurrentTactalDim>100?100:CurrentTactalDim)/(float)100; //根据反向战术模式的设置取设定亮度
  /* 应用温度控制设置算出来的电流 */
+ if(Throttle<5)Throttle=5;
+ if(Throttle>100)Throttle=100; //PID调节值限幅
  if(Throttle<100) //PID调节值低于100，温控启动
    {
 	 ThermalUnLimCurrent=Current; //存储未设置温控之前的挡位电流

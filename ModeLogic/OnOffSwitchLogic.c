@@ -103,18 +103,7 @@ void SystemRunLogProcessHandler(void)
 	//LED熄灭且时间未到开始计时
 	else if(OperationTimer<80)OperationTimer++;
 	}
-/*
-系统运行时出现错误的报错函数，负责生成日志并向电
-源管理状态机提交错误代码和新的电源状态。
-*/
-void RunTimeErrorReportHandler(SystemErrorCodeDef ErrorCode)
-  {
-  SysPstatebuf.ErrorCode=ErrorCode;
-	CollectLoginfo("正常运行中",&RunTimeBattTelemResult);
-	SysPstatebuf.Pstate=PState_Error;
-	TurnLightOFFLogic();
-	return;
-	}
+
 //手电筒进行开机自检操作的处理函数
 static void LEDPowerOnHandler(bool IsTac,INADoutSreDef *BattO)
   {
@@ -137,16 +126,16 @@ static void LEDPowerOnHandler(bool IsTac,INADoutSreDef *BattO)
 	  ResetCustomFlashControl();//复位自定义闪控制
 		MorseSenderReset();//关灯后重置呼吸和摩尔斯电码发送的状态机
 		}
-	
 	}
-	
+
 //手电筒从LED点亮到关机时需要进行的处理函数
 void LEDPowerOffOperationHandler(bool IsRollback)
   {
 	OPPFaultCounter=0;//重置过流保护计数器
 	CurrentTactalDim=100; //复位定时器
-	OperationTimer=0; //复位定时器
-  SysPstatebuf.Pstate=PState_Standby;//返回到待机状态
+	OperationTimer=(SysPstatebuf.ErrorCode!=Error_None)?80:0; //复位定时器(如果遇到错误则直接触发立即存档)
+  if(SysPstatebuf.ErrorCode==Error_None)SysPstatebuf.Pstate=PState_Standby;//返回到待机状态
+	else SysPstatebuf.Pstate=PState_Error; //出现错误，去到错误状态
 	TurnLightOFFLogic();
   if(IsRollback)ModeNoMemoryRollBackHandler();//关闭主灯后检查挡位是否带记忆，不带的就自动复位		
   ResetPowerOffTimerForPoff();//重置定时器
@@ -158,6 +147,18 @@ void LEDPowerOffOperationHandler(bool IsRollback)
   RunLogEntry.Data.DataSec.IsLowVoltageAlert=false;//清除低电压警报
   RunLogEntry.CurrentDataCRC=CalcRunLogCRC32(&RunLogEntry.Data); //计算运行日志的CRC32
 	SetupRTCForCounter(true); //手电筒关机，启用RTC计时实现自动锁定
+	}
+/*
+系统运行时出现错误的报错函数，负责生成日志并向电
+源管理状态机提交错误代码和新的电源状态。
+*/
+void RunTimeErrorReportHandler(SystemErrorCodeDef ErrorCode)
+  {
+  SysPstatebuf.ErrorCode=ErrorCode;
+	CollectLoginfo("正常运行中",&RunTimeBattTelemResult);
+	SysPstatebuf.Pstate=PState_Error;
+	LEDPowerOffOperationHandler(false); //关闭LED
+	return;
 	}
 /*
 系统的状态机处理函数。该函数主要负责根据用户操作

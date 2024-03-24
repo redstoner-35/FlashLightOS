@@ -7,10 +7,10 @@
 
 
 //字符串
-static const char *IllegalTemperature="\r\n错误:PID温控模块的%s温度应当在%.1f-%.1f(单位摄氏度)之间!";
-static const char *TemperatureHasSet="\r\nPID温控模块的启动温度阈值已被设置为%.1f摄氏度.";
-static const char *IllegalPIDParam="\r\n错误:PID温控模块的%s参数值应在0-10之间!";
-static const char *PIDParamHasSet="\r\nPID温控模块的%s参数值已被设置为%.2f.";
+static const char *IllegalTemperature="\r\n错误:温控模块的%s温度应当在%.1f-%.1f摄氏度之间!";
+static const char *TemperatureHasSet="\r\n温控模块的%s温度已被设置为%.1f摄氏度.";
+static const char *IllegalPIDParam="\r\n错误:温控模块的%s参数值应在0-10之间!";
+static const char *PIDParamHasSet="\r\n温控模块的%s参数值已被设置为%.2f.";
 static const char *PIDTCName="\r\nPID温控";
 static const char *LEDThermalWeight="%s降档权重: LED温度=%.2f%%,驱动MOS温度=%.2f%%";
 
@@ -53,7 +53,7 @@ void thermalcfghandler(void)
 		if(buf2==NAN||buf2<5||buf2>95)
 		  {
 			DisplayIllegalParam(Param,22,8);//显示用户输入了非法参数
-			UARTPuts("\r\n您应当将指定一个5-95(单位%)的数值作为LED降档曲线的权重值.");
+			UARTPuts("\r\n您应当将指定一个5-95(%)的数值作为LED降档曲线的权重值.");
 			}
 		else
 		  {

@@ -39,6 +39,8 @@ extern float UsedCapacity;
 //命令处理主函数
 void runlogviewHandler(void)
   {
+	float buf;
+	//显示数据
 	if(!IsRunTimeLoggingEnabled)
 		UartPrintf((char *)Rlvstr[9],"已被管理员禁用");
 	else if(!RunLogEntry.Data.DataSec.IsRunlogHasContent)
@@ -53,14 +55,11 @@ void runlogviewHandler(void)
 		UartPrintf("\r\n%sCRC-32 : 0x%08X",Rlvstr[7],CalcRunLogCRC32(&RunLogEntry.Data));	
 		UartPrintf("%s总记录次数 : %d次",Rlvstr[7],RunLogEntry.Data.DataSec.TotalLogCount);	
 		UartPrintf("%s序号 : #%d\r\n",Rlvstr[7],RunLogEntry.Data.DataSec.LogIncrementCode);	
-		
 		PrintStatuBar("系统主LED");
-		UartPrintf("%s平均电流 : %.2fA",Rlvstr[0],RunLogEntry.Data.DataSec.AverageLEDIf);
-		UartPrintf("%s最大电流 : %.2fA",Rlvstr[0],RunLogEntry.Data.DataSec.MaximumLEDIf);	
-		UartPrintf("%s平均压降 : %.2fV",Rlvstr[0],RunLogEntry.Data.DataSec.AverageLEDVf);
-		UartPrintf("%s最大压降 : %.2fV",Rlvstr[0],RunLogEntry.Data.DataSec.MaximumLEDVf);	
-		UartPrintf("%s平均功率 : %.2fW",Rlvstr[0],RunLogEntry.Data.DataSec.AverageLEDIf*RunLogEntry.Data.DataSec.AverageLEDVf);
-		UartPrintf("%s最大功率 : %.2fW",Rlvstr[0],RunLogEntry.Data.DataSec.MaximumLEDIf*RunLogEntry.Data.DataSec.MaximumLEDVf);		
+		UartPrintf("%s平均/最大电流 : %.2fA / %.2fA",Rlvstr[0],RunLogEntry.Data.DataSec.AverageLEDIf,RunLogEntry.Data.DataSec.MaximumLEDIf);
+		UartPrintf("%s平均/最大压降 : %.2fV / %.2fV",Rlvstr[0],RunLogEntry.Data.DataSec.AverageLEDVf,RunLogEntry.Data.DataSec.MaximumLEDVf);
+		buf=RunLogEntry.Data.DataSec.MaximumLEDIf*RunLogEntry.Data.DataSec.MaximumLEDVf; //计算最大功率
+		UartPrintf("%s平均/最大功率 : %.2fW / %.2fW",Rlvstr[0],RunLogEntry.Data.DataSec.AverageLEDIf*RunLogEntry.Data.DataSec.AverageLEDVf,buf);
 		UartPrintf("%s平均运行温度 : ",Rlvstr[0]);	
 		if(RunLogEntry.Data.DataSec.AverageLEDTemp!=NAN)
 		  UartPrintf((char *)Rlvstr[5],RunLogEntry.Data.DataSec.AverageLEDTemp);
@@ -83,7 +82,9 @@ void runlogviewHandler(void)
 		  UartPrintf((char *)Rlvstr[5],RunLogEntry.Data.DataSec.MaximumSPSTemp);				
 	  else
 			UARTPuts((char *)Rlvstr[4]);
+		#ifdef FlashLightOS_Init_Mode 
 		UartPrintf("%s平均/最高温度降档比例 : %.1f%% / %.1f%%",Rlvstr[1],RunLogEntry.Data.DataSec.ThermalStepDownValue,RunLogEntry.Data.DataSec.MaximumThermalStepDown);	
+		#endif
 		if((RunLogEntry.Data.DataSec.AverageLEDIf*RunLogEntry.Data.DataSec.AverageLEDVf)<RunLogEntry.Data.DataSec.AverageBatteryPower) //如果输入小于等于输出则驱动不显示功率
 		  UartPrintf("%s平均/峰值运行效率 : %.1f%% / %.1f%%",Rlvstr[1],RunLogEntry.Data.DataSec.AverageDriverEfficiency,RunLogEntry.Data.DataSec.MaximumEfficiency);
 		UartPrintf("%s强制极亮次数 : %d",Rlvstr[2],RunLogEntry.Data.DataSec.TotalMomtTurboCount);
@@ -94,10 +95,8 @@ void runlogviewHandler(void)
 	  UartPrintf("%s最低电压 : %.3fV",Rlvstr[3],RunLogEntry.Data.DataSec.MinimumBatteryVoltage);
     UartPrintf("%s平均电压 : %.3fV",Rlvstr[3],RunLogEntry.Data.DataSec.AverageBatteryVoltage);
 		UartPrintf("%s最高电压 : %.3fV",Rlvstr[3],RunLogEntry.Data.DataSec.MaximumBatteryVoltage);	
-		UartPrintf("%s平均输出电流 : %.2fA",Rlvstr[3],RunLogEntry.Data.DataSec.AverageBatteryCurrent);
-		UartPrintf("%s最大输出电流 : %.2fA",Rlvstr[3],RunLogEntry.Data.DataSec.MaximumBatteryCurrent);	
-		UartPrintf("%s平均输出功率 : %.2fW",Rlvstr[3],RunLogEntry.Data.DataSec.AverageBatteryPower);
-		UartPrintf("%s最大输出功率 : %.2fW",Rlvstr[3],RunLogEntry.Data.DataSec.MaximumBatteryPower);	
+		UartPrintf("%s平均/最大输出电流 : %.2fA / %.2fA",Rlvstr[3],RunLogEntry.Data.DataSec.AverageBatteryCurrent,RunLogEntry.Data.DataSec.MaximumBatteryCurrent);
+		UartPrintf("%s平均/最大输出功率 : %.2fW / %.2fW",Rlvstr[3],RunLogEntry.Data.DataSec.AverageBatteryPower,RunLogEntry.Data.DataSec.MaximumBatteryPower);
     UartPrintf("%s总放电量 : %.1fmAH",Rlvstr[3],RunLogEntry.Data.DataSec.TotalBatteryCapDischarged);			
 		if(RunLogEntry.Data.DataSec.BattUsage.IsCalibrationDone)
 		  {
@@ -109,7 +108,7 @@ void runlogviewHandler(void)
 		UartPrintf("%s自学习已启用 : %s\r\n",Rlvstr[8],RunLogEntry.Data.DataSec.BattUsage.IsLearningEnabled?"是":"否");
 		PrintStatuBar("告警统计");
 		UartPrintf((char *)Rlvstr[6],"电池欠压",RunLogEntry.Data.DataSec.LowVoltageShutDownCount);
-		UartPrintf((char *)Rlvstr[6],"输入过功率/限流及LED过流",RunLogEntry.Data.DataSec.OCPFaultCount);	
+		UartPrintf((char *)Rlvstr[6],"输入/LED过功率或限流",RunLogEntry.Data.DataSec.OCPFaultCount);	
 		UartPrintf((char *)Rlvstr[6],"LED开/短路",RunLogEntry.Data.DataSec.LEDOpenShortCount);
 		UartPrintf((char *)Rlvstr[6],"LED过热",RunLogEntry.Data.DataSec.LEDThermalFaultCount);
 		UartPrintf((char *)Rlvstr[6],"驱动过热",RunLogEntry.Data.DataSec.DriverThermalFaultCount);
