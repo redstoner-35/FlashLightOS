@@ -1,0 +1,31 @@
+#ifndef _LPassword
+#define _LPassword
+
+/*
+被加密的管理员用户ADMIN和超级用户root的默认密码
+密码使用AES-256加密，可以通过'cptextgen'命令生成，
+然后替换掉下方数组的内容即可，密码长度需要小于或
+等于16位。为了安全起见本固件的用户密码在单片机片
+内RAM区域和配置ROM区域均使用AES256密文存储。
+*/
+
+//使用AES256加密的超级用户(厂家工程师权限)的默认登录密码
+const char RootPassword[16]=
+{
+/* Encrypted Raw text 'Nje7^8#a5Be&d' */
+0x8D,0x09,0xEF,0x0B,0x63,0x12,0x85,0xA8,
+0x05,0xC6,0x91,0x02,0x20,0xA6,0x9F,0xD7
+};
+
+//使用AES256加密的管理员用户的默认登录密码
+const char AdminPassword[16]=
+{
+/* AES256加密的文本 'ADMIN' */
+0x62,0xFE,0xF0,0xC7,0x38,0x0B,0x08,0x04,
+0x8E,0xBF,0x67,0x0F,0x6B,0x09,0x4C,0xA3
+};	
+
+//管理员账户的用户名，应在16个字符内
+#define AdminAccountName "ADMIN"
+
+#endif

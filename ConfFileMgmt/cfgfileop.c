@@ -9,6 +9,7 @@
 #include "FRU.h"
 #include "selftestlogger.h"
 #include "CurrentReadComp.h"
+#include "Password.h"
 
 ConfUnionDef CfgFileUnion;
 const char ZeroConstBuf[32]={0};
@@ -25,25 +26,6 @@ static const char *RestoreCfg="Restoring %s config file...";
 //外部变量
 extern int DeepSleepTimer;  //外部休眠定时器
 
-/*
-被加密的管理员用户ADMIN和超级用户root的默认密码
-密码使用AES-256加密，可以通过'cptextgen'命令生成，
-然后替换掉下方数组的内容即可，密码长度需要小于或
-等于16位。为了安全起见本固件的用户密码在单片机片
-内RAM区域和配置ROM区域均使用AES256密文存储。
-*/
-const char RootPassword[16]=
-{
-/* Encrypted Raw text 'Nje7^8#a5Be&d' */
-0x8D,0x09,0xEF,0x0B,0x63,0x12,0x85,0xA8,
-0x05,0xC6,0x91,0x02,0x20,0xA6,0x9F,0xD7
-};
-const char AdminPassword[16]=
-{
-/* AES256加密的文本 'ADMIN' */
-0x62,0xFE,0xF0,0xC7,0x38,0x0B,0x08,0x04,
-0x8E,0xBF,0x67,0x0F,0x6B,0x09,0x4C,0xA3
-};	
 //加载默认的配置
 void LoadDefaultConf(bool IsOverridePassword)
  {

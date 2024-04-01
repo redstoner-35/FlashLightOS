@@ -154,10 +154,11 @@ void LEDPowerOffOperationHandler(bool IsRollback)
 */
 void RunTimeErrorReportHandler(SystemErrorCodeDef ErrorCode)
   {
-  SysPstatebuf.ErrorCode=ErrorCode;
+	if(SysPstatebuf.ErrorCode!=Error_None)return; //已经报告了一个错误，不执行报告
+	SysPstatebuf.ErrorCode=ErrorCode;
 	CollectLoginfo("正常运行中",&RunTimeBattTelemResult);
-	SysPstatebuf.Pstate=PState_Error;
 	LEDPowerOffOperationHandler(false); //关闭LED
+  SysPstatebuf.Pstate=PState_Error; //设置为错误状态
 	return;
 	}
 /*
@@ -345,6 +346,7 @@ void PStateStateMachine(void)
 				MorseSenderReset();//复位所有的特殊功能状态机
 				if(LongPressOnce) //如果用户长按手动清除错误码则回到待机或锁定状态
 				  {
+					while(getSideKeyHoldEvent())SideKey_LogicHandler();//在这里等待用户放开侧按开关，避免解锁后调档发生
 					SysPstatebuf.Pstate=RunLogEntry.Data.DataSec.IsFlashLightLocked?PState_Standby:PState_Locked;
 					SysPstatebuf.ErrorCode=Error_None; 
 					}

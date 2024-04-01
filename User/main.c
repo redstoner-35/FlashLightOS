@@ -108,7 +108,7 @@ int main(void)
 	 //手电筒处于运行状态，跳过一些运行时不需要处理的浪费时间的函数
    if(SysPstatebuf.Pstate==PState_LEDOn||SysPstatebuf.Pstate==PState_LEDOnNonHold)continue;
    SystemRunLogProcessHandler(); //负责管理将日志写入到ROM的管理函数
-	 AutoPowerOffTimerHandler();//处理自动关机定时器
+	 AuroPowerOffTIM();//处理自动关机定时器
 	 LoggerHeader_AutoUpdateHandler();//记录器自动更新头部数据	   	 
 	 #else
 	 SideKey_LogicHandler();//处理侧按按键事务

@@ -58,12 +58,6 @@ void DisplayBatteryValueHandler(void)
 			DisplayBatteryCapacity();//显示电池容量
 		}
 	}
-//挡位自动关机定时器的累减处理
-void AutoPowerOffTimerHandler(void)
-  {
-	if(SysPstatebuf.Pstate!=PState_LEDOn&&SysPstatebuf.Pstate!=PState_LEDOnNonHold)return;//LED未开启不进行计时
-	if(AutoOffTimer>0)AutoOffTimer--;//每0.125秒减一次自动关机计时器
-	}
 //挡位复位时自动重置定时器
 void ResetPowerOffTimerForPoff(void)
   {

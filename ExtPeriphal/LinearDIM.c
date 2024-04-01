@@ -337,7 +337,6 @@ void LinearDIM_POR(void)
  SetTogglePin(false); //PWM pin关闭
  delay_ms(10);
  Set3V3AUXDCDC(false); //主buck的控制器关闭10mS后禁用3V3 DCDC		
- IsDisableBattCheck=false; //默认开启电池质量检测
  #endif
 }
 //从开灯状态切换到关灯状态的逻辑
@@ -408,8 +407,10 @@ void DoLinearDimControl(float Current,bool IsMainLEDEnabled)
  DACInitStrDef DACInitStr;
  bool IsBuckPowerOff,resultOK=true,DAResult[2],IsAuxBuckEnabled; 
  static bool AuxDACSetState=true;
+ #ifndef FlashLightOS_Init_Mode
  static float LastCurrent=0;
  int Dimmratio;
+ #endif
  float DACVID,Comp;
  bool IsReturnFromPowerDown=false;
  /*********************************************************
@@ -549,8 +550,10 @@ void DoLinearDimControl(float Current,bool IsMainLEDEnabled)
 	 #endif
 	 if(!DAResult[0]||!DAResult[1])RunTimeErrorReportHandler(Error_DAC_Logic); //DAC无响应,这是严重故障,立即写log并停止驱动运行 
 	 }
-   //存储上一次进行调节的电流(如果LED启用则存储电流值否则写0)
-	 LastCurrent=IsMainLEDEnabled?Current:0;
+ #ifndef FlashLightOS_Init_Mode	
+ //存储上一次进行调节的电流(如果LED启用则存储电流值否则写0)
+ LastCurrent=IsMainLEDEnabled?Current:0;
+ #endif
  }	
  
 //从关灯状态转换到开灯状态,上电自检的逻辑

@@ -220,11 +220,13 @@ extern bool TimerCanTrigger;//内部flag 保证检测逻辑跑完定时器才能
 extern int DeepSleepTimer;//深度睡眠定时器
 extern float FusedMaxCurrent;//熔断的最大电流
 
+//负责自动关机的函数的inline定义
+#define AuroPowerOffTIM() if(AutoOffTimer>0)AutoOffTimer--
+
 //函数
 void SystemRunLogProcessHandler(void); //处理运行日志写入的函数
 void DisplayBatteryValueHandler(void);//电池电量的显示
 void ResetPowerOffTimerForPoff(void);//挡位复位时自动重置定时器
-void AutoPowerOffTimerHandler(void);//自动关机计时器的处理
 void DisplayUserWhenTimerOff(void);
 void DisplayUserWhenTimerOn(void);//当用户使能或者除能自动关机定时器时，指示用户定时器的时间
 void DriverLockPOR(void);//初始化上电锁定设置
