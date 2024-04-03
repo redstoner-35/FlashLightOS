@@ -15,7 +15,15 @@ static bool IsKeyPressed=false;
 static char MinMaxBrightNessStrobeTimer=0;
 static bool IsEnabledLimitTimer=false;
 bool IsRampAdjusting=false; //外部引用，无极调光是否在调节
+static RampModeStaticStorDef EmergencyMoonStor; //紧急月光调光挡位专用的调光存储
 
+//根据当前挡位信息获得目标需要处理的无极调光亮度结构体所在的位置
+static RampModeStaticStorDef *GetRampConfigStrIdx(void)
+ {
+ if(RunLogEntry.Data.DataSec.IsFlashLightLocked)return &EmergencyMoonStor;
+ else return &RunLogEntry.Data.DataSec.RampModeStor[GetRampConfigIndexFromMode()];
+ }
+ 
 //强制重置当前挡位的函数
 bool ResetRampBrightness(void)
  {
@@ -23,9 +31,15 @@ bool ResetRampBrightness(void)
  RampModeStaticStorDef *RampConfig;
  CurrentMode=GetCurrentModeConfig();//获取目前挡位信息
  if(CurrentMode==NULL||CurrentMode->Mode!=LightMode_Ramp)return false; //挡位信息为空
- RampConfig=&RunLogEntry.Data.DataSec.RampModeStor[GetRampConfigIndexFromMode()];//根据当前挡位信息获得目标需要处理的无极调光亮度结构体所在的位置
- RampConfig->RampModeDirection=false;
- RampConfig->RampModeConf=CfgFile.DefaultLevel[GetRampConfigIndexFromMode()]; //填写默认挡位
+ RampConfig=GetRampConfigStrIdx();
+ if(RunLogEntry.Data.DataSec.IsFlashLightLocked) //锁定模式的紧急月光，设置为0	
+     {
+		 IsEnabledLimitTimer=false; //禁用闪烁提示定时器
+     RampConfig->RampModeConf=0.00;
+		 RampConfig->RampModeDirection=false; //设置为从0向上调节
+		 }
+  else if(!CfgFile.IsRememberBrightNess[GetRampConfigIndexFromMode()]) //非锁定模式，触发亮度重置	   
+	   RampConfig->RampModeConf=CfgFile.DefaultLevel[GetRampConfigIndexFromMode()];//获取默认数据
  return true;//复位成功
  }
 //在每次开机和换挡之前检测并控制方向
@@ -35,7 +49,7 @@ void RampDimmingDirReConfig(void)
  RampModeStaticStorDef *RampConfig;
  CurrentMode=GetCurrentModeConfig();//获取目前挡位信息
  if(CurrentMode==NULL||CurrentMode->Mode!=LightMode_Ramp)return; //挡位信息为空
- RampConfig=&RunLogEntry.Data.DataSec.RampModeStor[GetRampConfigIndexFromMode()];//根据当前挡位信息获得目标需要处理的无极调光亮度结构体所在的位置
+ RampConfig=GetRampConfigStrIdx();
  if(RampConfig->RampModeConf==1.00)RampConfig->RampModeDirection=true; //当前挡位已经到最大值，直接设置为向下调节
  if(RampConfig->RampModeConf==0.00)RampConfig->RampModeDirection=false;	 //当前挡位已经到最小值，直接设置为向上 
  }
@@ -69,9 +83,9 @@ void RampModeHandler(void)
 	ModeConfStr *CurrentMode;
 	RampModeStaticStorDef *RampConfig;
 	CurrentMode=GetCurrentModeConfig();//获取目前挡位信息
-	RampConfig=&RunLogEntry.Data.DataSec.RampModeStor[GetRampConfigIndexFromMode()];//根据当前挡位信息获得目标需要处理的无极调光亮度结构体所在的位置
+	RampConfig=GetRampConfigStrIdx();
 	//检测按键
-	Keybuf=getSideKeyClickAndHoldEvent();	
+	Keybuf=RunLogEntry.Data.DataSec.IsFlashLightLocked?getSideKeyHoldEvent():getSideKeyClickAndHoldEvent();	//如果是紧急月光挡位则配置为hold调整亮度
 	if(Keybuf!=IsKeyPressed)//按键松开按下的检测
 	  {
 		IsKeyPressed=Keybuf; 
@@ -94,14 +108,14 @@ void RampModeHandler(void)
 		if(RampConfig->RampModeConf<0)RampConfig->RampModeConf=0;
 		if(RampConfig->RampModeConf>1.0)RampConfig->RampModeConf=1.0;//限幅
 		//如果亮度值没到0或者1.0则显示调整方向
-		if(CfgFile.IsNoteLEDEnabled&&RampConfig->RampModeConf>0&&RampConfig->RampModeConf<1.0)
+	  if(CfgFile.IsNoteLEDEnabled&&RampConfig->RampModeConf>0&&RampConfig->RampModeConf<1.0)
 		   {
 			 IsRampAdjusting=true; //指示正在调光
-			 LED_DisplayRampDir(RampConfig->RampModeDirection);
+			 if(!RunLogEntry.Data.DataSec.IsFlashLightLocked)LED_DisplayRampDir(RampConfig->RampModeDirection); //非锁定模式下的紧急月光才使能调整
 			 }
 		else IsRampAdjusting=false; //调光结束
 		}
-	else IsRampAdjusting=false; //按键松开，调光结束开始进入缓慢锁相模式
+	else IsRampAdjusting=false; //按键松开，调光结束
 	//负责短时间熄灭LED指示已经到达地板或者天花板亮度
 	if(IsEnabledLimitTimer&&(RampConfig->RampModeConf==0||RampConfig->RampModeConf==1.0))
 	  {

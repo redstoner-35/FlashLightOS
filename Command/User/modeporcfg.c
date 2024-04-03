@@ -14,9 +14,9 @@ const char *modeporcfgArgument(int ArgCount)
 	switch(ArgCount)
 	  {
 		case 0:
-		case 1:return "指定驱动的上电初始/非记忆跳回默认挡位所在的挡位组.";
+		case 1:return "指定驱动的默认挡位所在的挡位组.";
 		case 2:
-		case 3:return "指定驱动的上电初始/非记忆跳回默认挡位在挡位组内的序号.";
+		case 3:return "指定驱动的默认挡位在挡位组内的序号.";
     case 4:
 		case 5:return "设置驱动是否在每次上电后进入锁定状态.";
 	  }
@@ -43,22 +43,13 @@ void modeporcfghandler(void)
 		  UARTPuts("\r\n如您希望驱动在上电后自动进入锁定状态,请输入'true',否则请输入'false'.");
 		  break;
 		case UserInput_False: //进入解锁
-			if(!CfgFile.IsDriverLockedAfterPOR)
-				UartPrintf((char *)ModeSelectStr[8],"解锁","无需操作");
-			else
-			  {
-				CfgFile.IsDriverLockedAfterPOR=false;
-				UartPrintf((char *)ModeSelectStr[8],"解锁"," ");
-				}
-			break;
+			 CfgFile.IsDriverLockedAfterPOR=false;
+			 UartPrintf((char *)ModeSelectStr[8],"解锁");
+			 break;
 		case UserInput_True: //进入锁定
-		  if(CfgFile.IsDriverLockedAfterPOR)
-				UartPrintf((char *)ModeSelectStr[8],"锁定","无需操作");
-			else
-			  {
-				CfgFile.IsDriverLockedAfterPOR=true;
-				UartPrintf((char *)ModeSelectStr[8],"锁定"," ");
-				}				
+			 CfgFile.IsDriverLockedAfterPOR=true;
+			 UartPrintf((char *)ModeSelectStr[8],"锁定");
+       break;		
 		 }
 	//检查是否有改挡位的配置输入
 	IsParameterExist("0123",23,&Param);
@@ -103,7 +94,7 @@ void modeporcfghandler(void)
 	  //处理挡位类型识别
 		TargetMode=GetSelectedModeConfig(UserSelect,modenum);
 		if(!TargetMode->IsModeEnabled)
-			UARTPuts("\r\n错误:您不能指定一个已被禁用的挡位作为系统的上电和非记忆挡位运行结束后退回的默认挡位!\r\n");
+			UARTPuts("\r\n错误:您不能指定一个已被禁用的挡位作为默认挡位!\r\n");
 		else
 		  {
 			CfgFile.BootupModeGroup=UserSelect;

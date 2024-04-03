@@ -59,7 +59,7 @@ void customflashcfgHandler(void)
 			UARTPuts("\r\n错误:自定义闪烁序列的字符串内容不得超过31字符且应至少包含1个字符.\r\n");
 		else if(strresult!=-1)//字符串包含非法内容
 		  {
-			UARTPuts("\r\n错误:自定义闪烁序列的内容仅能包含数字[0-9],'-'以及大写字母'ABTRUS'和'WXYZ'.");
+			UARTPuts("\r\n错误:自定义闪烁序列的内容仅能包含数字[1-9],'-'以及大写字母'ABTRUS'和'WXYZ'.");
 		  UartPrintf("\r\n您输入的字符串'%s'在第%d个字符的位置存在非法内容,请修正后再试.\r\n",ParamPtr,strresult+1);
 			UARTPutc(' ',strresult+15);
 			UARTPuts("^\r\n");
@@ -85,7 +85,7 @@ void customflashcfgHandler(void)
 		else if(buf==NAN||buf<4||buf>25) //数值非法
 		  {
 			DisplayIllegalParam(ParamPtr,25,4);//显示用户输入了非法参数  
-			UARTPuts("\r\n您设定的自定义闪序列运行频率应当在4Hz到25.0Hz之间的正数,负数值和0均为非法值.");
+			UARTPuts("\r\n您设定的自定义闪序列运行频率应当在4-25.0Hz之间!");
 			}
 		else //更改
 		  {

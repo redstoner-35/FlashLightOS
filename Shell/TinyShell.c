@@ -101,7 +101,7 @@ void SelfTestErrorHandler(void)
 		//显示最后一条自检信息
 		if(TinyShellBuf=='M'||TinyShellBuf=='m')
 		  {
-				UARTPuts("\r\n您请求了显示最后一条自检的日志信息,正在读取中...");
+				UARTPuts("\r\n正在读取最后一条自检的日志信息...");
 			if(!DisplayLastTraceBackMessage())
 			  UARTPuts("\r\n系统读取该信息时遇到了错误,请重试.");
 			UARTPuts((char *)TinyShellText[5]);//显示shell字符
@@ -109,7 +109,7 @@ void SelfTestErrorHandler(void)
 		//重启系统
 		else if(TinyShellBuf=='R'||TinyShellBuf=='r')
 		  {
-			UARTPuts("\r\n您请求了手动重启,系统将在3秒后重启...\r\n\r\n");
+			UARTPuts("\r\n系统将在3秒后重启...\r\n\r\n");
 			delay_Second(3);
 			NVIC_SystemReset();
 			while(1);

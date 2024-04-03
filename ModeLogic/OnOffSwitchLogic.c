@@ -137,6 +137,7 @@ void LEDPowerOffOperationHandler(bool IsRollback)
   if(SysPstatebuf.ErrorCode==Error_None)SysPstatebuf.Pstate=PState_Standby;//返回到待机状态
 	else SysPstatebuf.Pstate=PState_Error; //出现错误，去到错误状态
 	TurnLightOFFLogic();
+	ResetRampBrightness();//调用亮度重置函数重设无极调光亮度
   if(IsRollback)ModeNoMemoryRollBackHandler();//关闭主灯后检查挡位是否带记忆，不带的就自动复位		
   ResetPowerOffTimerForPoff();//重置定时器
 	ResetBreathStateMachine();
@@ -210,15 +211,21 @@ void PStateStateMachine(void)
 				CurrentMode=GetCurrentModeConfig(); //修改完挡位之后获取当前挡位的数据
         if(CurrentMode==NULL)break;//当前挡位为空
 				MoonLightBuf.ModeCurrent=CurrentMode->LEDCurrentHigh;
-				CurrentMode->LEDCurrentHigh=MinimumLEDCurrent; //电流设置为固件的最低闲置
+				CurrentMode->LEDCurrentHigh=FusedMaxCurrent*0.05; //额定最高电流设置为驱动最高输出的5%
+				MoonLightBuf.ModeMinCurrent=CurrentMode->LEDCurrentLow;
+				CurrentMode->LEDCurrentLow=MinimumLEDCurrent; //最低电流设置为驱动允许的最低电流
 				MoonLightBuf.IsModeEnabled=CurrentMode->IsModeEnabled; 
-				CurrentMode->IsModeEnabled=true;//模式强制设置为开启
+				CurrentMode->IsModeEnabled=true;//模式强制设置为开启			
+				MoonLightBuf.RampSpeed=CurrentMode->RampModeSpeed;						
+				CurrentMode->RampModeSpeed=3; //设置调光速度为3秒			
 				MoonLightBuf.Mode=CurrentMode->Mode; 
-				CurrentMode->Mode=LightMode_On; //挡位运行模式强制设置为常亮模式
+				CurrentMode->Mode=LightMode_Ramp; //挡位运行模式强制设置为无极调光电流
 				MoonLightBuf.IsStepdown=CurrentMode->IsModeAffectedByStepDown;
 				CurrentMode->IsModeAffectedByStepDown=false; //紧急月光挡位没什么电流，因此强制关闭降档	
+				ResetRampBrightness();//复位无极调光参数
 				//进行开机操作	
 				LEDPowerOnHandler(false,&BattO);
+				BreathCurrent=MinimumLEDCurrent; //将呼吸电流设置为最低的LED电流使得LED不会闪
 				}
 			//其余任何按键情况，手电红色灯闪烁三次表示已锁定
 			else if(
@@ -365,11 +372,11 @@ void PStateStateMachine(void)
 		正常模式下，自检通过后主LED点亮的模式*/
 		case PState_LEDOn:
 		  {
-			//执行运行过程中的故障检测,以及挡位逻辑
+			//执行运行过程中的故障检测,以及挡位逻辑 
+			RuntimeModeCurrentHandler();              //运行过程中的电流管理
 			FlashTimerInitHandler();                  //定时器配置
-	    RuntimeModeCurrentHandler();              //运行过程中的电流管理
-			//锁定模式开启的紧急月光，单击或者长按关机
-			if(RunLogEntry.Data.DataSec.IsFlashLightLocked&&(ShortPress==1||LongPressOnce)) 	
+	   	//锁定模式开启的紧急月光，单击关机
+			if(RunLogEntry.Data.DataSec.IsFlashLightLocked&&ShortPress==1)
 			  {
 				LEDPowerOffOperationHandler(false); //关闭主LED
 				SysPstatebuf.Pstate=PState_Locked; //退回到锁定模式
@@ -378,13 +385,12 @@ void PStateStateMachine(void)
 				CurrentMode->Mode=MoonLightBuf.Mode;
 				CurrentMode->IsModeAffectedByStepDown=MoonLightBuf.IsStepdown;
 				CurrentMode->IsModeEnabled=MoonLightBuf.IsModeEnabled;
+				CurrentMode->LEDCurrentLow=MoonLightBuf.ModeMinCurrent;
+			  CurrentMode->RampModeSpeed=MoonLightBuf.RampSpeed;
 				CurrentMode->LEDCurrentHigh=MoonLightBuf.ModeCurrent; //复原被覆盖的默认模式0挡位的数据
 				CurMode.RegularGrpMode=MoonLightBuf.RegularGrpMode; 
 				CurMode.ModeGrpSel=MoonLightBuf.ModeGrpSel; //复原被覆盖的挡位组数据
-			  while(getSideKeyHoldEvent())SideKey_LogicHandler();//在这里等待用户放开侧按开关，解决错误报告处于锁定状态的bug
-				}
-			//锁定模式下不执行下面的任何内容
-			else if(RunLogEntry.Data.DataSec.IsFlashLightLocked)break;
+				}			
 			//按侧按6次重置亮度等级
 			else if(ShortPress==6)
 			  {
@@ -396,7 +402,9 @@ void PStateStateMachine(void)
 				  strncat(LEDModeStr,ResetBrightLEDControlStr,sizeof(LEDModeStr)-1);//填充头部 
 					ExtLEDIndex=&LEDModeStr[0];//传指针过去	
 					}
-				}
+				}			
+			//锁定模式下不执行下面的任何内容
+			else if(RunLogEntry.Data.DataSec.IsFlashLightLocked)break;
 			//按侧按4次，启用或者禁用反向战术模式
 			else if(ShortPress==4)
 			 {

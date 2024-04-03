@@ -128,6 +128,8 @@ typedef struct
  ModeGrpSelDef ModeGrpSel;  //模式组的选择
  bool IsModeEnabled; //模式是否启用
  float ModeCurrent; //挡位电流
+ float ModeMinCurrent;//挡位最低电流
+ float RampSpeed; //调光速度
  LightModeDef Mode;//该挡位的操作模式
  bool IsStepdown; //是否降档
  }MoonLightModeCacheDef;	
