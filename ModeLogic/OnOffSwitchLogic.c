@@ -137,7 +137,7 @@ void LEDPowerOffOperationHandler(bool IsRollback)
   if(SysPstatebuf.ErrorCode==Error_None)SysPstatebuf.Pstate=PState_Standby;//返回到待机状态
 	else SysPstatebuf.Pstate=PState_Error; //出现错误，去到错误状态
 	TurnLightOFFLogic();
-	ResetRampBrightness();//调用亮度重置函数重设无极调光亮度
+	ResetRampBrightness(false);//调用亮度重置函数重设无极调光亮度
   if(IsRollback)ModeNoMemoryRollBackHandler();//关闭主灯后检查挡位是否带记忆，不带的就自动复位		
   ResetPowerOffTimerForPoff();//重置定时器
 	ResetBreathStateMachine();
@@ -222,7 +222,7 @@ void PStateStateMachine(void)
 				CurrentMode->Mode=LightMode_Ramp; //挡位运行模式强制设置为无极调光电流
 				MoonLightBuf.IsStepdown=CurrentMode->IsModeAffectedByStepDown;
 				CurrentMode->IsModeAffectedByStepDown=false; //紧急月光挡位没什么电流，因此强制关闭降档	
-				ResetRampBrightness();//复位无极调光参数
+				ResetRampBrightness(false);//复位无极调光参数
 				//进行开机操作	
 				LEDPowerOnHandler(false,&BattO);
 				BreathCurrent=MinimumLEDCurrent; //将呼吸电流设置为最低的LED电流使得LED不会闪
@@ -263,7 +263,7 @@ void PStateStateMachine(void)
 			//按侧按6次重置亮度等级
 			else if(ShortPress==6)
 			  {
-				if(ResetRampBrightness()) //复位亮度等级,如果成功则侧按提示
+				if(ResetRampBrightness(true)) //复位亮度等级,如果成功则侧按提示
 				  {
 					LED_Reset();//复位LED管理器
           memset(LEDModeStr,0,sizeof(LEDModeStr));//清空内存
@@ -394,7 +394,7 @@ void PStateStateMachine(void)
 			//按侧按6次重置亮度等级
 			else if(ShortPress==6)
 			  {
-				if(ResetRampBrightness()) //复位亮度等级,如果成功则侧按提示
+				if(ResetRampBrightness(true)) //复位亮度等级,如果成功则侧按提示
 				  {
 					LED_Reset();//复位LED管理器
           memset(LEDModeStr,0,sizeof(LEDModeStr));//清空内存

@@ -207,7 +207,7 @@ void DisplayBatteryCapacity(void);//库仑计开启时显示百分比（精确�
 void RandomFlashHandler(void);//随机变频闪的handler
 void LinearFlashReset(void);
 void LinearFlashHandler(void);//线性变频闪的复位和处理模块
-bool ResetRampBrightness(void);//强制复位当前无极调光挡位
+bool ResetRampBrightness(bool IsForceReset);//强制复位当前无极调光挡位
 int GetRampConfigIndexFromMode(void);//根据当前挡位转换数组下标的模块
 void PORResetFactoryDetect(void);//在上电自检阶段进行reset操作的函数
 void RampDimmingDirReConfig(void);//重新初始化无极调光方向

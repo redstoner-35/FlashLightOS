@@ -25,7 +25,7 @@ static RampModeStaticStorDef *GetRampConfigStrIdx(void)
  }
  
 //强制重置当前挡位的函数
-bool ResetRampBrightness(void)
+bool ResetRampBrightness(bool IsForceReset)
  {
  ModeConfStr *CurrentMode;
  RampModeStaticStorDef *RampConfig;
@@ -38,7 +38,7 @@ bool ResetRampBrightness(void)
      RampConfig->RampModeConf=0.00;
 		 RampConfig->RampModeDirection=false; //设置为从0向上调节
 		 }
-  else if(!CfgFile.IsRememberBrightNess[GetRampConfigIndexFromMode()]) //非锁定模式，触发亮度重置	   
+  else if(IsForceReset||!CfgFile.IsRememberBrightNess[GetRampConfigIndexFromMode()]) //非锁定模式，触发亮度重置	   
 	   RampConfig->RampModeConf=CfgFile.DefaultLevel[GetRampConfigIndexFromMode()];//获取默认数据
  return true;//复位成功
  }

@@ -31,11 +31,11 @@ const char *runlogcfgArgument(int ArgCount)
 		case 0:
 		case 1:return "清除系统中的运行日志";	
 		case 2:
-		case 3:return "设置运行日志记录器是否启用.";
+		case 3:return "设置运行日志记录器是否启用";
 		case 4:
-		case 5:return "将运行日志以Xmodem的方式保存到电脑进行分析";
+		case 5:return "将运行日志以Xmodem的方式保存到电脑";
 		case 6:
-		case 7:return "从电脑端以Xmodem的方式接收并恢复已有的运行日志";
+		case 7:return "从电脑端以Xmodem的方式恢复运行日志";
 		}
 	return NULL;
 	}
@@ -57,7 +57,7 @@ void RestoreRunLog(void)
 			UARTPuts("失败\r\n错误:您上传的日志文件无效,文件已损坏.");					 
 	else
 			{
-			UARTPuts("成功\r\n日志文件检查通过,正在还原日志请耐心等待...");
+				UARTPuts("成功\r\n日志文件检查通过,正在恢复日志数据...");
 			CarrySize=RunTimeLogSize;
 			Address=XmodemConfRecvBase;
 			WriteAddress=RunTimeLogBase;
