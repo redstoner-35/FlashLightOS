@@ -15,10 +15,9 @@ float LEDFilter(float DIN,float *BufIN,int bufsize);
 static float err_last_temp = 0.0;	//上一温度误差
 static float integral_temp = 0.0; //积分后的温度误差值
 static bool TempControlEnabled = false; //是否激活温控
-static bool CalculatePIDRequest = false; //PID计算请求
 static bool DoubleClickPressed = false;//缓存，记录双击+长按是否按下
-float ThermalLowPassFilter[8*ThermalLPFTimeConstant]={0}; //低通滤波器
-static volatile float PIDInputTemp=25; //低通滤波结果
+float ThermalLowPassFilter[24]={0}; //低通滤波器
+static float PIDAdjustVal=100; //PID调节值
 static char RemainingMomtBurstCount=0; //短时间鸡血技能的剩余次数
 
 //显示已经没有鸡血技能了
@@ -32,6 +31,7 @@ void DisplayNoMomentTurbo(void)
 //重置PID温控器的积分器
 void ResetThermalPID(void)
   {
+	PIDAdjustVal=100; //复位调节值
 	integral_temp=0;
 	err_last_temp=0; //在温控不需要启动的阶段，需要将温控的微分和积分器复位否则会发生过调
 	}
@@ -64,15 +64,6 @@ float GetActualTemp(ADCOutTypeDef *ADCResult)
 		}
 	return ActualTemp; //返回实际温度
 	}	
-//放在日志记录器里面进行温度常数计算的函数
-void CalculatePIDTempInput(ADCOutTypeDef *ADCResult)
-  {
-  //如果当前LED电流为0，则不允许积分器进行累加
-	if(!SysPstatebuf.ToggledFlash||SysPstatebuf.TargetCurrent<=0)return;	
-	//运行读取函数并赋值最新的PID数值
-	PIDInputTemp=LEDFilter(GetActualTemp(ADCResult),ThermalLowPassFilter,8*ThermalLPFTimeConstant);
-	CalculatePIDRequest = true; //请求PID计算
-	}
 
 //自检协商完毕之后填充温度滤波器
 void FillThermalFilterBuf(ADCOutTypeDef *ADCResult)
@@ -81,17 +72,19 @@ void FillThermalFilterBuf(ADCOutTypeDef *ADCResult)
 	float Temp;
 	//写缓冲区
 	Temp=GetActualTemp(ADCResult);
-	PIDInputTemp=Temp; //存储温度值
-  for(i=0;i<(8*ThermalLPFTimeConstant);i++)ThermalLowPassFilter[i]=Temp;
+  for(i=0;i<24;i++)ThermalLowPassFilter[i]=Temp;
 	}	
 
 //基于PID算法的温度控制模块
-float PIDThermalControl(void)
+float PIDThermalControl(ADCOutTypeDef *ADCResult)
   {
-	float err_temp,AdjustValue;
+	float err_temp,PIDInputTemp;
 	bool result;
+	ModeConfStr *TargetMode; 
   float TriggerTemp,MaintainTemp,ReleaseTemp;
-	ModeConfStr *TargetMode=GetCurrentModeConfig();
+  //运行读取函数获取最新的LED温度以及模式组数据
+	PIDInputTemp=LEDFilter(GetActualTemp(ADCResult),ThermalLowPassFilter,24);	
+	TargetMode=GetCurrentModeConfig();
 	//如果当前挡位支持鸡血，且自动关机定时器没有启用则进行逻辑检测
 	if(TargetMode!=NULL&&TargetMode->MaxMomtTurboCount>0&&TargetMode->PowerOffTimer==0)
 	  {
@@ -132,16 +125,20 @@ float PIDThermalControl(void)
 	else if(TempControlEnabled&&PIDInputTemp<=ReleaseTemp)TempControlEnabled=false;  //温控解除，恢复turbo次数
 	//温控不需要接入或者当前LED是熄灭状态，直接返回100
 	if(!TempControlEnabled||!SysPstatebuf.ToggledFlash||SysPstatebuf.TargetCurrent==0)return 100;
-	//温控的PID部分
-	err_temp=MaintainTemp-PIDInputTemp; //计算误差值
-	if(CalculatePIDRequest)
-	  {
-		integral_temp+=(err_temp*((float)2/(float)ThermalLPFTimeConstant)); //积分限幅(拓展系数取低通滤波器时间常数的0.5倍)
-	  if(integral_temp>10)integral_temp=10;
-	  if(integral_temp<-85)integral_temp=-85; //积分和积分限幅
-		CalculatePIDRequest=false; //积分统计完成
+	//温控PID的误差计算以及Kp和Kd项调节
+  err_temp=MaintainTemp-PIDInputTemp; //计算误差值
+	PIDAdjustVal+=err_temp*CfgFile.ThermalPIDKp/100; //Kp(比例项)
+	if(fabsf(err_temp)>2) //温度误差的绝对值大于2℃，进行微分调节
+	  {	
+		PIDAdjustVal+=(err_temp-err_last_temp)*CfgFile.ThermalPIDKd/100; //Kd(微分项)
+		err_last_temp=err_temp;//记录上一个误差值
 		}
-	AdjustValue=CfgFile.ThermalPIDKp*err_temp+CfgFile.ThermalPIDKi*integral_temp+CfgFile.ThermalPIDKd*(err_temp-err_last_temp); //PID算法算出调节值
-	err_last_temp=err_temp;//记录上一个误差值
-	return 90+AdjustValue; //返回base值+调节value
+	if(PIDAdjustVal>100)PIDAdjustVal=100;
+	if(PIDAdjustVal<5)PIDAdjustVal=5; //PID调节值限幅
+	//温控PID的Ki(积分项)
+  integral_temp+=(err_temp/(float)150); //积分累加
+  if(integral_temp>25)integral_temp=25;
+	if(integral_temp<-25)integral_temp=-25; //积分限幅
+  //返回计算结束的调节值
+	return PIDAdjustVal+CfgFile.ThermalPIDKi*integral_temp; //返回比例和微分结果以及积分结果相加的调节值
 	}

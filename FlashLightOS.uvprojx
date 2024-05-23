@@ -968,11 +968,6 @@
               <FilePath>.\ModeLogic\RampMode.c</FilePath>
             </File>
             <File>
-              <FileName>MorseCodeTransmitMode.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\ModeLogic\MorseCodeTransmitMode.c</FilePath>
-            </File>
-            <File>
               <FileName>Customflash.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\ModeLogic\Customflash.c</FilePath>
@@ -986,6 +981,11 @@
               <FileName>LinearFlash.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\ModeLogic\LinearFlash.c</FilePath>
+            </File>
+            <File>
+              <FileName>MorseCodeTransmitMode.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\ModeLogic\MorseCodeTransmitMode.c</FilePath>
             </File>
             <File>
               <FileName>FactoryReset.c</FileName>

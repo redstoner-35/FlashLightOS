@@ -11,7 +11,6 @@
 //函数声明
 float fmaxf(float x,float y);
 float fminf(float x,float y);
-void CalculatePIDTempInput(ADCOutTypeDef *ADCResult);
 
 //静态变量
 static char RuntimeAverageCount=0;
@@ -79,7 +78,6 @@ void RunTimeDataLogging(void)
 	 else AverageBuf[4]+=RunLogEntry.Data.DataSec.AverageSPSTemp;  //如果在本次平均的时候温度数据不可用则使用老数据
 	 RuntimeAverageCount++;
 	 }
- CalculatePIDTempInput(&ADCO);	//将ADC采集到的数据写入到滤波器内实现滤波
  if(!IsRunTimeLoggingEnabled)return;//logger被禁止，不需要采集后面的日志数据只需要采集温度信息保障温控系统正常运作即可。
  //开始处理最大值最小值类的采样
  if(ADCO.NTCState==LED_NTC_OK) //LED温度

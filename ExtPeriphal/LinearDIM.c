@@ -16,7 +16,7 @@
 //声明一下函数
 float fmaxf(float x,float y);
 float fminf(float x,float y);
-float PIDThermalControl(void);//PID温控
+float PIDThermalControl(ADCOutTypeDef *ADCResult);//PID温控
 void FillThermalFilterBuf(ADCOutTypeDef *ADCResult);//填充温度stepdown的缓冲区
 
 //内部变量
@@ -768,7 +768,7 @@ void RuntimeModeCurrentHandler(void)
  else IsEnableStepDown=false; //不需要应用降档设置
  //执行温控
  if(!IsEnableStepDown)ResetThermalPID(); //禁用温控降档的时候复位温控PID
- Throttle=IsEnableStepDown?PIDThermalControl():100;//根据是否降档来执行PID温控计算降档参数
+ Throttle=IsEnableStepDown?PIDThermalControl(&ADCO):100;//根据是否降档来执行PID温控计算降档参数
  if(Throttle>100)Throttle=100;
  if(Throttle<5)Throttle=5;//温度降档值限幅
  SysPstatebuf.CurrentThrottleLevel=(float)100-Throttle;//将最后的降档系数记录下来用于事件日志使用
