@@ -3,6 +3,7 @@
 #include "runtimelogger.h"
 #include <stdlib.h>
 #include <math.h>
+#include "ADC.h"
 
 static const char *Rlvstr[]=
 {
@@ -18,7 +19,7 @@ static const char *Rlvstr[]=
 "\r\n由于运行日志%s,故无法查看.",//9
 };
 
-void DisplayLampTime(double time)
+static void DisplayLampTime(double time)
   {
   //秒	
 	if(time<60)UartPrintf("%ld秒",(long)time%60);
@@ -27,19 +28,22 @@ void DisplayLampTime(double time)
 	//小时分钟+秒
 	else UartPrintf("%ld小时%ld分%ld秒",(long)time/3600,((long)time%3600)/60,((long)time%3600)%60);
 	}
-void PrintStatuBar(char *CompType)
+static void PrintStatuBar(char *CompType)
   {
 	UARTPuts("\r\n  ");
 	UARTPutc('-',12);
 	UartPrintf("  %s信息  ",CompType);
 	UARTPutc('-',12);
 	}
+//外部变量和函数声明
 extern float UsedCapacity;
+float GetActualTemp(ADCOutTypeDef *ADCResult);
 	
 //命令处理主函数
 void runlogviewHandler(void)
   {
-	float buf;
+	float buf,DriverIntTemp,DriverMaxIntTemp;
+	ADCOutTypeDef ADCO;
 	//显示数据
 	if(!IsRunTimeLoggingEnabled)
 		UartPrintf((char *)Rlvstr[9],"已被管理员禁用");
@@ -47,7 +51,18 @@ void runlogviewHandler(void)
 	  UartPrintf((char *)Rlvstr[9],"内容为空");
 	else
 	  {
-		//正常显示
+		//填写结构体并运算出驱动加权平均温度
+	  ADCO.NTCState=RunLogEntry.Data.DataSec.AverageLEDTemp!=NAN?LED_NTC_OK:LED_NTC_Open;
+		ADCO.SPSTMONState=RunLogEntry.Data.DataSec.AverageSPSTemp!=NAN?SPS_TMON_OK:SPS_TMON_Disconnect; //根据LED和SPS的温度数据设置传感器状态
+    ADCO.LEDTemp=RunLogEntry.Data.DataSec.AverageLEDTemp;		
+	  ADCO.SPSTemp=RunLogEntry.Data.DataSec.AverageSPSTemp;
+		DriverIntTemp=GetActualTemp(&ADCO);
+	  ADCO.NTCState=RunLogEntry.Data.DataSec.MaximumLEDTemp!=NAN?LED_NTC_OK:LED_NTC_Open;
+		ADCO.SPSTMONState=RunLogEntry.Data.DataSec.MaximumSPSTemp!=NAN?SPS_TMON_OK:SPS_TMON_Disconnect; //根据LED和SPS的温度数据设置传感器状态
+    ADCO.LEDTemp=RunLogEntry.Data.DataSec.MaximumLEDTemp;		
+	  ADCO.SPSTemp=RunLogEntry.Data.DataSec.MaximumSPSTemp;			
+		DriverMaxIntTemp=GetActualTemp(&ADCO);	
+		//开始显示系统日志
 		UARTPuts("\r\n");
 		UARTPutc('-',16);
 		UARTPuts(" 系统运行日志查看器 ");
@@ -74,6 +89,7 @@ void runlogviewHandler(void)
 			UARTPuts((char *)Rlvstr[4]);
 	  UARTPuts("\r\n  LED总运行时长 : ");DisplayLampTime(RunLogEntry.Data.DataSec.LEDRunTime);
 		PrintStatuBar("驱动模块");
+		UartPrintf("\r\n  手电内部加权平均/最高温度 :  %.2f'C / %.2f'C",DriverIntTemp,DriverMaxIntTemp);
 		UartPrintf("%sMOS平均/最高运行温度 : ",Rlvstr[1]);
 		if(RunLogEntry.Data.DataSec.AverageSPSTemp!=NAN)
 		  UartPrintf((char *)Rlvstr[5],RunLogEntry.Data.DataSec.AverageSPSTemp);

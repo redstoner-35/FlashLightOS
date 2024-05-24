@@ -58,11 +58,9 @@ void battcfghandler(void)
 		UartPrintf((char *)BatteryVoltagePoint,"低电量警告",CfgFile.VoltageAlert);
 		UartPrintf((char *)BatteryVoltagePoint,"低电量保护",CfgFile.VoltageTrip);
 		UartPrintf("\r\n 电池最高允许功率 : %.2fW",MaximumBatteryPower);
-		UARTPuts("\r\n   ------ 库仑计信息 ------\r\n");
-		if(!IsRunTimeLoggingEnabled)//日志被关闭
-		  UARTPuts("\r\n  由于运行日志已被禁用\r\n库仑计功能不可用.\r\n");
-		else //正常显示
+		if(IsRunTimeLoggingEnabled)//日志已启用
 		  {
+			UARTPuts("\r\n   ------ 库仑计信息 ------\r\n");
 			UartPrintf("\r\n 库仑计自学习已启用 : %s\r\n",RunLogEntry.Data.DataSec.BattUsage.IsLearningEnabled?"是":"否");
 		  if(RunLogEntry.Data.DataSec.BattUsage.IsCalibrationDone)
 		    {
@@ -71,6 +69,8 @@ void battcfghandler(void)
 			  }
 		  UartPrintf("\r\n 库仑计校准完毕 : %s",RunLogEntry.Data.DataSec.BattUsage.IsCalibrationDone?"是":"否");
 			}
+		UARTPuts("\r\n\r\n");
+		UARTPutc('-',36);
 		IsCmdParamOK=true;
 		}
 	//复位库仑计的统计数据
@@ -115,7 +115,7 @@ void battcfghandler(void)
 			RunLogEntry.Data.DataSec.IsLowQualityBattAlert=false;//重置警告
 			RunLogEntry.CurrentDataCRC=CalcRunLogCRC32(&RunLogEntry.Data);//算新的CRC-32值
 			WriteRuntimeLogToROM();//更新运行日志数据
-			UARTPuts("\r\n库仑计的统计数据已被复位,您需要重新运行一次电池容量自学习以启用库仑计.\r\n");
+			UARTPuts("\r\n库仑计的电池统计数据已被复位.\r\n");
 			}
 		IsCmdParamOK=true;
 		}
@@ -138,7 +138,7 @@ void battcfghandler(void)
 		else if(buf==NAN||buf<2000||buf>100000)
 		  {
 			DisplayIllegalParam(Param,24,10);//显示用户输入了非法参数
-			UARTPuts("\r\n您应当指定一个在2000-100000(mAH)之间的数值来手动设置库仑计的设计电池容量.");
+			UARTPuts("\r\n您应指定一个在2000-100000(mAH)之间的数值作为库仑计的设计电池容量!");
 			}
 		 else //设置参数
 		  {
