@@ -7,7 +7,7 @@
 
 #define MajorVersion 2
 #define MinorVersion 4
-#define HotfixVersion 14  //固件版本号
+#define HotfixVersion 15  //固件版本号
 
 //固件模式配置
 //#define FlashLightOS_Init_Mode //设定固件的编译模式，如果开启此注释则固件配置为初始化模式，此时将会允许工程师对FRU进行设置并允许校准功能
@@ -26,16 +26,16 @@
 #define GammaCorrectionValue 2.45   //亮度拟合曲线的gamma修正，根据不同LED有所不同
 #define LVAlertCurrentLimit 4.3 //当低电压警告触发后，驱动最大的输出电流值(A)
 #define ForceThermalControlCurrent 5.5 //当挡位的运行电流大于这个值时温控将会被强制启用不准关闭
-#define MaxAllowedLEDCurrent 33 //驱动硬件熔断的最大输出电流设置(测得电流超过此电流的1.2倍将触发保护)
-#define MinimumLEDCurrent 0.05 //最小的LED电流
+#define MaxAllowedLEDCurrent 35 //驱动硬件熔断的最大输出电流设置(测得电流超过此电流的1.2倍将触发保护)
+#define MinimumLEDCurrent 0.04 //最小的LED电流
 #define BatteryCellCount 3 //默认情况下驱动使用的电池组中锂电池的串数(按照三元锂电池计算)
 #define DeepsleepDelay 35 //驱动的出厂深度睡眠时间,35秒内没有操作则睡眠
 #define ForceRequireLEDNTC //驱动的LED NTC热敏电阻强制要求存在,如果检测不到热敏电阻则驱动将自检失败
 //#define SideKeyPolar_positive  //侧按的极性，保留此define表示侧按按键高有效，否则低有效
 
 //FRU中LED类型的配置
-#define CustomLEDName "XHP70.3HI-4500K*3" //如果指定驱动使用其他任意未指定型号的LED，则需要在此处填写LED名称
-#define CustomLEDCode 0x7002 //如果指定驱动使用其他任意未指定型号的LED，则需要在此处填写该LED的类型代码
+#define CustomLEDName "DFEx-SuperLED+ FI1048D-Gen1" //如果指定驱动使用其他任意未指定型号的LED，则需要在此处填写LED名称
+#define CustomLEDCode 0x7004 //如果指定驱动使用其他任意未指定型号的LED，则需要在此处填写该LED的类型代码
 
 //#define Using_SBT90Gen2_LED //使用SBT90.2
 //#define Using_SBT90R_LED //使用红色的SBT90
@@ -70,6 +70,7 @@
 #define SPSTMONStdVal 0.6 //SPS为0度时的温度，单位V
 
 //温度测量设置
+#define NTCT0ResK 10 //NTC电阻在标定温度(一般是25℃)x下面的阻值（单位KΩ）
 #define NTCUpperResValueK 10 //NTC测温电路上面串联的电阻（单位KΩ）
 #define NTCTRIMValue 0.5 //温度修正值，单位℃
 #define NTCB 3950 //NTC热敏电阻的B值(V1.x 3450 V2.0 3950,注意:此处B值仅对debug模式下初始化FRU时有效，初始化后此处数值将被忽略)
@@ -78,8 +79,8 @@
 
 //电池功率计和输入电流环路限制参数设置
 #define INA219ShuntOhm 0.5 //驱动的INA219功率级的分流电阻阻值(单位mΩ)
-#define InputCurrentLimitTrip 24 //触发驱动电流输入的PID限制器的阈值
-#define InputCurrentMaintain 10 //PID限制器目标维持的电流
+#define InputCurrentLimitTrip 29.5 //触发驱动电流输入的PID限制器的阈值
+#define InputCurrentMaintain 15 //PID限制器目标维持的电流
 #define InputCurrentLimitRelease 6 //除能驱动电流PID显示器的阈值
 #define InplPIDKp 0.95 
 #define InplPIDKi 1.8

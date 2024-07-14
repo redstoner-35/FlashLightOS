@@ -289,6 +289,7 @@ void LinearDIM_POR(void)
  if(!MCP3421_SetChip(AuxBuckIsenADCGain,AuxBuckIsenADCRes,false))
    {
 	 UartPost(Msg_critical,"LineDIM",(char *)AUXBuckADCError,"init FAIL.");
+	 CurrentLEDIndex=17;
 	 SelfTestErrorHandler();  
 	 }	 
  AD5693R_SetOutput(0,AuxBuckAD5693ADDR); //将辅助buck输出设置为0，在上电之前辅助buck调光引脚不能有电压否则芯片不运行
@@ -314,10 +315,10 @@ void LinearDIM_POR(void)
 		}
  if(i==50) //出错
     {
+		CurrentLEDIndex=17;
 		UartPost(Msg_critical,"LineDIM","Failed to start Aux Buck.");
     DisableAuxBuckForFault(); //关闭辅助buck并报错
 		}
- 
  /***********************************************************************
  副buck自检成功结束，这个时候我们通过设置DAC基准强制关闭副buck并关闭ADC,
  进入低功耗休眠阶段。

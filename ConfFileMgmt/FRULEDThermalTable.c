@@ -1,5 +1,11 @@
 #include "FRU.h"
 
+
+//entry配置
+//#define EnableLuminusEntry //配置中是否保留luminus的入口
+#define EnableCREEEntry //是否保留科瑞的入口
+//#define EnableCDEntry //是否保留昌达的入口
+
 //加载默认值
 static void LoadDefaultValue(LEDThermalConfStrDef *ParamOut)
   {
@@ -19,6 +25,7 @@ int CheckForOEMLEDTable(LEDThermalConfStrDef *ParamOut,FRUBlockUnion *FRU)
 		   ParamOut->PIDTriggerTemp=56;
 		   ParamOut->PIDMaintainTemp=50;
 		   break;
+		#ifdef EnableLuminusEntry
 		//8颗Luminus SFT-40-W 6500K
 		case 0x4E65:
 		//8颗Luminus SFT-40-W 5000K
@@ -27,6 +34,8 @@ int CheckForOEMLEDTable(LEDThermalConfStrDef *ParamOut,FRUBlockUnion *FRU)
 		   ParamOut->PIDTriggerTemp=65;
 		   ParamOut->PIDMaintainTemp=55;			
 		   break;
+		#endif
+		#ifdef EnableCREEEntry
 		//3颗CREE XHP70.3HI 6500K P2光效
 		case 0x7003:
 		//3颗CREE XHP70.3HI 4500K 90CRI
@@ -37,6 +46,8 @@ int CheckForOEMLEDTable(LEDThermalConfStrDef *ParamOut,FRUBlockUnion *FRU)
 		   ParamOut->PIDTriggerTemp=70;
 		   ParamOut->PIDMaintainTemp=60;		
 		   break;
+	  #endif
+		#ifdef EnableCDEntry 
 		//昌达SFH43 3000K
 	  case 0x1001:
 		//昌达SFH45 5500K
@@ -45,6 +56,13 @@ int CheckForOEMLEDTable(LEDThermalConfStrDef *ParamOut,FRUBlockUnion *FRU)
 		   ParamOut->PIDTriggerTemp=70;
 		   ParamOut->PIDMaintainTemp=60;
 		   break;			 
+		#endif
+    //DFEx-SuperLED+ FI1048D Gen1
+		case 0x7004:
+			 ParamOut->MaxLEDTemp=75;
+		   ParamOut->PIDTriggerTemp=70;
+		   ParamOut->PIDMaintainTemp=60;
+		   break;			 			
 		//未定义ID
 		default : LoadDefaultValue(ParamOut);return 1;
 		}

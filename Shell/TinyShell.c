@@ -22,7 +22,7 @@ static const char *TinyShellText[]=
 "手动重启驱动",//3
 "查看驱动输出的最后一条自检日志信息",//4
 "\r\n\r\nRescue:>",//5
-"\r\n您请求了下载%s日志,请打开Xmodem传输软件以接收日志.\r\n\r\n",//6
+"\r\n您请求了下载%s日志,请打开Xmodem软件以接收日志.\r\n\r\n",//6
 };
 
 //显示Shell操作内容
@@ -84,8 +84,8 @@ void SelfTestErrorHandler(void)
  XmodemTransferReset();//复位Xmodem状态机
  delay_Second(3);
  UARTPuts("\x0C\033[2J");
- UARTPuts("\r\n驱动在POST时发现了致命硬件错误.为避免故障扩大,自我保护模式已激活.");
- UARTPuts("\r\n如您作为消费者看到此提示,请输入'X'下载日志并发给商家分析问题."); 
+ UARTPuts("\r\n驱动在POST时发现了致命硬件错误,为保护硬件自我保护模式已激活.");
+ UARTPuts("\r\n如您作为消费者看到此提示,请输入'X'下载日志并发给商家."); 
  PrintShellContent();//打印操作提示
  while(1)//主循环
   {
